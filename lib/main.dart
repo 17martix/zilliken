@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:zilliken/Pages/DashboardPage.dart';
 
 import 'Pages/SingleOrderPage.dart';
 
@@ -16,7 +17,7 @@ class Zilliken extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: SingleOrderPage(),
+      home: DashboardPage(),
     );
   }
 }
