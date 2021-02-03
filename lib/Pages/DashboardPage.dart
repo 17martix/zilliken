@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:zilliken/Components/ZAppBar.dart';
+import 'package:zilliken/Helpers/Styling.dart';
 import 'package:zilliken/Pages/MenuPage.dart';
 import 'package:zilliken/Pages/OrdersPage.dart';
+import 'package:zilliken/i18n.dart';
 
 class DashboardPage extends StatefulWidget {
   @override
@@ -16,18 +18,20 @@ class _DashboardPageState extends State<DashboardPage> {
       appBar: buildAppBar(),
       body: body(),
       bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
+        items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.restaurant_menu_outlined),
-            label: 'menu',
+            label: I18n.of(context).menu,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.shopping_bag),
-            label: 'Commandes',
+            label: I18n.of(context).orders,
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.amber[800],
+        selectedItemColor: Color(
+          Styling.primaryColor,
+        ),
         onTap: _onItemTapped,
       ),
     );

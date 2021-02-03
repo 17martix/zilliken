@@ -9,14 +9,22 @@ import 'package:flutter/material.dart';
 class I18n {
   String get appTitle => _getText("appTitle");
 
+  String get menu => _getText("menu");
+
+  String get orders => _getText("orders");
+
   static Map<String, String> _localizedValues;
 
   static Map<String, String> _enValues = {
     "appTitle": "Zilliken",
+    "menu": "Menu",
+    "orders": "Orders",
   };
 
   static Map<String, String> _frValues = {
     "appTitle": "Zilliken",
+    "menu": "Menu",
+    "orders": "Commandes",
   };
 
   static Map<String, Map<String, String>> _allValues = {
