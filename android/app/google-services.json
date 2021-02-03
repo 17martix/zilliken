@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "532513764082",
+    "project_id": "zilliken-7672c",
+    "storage_bucket": "zilliken-7672c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:532513764082:android:01d4cf59647f99f0c5966b",
+        "android_client_info": {
+          "package_name": "net.visionplusplus.zilliken"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "532513764082-f6fnrt3eqc7vavcq1st2la8tdae1u3ac.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "net.visionplusplus.zilliken",
+            "certificate_hash": "c888baac2ef82f2d2da6ed407817714a48b1afde"
+          }
+        },
+        {
+          "client_id": "532513764082-r5gh8hf1eipiv3829dpmni6rn38ijgee.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBcieliCMpqVviYm3f56IosaE7phJdj3Es"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "532513764082-r5gh8hf1eipiv3829dpmni6rn38ijgee.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
