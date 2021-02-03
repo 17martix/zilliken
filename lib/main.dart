@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'Pages/SplashPage.dart';
+
 void main() {
   runApp(Zilliken());
 }
@@ -14,7 +16,7 @@ class Zilliken extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: Text('hello'),
+      home: SplashPage(),
     );
   }
 }
