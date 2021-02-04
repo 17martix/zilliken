@@ -61,8 +61,9 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  #assets:
-    #- assets/logo.png
+
+  assets:
+    - assets/logo.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
@@ -93,12 +94,12 @@ flutter_launcher_name:
   name: "Zilliken"
 
 flutter_native_splash:
-  color: "#FFFFFF"
+  color: "#122F41"
 
 flutter_icons:
   android: true
   ios: true
-  image_path: "assets/logo.png"
+  image_path: "assets/logo.jpg"
 
 flappy_translator:
   input_file_path: "strings.csv"
