@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:zilliken/Pages/DashboardPage.dart';
+import 'package:zilliken/Pages/CartPage.dart';
 
 import 'Helpers/Styling.dart';
+import 'Pages/DashboardPage.dart';
 import 'Pages/SingleOrderPage.dart';
 import 'i18n.dart';
 
-import 'Pages/SplashPage.dart';
+import 'Pages/DashboardPage.dart';
 
 void main() {
   runApp(Zilliken());
@@ -25,7 +27,7 @@ class Zilliken extends StatelessWidget {
       supportedLocales: I18nDelegate.supportedLocals,
       title: 'Zilliken',
       theme: buildTheme(),
-      home: SplashPage(),
+      home: CartPage(),
     );
   }
 
