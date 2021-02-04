@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:zilliken/Pages/DashboardPage.dart';
+import 'package:zilliken/Services/Authentication.dart';
 
 import 'Helpers/Styling.dart';
 import 'Pages/SingleOrderPage.dart';
@@ -25,7 +26,7 @@ class Zilliken extends StatelessWidget {
       supportedLocales: I18nDelegate.supportedLocals,
       title: 'Zilliken',
       theme: buildTheme(),
-      home: SplashPage(),
+      home: SplashPage(auth: Authentication(),),
     );
   }
 

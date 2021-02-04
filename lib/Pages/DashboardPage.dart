@@ -3,9 +3,16 @@ import 'package:zilliken/Components/ZAppBar.dart';
 import 'package:zilliken/Helpers/Styling.dart';
 import 'package:zilliken/Pages/MenuPage.dart';
 import 'package:zilliken/Pages/OrdersPage.dart';
+import 'package:zilliken/Services/Authentication.dart';
 import 'package:zilliken/i18n.dart';
 
 class DashboardPage extends StatefulWidget {
+  final Authentication auth;
+  final String userId;
+  final String userRole;
+
+  DashboardPage({this.auth, this.userId, this.userRole});
+
   @override
   _DashboardPageState createState() => _DashboardPageState();
 }
