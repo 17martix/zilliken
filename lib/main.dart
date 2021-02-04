@@ -25,7 +25,7 @@ class Zilliken extends StatelessWidget {
       supportedLocales: I18nDelegate.supportedLocals,
       title: 'Zilliken',
       theme: buildTheme(),
-      home: SplashPage(),
+      home: DashboardPage(),
     );
   }
 

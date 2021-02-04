@@ -3,6 +3,8 @@ import 'package:zilliken/Helpers/Styling.dart';
 
 AppBar buildAppBar(context) {
   return AppBar(
+    backgroundColor: Color(Styling.primaryBackgroundColor),
+    elevation: 0,
     title: Center(
       child: RichText(
         text: TextSpan(
