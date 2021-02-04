@@ -6,6 +6,8 @@ import 'Helpers/Styling.dart';
 import 'Pages/SingleOrderPage.dart';
 import 'i18n.dart';
 
+import 'Pages/SplashPage.dart';
+
 void main() {
   runApp(Zilliken());
 }
@@ -23,7 +25,7 @@ class Zilliken extends StatelessWidget {
       supportedLocales: I18nDelegate.supportedLocals,
       title: 'Zilliken',
       theme: buildTheme(),
-      home: DashboardPage(),
+      home: SplashPage(),
     );
   }
 
