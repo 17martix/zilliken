@@ -70,6 +70,7 @@ class _SplashPageState extends State<SplashPage> {
     );
   }
 
+
   void isLoggedIn() async {
     User user = await widget.auth.getCurrentUser();
     if (user?.uid == null) {
@@ -100,4 +101,5 @@ class _SplashPageState extends State<SplashPage> {
       );
     }
   }
+
 }

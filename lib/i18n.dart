@@ -13,18 +13,26 @@ class I18n {
 
   String get orders => _getText("orders");
 
+  String get error => _getText("error");
+
+  String get loading => _getText("loading");
+
   static Map<String, String> _localizedValues;
 
   static Map<String, String> _enValues = {
     "appTitle": "Zilliken",
     "menu": "Menu",
     "orders": "Orders",
+    "error": "Something went wrong",
+    "loading": "Loading",
   };
 
   static Map<String, String> _frValues = {
     "appTitle": "Zilliken",
     "menu": "Menu",
     "orders": "Commandes",
+    "error": "erreur survenue",
+    "loading": "Chargement",
   };
 
   static Map<String, Map<String, String>> _allValues = {
