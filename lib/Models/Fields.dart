@@ -32,5 +32,9 @@ class Fields {
   static final String total = 'total';
 
   static final String count = 'count';
-
+  static final String name = 'name';
+  static final String category = 'category';
+  static final String price = 'price';
+  static final String rank = 'rank';
+  static final String global = 'global';
 }
