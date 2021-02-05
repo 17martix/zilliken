@@ -1,8 +1,15 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:zilliken/Components/ZAppBar.dart';
 import 'package:zilliken/Helpers/Styling.dart';
+import 'package:zilliken/Services/Authentication.dart';
+
+import '../i18n.dart';
 
 class OrdersPage extends StatefulWidget {
+  Authentication auth;
+  OrdersPage({this.auth});
+
   @override
   _OrdersPageState createState() => _OrdersPageState();
 }
@@ -49,6 +56,32 @@ class _OrdersPageState extends State<OrdersPage> {
           ),
         )
       ],
+    );
+  }
+
+  Widget ordersList() {
+    CollectionReference users = FirebaseFirestore.instance.collection('users');
+
+    return StreamBuilder<QuerySnapshot>(
+      stream: users.snapshots(),
+      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        if (snapshot.hasError) {
+          return Text(I18n.of(context).error);
+        }
+
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Text(I18n.of(context).loading);
+        }
+
+        return new ListView(
+          children: snapshot.data.docs.map((DocumentSnapshot document) {
+            return new ListTile(
+              title: new Text(document.data()['full_name']),
+              subtitle: new Text(document.data()['company']),
+            );
+          }).toList(),
+        );
+      },
     );
   }
 }
