@@ -15,55 +15,62 @@ class OrdersPage extends StatefulWidget {
 }
 
 class _OrdersPageState extends State<OrdersPage> {
+  CollectionReference commandes =
+      FirebaseFirestore.instance.collection('commandes');
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: listView(),
+      body: ordersList(),
     );
   }
 
-  Widget listView() {
+  /*Widget listView() {
     return ListView(
       children: [
         Padding(
           padding: const EdgeInsets.only(left: 8, right: 8),
-          child: RaisedButton(
-            onPressed: () {},
-            elevation: 35,
-            color: Colors.white70,
-            child: ListTile(
-              leading: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.restaurant_menu),
-                ],
-              ),
-              title: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Text('Hello 1'),
-                  Text('Hello 2'),
-                ],
-              ),
-              subtitle: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Text('Hello 3'),
-                  Text('Hello 4'),
-                ],
-              ),
-            ),
-          ),
+          child: item(),
         )
       ],
+    );
+  }*/
+
+  Widget item(String nom, String category, int prix) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 8, right: 8),
+      child: Card(
+        elevation: 25,
+        color: Colors.white70,
+        child: ListTile(
+          leading: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.restaurant_menu),
+            ],
+          ),
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Text(nom),
+              Text(category),
+            ],
+          ),
+          subtitle: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Text('$prix'),
+              Text('Hello 4'),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
   Widget ordersList() {
-    CollectionReference users = FirebaseFirestore.instance.collection('users');
-
     return StreamBuilder<QuerySnapshot>(
-      stream: users.snapshots(),
+      stream: commandes.snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasError) {
           return Text(I18n.of(context).error);
@@ -75,10 +82,8 @@ class _OrdersPageState extends State<OrdersPage> {
 
         return new ListView(
           children: snapshot.data.docs.map((DocumentSnapshot document) {
-            return new ListTile(
-              title: new Text(document.data()['full_name']),
-              subtitle: new Text(document.data()['company']),
-            );
+            return item(document.data()['nom'], document.data()['category'],
+                document.data()['prix']);
           }).toList(),
         );
       },
