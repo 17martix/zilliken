@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:zilliken/Components/ZAppBar.dart';
 import 'package:zilliken/Helpers/Styling.dart';
+import '../i18n.dart';
 
 class CartPage extends StatefulWidget {
   @override
@@ -9,10 +10,14 @@ class CartPage extends StatefulWidget {
 }
 
 class _CartPageState extends State<CartPage> {
+  CollectionReference commandes =
+      FirebaseFirestore.instance.collection('commandes');
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: buildAppBar(context),
+      //body: orderlist(),
       body: Column(
         children: [
           order(),
@@ -63,7 +68,7 @@ class _CartPageState extends State<CartPage> {
             Padding(
               padding: const EdgeInsets.all(18.0),
               child: Text(
-                "What kind of order is this?",
+                I18n.of(context).sprkling,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Colors.black,
@@ -75,12 +80,16 @@ class _CartPageState extends State<CartPage> {
               height: 1,
               color: Colors.black,
             ),
-            Text(
-              "Restaurant order"
-              " Order",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.grey,
+            FlatButton.icon(
+              onPressed: null,
+              icon: Icon(Icons.pause_circle_filled),
+              label: Text(
+                "Restaurant order"
+                "Room Order",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.grey,
+                ),
               ),
             ),
             Padding(
@@ -106,19 +115,22 @@ class _CartPageState extends State<CartPage> {
                 color: Colors.grey,
               ),
             ),
-            Text(
-              "Do you have instructions?",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.grey,
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                decoration: InputDecoration(
+                  labelText: "Do you have instructions?",
+                  icon: Icon(Icons.access_alarm),
+                ),
+                keyboardType: TextInputType.text,
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(12.0),
+              padding: const EdgeInsets.all(10.0),
               child: Container(
                 width: double.infinity,
                 height: 1,
-                color: Colors.black,
+                color: Color(Styling.iconColor),
               ),
             ),
           ],
@@ -141,14 +153,14 @@ class _CartPageState extends State<CartPage> {
                 "Bill",
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: Colors.black,
+                  color: Color(Styling.iconColor),
                 ),
               ),
             ),
             Container(
               width: double.infinity,
               height: 1,
-              color: Colors.grey,
+              color: Color(Styling.accentColor),
             ),
             Column(
               children: [
@@ -161,7 +173,7 @@ class _CartPageState extends State<CartPage> {
                         "Item total",
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          color: Colors.grey,
+                          color: Color(Styling.accentColor),
                         ),
                       ),
                       Text("4"),
@@ -174,10 +186,10 @@ class _CartPageState extends State<CartPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        "Taxes & Charges",
+                        I18n.of(context).taxCharge,
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          color: Colors.grey,
+                          color: Color(Styling.accentColor),
                         ),
                       ),
                       Text("4"),
@@ -217,10 +229,8 @@ class _CartPageState extends State<CartPage> {
   }
 
   Widget orderlist() {
-    CollectionReference users = FirebaseFirestore.instance.collection('users');
-
     return StreamBuilder<QuerySnapshot>(
-      stream: users.snapshots(),
+      stream: commandes.snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasError) {
           return Text('Something went wrong');
@@ -231,10 +241,10 @@ class _CartPageState extends State<CartPage> {
         }
 
         return new ListView(
-          children: snapshot.data.documents.map((DocumentSnapshot document) {
+          children: snapshot.data.docs.map((DocumentSnapshot document) {
             return new ListTile(
-              title: new Text(document.data()['full_name']),
-              subtitle: new Text(document.data()['company']),
+              title: new Text(document.data()['nom']),
+              subtitle: new Text(document.data()['category']),
             );
           }).toList(),
         );

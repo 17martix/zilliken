@@ -4,3 +4,9 @@ menu,Menu,Menu
 orders,Orders,Commandes
 error,Something went wrong,erreur survenue
 loading,Loading,Chargement
+taxCharge,Taxes & charges,Taxes et charges
+sprkling,sparkiling water,Eau petillante
+orderKind,What kind of order is this?,Quel genre de Commande est-ce?
+bil,Bill,facture
+total,Item total,le total
+ordPlace,place order,Passer la Commande
