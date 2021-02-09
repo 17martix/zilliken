@@ -74,7 +74,7 @@ String orderCardTtle(context, Order order) {
     text = "${order.clientOrder[0].menuItem.name}";
   } else if (orderLength == 2) {
     text =
-        "${order.clientOrder[0].menuItem.name} ${I18n.of(context).and} ${order.clientOrder.length} ${I18n.of(context).moreItem}";
+        "${order.clientOrder[0].menuItem.name} ${I18n.of(context).and} ${order.clientOrder.length} ${I18n.of(context).moreItems}";
   } else if (orderLength > 2) {
     text =
         "${order.clientOrder[0].menuItem.name} ${I18n.of(context).and} ${order.clientOrder.length} ${I18n.of(context).moreItems}";
@@ -117,7 +117,7 @@ String showRommTable(context, Order order) {
   return text;
 }
 
-int statusCode( Order order) {
+int statusCode(Order order) {
   int code;
   if (order.status == Fields.pending) {
     code = 0;
@@ -132,15 +132,15 @@ int statusCode( Order order) {
   return code;
 }
 
-String statusText( Order order,int value) {
+String statusText(Order order, int value) {
   String text;
-  if (value==0) {
+  if (value == 0) {
     order.status = Fields.pending;
-  } else if (value==1) {
+  } else if (value == 1) {
     order.status = Fields.confirmed;
-  } else if (value==2) {
+  } else if (value == 2) {
     order.status = Fields.preparation;
-  } else if (value==3) {
+  } else if (value == 3) {
     order.status = Fields.served;
   }
 
