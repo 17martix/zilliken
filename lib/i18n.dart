@@ -17,6 +17,12 @@ class I18n {
 
   String get loading => _getText("loading");
 
+  String get total => _getText("total");
+
+  String get tableNumber => _getText("tableNumber");
+
+  String get orderDate => _getText("orderDate");
+
   static Map<String, String> _localizedValues;
 
   static Map<String, String> _enValues = {
@@ -25,6 +31,9 @@ class I18n {
     "orders": "Orders",
     "error": "Something went wrong",
     "loading": "Loading",
+    "total": "Total",
+    "tableNumber": "N. table",
+    "orderDate": "Date",
   };
 
   static Map<String, String> _frValues = {
@@ -33,6 +42,9 @@ class I18n {
     "orders": "Commandes",
     "error": "erreur survenue",
     "loading": "Chargement",
+    "total": "Total",
+    "tableNumber": "N. table",
+    "orderDate": "Date",
   };
 
   static Map<String, Map<String, String>> _allValues = {

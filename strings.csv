@@ -4,3 +4,6 @@ menu,Menu,Menu
 orders,Orders,Commandes
 error,Something went wrong,erreur survenue
 loading,Loading,Chargement
+total,Total,Total
+tableNumber,N. table,N. table
+orderDate,Date,Date

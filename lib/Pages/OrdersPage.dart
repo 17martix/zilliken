@@ -2,12 +2,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:zilliken/Components/ZAppBar.dart';
 import 'package:zilliken/Helpers/Styling.dart';
+import 'package:zilliken/Models/Order.dart';
 import 'package:zilliken/Services/Authentication.dart';
+import 'package:intl/intl.dart';
 
 import '../i18n.dart';
 
 class OrdersPage extends StatefulWidget {
-  Authentication auth;
+  final Authentication auth;
+  final DateFormat formatter = DateFormat('dd/MM/yyyy HH:mm');
+
   OrdersPage({this.auth});
 
   @override
@@ -16,7 +20,7 @@ class OrdersPage extends StatefulWidget {
 
 class _OrdersPageState extends State<OrdersPage> {
   CollectionReference commandes =
-      FirebaseFirestore.instance.collection('commandes');
+      FirebaseFirestore.instance.collection('order');
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +40,7 @@ class _OrdersPageState extends State<OrdersPage> {
     );
   }*/
 
-  Widget item(String nom, String category, int prix) {
+  Widget item(Order order) {
     return Padding(
       padding: const EdgeInsets.only(left: 8, right: 8),
       child: Card(
@@ -50,17 +54,19 @@ class _OrdersPageState extends State<OrdersPage> {
             ],
           ),
           title: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(nom),
-              Text(category),
+              Text(order.status),
+              Text('${I18n.of(context).total} : ${order.grandTotal}'),
             ],
           ),
           subtitle: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('$prix'),
-              Text('Hello 4'),
+              Text(
+                  '${I18n.of(context).tableNumber} : ${order.roomTableNumber}'),
+              Text(
+                  '${I18n.of(context).orderDate} : ${widget.formatter.format(DateTime.fromMillisecondsSinceEpoch(order.orderDate))}'),
             ],
           ),
         ),
@@ -82,8 +88,9 @@ class _OrdersPageState extends State<OrdersPage> {
 
         return new ListView(
           children: snapshot.data.docs.map((DocumentSnapshot document) {
-            return item(document.data()['nom'], document.data()['category'],
-                document.data()['prix']);
+            Order order = Order();
+            order.buildObject(document);
+            return item(order);
           }).toList(),
         );
       },
