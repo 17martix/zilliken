@@ -13,7 +13,10 @@ class SplashPage extends StatefulWidget {
   final Authentication auth;
   final Database db;
 
-  SplashPage({this.auth, this.db,});
+  SplashPage({
+    this.auth,
+    this.db,
+  });
 
   @override
   _SplashPageState createState() => _SplashPageState();
@@ -70,7 +73,6 @@ class _SplashPageState extends State<SplashPage> {
     );
   }
 
-
   void isLoggedIn() async {
     User user = await widget.auth.getCurrentUser();
     if (user?.uid == null) {
@@ -92,14 +94,14 @@ class _SplashPageState extends State<SplashPage> {
       Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => DashboardPage(
-                  auth: widget.auth,
-                db: widget.db,
-                userId: user.uid,
-                userRole: role,
-                ),),
+          builder: (context) => DashboardPage(
+            auth: widget.auth,
+            db: widget.db,
+            userId: user.uid,
+            userRole: role,
+          ),
+        ),
       );
     }
   }
-
 }
