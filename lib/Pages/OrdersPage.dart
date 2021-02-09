@@ -2,12 +2,18 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:zilliken/Components/ZAppBar.dart';
 import 'package:zilliken/Helpers/Styling.dart';
+import 'package:zilliken/Helpers/Utils.dart';
+import 'package:zilliken/Models/Fields.dart';
+import 'package:zilliken/Models/Order.dart';
 import 'package:zilliken/Services/Authentication.dart';
+import 'package:intl/intl.dart';
 
 import '../i18n.dart';
 
 class OrdersPage extends StatefulWidget {
-  Authentication auth;
+  final Authentication auth;
+  final DateFormat formatter = DateFormat('dd/MM/yyyy HH:mm');
+
   OrdersPage({this.auth});
 
   @override
@@ -15,55 +21,80 @@ class OrdersPage extends StatefulWidget {
 }
 
 class _OrdersPageState extends State<OrdersPage> {
+  CollectionReference commandes =
+      FirebaseFirestore.instance.collection('order');
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: listView(),
+      body: ordersList(),
     );
   }
 
-  Widget listView() {
+  /*Widget listView() {
     return ListView(
       children: [
         Padding(
           padding: const EdgeInsets.only(left: 8, right: 8),
-          child: RaisedButton(
-            onPressed: () {},
-            elevation: 35,
-            color: Colors.white70,
-            child: ListTile(
-              leading: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.restaurant_menu),
-                ],
-              ),
-              title: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Text('Hello 1'),
-                  Text('Hello 2'),
-                ],
-              ),
-              subtitle: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Text('Hello 3'),
-                  Text('Hello 4'),
-                ],
-              ),
-            ),
-          ),
+          child: item(),
         )
       ],
     );
+  }*/
+
+  Widget item(Order order) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 5, right: 5),
+      child: Card(
+        elevation: 25,
+        color: Colors.white70,
+        child: ListTile(
+          leading: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.restaurant_menu),
+            ],
+          ),
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                '${orderStatus(context, order)}',
+                style: TextStyle(color: colorPicker(order.status)),
+              ),
+              Text('${I18n.of(context).total} : ${order.grandTotal}'),
+            ],
+          ),
+          subtitle: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                  '${I18n.of(context).tableNumber} : ${order.roomTableNumber}'),
+              Text(
+                  '${I18n.of(context).orderDate} : ${widget.formatter.format(DateTime.fromMillisecondsSinceEpoch(order.orderDate))}'),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Color colorPicker(String status) {
+    Color textColor = Colors.black;
+    if (status == Fields.pending)
+      textColor = Colors.red;
+    else if (status == Fields.confirmed)
+      textColor = Colors.green;
+    else if (status == Fields.preparation)
+      textColor = Colors.orange;
+    else if (status == Fields.served) textColor = Colors.blue;
+
+    return textColor;
   }
 
   Widget ordersList() {
-    CollectionReference users = FirebaseFirestore.instance.collection('users');
-
     return StreamBuilder<QuerySnapshot>(
-      stream: users.snapshots(),
+      stream: commandes.snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasError) {
           return Text(I18n.of(context).error);
@@ -75,10 +106,9 @@ class _OrdersPageState extends State<OrdersPage> {
 
         return new ListView(
           children: snapshot.data.docs.map((DocumentSnapshot document) {
-            return new ListTile(
-              title: new Text(document.data()['full_name']),
-              subtitle: new Text(document.data()['company']),
-            );
+            Order order = Order();
+            order.buildObject(document);
+            return item(order);
           }).toList(),
         );
       },
