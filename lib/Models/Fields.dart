@@ -37,4 +37,7 @@ class Fields {
   static final String price = 'price';
   static final String rank = 'rank';
   static final String global = 'global';
+
+  static final String availability = 'availability';
+  static final String createdAt = 'createdAt';
 }
