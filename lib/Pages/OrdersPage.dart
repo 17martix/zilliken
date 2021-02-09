@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:zilliken/Components/ZAppBar.dart';
 import 'package:zilliken/Helpers/Styling.dart';
+import 'package:zilliken/Helpers/Utils.dart';
+import 'package:zilliken/Models/Fields.dart';
 import 'package:zilliken/Models/Order.dart';
 import 'package:zilliken/Services/Authentication.dart';
 import 'package:intl/intl.dart';
@@ -42,7 +44,7 @@ class _OrdersPageState extends State<OrdersPage> {
 
   Widget item(Order order) {
     return Padding(
-      padding: const EdgeInsets.only(left: 8, right: 8),
+      padding: const EdgeInsets.only(left: 5, right: 5),
       child: Card(
         elevation: 25,
         color: Colors.white70,
@@ -56,7 +58,10 @@ class _OrdersPageState extends State<OrdersPage> {
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(order.status),
+              Text(
+                '${orderStatus(context, order)}',
+                style: TextStyle(color: colorPicker(order.status)),
+              ),
               Text('${I18n.of(context).total} : ${order.grandTotal}'),
             ],
           ),
@@ -72,6 +77,19 @@ class _OrdersPageState extends State<OrdersPage> {
         ),
       ),
     );
+  }
+
+  Color colorPicker(String status) {
+    Color textColor = Colors.black;
+    if (status == Fields.pending)
+      textColor = Colors.red;
+    else if (status == Fields.confirmed)
+      textColor = Colors.green;
+    else if (status == Fields.preparation)
+      textColor = Colors.orange;
+    else if (status == Fields.served) textColor = Colors.blue;
+
+    return textColor;
   }
 
   Widget ordersList() {

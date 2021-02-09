@@ -7,3 +7,13 @@ loading,Loading,Chargement
 total,Total,Total
 tableNumber,N. table,N. table
 orderDate,Date,Date
+item,Item,Article
+items,Items,Articles
+fbu,FBU,FBU
+roomNumber,Room Number,Numero de Chambre
+pendingOrder,Order Pending,Commande En Attente
+confirmedOrder,Order Confirmed,Commande Confirmée
+orderPreparation,Order Being Prepared,Commande En Préparation
+orderServed,Order Served,Commande Servie
+and,and,et
+moreItems,More Items,Articles De Plus

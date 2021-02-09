@@ -23,6 +23,26 @@ class I18n {
 
   String get orderDate => _getText("orderDate");
 
+  String get item => _getText("item");
+
+  String get items => _getText("items");
+
+  String get fbu => _getText("fbu");
+
+  String get roomNumber => _getText("roomNumber");
+
+  String get pendingOrder => _getText("pendingOrder");
+
+  String get confirmedOrder => _getText("confirmedOrder");
+
+  String get orderPreparation => _getText("orderPreparation");
+
+  String get orderServed => _getText("orderServed");
+
+  String get and => _getText("and");
+
+  String get moreItems => _getText("moreItems");
+
   static Map<String, String> _localizedValues;
 
   static Map<String, String> _enValues = {
@@ -34,6 +54,16 @@ class I18n {
     "total": "Total",
     "tableNumber": "N. table",
     "orderDate": "Date",
+    "item": "Item",
+    "items": "Items",
+    "fbu": "FBU",
+    "roomNumber": "Room Number",
+    "pendingOrder": "Order Pending",
+    "confirmedOrder": "Order Confirmed",
+    "orderPreparation": "Order Being Prepared",
+    "orderServed": "Order Served",
+    "and": "and",
+    "moreItems": "More Items",
   };
 
   static Map<String, String> _frValues = {
@@ -45,6 +75,16 @@ class I18n {
     "total": "Total",
     "tableNumber": "N. table",
     "orderDate": "Date",
+    "item": "Article",
+    "items": "Articles",
+    "fbu": "FBU",
+    "roomNumber": "Numero de Chambre",
+    "pendingOrder": "Commande En Attente",
+    "confirmedOrder": "Commande Confirmée",
+    "orderPreparation": "Commande En Préparation",
+    "orderServed": "Commande Servie",
+    "and": "et",
+    "moreItems": "Articles De Plus",
   };
 
   static Map<String, Map<String, String>> _allValues = {
