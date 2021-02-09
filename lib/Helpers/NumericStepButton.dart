@@ -35,7 +35,7 @@ class _NumericStepButtonState extends State<NumericStepButton> {
               color: Theme.of(context).accentColor,
             ),
             padding: EdgeInsets.symmetric(vertical: 0.0, horizontal: 0.0),
-            iconSize: SizeConfig.safeBlockVertical * 2,
+            iconSize: SizeConfig.diagonal * 2,
             color: Theme.of(context).primaryColor,
             onPressed: () {
               setState(() {
@@ -51,7 +51,7 @@ class _NumericStepButtonState extends State<NumericStepButton> {
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Colors.black87,
-              fontSize: SizeConfig.safeBlockVertical * 1.2,
+              fontSize: SizeConfig.diagonal * 1.2,
             ),
           ),
           IconButton(
@@ -60,7 +60,7 @@ class _NumericStepButtonState extends State<NumericStepButton> {
               color: Theme.of(context).accentColor,
             ),
             padding: EdgeInsets.symmetric(vertical: 0.0, horizontal: 0.0),
-            iconSize: SizeConfig.safeBlockVertical * 2,
+            iconSize: SizeConfig.diagonal * 2,
             color: Theme.of(context).primaryColor,
             onPressed: () {
               setState(() {

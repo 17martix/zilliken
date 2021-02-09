@@ -4,3 +4,14 @@ menu,Menu,Menu
 orders,Orders,Commandes
 error,Something went wrong,erreur survenue
 loading,Loading,Chargement
+item,Item,Article
+items,Items,Articles
+fbu,FBU,FBU
+roomNumber,Room Number,Numero de Chambre
+tableNumber,Table Number,Numero de Table
+pendingOrder,Commande En Attente,Order Pending
+confirmedOrder,Commande Confirmée,Order Confirmed
+orderPreparation,Order Being Prepared,Commande En Préparation
+orderServed,Order Served,Commande Servie
+and,and,et
+moreItems,More Items,Articles De Plus
