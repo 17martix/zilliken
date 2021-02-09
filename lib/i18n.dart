@@ -17,7 +17,6 @@ class I18n {
 
   String get loading => _getText("loading");
 
-
   String get taxCharge => _getText("taxCharge");
 
   String get sprkling => _getText("sprkling");
@@ -36,6 +35,29 @@ class I18n {
 
   String get roomOrder => _getText("roomOrder");
 
+  String get tableNumber => _getText("tableNumber");
+
+  String get orderDate => _getText("orderDate");
+
+  String get item => _getText("item");
+
+  String get items => _getText("items");
+
+  String get fbu => _getText("fbu");
+
+  String get roomNumber => _getText("roomNumber");
+
+  String get pendingOrder => _getText("pendingOrder");
+
+  String get confirmedOrder => _getText("confirmedOrder");
+
+  String get orderPreparation => _getText("orderPreparation");
+
+  String get orderServed => _getText("orderServed");
+
+  String get and => _getText("and");
+
+  String get moreItems => _getText("moreItems");
 
   static Map<String, String> _localizedValues;
 
@@ -45,17 +67,27 @@ class I18n {
     "orders": "Orders",
     "error": "Something went wrong",
     "loading": "Loading",
-
     "taxCharge": "Taxes & charges",
     "sprkling": "sparkiling water",
     "orderKind": "What kind of order is this?",
     "bil": "Bill",
-    "total": "Item total",
+    "total": "Total",
     "ordPlace": "Place order",
     "instruction": "Do you have instructions?",
     "restaurantOrder": "Restaurant Order",
     "roomOrder": "Room Order",
-
+    "tableNumber": "N. table",
+    "orderDate": "Date",
+    "item": "Item",
+    "items": "Items",
+    "fbu": "FBU",
+    "roomNumber": "Room Number",
+    "pendingOrder": "Order Pending",
+    "confirmedOrder": "Order Confirmed",
+    "orderPreparation": "Order Being Prepared",
+    "orderServed": "Order Served",
+    "and": "and",
+    "moreItems": "More Items",
   };
 
   static Map<String, String> _frValues = {
@@ -64,17 +96,27 @@ class I18n {
     "orders": "Commandes",
     "error": "erreur survenue",
     "loading": "Chargement",
-
     "taxCharge": "Taxes et charges",
     "sprkling": "Eau petillante",
     "orderKind": "Quel genre de Commande est-ce?",
     "bil": "Facture",
-    "total": "Le total",
+    "total": "Total",
     "ordPlace": "Passer la Commande",
     "instruction": "Avez-vous des instructions?",
     "restaurantOrder": "Commande de Restaurant",
     "roomOrder": "Commande chambre",
-
+    "tableNumber": "N. table",
+    "orderDate": "Date",
+    "item": "Article",
+    "items": "Articles",
+    "fbu": "FBU",
+    "roomNumber": "Numero de Chambre",
+    "pendingOrder": "Commande En Attente",
+    "confirmedOrder": "Commande Confirmée",
+    "orderPreparation": "Commande En Préparation",
+    "orderServed": "Commande Servie",
+    "and": "et",
+    "moreItems": "Articles De Plus",
   };
 
   static Map<String, Map<String, String>> _allValues = {
