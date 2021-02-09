@@ -23,6 +23,18 @@ class I18n {
 
   String get orderKind => _getText("orderKind");
 
+  String get bil => _getText("bil");
+
+  String get total => _getText("total");
+
+  String get ordPlace => _getText("ordPlace");
+
+  String get instruction => _getText("instruction");
+
+  String get restaurantOrder => _getText("restaurantOrder");
+
+  String get roomOrder => _getText("roomOrder");
+
   static Map<String, String> _localizedValues;
 
   static Map<String, String> _enValues = {
@@ -34,6 +46,12 @@ class I18n {
     "taxCharge": "Taxes & charges",
     "sprkling": "sparkiling water",
     "orderKind": "What kind of order is this?",
+    "bil": "Bill",
+    "total": "Item total",
+    "ordPlace": "Place order",
+    "instruction": "Do you have instructions?",
+    "restaurantOrder": "Restaurant Order",
+    "roomOrder": "Room Order",
   };
 
   static Map<String, String> _frValues = {
@@ -45,6 +63,12 @@ class I18n {
     "taxCharge": "Taxes et charges",
     "sprkling": "Eau petillante",
     "orderKind": "Quel genre de Commande est-ce?",
+    "bil": "Facture",
+    "total": "Le total",
+    "ordPlace": "Passer la Commande",
+    "instruction": "Avez-vous des instructions?",
+    "restaurantOrder": "Commande de Restaurant",
+    "roomOrder": "Commande chambre",
   };
 
   static Map<String, Map<String, String>> _allValues = {
