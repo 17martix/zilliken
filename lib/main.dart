@@ -9,13 +9,13 @@ import 'package:zilliken/Services/Authentication.dart';
 import 'Helpers/ConnectionStatus.dart';
 import 'Helpers/PushNotificationManager.dart';
 import 'Helpers/Styling.dart';
+
 import 'Pages/DashboardPage.dart';
 import 'Pages/SingleOrderPage.dart';
+
 import 'Pages/SplashPage.dart';
 import 'Services/Database.dart';
 import 'i18n.dart';
-
-import 'Pages/DashboardPage.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -42,10 +42,7 @@ class Zilliken extends StatelessWidget {
       title: 'Zilliken',
       theme: buildTheme(),
 
-      home: SplashPage(
-        auth: Authentication(),
-        db: Database(),
-      ),
+      home: CartPage(),
 
 
     );

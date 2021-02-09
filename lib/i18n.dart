@@ -17,31 +17,25 @@ class I18n {
 
   String get loading => _getText("loading");
 
+
+  String get taxCharge => _getText("taxCharge");
+
+  String get sprkling => _getText("sprkling");
+
+  String get orderKind => _getText("orderKind");
+
+  String get bil => _getText("bil");
+
   String get total => _getText("total");
 
-  String get tableNumber => _getText("tableNumber");
+  String get ordPlace => _getText("ordPlace");
 
-  String get orderDate => _getText("orderDate");
+  String get instruction => _getText("instruction");
 
-  String get item => _getText("item");
+  String get restaurantOrder => _getText("restaurantOrder");
 
-  String get items => _getText("items");
+  String get roomOrder => _getText("roomOrder");
 
-  String get fbu => _getText("fbu");
-
-  String get roomNumber => _getText("roomNumber");
-
-  String get pendingOrder => _getText("pendingOrder");
-
-  String get confirmedOrder => _getText("confirmedOrder");
-
-  String get orderPreparation => _getText("orderPreparation");
-
-  String get orderServed => _getText("orderServed");
-
-  String get and => _getText("and");
-
-  String get moreItems => _getText("moreItems");
 
   static Map<String, String> _localizedValues;
 
@@ -51,19 +45,17 @@ class I18n {
     "orders": "Orders",
     "error": "Something went wrong",
     "loading": "Loading",
-    "total": "Total",
-    "tableNumber": "N. table",
-    "orderDate": "Date",
-    "item": "Item",
-    "items": "Items",
-    "fbu": "FBU",
-    "roomNumber": "Room Number",
-    "pendingOrder": "Order Pending",
-    "confirmedOrder": "Order Confirmed",
-    "orderPreparation": "Order Being Prepared",
-    "orderServed": "Order Served",
-    "and": "and",
-    "moreItems": "More Items",
+
+    "taxCharge": "Taxes & charges",
+    "sprkling": "sparkiling water",
+    "orderKind": "What kind of order is this?",
+    "bil": "Bill",
+    "total": "Item total",
+    "ordPlace": "Place order",
+    "instruction": "Do you have instructions?",
+    "restaurantOrder": "Restaurant Order",
+    "roomOrder": "Room Order",
+
   };
 
   static Map<String, String> _frValues = {
@@ -72,19 +64,17 @@ class I18n {
     "orders": "Commandes",
     "error": "erreur survenue",
     "loading": "Chargement",
-    "total": "Total",
-    "tableNumber": "N. table",
-    "orderDate": "Date",
-    "item": "Article",
-    "items": "Articles",
-    "fbu": "FBU",
-    "roomNumber": "Numero de Chambre",
-    "pendingOrder": "Commande En Attente",
-    "confirmedOrder": "Commande Confirmée",
-    "orderPreparation": "Commande En Préparation",
-    "orderServed": "Commande Servie",
-    "and": "et",
-    "moreItems": "Articles De Plus",
+
+    "taxCharge": "Taxes et charges",
+    "sprkling": "Eau petillante",
+    "orderKind": "Quel genre de Commande est-ce?",
+    "bil": "Facture",
+    "total": "Le total",
+    "ordPlace": "Passer la Commande",
+    "instruction": "Avez-vous des instructions?",
+    "restaurantOrder": "Commande de Restaurant",
+    "roomOrder": "Commande chambre",
+
   };
 
   static Map<String, Map<String, String>> _allValues = {
