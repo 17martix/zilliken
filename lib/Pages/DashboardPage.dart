@@ -13,7 +13,12 @@ class DashboardPage extends StatefulWidget {
   final String userId;
   final String userRole;
 
-  DashboardPage({this.auth, this.userId, this.userRole, this.db,});
+  DashboardPage({
+    this.auth,
+    this.userId,
+    this.userRole,
+    this.db,
+  });
 
   @override
   _DashboardPageState createState() => _DashboardPageState();
@@ -58,7 +63,12 @@ class _DashboardPageState extends State<DashboardPage> {
         return MenuPage();
         break;
       case 1:
-        return OrdersPage();
+        return OrdersPage(
+          auth: widget.auth,
+          db: widget.db,
+          userId: widget.userId,
+          userRole: widget.userRole,
+        );
         break;
       default:
         return MenuPage();

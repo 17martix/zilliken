@@ -91,7 +91,7 @@ class _SplashPageState extends State<SplashPage> {
       );
     } else {
       String role = await widget.db.getUserRole(user.uid);
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (context) => DashboardPage(

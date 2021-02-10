@@ -17,3 +17,6 @@ orderPreparation,Order Being Prepared,Commande En Préparation
 orderServed,Order Served,Commande Servie
 and,and,et
 moreItems,More Items,Articles De Plus
+order,Order,Commande
+orderInformation,Informations,Informations
+billDetails,Bill,Facture

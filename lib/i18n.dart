@@ -43,6 +43,12 @@ class I18n {
 
   String get moreItems => _getText("moreItems");
 
+  String get order => _getText("order");
+
+  String get orderInformation => _getText("orderInformation");
+
+  String get billDetails => _getText("billDetails");
+
   static Map<String, String> _localizedValues;
 
   static Map<String, String> _enValues = {
@@ -64,6 +70,9 @@ class I18n {
     "orderServed": "Order Served",
     "and": "and",
     "moreItems": "More Items",
+    "order": "Order",
+    "orderInformation": "Informations",
+    "billDetails": "Bill",
   };
 
   static Map<String, String> _frValues = {
@@ -85,6 +94,9 @@ class I18n {
     "orderServed": "Commande Servie",
     "and": "et",
     "moreItems": "Articles De Plus",
+    "order": "Commande",
+    "orderInformation": "Informations",
+    "billDetails": "Facture",
   };
 
   static Map<String, Map<String, String>> _allValues = {

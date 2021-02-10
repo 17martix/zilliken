@@ -96,7 +96,8 @@ class Database {
   Future<Order> getOrder(String id) async {
     Order order;
     var document = databaseReference.collection(Fields.order).doc(id);
-    await document.get().then((snapshot) {
+    await document.get().then((snapshot) async {
+      List<OrderItem> items = await getOrderItems(id);
       order = Order(
         id: document.id,
         orderLocation: snapshot[Fields.orderLocation],
@@ -104,6 +105,7 @@ class Database {
         instructions: snapshot[Fields.instructions],
         grandTotal: snapshot[Fields.grandTotal],
         orderDate: snapshot[Fields.orderDate],
+        clientOrder: items,
       );
     });
 
@@ -213,7 +215,7 @@ class Database {
 
     await databaseReference
         .collection(Fields.menu)
-        .where(Fields.category,isEqualTo: menuItem.category)
+        .where(Fields.category, isEqualTo: menuItem.category)
         .orderBy(Fields.createdAt, descending: true)
         .limit(1)
         .get()
@@ -232,8 +234,8 @@ class Database {
       Fields.name: menuItem.name,
       Fields.price: menuItem.price,
       Fields.createdAt: DateTime.now().millisecondsSinceEpoch.toInt(),
-      Fields.rank:rank,
-      Fields.global:global,
+      Fields.rank: rank,
+      Fields.global: global,
     });
   }
 
@@ -245,7 +247,6 @@ class Database {
         .limit(1)
         .get()
         .then((snapshot) async {
-
       if (snapshot.docs.isEmpty) {
         rank = 1;
       } else {
@@ -257,7 +258,7 @@ class Database {
     await document.set({
       Fields.name: category.name,
       Fields.createdAt: DateTime.now().millisecondsSinceEpoch.toInt(),
-      Fields.rank:rank,
+      Fields.rank: rank,
     });
   }
 
@@ -275,16 +276,19 @@ class Database {
     var document = databaseReference.collection(Fields.order).doc(id);
     int now = DateTime.now().millisecondsSinceEpoch.toInt();
     if (value == 0) {
-      await document.update({Fields.status: Fields.pending, Fields.orderDate: now});
+      await document
+          .update({Fields.status: Fields.pending, Fields.orderDate: now});
     } else if (value == 1) {
       await document.update({
         Fields.status: Fields.confirmed,
         Fields.confirmedDate: now,
       });
     } else if (value == 2) {
-      await document.update({Fields.status: Fields.preparation, Fields.prepationDate: now});
+      await document.update(
+          {Fields.status: Fields.preparation, Fields.prepationDate: now});
     } else if (value == 3) {
-      await document.update({Fields.status: Fields.served, Fields.servedDate: now});
+      await document
+          .update({Fields.status: Fields.served, Fields.servedDate: now});
     }
   }
 }
