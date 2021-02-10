@@ -33,8 +33,6 @@ class I18n {
 
   String get restaurantOrder => _getText("restaurantOrder");
 
-  String get roomOrder => _getText("roomOrder");
-
   String get tableNumber => _getText("tableNumber");
 
   String get orderDate => _getText("orderDate");
@@ -59,6 +57,12 @@ class I18n {
 
   String get moreItems => _getText("moreItems");
 
+  String get order => _getText("order");
+
+  String get orderInformation => _getText("orderInformation");
+
+  String get billDetails => _getText("billDetails");
+
   static Map<String, String> _localizedValues;
 
   static Map<String, String> _enValues = {
@@ -75,7 +79,6 @@ class I18n {
     "ordPlace": "Place order",
     "instruction": "Do you have instructions?",
     "restaurantOrder": "Restaurant Order",
-    "roomOrder": "Room Order",
     "tableNumber": "N. table",
     "orderDate": "Date",
     "item": "Item",
@@ -88,6 +91,11 @@ class I18n {
     "orderServed": "Order Served",
     "and": "and",
     "moreItems": "More Items",
+
+    "order": "Order",
+    "orderInformation": "Informations",
+    "billDetails": "Bill",
+
   };
 
   static Map<String, String> _frValues = {
@@ -104,7 +112,6 @@ class I18n {
     "ordPlace": "Passer la Commande",
     "instruction": "Avez-vous des instructions?",
     "restaurantOrder": "Commande de Restaurant",
-    "roomOrder": "Commande chambre",
     "tableNumber": "N. table",
     "orderDate": "Date",
     "item": "Article",
@@ -117,6 +124,9 @@ class I18n {
     "orderServed": "Commande Servie",
     "and": "et",
     "moreItems": "Articles De Plus",
+    "order": "Commande",
+    "orderInformation": "Informations",
+    "billDetails": "Facture",
   };
 
   static Map<String, Map<String, String>> _allValues = {

@@ -36,6 +36,11 @@ String priceItemsTotal(context, List<OrderItem> order) {
   return "${cart.totalPrice} ${I18n.of(context).fbu}";
 }
 
+int priceItemsTotalNumber(context, List<OrderItem> order) {
+  Cart cart = cartCount(order);
+  return cart.totalPrice;
+}
+
 String grandTotal(context, List<OrderItem> order, int taxPercentage) {
   Cart cart = cartCount(order);
   double tax = (taxPercentage / 100) * cart.totalPrice;
@@ -111,38 +116,8 @@ String itemTax(context, Order order) {
 String showRommTable(context, Order order) {
   String text;
   if (order.orderLocation == 0)
-    text = "${I18n.of(context).tableNumber} : ${order.roomTableNumber}";
+    text = "${I18n.of(context).tableNumber} : ${order.tableAdress}";
   else if (order.orderLocation == 1)
-    text = "${I18n.of(context).roomNumber} : ${order.roomTableNumber}";
-  return text;
-}
-
-int statusCode(Order order) {
-  int code;
-  if (order.status == Fields.pending) {
-    code = 0;
-  } else if (order.status == Fields.confirmed) {
-    code = 1;
-  } else if (order.status == Fields.preparation) {
-    code = 2;
-  } else if (order.status == Fields.served) {
-    code = 3;
-  }
-
-  return code;
-}
-
-String statusText(Order order, int value) {
-  String text;
-  if (value == 0) {
-    order.status = Fields.pending;
-  } else if (value == 1) {
-    order.status = Fields.confirmed;
-  } else if (value == 2) {
-    order.status = Fields.preparation;
-  } else if (value == 3) {
-    order.status = Fields.served;
-  }
-
+    text = "${I18n.of(context).roomNumber} : ${order.tableAdress}";
   return text;
 }
