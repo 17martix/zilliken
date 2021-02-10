@@ -46,5 +46,4 @@ class Fields {
   static final String confirmed = 'confirmed';
   static final String preparation = 'preparation';
   static final String served = 'served';
-
 }
