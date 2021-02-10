@@ -1,9 +1,11 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+
 import 'package:zilliken/Pages/SplashPage.dart';
 import 'package:zilliken/Services/Authentication.dart';
 import 'package:zilliken/Services/Database.dart';
+
 import 'Helpers/ConnectionStatus.dart';
 import 'Helpers/PushNotificationManager.dart';
 import 'Helpers/Styling.dart';
@@ -13,7 +15,6 @@ import 'Pages/SingleOrderPage.dart';
 import 'Pages/SplashPage.dart';
 import 'Services/Database.dart';
 import 'i18n.dart';
-
 
 import 'Pages/CartPage.dart';
 import 'i18n.dart';
@@ -42,10 +43,12 @@ class Zilliken extends StatelessWidget {
       supportedLocales: I18nDelegate.supportedLocals,
       title: 'Zilliken',
       theme: buildTheme(),
+
       home: SplashPage(
         auth: Authentication(),
         db: Database(),
       ),
+
     );
   }
 

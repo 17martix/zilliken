@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:zilliken/Helpers/NumericStepButton.dart';
 import "package:zilliken/Helpers/Styling.dart";
+import 'package:zilliken/Helpers/Utils.dart';
 import 'package:zilliken/Models/Category.dart';
 import 'package:zilliken/Models/MenuItem.dart';
 import 'package:zilliken/Models/OrderItem.dart';
@@ -17,7 +18,7 @@ class _MenuPageState extends State<MenuPage> {
       .collection('category')
       .orderBy('rank', descending: false);
   String selectedCategory = "Tout";
-  List<OrderItem> clientOrder;
+  List<OrderItem> clientOrder = List<OrderItem>();
 
   @override
   void initState() {
@@ -115,30 +116,36 @@ class _MenuPageState extends State<MenuPage> {
               ],
             ),
           ),
-          InkWell(
-            onTap: () {
-              clientOrder.add(OrderItem(menuItem: menu, count: 1));
-            },
-            child: Container(
-              decoration: BoxDecoration(
-                color: Color(Styling.primaryBackgroundColor),
-                border: Border.all(
-                  color: Color(Styling.accentColor),
-                ),
-              ),
-              margin: EdgeInsets.all(8),
-              padding: EdgeInsets.all(8),
-              child: Row(
-                children: [
-                  Text("Add"),
-                  Container(
-                    width: 2,
+          isAlreadyOnTheOrder(clientOrder, menu.id)
+              ? NumericStepButton(
+                  counter: 10,
+                  maxValue: 20,
+                  onChanged: (value) {},
+                )
+              : InkWell(
+                  onTap: () {
+                    clientOrder.add(OrderItem(menuItem: menu, count: 1));
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Color(Styling.primaryBackgroundColor),
+                      border: Border.all(
+                        color: Color(Styling.accentColor),
+                      ),
+                    ),
+                    margin: EdgeInsets.all(8),
+                    padding: EdgeInsets.all(8),
+                    child: Row(
+                      children: [
+                        Text("Add"),
+                        Container(
+                          width: 2,
+                        ),
+                        Text("+"),
+                      ],
+                    ),
                   ),
-                  Text("+"),
-                ],
-              ),
-            ),
-          ),
+                ),
         ],
       ),
     );
