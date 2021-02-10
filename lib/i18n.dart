@@ -17,7 +17,21 @@ class I18n {
 
   String get loading => _getText("loading");
 
+  String get taxCharge => _getText("taxCharge");
+
+  String get sprkling => _getText("sprkling");
+
+  String get orderKind => _getText("orderKind");
+
+  String get bil => _getText("bil");
+
   String get total => _getText("total");
+
+  String get ordPlace => _getText("ordPlace");
+
+  String get instruction => _getText("instruction");
+
+  String get restaurantOrder => _getText("restaurantOrder");
 
   String get tableNumber => _getText("tableNumber");
 
@@ -57,7 +71,14 @@ class I18n {
     "orders": "Orders",
     "error": "Something went wrong",
     "loading": "Loading",
+    "taxCharge": "Taxes & charges",
+    "sprkling": "sparkiling water",
+    "orderKind": "What kind of order is this?",
+    "bil": "Bill",
     "total": "Total",
+    "ordPlace": "Place order",
+    "instruction": "Do you have instructions?",
+    "restaurantOrder": "Restaurant Order",
     "tableNumber": "N. table",
     "orderDate": "Date",
     "item": "Item",
@@ -70,9 +91,11 @@ class I18n {
     "orderServed": "Order Served",
     "and": "and",
     "moreItems": "More Items",
+
     "order": "Order",
     "orderInformation": "Informations",
     "billDetails": "Bill",
+
   };
 
   static Map<String, String> _frValues = {
@@ -81,7 +104,14 @@ class I18n {
     "orders": "Commandes",
     "error": "erreur survenue",
     "loading": "Chargement",
+    "taxCharge": "Taxes et charges",
+    "sprkling": "Eau petillante",
+    "orderKind": "Quel genre de Commande est-ce?",
+    "bil": "Facture",
     "total": "Total",
+    "ordPlace": "Passer la Commande",
+    "instruction": "Avez-vous des instructions?",
+    "restaurantOrder": "Commande de Restaurant",
     "tableNumber": "N. table",
     "orderDate": "Date",
     "item": "Article",

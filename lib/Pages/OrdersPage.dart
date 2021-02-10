@@ -2,8 +2,6 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:zilliken/Components/ZAppBar.dart';
-import 'package:zilliken/Helpers/Styling.dart';
 import 'package:zilliken/Helpers/Utils.dart';
 import 'package:zilliken/Models/Fields.dart';
 import 'package:zilliken/Models/Order.dart';
@@ -110,7 +108,7 @@ class _OrdersPageState extends State<OrdersPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                  '${I18n.of(context).tableNumber} : ${order.roomTableNumber}'),
+                  '${I18n.of(context).tableNumber} : ${order.tableAdress}'),
               Text(
                   '${I18n.of(context).orderDate} : ${widget.formatter.format(DateTime.fromMillisecondsSinceEpoch(order.orderDate))}'),
             ],

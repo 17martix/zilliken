@@ -4,6 +4,13 @@ menu,Menu,Menu
 orders,Orders,Commandes
 error,Something went wrong,erreur survenue
 loading,Loading,Chargement
+taxCharge,Taxes & charges,Taxes et charges
+sprkling,sparkiling water,Eau petillante
+orderKind,What kind of order is this?,Quel genre de Commande est-ce?
+bil,Bill,Facture
+ordPlace,Place order,Passer la Commande
+instruction,Do you have instructions?,Avez-vous des instructions?
+restaurantOrder,Restaurant Order,Commande de Restaurant
 total,Total,Total
 tableNumber,N. table,N. table
 orderDate,Date,Date
@@ -20,3 +27,9 @@ moreItems,More Items,Articles De Plus
 order,Order,Commande
 orderInformation,Informations,Informations
 billDetails,Bill,Facture
+ntable,Table Number,Numero de table
+livrdomicile,Home delivery,Livraison a domicile
+gtotal,Grand Total,Grand total
+addr,Address,Adresse
+fone,Phone number,Numero de telephone
+requit,Required,Requis

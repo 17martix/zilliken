@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:zilliken/Helpers/SizeConfig.dart';
 import 'package:zilliken/Helpers/Styling.dart';
+import 'package:zilliken/Pages/CartPage.dart';
 import 'package:zilliken/Pages/DashboardPage.dart';
 import 'package:zilliken/Services/Authentication.dart';
 import 'package:zilliken/Services/Database.dart';
@@ -81,7 +82,7 @@ class _SplashPageState extends State<SplashPage> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => DashboardPage(
+          builder: (context) => CartPage(
             auth: widget.auth,
             db: widget.db,
             userId: id,
@@ -94,7 +95,7 @@ class _SplashPageState extends State<SplashPage> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => DashboardPage(
+          builder: (context) => CartPage(
             auth: widget.auth,
             db: widget.db,
             userId: user.uid,
