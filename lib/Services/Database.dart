@@ -59,7 +59,8 @@ class Database {
     await document.set({
       Fields.id: document.id,
       Fields.orderLocation: order.orderLocation,
-      Fields.roomTableNumber: order.roomTableNumber,
+      Fields.phoneNumber: order.phoneNumber,
+      Fields.tableAdress: order.tableAdress,
       Fields.instructions: order.instructions,
       Fields.grandTotal: order.grandTotal,
       Fields.status: order.status,
@@ -100,7 +101,8 @@ class Database {
       order = Order(
         id: document.id,
         orderLocation: snapshot[Fields.orderLocation],
-        roomTableNumber: snapshot[Fields.roomTableNumber],
+        tableAdress: snapshot[Fields.tableAdress],
+         phoneNumber: snapshot[Fields.phoneNumber],
         instructions: snapshot[Fields.instructions],
         grandTotal: snapshot[Fields.grandTotal],
         orderDate: snapshot[Fields.orderDate],

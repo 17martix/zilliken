@@ -1,9 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:zilliken/Components/ZAppBar.dart';
+import 'package:zilliken/Components/ZRaisedButton.dart';
+import 'package:zilliken/Components/ZTextField.dart';
 import 'package:zilliken/Helpers/Styling.dart';
+import 'package:zilliken/Helpers/Utils.dart';
 import 'package:zilliken/Models/MenuItem.dart';
+import 'package:zilliken/Models/Order.dart';
 import 'package:zilliken/Models/OrderItem.dart';
+import 'package:zilliken/Pages/SingleOrderPage.dart';
 import 'package:zilliken/Services/Authentication.dart';
 import 'package:zilliken/Services/Database.dart';
 import '../i18n.dart';
@@ -57,6 +62,26 @@ class _CartPageState extends State<CartPage> {
   int abc = 1;
 
   TextEditingController choiceController = TextEditingController();
+
+  int tax = 0;
+
+  GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
+  String tableAdress;
+
+  String phone;
+
+  String instruction;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.db.getTax().then((value) {
+      setState(() {
+        tax = value;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -178,74 +203,63 @@ class _CartPageState extends State<CartPage> {
                 groupValue: restaurantOrRoomOrder,
                 onChanged: restaurantRoomChange,
               ),
-              Text(I18n.of(context).roomOrder),
+              Text(I18n.of(context).livrdomicile),
             ],
           ),
         ),
-        TextField(
-          controller: choiceController,
-          decoration: InputDecoration(
-            labelText: restaurantOrRoomOrder == 0
-                ? "numero de table"
-                : "numero de chambre",
-            icon: restaurantOrRoomOrder == 0
-                ? Icon(
-                    Icons.restaurant_menu,
-                    color: Color(Styling.accentColor),
-                  )
-                : Icon(
-                    Icons.single_bed,
+        Form(
+          key: formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ZTextField(
+                controller: choiceController,
+                onSaved: (newValue) => tableAdress = newValue,
+                validator: (value) =>
+                    value.isEmpty ? I18n.of(context).requit : null,
+                keyboardType: restaurantOrRoomOrder == 0
+                    ? TextInputType.number
+                    : TextInputType.text,
+                label: restaurantOrRoomOrder == 0
+                    ? I18n.of(context).ntable
+                    : I18n.of(context).addr,
+                icon: restaurantOrRoomOrder == 0
+                    ? Icon(
+                        Icons.restaurant_menu,
+                        color: Color(Styling.accentColor),
+                      )
+                    : Icon(
+                        Icons.shopping_cart,
+                        color: Color(Styling.accentColor),
+                      ),
+              ),
+              if (restaurantOrRoomOrder == 1)
+                ZTextField(
+                  onSaved: (newValue) => phone = newValue,
+                  validator: (value) =>
+                      value.isEmpty ? I18n.of(context).requit : null,
+                  keyboardType: TextInputType.phone,
+                  label: I18n.of(context).fone,
+                  icon: Icon(
+                    Icons.phone_android,
+                    color: Color(
+                      Styling.accentColor,
+                    ),
+                  ),
+                ),
+              Padding(
+                padding: EdgeInsets.all(8.0),
+                child: ZTextField(
+                  onSaved: (newValue) => instruction = newValue,
+                  label: I18n.of(context).instruction,
+                  icon: Icon(
+                    Icons.info,
                     color: Color(Styling.accentColor),
                   ),
-          ),
-        ),
-
-        /*FlatButton.icon(
-          onPressed: null,
-          icon: Icon(Icons.pause_circle_filled),
-          label: Text(
-            "Restaurant order"
-            "Room Order",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Color(Styling.iconColor),
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Container(
-            width: double.infinity,
-            height: 1,
-            color: Color(Styling.accentColor),
-          ),
-        ),
-        Text(
-          "5",
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            color: Colors.grey,
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Container(
-            width: double.infinity,
-            height: 1,
-            color: Color(Styling.accentColor),
-          ),
-        ),*/
-        Padding(
-          padding: EdgeInsets.all(8.0),
-          child: TextField(
-            decoration: InputDecoration(
-              labelText: I18n.of(context).instruction,
-              icon: Icon(
-                Icons.info,
-                color: Color(Styling.accentColor),
+                  keyboardType: TextInputType.text,
+                ),
               ),
-            ),
-            keyboardType: TextInputType.text,
+            ],
           ),
         ),
       ],
@@ -289,7 +303,7 @@ class _CartPageState extends State<CartPage> {
                           color: Color(Styling.accentColor),
                         ),
                       ),
-                      Text("4"),
+                      Text(priceItemsTotal(context, widget.clientOrder)),
                     ],
                   ),
                 ),
@@ -305,7 +319,7 @@ class _CartPageState extends State<CartPage> {
                           color: Color(Styling.accentColor),
                         ),
                       ),
-                      Text("4"),
+                      Text(appliedTax(context, widget.clientOrder, tax)),
                     ],
                   ),
                 ),
@@ -315,28 +329,25 @@ class _CartPageState extends State<CartPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        "Grand Total",
+                        I18n.of(context).gtotal,
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Colors.black,
                         ),
                       ),
-                      Text("4"),
+                      Text(grandTotal(context, widget.clientOrder, tax)),
                     ],
                   ),
                 ),
               ],
             ),
-            SizedBox(
-              width: double.infinity,
-              child: RaisedButton(
-                color: Color(Styling.accentColor),
-                onPressed: () {},
-                child: Text(
-                  I18n.of(context).ordPlace,
-                  style: TextStyle(
-                    color: Color(Styling.iconColor),
-                  ),
+            ZRaisedButton(
+              onpressed: sendToFireBase,
+              color: Color(Styling.accentColor),
+              textIcon: Text(
+                I18n.of(context).ordPlace,
+                style: TextStyle(
+                  color: Color(Styling.primaryBackgroundColor),
                 ),
               ),
             ),
@@ -344,5 +355,46 @@ class _CartPageState extends State<CartPage> {
         ),
       ),
     );
+  }
+
+  bool validate() {
+    final form = formKey.currentState;
+    if (form.validate()) {
+      form.save();
+      return true;
+    }
+    return false;
+  }
+
+  Future<void> sendToFireBase() async {
+    if (validate()) {
+      Order order = Order(
+        clientOrder: widget.clientOrder,
+        orderLocation: restaurantOrRoomOrder,
+        tableAdress: tableAdress,
+        phoneNumber: phone,
+        instructions: instruction,
+        grandTotal: grandTotalNumber(context, widget.clientOrder, tax),
+        orderDate: DateTime.now().millisecondsSinceEpoch,
+        confirmedDate: 0,
+        servedDate: 0,
+        status: 0,
+        userId: widget.userId,
+        userRole: widget.userRole,
+        taxPercentage: tax,
+        total: priceItemsTotalNumber(
+          context,
+          widget.clientOrder,
+        ),
+      );
+      await widget.db.placeOrder(order);
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SingleOrderPage(),
+        ),
+      );
+    }
   }
 }

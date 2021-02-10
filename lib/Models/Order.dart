@@ -7,14 +7,15 @@ class Order {
   String id;
   List<OrderItem> clientOrder;
   int orderLocation;
-  int roomTableNumber;
+  String tableAdress;
+  String phoneNumber;
   String instructions;
-  int grandTotal;
+  double grandTotal;
   int orderDate;
   int confirmedDate;
   int prepationDate;
   int servedDate;
-  String status;
+  int status;
   String userId;
   String userRole;
   int taxPercentage;
@@ -25,7 +26,8 @@ class Order {
     this.instructions,
     this.clientOrder,
     this.orderLocation,
-    this.roomTableNumber,
+    this.phoneNumber,
+    this.tableAdress,
     this.grandTotal,
     this.orderDate,
     this.status,
@@ -42,7 +44,8 @@ class Order {
     id = document.id;
     instructions = document.data()[Fields.instructions];
     orderLocation = document.data()[Fields.orderLocation];
-    roomTableNumber = document.data()[Fields.roomTableNumber];
+    phoneNumber = document.data()[Fields.phoneNumber];
+    tableAdress = document.data()[Fields.tableAdress];
     grandTotal = document.data()[Fields.grandTotal];
     orderDate = document.data()[Fields.orderDate];
     status = document.data()[Fields.status];
