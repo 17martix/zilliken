@@ -1,21 +1,21 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:zilliken/Pages/DashboardPage.dart';
-
-import 'package:zilliken/Services/Authentication.dart';
 
 
 import 'Helpers/ConnectionStatus.dart';
 import 'Helpers/PushNotificationManager.dart';
 import 'Helpers/Styling.dart';
+
 import 'Pages/DashboardPage.dart';
 import 'Pages/SingleOrderPage.dart';
 import 'Pages/SplashPage.dart';
 import 'Services/Database.dart';
 import 'i18n.dart';
 
-import 'Pages/DashboardPage.dart';
+
+import 'Pages/CartPage.dart';
+import 'i18n.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -42,10 +42,7 @@ class Zilliken extends StatelessWidget {
       title: 'Zilliken',
       theme: buildTheme(),
 
-      home: SplashPage(
-        auth: Authentication(),
-        db: Database(),
-      ),
+      home: CartPage(),
 
 
     );

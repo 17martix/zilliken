@@ -1,7 +1,7 @@
 class Fields {
   static final String users = "users";
   static final String configuration = "configuration";
-  static final String orders = "orders";
+  static final String order = "order";
   static final String items = "items";
 
   static final String id = "id";
@@ -38,6 +38,12 @@ class Fields {
   static final String rank = 'rank';
   static final String global = 'global';
 
-  static final String availability = 'availability';
+  static final String menu = 'menu';
   static final String createdAt = 'createdAt';
+  static final String availability = 'availability';
+
+  static final String pending = 'pending';
+  static final String confirmed = 'confirmed';
+  static final String preparation = 'preparation';
+  static final String served = 'served';
 }
