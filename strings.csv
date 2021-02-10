@@ -8,7 +8,6 @@ taxCharge,Taxes & charges,Taxes et charges
 sprkling,sparkiling water,Eau petillante
 orderKind,What kind of order is this?,Quel genre de Commande est-ce?
 bil,Bill,Facture
-total,Item total,Le total
 ordPlace,Place order,Passer la Commande
 instruction,Do you have instructions?,Avez-vous des instructions?
 restaurantOrder,Restaurant Order,Commande de Restaurant
@@ -25,6 +24,9 @@ orderPreparation,Order Being Prepared,Commande En Préparation
 orderServed,Order Served,Commande Servie
 and,and,et
 moreItems,More Items,Articles De Plus
+order,Order,Commande
+orderInformation,Informations,Informations
+billDetails,Bill,Facture
 ntable,Table Number,Numero de table
 livrdomicile,Home delivery,Livraison a domicile
 gtotal,Grand Total,Grand total

@@ -41,11 +41,12 @@ class Fields {
   static final String createdAt = 'createdAt';
   static final String availability = 'availability';
 
-  static final String pending = 'pending';
-  static final String confirmed = 'confirmed';
-  static final String preparation = 'preparation';
-  static final String served = 'served';
-  
+  static final int pending = 1;
+  static final int confirmed = 2;
+  static final int preparation = 3;
+  static final int served = 4;
+
+
   static final String tableAdress = 'tableAdress';
   static final String phoneNumber = 'phoneNumber';
 }

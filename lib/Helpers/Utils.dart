@@ -121,33 +121,3 @@ String showRommTable(context, Order order) {
     text = "${I18n.of(context).roomNumber} : ${order.tableAdress}";
   return text;
 }
-
-int statusCode(Order order) {
-  int code;
-  if (order.status == Fields.pending) {
-    code = 0;
-  } else if (order.status == Fields.confirmed) {
-    code = 1;
-  } else if (order.status == Fields.preparation) {
-    code = 2;
-  } else if (order.status == Fields.served) {
-    code = 3;
-  }
-
-  return code;
-}
-
-String statusText(Order order, int value) {
-  String text;
-  if (value == 0) {
-    order.status = Fields.pending;
-  } else if (value == 1) {
-    order.status = Fields.confirmed;
-  } else if (value == 2) {
-    order.status = Fields.preparation;
-  } else if (value == 3) {
-    order.status = Fields.served;
-  }
-
-  return text;
-}
