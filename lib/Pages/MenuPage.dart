@@ -102,30 +102,45 @@ class _MenuPageState extends State<MenuPage> {
   Widget item(MenuItem menu) {
     return Card(
       elevation: 16,
-      child: ListTile(
-        leading: Icon(Icons.restaurant_menu),
-        title: Text(menu.name),
-        subtitle: Text("${menu.price}"),
-        trailing: Container(
-          width: 100,
-          child: FlatButton(
-            onPressed: () {
-              clientOrder.add(OrderItem(menuItem: menu, count: 1));
-            },
-            child: Container(child: Row(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Container(
+            padding: EdgeInsets.only(left: 8),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Text("Add"),
-                Text("+"),
-
+                Text(menu.name),
+                Text("${menu.price}"),
               ],
             ),
-            decoration: BoxDecoration(border: Border.all()),),
-
+          ),
+          InkWell(
+            onTap: () {
+              clientOrder.add(OrderItem(menuItem: menu, count: 1));
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                color: Color(Styling.primaryBackgroundColor),
+                border: Border.all(
+                  color: Color(Styling.accentColor),
+                ),
+              ),
+              margin: EdgeInsets.all(8),
+              padding: EdgeInsets.all(8),
+              child: Row(
+                children: [
+                  Text("Add"),
+                  Container(
+                    width: 2,
+                  ),
+                  Text("+"),
+                ],
               ),
             ),
           ),
-        
-        
+        ],
+      ),
     );
   }
 
