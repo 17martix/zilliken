@@ -42,18 +42,16 @@ class ZTextField extends StatelessWidget {
         keyboardType: keyboardType,
         inputFormatters: inputFormatters,
         style: TextStyle(
-          fontSize: SizeConfig.diagonal * 2.5,
+          fontSize: SizeConfig.diagonal * 2,
         ),
         decoration: InputDecoration(
           hintStyle: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: SizeConfig.diagonal * 2.5,
+            fontSize: SizeConfig.diagonal * 2,
           ),
           hintText: hint,
           labelText: label,
           labelStyle: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: SizeConfig.diagonal * 2.5,
+            fontSize: SizeConfig.diagonal * 2,
           ),
           prefixIcon: Padding(
             child: IconTheme(

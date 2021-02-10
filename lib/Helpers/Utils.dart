@@ -36,6 +36,11 @@ String priceItemsTotal(context, List<OrderItem> order) {
   return "${cart.totalPrice} ${I18n.of(context).fbu}";
 }
 
+int priceItemsTotalNumber(context, List<OrderItem> order) {
+  Cart cart = cartCount(order);
+  return cart.totalPrice;
+}
+
 String grandTotal(context, List<OrderItem> order, int taxPercentage) {
   Cart cart = cartCount(order);
   double tax = (taxPercentage / 100) * cart.totalPrice;
@@ -111,9 +116,9 @@ String itemTax(context, Order order) {
 String showRommTable(context, Order order) {
   String text;
   if (order.orderLocation == 0)
-    text = "${I18n.of(context).tableNumber} : ${order.roomTableNumber}";
+    text = "${I18n.of(context).tableNumber} : ${order.tableAdress}";
   else if (order.orderLocation == 1)
-    text = "${I18n.of(context).roomNumber} : ${order.roomTableNumber}";
+    text = "${I18n.of(context).roomNumber} : ${order.tableAdress}";
   return text;
 }
 

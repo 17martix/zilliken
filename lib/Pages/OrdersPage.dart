@@ -67,7 +67,7 @@ class _OrdersPageState extends State<OrdersPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                  '${I18n.of(context).tableNumber} : ${order.roomTableNumber}'),
+                  '${I18n.of(context).tableNumber} : ${order.tableAdress}'),
               Text(
                   '${I18n.of(context).orderDate} : ${widget.formatter.format(DateTime.fromMillisecondsSinceEpoch(order.orderDate))}'),
             ],

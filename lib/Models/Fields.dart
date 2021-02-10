@@ -18,7 +18,6 @@ class Fields {
   static final String percentage = 'percentage';
 
   static final String orderLocation = 'orderLocation';
-  static final String roomTableNumber = 'roomTableNumber';
   static final String instructions = 'instructions';
   static final String grandTotal = 'grandTotal';
   static final String status = 'status';
@@ -46,5 +45,8 @@ class Fields {
   static final String confirmed = 'confirmed';
   static final String preparation = 'preparation';
   static final String served = 'served';
+
+  static final String tableAdress = 'tableAdress';
+  static final String phoneNumber = 'phoneNumber';
 
 }

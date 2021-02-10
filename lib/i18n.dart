@@ -33,8 +33,6 @@ class I18n {
 
   String get restaurantOrder => _getText("restaurantOrder");
 
-  String get roomOrder => _getText("roomOrder");
-
   String get tableNumber => _getText("tableNumber");
 
   String get orderDate => _getText("orderDate");
@@ -59,6 +57,18 @@ class I18n {
 
   String get moreItems => _getText("moreItems");
 
+  String get ntable => _getText("ntable");
+
+  String get livrdomicile => _getText("livrdomicile");
+
+  String get gtotal => _getText("gtotal");
+
+  String get addr => _getText("addr");
+
+  String get fone => _getText("fone");
+
+  String get requit => _getText("requit");
+
   static Map<String, String> _localizedValues;
 
   static Map<String, String> _enValues = {
@@ -75,7 +85,6 @@ class I18n {
     "ordPlace": "Place order",
     "instruction": "Do you have instructions?",
     "restaurantOrder": "Restaurant Order",
-    "roomOrder": "Room Order",
     "tableNumber": "N. table",
     "orderDate": "Date",
     "item": "Item",
@@ -88,6 +97,12 @@ class I18n {
     "orderServed": "Order Served",
     "and": "and",
     "moreItems": "More Items",
+    "ntable": "Table Number",
+    "livrdomicile": "Home delivery",
+    "gtotal": "Grand Total",
+    "addr": "Address",
+    "fone": "Phone number",
+    "requit": "Required",
   };
 
   static Map<String, String> _frValues = {
@@ -104,7 +119,6 @@ class I18n {
     "ordPlace": "Passer la Commande",
     "instruction": "Avez-vous des instructions?",
     "restaurantOrder": "Commande de Restaurant",
-    "roomOrder": "Commande chambre",
     "tableNumber": "N. table",
     "orderDate": "Date",
     "item": "Article",
@@ -117,6 +131,12 @@ class I18n {
     "orderServed": "Commande Servie",
     "and": "et",
     "moreItems": "Articles De Plus",
+    "ntable": "Numero de table",
+    "livrdomicile": "Livraison a domicile",
+    "gtotal": "Grand total",
+    "addr": "Adresse",
+    "fone": "Numero de telephone",
+    "requit": "Requis",
   };
 
   static Map<String, Map<String, String>> _allValues = {
