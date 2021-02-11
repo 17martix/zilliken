@@ -14,8 +14,10 @@ import 'package:zilliken/Models/Category.dart';
 import 'package:zilliken/Models/Fields.dart';
 import 'package:zilliken/Models/MenuItem.dart';
 import 'package:zilliken/Models/OrderItem.dart';
+
 import 'package:zilliken/Services/Authentication.dart';
 import 'package:zilliken/Services/Database.dart';
+
 import 'package:zilliken/i18n.dart';
 
 class MenuPage extends StatefulWidget {
@@ -128,6 +130,7 @@ class _MenuPageState extends State<MenuPage> {
         Expanded(
           child: menulist(),
         ),
+        if (clientOrder.length > 0) showBill(),
       ],
     );
   }
@@ -184,6 +187,7 @@ class _MenuPageState extends State<MenuPage> {
               ),
             ],
           ),
+
           new Divider(height: 2.0, color: Colors.black),
           _itemorCategory == 0
               ? Form(
@@ -278,10 +282,38 @@ class _MenuPageState extends State<MenuPage> {
                     ],
                   ),
                 ),
+
         ],
       ),
     );
   }
+
+  Widget showBill() {
+    return Align(
+        alignment: Alignment.bottomCenter,
+        child: Card(
+          color: Color(Styling.accentColor),
+          elevation: 16,
+          child: ListTile(
+            title: Text(
+              numberItems(context, clientOrder),
+              style: TextStyle(color: Color(Styling.primaryBackgroundColor)),
+            ),
+            subtitle: Text(
+              priceItems(context, clientOrder),
+              style: TextStyle(
+                color: Color(Styling.primaryBackgroundColor),
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            trailing: Text(
+              I18n.of(context).vOrder,
+              style: TextStyle(
+                color: Color(Styling.primaryBackgroundColor),
+              ),
+            ),
+          ),
+        ));
 
   bool validateAndSaveCategory() {
     final form = _catformKey.currentState;
@@ -402,6 +434,7 @@ class _MenuPageState extends State<MenuPage> {
     setState(() {
       _itemorCategory = value;
     });
+
   }
 
   Widget categoryList() {
@@ -439,10 +472,52 @@ class _MenuPageState extends State<MenuPage> {
           children: snapshot.data.docs.map((DocumentSnapshot document) {
             MenuItem menu = MenuItem();
             menu.buildObject(document);
-            return item(menu);
+            return Column(
+              children: [
+                if (menu.rank == 1) categoryRow(menu),
+                item(menu),
+              ],
+            );
           }).toList(),
         );
       },
+    );
+  }
+
+  Widget categoryRow(MenuItem menu) {
+    return Row(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  height: 2,
+                  width: 70,
+                  color: Color(Styling.accentColor),
+                  padding: EdgeInsets.all(8),
+                ),
+              ),
+              Text(
+                menu.category,
+                style: TextStyle(fontSize: 15),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  height: 2,
+                  width: 70,
+                  color: Color(Styling.accentColor),
+                  padding: EdgeInsets.all(8),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
