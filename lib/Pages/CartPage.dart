@@ -19,6 +19,7 @@ import 'package:zilliken/Pages/SingleOrderPage.dart';
 import 'package:zilliken/Services/Authentication.dart';
 import 'package:zilliken/Services/Database.dart';
 import '../i18n.dart';
+import 'DisabledPage.dart';
 
 class CartPage extends StatefulWidget {
   final List<OrderItem> clientOrder;
@@ -55,6 +56,7 @@ class _CartPageState extends State<CartPage> {
   bool isOffline = false;
   bool _isLoading = false;
   bool _isTaxLoaded = false;
+  int enabled=1;
 
   @override
   void initState() {
@@ -70,6 +72,16 @@ class _CartPageState extends State<CartPage> {
     ConnectionStatus connectionStatus = ConnectionStatus.getInstance();
     _connectionChangeStream =
         connectionStatus.connectionChange.listen(connectionChanged);
+
+        FirebaseFirestore.instance
+        .collection(Fields.configuration)
+        .doc(Fields.settings)
+        .snapshots()
+        .listen((DocumentSnapshot documentSnapshot) {
+      setState(() {
+        enabled = documentSnapshot.data()[Fields.enabled];
+      });
+    });
   }
 
   void connectionChanged(dynamic hasConnection) {
@@ -81,7 +93,14 @@ class _CartPageState extends State<CartPage> {
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
-    return Scaffold(
+    return enabled == 0
+        ? DisabledPage(
+            auth: widget.auth,
+            db: widget.db,
+            userId: widget.userId,
+            userRole: widget.userRole,
+          )
+        : Scaffold(
       key: _scaffoldKey,
       appBar: buildAppBar(context, widget.auth, true, false, null, null),
       body: Stack(

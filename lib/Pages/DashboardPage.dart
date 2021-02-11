@@ -1,15 +1,18 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:zilliken/Components/ZAppBar.dart';
 import 'package:zilliken/Helpers/ConnectionStatus.dart';
 import 'package:zilliken/Helpers/Styling.dart';
+import 'package:zilliken/Models/Fields.dart';
 import 'package:zilliken/Pages/MenuPage.dart';
 import 'package:zilliken/Pages/OrdersPage.dart';
 import 'package:zilliken/Services/Authentication.dart';
 import 'package:zilliken/Services/Database.dart';
 import 'package:zilliken/i18n.dart';
 
+import 'DisabledPage.dart';
 import 'SplashPage.dart';
 
 class DashboardPage extends StatefulWidget {
@@ -35,6 +38,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
   int _selectedIndex = 0;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
+  int enabled = 1;
 
   @override
   void initState() {
@@ -42,6 +46,16 @@ class _DashboardPageState extends State<DashboardPage> {
     ConnectionStatus connectionStatus = ConnectionStatus.getInstance();
     _connectionChangeStream =
         connectionStatus.connectionChange.listen(connectionChanged);
+
+    FirebaseFirestore.instance
+        .collection(Fields.configuration)
+        .doc(Fields.settings)
+        .snapshots()
+        .listen((DocumentSnapshot documentSnapshot) {
+      setState(() {
+        enabled = documentSnapshot.data()[Fields.enabled];
+      });
+    });
   }
 
   void connectionChanged(dynamic hasConnection) {
@@ -52,29 +66,36 @@ class _DashboardPageState extends State<DashboardPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: _scaffoldKey,
-      appBar:
-          buildAppBar(context, widget.auth, false, true, googleSign, logout),
-      body: body(),
-      bottomNavigationBar: BottomNavigationBar(
-        items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.restaurant_menu_outlined),
-            label: I18n.of(context).menu,
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_bag),
-            label: I18n.of(context).orders,
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Color(
-          Styling.primaryColor,
-        ),
-        onTap: _onItemTapped,
-      ),
-    );
+    return enabled == 0
+        ? DisabledPage(
+            auth: widget.auth,
+            db: widget.db,
+            userId: widget.userId,
+            userRole: widget.userRole,
+          )
+        : Scaffold(
+            key: _scaffoldKey,
+            appBar: buildAppBar(
+                context, widget.auth, false, true, googleSign, logout),
+            body: body(),
+            bottomNavigationBar: BottomNavigationBar(
+              items: <BottomNavigationBarItem>[
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.restaurant_menu_outlined),
+                  label: I18n.of(context).menu,
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.shopping_bag),
+                  label: I18n.of(context).orders,
+                ),
+              ],
+              currentIndex: _selectedIndex,
+              selectedItemColor: Color(
+                Styling.primaryColor,
+              ),
+              onTap: _onItemTapped,
+            ),
+          );
   }
 
   void _onItemTapped(int index) {

@@ -95,6 +95,8 @@ class I18n {
 
   String get logout => _getText("logout");
 
+  String get accountDisabled => _getText("accountDisabled");
+
   static Map<String, String> _localizedValues;
 
   static Map<String, String> _enValues = {
@@ -142,6 +144,7 @@ class I18n {
     "noInternet": "No Internet Connection",
     "login": "Log In",
     "logout": "Log Out",
+    "accountDisabled": "This App Has Been Disabled",
   };
 
   static Map<String, String> _frValues = {
@@ -189,6 +192,7 @@ class I18n {
     "noInternet": "Pas de Connexion Internet",
     "login": "Se Connecter",
     "logout": "Se Deconnecter",
+    "accountDisabled": "Cette Application a été Désactivé",
   };
 
   static Map<String, Map<String, String>> _allValues = {
