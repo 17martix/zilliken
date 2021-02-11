@@ -66,7 +66,7 @@ class Database {
       Fields.status: order.status,
       Fields.orderDate: order.orderDate,
       Fields.confirmedDate: order.confirmedDate,
-      Fields.prepationDate: order.prepationDate,
+      Fields.preparationDate: order.preparationDate,
       Fields.servedDate: order.servedDate,
       Fields.userId: order.userId,
       Fields.userRole: order.userRole,
@@ -287,7 +287,7 @@ class Database {
       });
     } else if (value == 2) {
       await document.update(
-          {Fields.status: Fields.preparation, Fields.prepationDate: now});
+          {Fields.status: Fields.preparation, Fields.preparationDate: now});
     } else if (value == 3) {
       await document
           .update({Fields.status: Fields.served, Fields.servedDate: now});

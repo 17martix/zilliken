@@ -19,7 +19,12 @@ class OrdersPage extends StatefulWidget {
   final String userRole;
   final DateFormat formatter = DateFormat('dd/MM/yyyy HH:mm');
 
-  OrdersPage({this.auth, this.db, this.userId, this.userRole,});
+  OrdersPage({
+    this.auth,
+    this.db,
+    this.userId,
+    this.userRole,
+  });
 
   @override
   _OrdersPageState createState() => _OrdersPageState();
@@ -107,8 +112,7 @@ class _OrdersPageState extends State<OrdersPage> {
           subtitle: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                  '${I18n.of(context).tableNumber} : ${order.tableAdress}'),
+              Text('${I18n.of(context).tableNumber} : ${order.tableAdress}'),
               Text(
                   '${I18n.of(context).orderDate} : ${widget.formatter.format(DateTime.fromMillisecondsSinceEpoch(order.orderDate))}'),
             ],
@@ -135,14 +139,6 @@ class _OrdersPageState extends State<OrdersPage> {
     return StreamBuilder<QuerySnapshot>(
       stream: commandes.snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        if (snapshot.hasError) {
-          return Text(I18n.of(context).error);
-        }
-
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Text(I18n.of(context).loading);
-        }
-
         return new ListView(
           children: snapshot.data.docs.map((DocumentSnapshot document) {
             Order order = Order();
