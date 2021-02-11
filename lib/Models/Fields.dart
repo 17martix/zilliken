@@ -9,8 +9,7 @@ class Fields {
   static final String receiveNotifications = "receiveNotifications";
 
   static final String client = 'client';
-  static final String driver = 'chef';
-  static final String staff = 'staff';
+  static final String chef = 'chef';
   static final String admin = 'admin';
   static final String developer = 'developer';
 
@@ -49,4 +48,8 @@ class Fields {
 
   static final String tableAdress = 'tableAdress';
   static final String phoneNumber = 'phoneNumber';
+  static final String tout = 'Tout';
+
+  static final String settings = 'settings';
+  static final String enabled = 'enabled';
 }

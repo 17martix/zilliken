@@ -35,6 +35,8 @@ class I18n {
 
   String get tableNumber => _getText("tableNumber");
 
+  String get address => _getText("address");
+
   String get orderDate => _getText("orderDate");
 
   String get item => _getText("item");
@@ -75,8 +77,6 @@ class I18n {
 
   String get requit => _getText("requit");
 
-  String get vOrder => _getText("vOrder");
-
   static Map<String, String> _localizedValues;
 
   static Map<String, String> _enValues = {
@@ -93,7 +93,8 @@ class I18n {
     "instruction": "Do you have instructions?",
     "restaurantOrder": "Restaurant Order",
     "total": "Total",
-    "tableNumber": "N. table",
+    "tableNumber": "Table N.",
+    "address": "Address",
     "orderDate": "Date",
     "item": "Item",
     "items": "Items",
@@ -114,7 +115,6 @@ class I18n {
     "addr": "Address",
     "fone": "Phone number",
     "requit": "Required",
-    "vOrder": "View My Order",
   };
 
   static Map<String, String> _frValues = {
@@ -132,6 +132,7 @@ class I18n {
     "restaurantOrder": "Commande de Restaurant",
     "total": "Total",
     "tableNumber": "N. table",
+    "address": "Adresse",
     "orderDate": "Date",
     "item": "Article",
     "items": "Articles",
@@ -152,7 +153,7 @@ class I18n {
     "addr": "Adresse",
     "fone": "Numero de telephone",
     "requit": "Requis",
-    "vOrder": "Voir Ma Commande",
+
   };
 
   static Map<String, Map<String, String>> _allValues = {
