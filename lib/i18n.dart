@@ -77,6 +77,28 @@ class I18n {
 
   String get requit => _getText("requit");
 
+  String get vOrder => _getText("vOrder");
+
+  String get addWhat => _getText("addWhat");
+
+  String get category => _getText("category");
+
+  String get addItem => _getText("addItem");
+
+  String get categoryName => _getText("categoryName");
+
+  String get itemPrice => _getText("itemPrice");
+
+  String get itemName => _getText("itemName");
+
+  String get noInternet => _getText("noInternet");
+
+  String get login => _getText("login");
+
+  String get logout => _getText("logout");
+
+  String get accountDisabled => _getText("accountDisabled");
+
   static Map<String, String> _localizedValues;
 
   static Map<String, String> _enValues = {
@@ -115,6 +137,17 @@ class I18n {
     "addr": "Address",
     "fone": "Phone number",
     "requit": "Required",
+    "vOrder": "View My Order",
+    "addWhat": "What Do You Want to Add?",
+    "category": "Category",
+    "addItem": "Add",
+    "categoryName": "Name of Categoy",
+    "itemPrice": "Price of Item",
+    "itemName": "Name of Item",
+    "noInternet": "No Internet Connection",
+    "login": "Log In",
+    "logout": "Log Out",
+    "accountDisabled": "This App Has Been Disabled",
   };
 
   static Map<String, String> _frValues = {
@@ -153,7 +186,17 @@ class I18n {
     "addr": "Adresse",
     "fone": "Numero de telephone",
     "requit": "Requis",
-
+    "vOrder": "Voir Ma Commande",
+    "addWhat": "Que Voulez-vous Ajouter?",
+    "category": "Catégorie",
+    "addItem": "Ajouter",
+    "categoryName": "Nom de la Categorie",
+    "itemPrice": "Prix de l'article",
+    "itemName": "Nom de l'article",
+    "noInternet": "Pas de Connexion Internet",
+    "login": "Se Connecter",
+    "logout": "Se Deconnecter",
+    "accountDisabled": "Cette Application a été Désactivé",
   };
 
   static Map<String, Map<String, String>> _allValues = {

@@ -187,7 +187,6 @@ class _MenuPageState extends State<MenuPage> {
               ),
             ],
           ),
-
           new Divider(height: 2.0, color: Colors.black),
           _itemorCategory == 0
               ? Form(
@@ -282,7 +281,6 @@ class _MenuPageState extends State<MenuPage> {
                     ],
                   ),
                 ),
-
         ],
       ),
     );
@@ -314,6 +312,7 @@ class _MenuPageState extends State<MenuPage> {
             ),
           ),
         ));
+  }
 
   bool validateAndSaveCategory() {
     final form = _catformKey.currentState;
@@ -434,7 +433,6 @@ class _MenuPageState extends State<MenuPage> {
     setState(() {
       _itemorCategory = value;
     });
-
   }
 
   Widget categoryList() {
