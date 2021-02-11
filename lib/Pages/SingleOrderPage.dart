@@ -44,7 +44,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: buildAppBar(context),
+      appBar: buildAppBar(context, widget.auth, true, false, null, null),
       body: ListView(
         children: [
           orderDetails(),
