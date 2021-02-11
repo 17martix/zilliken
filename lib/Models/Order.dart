@@ -11,7 +11,7 @@ class Order {
   String tableAdress;
   String phoneNumber;
   String instructions;
-  double grandTotal;
+  var grandTotal;
   int orderDate;
   int confirmedDate;
   int prepationDate;

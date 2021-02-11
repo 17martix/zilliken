@@ -1,11 +1,16 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:zilliken/Components/ZAppBar.dart';
+import 'package:zilliken/Helpers/ConnectionStatus.dart';
 import 'package:zilliken/Helpers/Styling.dart';
 import 'package:zilliken/Pages/MenuPage.dart';
 import 'package:zilliken/Pages/OrdersPage.dart';
 import 'package:zilliken/Services/Authentication.dart';
 import 'package:zilliken/Services/Database.dart';
 import 'package:zilliken/i18n.dart';
+
+import 'SplashPage.dart';
 
 class DashboardPage extends StatefulWidget {
   final Authentication auth;
@@ -25,11 +30,32 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
+  StreamSubscription _connectionChangeStream;
+  bool isOffline = false;
+
   int _selectedIndex = 0;
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  @override
+  void initState() {
+    super.initState();
+    ConnectionStatus connectionStatus = ConnectionStatus.getInstance();
+    _connectionChangeStream =
+        connectionStatus.connectionChange.listen(connectionChanged);
+  }
+
+  void connectionChanged(dynamic hasConnection) {
+    setState(() {
+      isOffline = !hasConnection;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: buildAppBar(context),
+      key: _scaffoldKey,
+      appBar:
+          buildAppBar(context, widget.auth, false, true, googleSign, logout),
       body: body(),
       bottomNavigationBar: BottomNavigationBar(
         items: <BottomNavigationBarItem>[
@@ -60,7 +86,12 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget body() {
     switch (_selectedIndex) {
       case 0:
-        return MenuPage();
+        return MenuPage(
+          auth: widget.auth,
+          db: widget.db,
+          userId: widget.userId,
+          userRole: widget.userRole,
+        );
         break;
       case 1:
         return OrdersPage(
@@ -71,8 +102,69 @@ class _DashboardPageState extends State<DashboardPage> {
         );
         break;
       default:
-        return MenuPage();
+        return MenuPage(
+          auth: widget.auth,
+          db: widget.db,
+          userId: widget.userId,
+          userRole: widget.userRole,
+        );
         break;
+    }
+  }
+
+  void googleSign() async {
+    String userId = "";
+
+    if (isOffline) {
+      _scaffoldKey.currentState.showSnackBar(
+        SnackBar(
+          content: Text(I18n.of(context).noInternet),
+        ),
+      );
+    } else {
+      try {
+        userId = await widget.auth.signInWithGoogle();
+
+        if (userId.length > 0 && userId != null) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => SplashPage(
+                auth: widget.auth,
+                db: widget.db,
+              ),
+            ),
+          );
+        }
+      } on Exception catch (e) {
+        //print('Error: $e');
+        _scaffoldKey.currentState.showSnackBar(
+          SnackBar(
+            content: Text(e.toString()),
+          ),
+        );
+      }
+    }
+  }
+
+  void logout() async {
+    try {
+      await widget.auth.signOut();
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+            builder: (context) => SplashPage(
+                  auth: widget.auth,
+                  db: widget.db,
+                )),
+      );
+    } on Exception catch (e) {
+      print('Error: $e');
+      _scaffoldKey.currentState.showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
     }
   }
 }

@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:zilliken/Helpers/SizeConfig.dart';
 import 'package:zilliken/Helpers/Styling.dart';
-import 'package:zilliken/Pages/CartPage.dart';
+import 'package:zilliken/Models/Fields.dart';
 import 'package:zilliken/Pages/DashboardPage.dart';
 import 'package:zilliken/Services/Authentication.dart';
 import 'package:zilliken/Services/Database.dart';
@@ -24,7 +24,6 @@ class SplashPage extends StatefulWidget {
 }
 
 class _SplashPageState extends State<SplashPage> {
-  //int abc=1;
   @override
   void initState() {
     super.initState();
@@ -44,13 +43,13 @@ class _SplashPageState extends State<SplashPage> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            margin: EdgeInsets.only(bottom: 10),
+            margin: EdgeInsets.only(bottom: SizeConfig.diagonal * 2),
             child: Center(
               child: logo(),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: EdgeInsets.all(SizeConfig.diagonal * 2),
             child: CircularProgressIndicator(),
           ),
         ],
@@ -62,9 +61,9 @@ class _SplashPageState extends State<SplashPage> {
     return Hero(
       tag: I18n.of(context).appTitle,
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: EdgeInsets.all(SizeConfig.diagonal * 2),
         child: CircleAvatar(
-          radius: 90,
+          radius: SizeConfig.diagonal * 10,
           backgroundColor: Colors.transparent,
           child: Image(
             image: AssetImage('assets/logo.jpg'),
@@ -75,10 +74,10 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   void isLoggedIn() async {
-    User user = await widget.auth.getCurrentUser();
+    User user = widget.auth.getCurrentUser();
     if (user?.uid == null) {
       String id = await widget.auth.anonymousSignIn();
-      String role = 'client';
+      String role = Fields.client;
       Navigator.push(
         context,
         MaterialPageRoute(
