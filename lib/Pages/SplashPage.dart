@@ -82,7 +82,7 @@ class _SplashPageState extends State<SplashPage> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => CartPage(
+          builder: (context) => DashboardPage(
             auth: widget.auth,
             db: widget.db,
             userId: id,
@@ -95,7 +95,7 @@ class _SplashPageState extends State<SplashPage> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => CartPage(
+          builder: (context) => DashboardPage(
             auth: widget.auth,
             db: widget.db,
             userId: user.uid,

@@ -143,7 +143,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text('${I18n.of(context).tableNumber}'),
-                  Text('${order.roomTableNumber}'),
+                  Text('${order..tableAdress}'),
                 ],
               ),
             ),

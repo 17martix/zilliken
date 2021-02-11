@@ -25,13 +25,13 @@ class I18n {
 
   String get bil => _getText("bil");
 
-  String get total => _getText("total");
-
   String get ordPlace => _getText("ordPlace");
 
   String get instruction => _getText("instruction");
 
   String get restaurantOrder => _getText("restaurantOrder");
+
+  String get total => _getText("total");
 
   String get tableNumber => _getText("tableNumber");
 
@@ -63,6 +63,18 @@ class I18n {
 
   String get billDetails => _getText("billDetails");
 
+  String get ntable => _getText("ntable");
+
+  String get livrdomicile => _getText("livrdomicile");
+
+  String get gtotal => _getText("gtotal");
+
+  String get addr => _getText("addr");
+
+  String get fone => _getText("fone");
+
+  String get requit => _getText("requit");
+
   static Map<String, String> _localizedValues;
 
   static Map<String, String> _enValues = {
@@ -75,10 +87,10 @@ class I18n {
     "sprkling": "sparkiling water",
     "orderKind": "What kind of order is this?",
     "bil": "Bill",
-    "total": "Total",
     "ordPlace": "Place order",
     "instruction": "Do you have instructions?",
     "restaurantOrder": "Restaurant Order",
+    "total": "Total",
     "tableNumber": "N. table",
     "orderDate": "Date",
     "item": "Item",
@@ -91,11 +103,15 @@ class I18n {
     "orderServed": "Order Served",
     "and": "and",
     "moreItems": "More Items",
-
     "order": "Order",
     "orderInformation": "Informations",
     "billDetails": "Bill",
-
+    "ntable": "Table Number",
+    "livrdomicile": "Home delivery",
+    "gtotal": "Grand Total",
+    "addr": "Address",
+    "fone": "Phone number",
+    "requit": "Required",
   };
 
   static Map<String, String> _frValues = {
@@ -108,10 +124,10 @@ class I18n {
     "sprkling": "Eau petillante",
     "orderKind": "Quel genre de Commande est-ce?",
     "bil": "Facture",
-    "total": "Total",
     "ordPlace": "Passer la Commande",
     "instruction": "Avez-vous des instructions?",
     "restaurantOrder": "Commande de Restaurant",
+    "total": "Total",
     "tableNumber": "N. table",
     "orderDate": "Date",
     "item": "Article",
@@ -127,6 +143,12 @@ class I18n {
     "order": "Commande",
     "orderInformation": "Informations",
     "billDetails": "Facture",
+    "ntable": "Numero de table",
+    "livrdomicile": "Livraison a domicile",
+    "gtotal": "Grand total",
+    "addr": "Adresse",
+    "fone": "Numero de telephone",
+    "requit": "Requis",
   };
 
   static Map<String, Map<String, String>> _allValues = {

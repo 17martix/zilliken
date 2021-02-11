@@ -63,7 +63,6 @@ class Order {
     id = document.data.id;
     instructions = document.data[Fields.instructions];
     orderLocation = document.data[Fields.orderLocation];
-    roomTableNumber = document.data[Fields.roomTableNumber];
     grandTotal = document.data[Fields.grandTotal];
     orderDate = document.data[Fields.orderDate];
     status = document.data[Fields.status];
