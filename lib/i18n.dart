@@ -75,6 +75,8 @@ class I18n {
 
   String get requit => _getText("requit");
 
+  String get vOrder => _getText("vOrder");
+
   static Map<String, String> _localizedValues;
 
   static Map<String, String> _enValues = {
@@ -112,6 +114,7 @@ class I18n {
     "addr": "Address",
     "fone": "Phone number",
     "requit": "Required",
+    "vOrder": "View My Order",
   };
 
   static Map<String, String> _frValues = {
@@ -149,6 +152,7 @@ class I18n {
     "addr": "Adresse",
     "fone": "Numero de telephone",
     "requit": "Requis",
+    "vOrder": "Voir Ma Commande",
   };
 
   static Map<String, Map<String, String>> _allValues = {

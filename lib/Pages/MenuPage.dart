@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:zilliken/Helpers/NumericStepButton.dart';
@@ -6,6 +8,7 @@ import 'package:zilliken/Helpers/Utils.dart';
 import 'package:zilliken/Models/Category.dart';
 import 'package:zilliken/Models/MenuItem.dart';
 import 'package:zilliken/Models/OrderItem.dart';
+import 'package:zilliken/i18n.dart';
 
 class MenuPage extends StatefulWidget {
   @override
@@ -47,9 +50,38 @@ class _MenuPageState extends State<MenuPage> {
           Expanded(
             child: menulist(),
           ),
+          if (clientOrder.length > 0) showBill(),
         ],
       ),
     );
+  }
+
+  Widget showBill() {
+    return Align(
+        alignment: Alignment.bottomCenter,
+        child: Card(
+          color: Color(Styling.accentColor),
+          elevation: 16,
+          child: ListTile(
+            title: Text(
+              numberItems(context, clientOrder),
+              style: TextStyle(color: Color(Styling.primaryBackgroundColor)),
+            ),
+            subtitle: Text(
+              priceItems(context, clientOrder),
+              style: TextStyle(
+                color: Color(Styling.primaryBackgroundColor),
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            trailing: Text(
+              I18n.of(context).vOrder,
+              style: TextStyle(
+                color: Color(Styling.primaryBackgroundColor),
+              ),
+            ),
+          ),
+        ));
   }
 
   Widget categoryList() {
@@ -93,10 +125,52 @@ class _MenuPageState extends State<MenuPage> {
           children: snapshot.data.docs.map((DocumentSnapshot document) {
             MenuItem menu = MenuItem();
             menu.buildObject(document);
-            return item(menu);
+            return Column(
+              children: [
+                if (menu.rank == 1) categoryRow(menu),
+                item(menu),
+              ],
+            );
           }).toList(),
         );
       },
+    );
+  }
+
+  Widget categoryRow(MenuItem menu) {
+    return Row(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  height: 2,
+                  width: 70,
+                  color: Color(Styling.accentColor),
+                  padding: EdgeInsets.all(8),
+                ),
+              ),
+              Text(
+                menu.category,
+                style: TextStyle(fontSize: 15),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  height: 2,
+                  width: 70,
+                  color: Color(Styling.accentColor),
+                  padding: EdgeInsets.all(8),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
