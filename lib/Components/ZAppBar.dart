@@ -42,7 +42,7 @@ AppBar buildAppBar(context, Authentication auth, bool isBackAllowed,
     ),
     actions: [
       !loginOptionAvailable
-          ? null
+          ? Text('')
           : auth.getCurrentUser().isAnonymous
               ? googleSignIN(googleSign)
               : logoutButton(logout)

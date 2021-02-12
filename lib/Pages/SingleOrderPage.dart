@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:zilliken/Components/ZAppBar.dart';
+import 'package:zilliken/Components/ZCircularProgress.dart';
 import 'package:zilliken/Components/ZRaisedButton.dart';
 import 'package:zilliken/Helpers/ConnectionStatus.dart';
 import 'package:zilliken/Helpers/SizeConfig.dart';
@@ -18,6 +19,7 @@ import 'package:intl/intl.dart';
 import 'package:timelines/timelines.dart';
 
 import 'DashboardPage.dart';
+import 'DisabledPage.dart';
 
 class SingleOrderPage extends StatefulWidget {
   final Authentication auth;
@@ -25,6 +27,7 @@ class SingleOrderPage extends StatefulWidget {
   final String userId;
   final String userRole;
   final String orderId;
+  final Order clientOrder;
   final DateFormat formatter = DateFormat('dd/MM/yyyy  HH:mm');
 
   SingleOrderPage({
@@ -33,6 +36,7 @@ class SingleOrderPage extends StatefulWidget {
     this.userId,
     this.userRole,
     this.orderId,
+    this.clientOrder,
   });
 
   @override
@@ -44,10 +48,12 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
   var orderItems;
   bool isDataBeingDeleted = false;
   int _status = Fields.confirmed;
+  bool _isLoading = false;
   StreamSubscription _connectionChangeStream;
   bool isOffline = false;
 
   int _orderStatus = 0;
+  int enabled = 1;
 
   @override
   void initState() {
@@ -70,6 +76,16 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
       });
     });
 
+    FirebaseFirestore.instance
+        .collection(Fields.configuration)
+        .doc(Fields.settings)
+        .snapshots()
+        .listen((DocumentSnapshot documentSnapshot) {
+      setState(() {
+        enabled = documentSnapshot.data()[Fields.enabled];
+      });
+    });
+
     ConnectionStatus connectionStatus = ConnectionStatus.getInstance();
     _connectionChangeStream =
         connectionStatus.connectionChange.listen(connectionChanged);
@@ -83,7 +99,6 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
 
   @override
   Widget build(BuildContext context) {
-
     SizeConfig().init(context);
     return WillPopScope(
       onWillPop: () {
@@ -99,10 +114,23 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
           ),
         );
       },
-      child: Scaffold(
-        appBar: buildAppBar(context),
-        body: body(),
-      ),
+      child: enabled == 0
+          ? DisabledPage(
+              auth: widget.auth,
+              db: widget.db,
+              userId: widget.userId,
+              userRole: widget.userRole,
+            )
+          : Scaffold(
+              appBar:
+                  buildAppBar(context, widget.auth, true, false, null, null),
+              body: Stack(
+                children: [
+                  body(),
+                  ZCircularProgress(_isLoading),
+                ],
+              ),
+            ),
     );
   }
 
@@ -113,9 +141,8 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
       );
     } else {
       return ListView(
-
         children: [
-          if (widget.userRole == Fields.client) progressStatus(),
+          if (widget.userRole == Fields.client) progressionTimeLine(),
           if (widget.userRole == Fields.chef ||
               widget.userRole == Fields.admin ||
               widget.userRole == Fields.developer)
@@ -142,7 +169,36 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
     }
   }
 
-  Widget progressStatus() {
+  Widget progressionTimeLine() {
+    oneOrderDetails.snapshots(includeMetadataChanges: true);
+    return Container(
+      decoration: BoxDecoration(color: Color(Styling.primaryBackgroundColor)),
+      child: StreamBuilder<DocumentSnapshot>(
+          stream: oneOrderDetails.snapshots(),
+          builder:
+              (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+            if (snapshot.hasError) {
+              return Center(
+                child: Text(""),
+              );
+            }
+
+            if (snapshot.data == null)
+              return Center(
+                child: Text(""),
+              );
+
+            Order order = Order();
+            order.buildObjectAsync(snapshot);
+
+            return Expanded(
+              child: progressStatus(order),
+            );
+          }),
+    );
+  }
+
+  Widget progressStatus(Order order) {
     return Timeline(
       scrollDirection: Axis.horizontal,
       children: [
@@ -324,46 +380,45 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 new Radio(
-                  value: 0,
-                  groupValue: ,
+                  value: 1,
+                  groupValue: widget.clientOrder.status,
                   onChanged: handleStatusChange,
                 ),
                 new Text(
                   I18n.of(context).pendingOrder,
-                  style: new TextStyle(
-                      fontSize: SizeConfig.safeBlockHorizontal * 3),
+                  style: new TextStyle(fontSize: SizeConfig.diagonal * 1.5),
                 ),
                 new Radio(
-                  value: 1,
-                  groupValue: statusCode(widget.clientOrder),
+                  value: 2,
+                  groupValue: widget.clientOrder.status,
                   onChanged: handleStatusChange,
                 ),
                 new Text(
                   I18n.of(context).confirmedOrder,
                   style: new TextStyle(
-                    fontSize: SizeConfig.safeBlockHorizontal * 3,
+                    fontSize: SizeConfig.diagonal * 1.5,
                   ),
                 ),
                 new Radio(
-                  value: 2,
-                  groupValue: statusCode(widget.clientOrder),
+                  value: 3,
+                  groupValue: widget.clientOrder.status,
                   onChanged: handleStatusChange,
                 ),
                 new Text(
                   I18n.of(context).orderPreparation,
                   style: new TextStyle(
-                    fontSize: SizeConfig.safeBlockHorizontal * 3,
+                    fontSize: SizeConfig.diagonal * 1.5,
                   ),
                 ),
                 new Radio(
-                  value: 3,
-                  groupValue: statusCode(widget.clientOrder),
+                  value: 4,
+                  groupValue: widget.clientOrder.status,
                   onChanged: handleStatusChange,
                 ),
                 new Text(
                   I18n.of(context).orderServed,
                   style: new TextStyle(
-                    fontSize: SizeConfig.safeBlockHorizontal * 3,
+                    fontSize: SizeConfig.diagonal * 1.5,
                   ),
                 ),
               ],
@@ -376,7 +431,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
 
   void handleStatusChange(int value) {
     setState(() {
-      statusText(widget.clientOrder, value);
+      widget.clientOrder.status = value;
     });
     widget.db.updateStatus(widget.orderId, widget.clientOrder, value);
   }

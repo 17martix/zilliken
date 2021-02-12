@@ -82,6 +82,7 @@ class _OrdersPageState extends State<OrdersPage> {
                   userId: widget.userId,
                   userRole: widget.userRole,
                   orderId: order.id,
+                   clientOrder: order,
                 ),
               ),
             );
@@ -117,7 +118,7 @@ class _OrdersPageState extends State<OrdersPage> {
               ),
             ],
           ),
-<
+
           subtitle: Padding(
             padding: EdgeInsets.only(top: SizeConfig.diagonal * 1),
             child: Row(

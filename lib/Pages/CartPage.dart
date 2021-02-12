@@ -69,6 +69,16 @@ class _CartPageState extends State<CartPage> {
       });
     });
 
+     FirebaseFirestore.instance
+        .collection(Fields.configuration)
+        .doc(Fields.settings)
+        .snapshots()
+        .listen((DocumentSnapshot documentSnapshot) {
+      setState(() {
+        enabled = documentSnapshot.data()[Fields.enabled];
+      });
+    });
+
     ConnectionStatus connectionStatus = ConnectionStatus.getInstance();
     _connectionChangeStream =
         connectionStatus.connectionChange.listen(connectionChanged);
@@ -542,6 +552,7 @@ class _CartPageState extends State<CartPage> {
                 userId: widget.userId,
                 userRole: widget.userRole,
                 orderId: order.id,
+                 clientOrder: order,
               ),
             ),
           );
