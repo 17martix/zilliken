@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zilliken/Components/ZAppBar.dart';
 import 'package:zilliken/Components/ZRaisedButton.dart';
 import 'package:zilliken/Helpers/SizeConfig.dart';
@@ -37,7 +38,8 @@ class SingleOrderPage extends StatefulWidget {
 class _SingleOrderPageState extends State<SingleOrderPage> {
   var oneOrderDetails;
   var orderItems;
-  CollectionReference users = FirebaseFirestore.instance.collection('order');
+  CollectionReference users =
+      FirebaseFirestore.instance.collection(Fields.order);
 
   @override
   void initState() {
@@ -56,10 +58,8 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
     SizeConfig().init(context);
     return Scaffold(
       appBar: buildAppBar(context),
-      body: progressStatus(),
-      /*ListView(
+      body: ListView(
         children: [
-          progressStatus(),
           orderItemStream(),
           informationStream(),
           Padding(
@@ -78,7 +78,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
             ),
           )
         ],
-      ),*/
+      ),
     );
   }
 
@@ -88,43 +88,148 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
       children: [
         TimelineTile(
           oppositeContents: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text('opposite\ncontents'),
-          ),
-          contents: Card(
-            child: Container(
-              padding: EdgeInsets.all(8.0),
-              child: Text('contents'),
+            padding: EdgeInsets.all(SizeConfig.diagonal * 1),
+            child: Icon(
+              Icons.access_alarm,
+              size: SizeConfig.diagonal * 4,
+              color: Color(Styling.primaryColor),
             ),
           ),
+          contents: Container(
+            padding: EdgeInsets.all(SizeConfig.diagonal * 1),
+            child: Text(I18n.of(context).pending),
+          ),
+          direction: Axis.horizontal,
           node: TimelineNode(
-            indicator: DotIndicator(),
+            direction: Axis.horizontal,
+            indicator: DotIndicator(
+              color: Color(Styling.primaryColor),
+              size: SizeConfig.diagonal * 3,
+              child: Icon(
+                Icons.check,
+                color: Color(Styling.accentColor),
+                size: SizeConfig.diagonal * 2,
+              ),
+            ),
             startConnector: null,
             endConnector: SizedBox(
-              width: SizeConfig.diagonal * 5,
-              child: SolidLineConnector(),
+              width: SizeConfig.diagonal * 4,
+              child: SolidLineConnector(
+                color: Color(Styling.primaryColor),
+              ),
             ),
           ),
         ),
         TimelineTile(
           oppositeContents: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text('opposite\ncontents'),
-          ),
-          contents: Card(
-            child: Container(
-              padding: EdgeInsets.all(8.0),
-              child: Text('contents'),
+            padding: EdgeInsets.all(SizeConfig.diagonal * 1),
+            child: Icon(
+              Icons.thumb_up,
+              size: SizeConfig.diagonal * 4,
+              color: Color(Styling.primaryColor),
             ),
           ),
+          contents: Container(
+            padding: EdgeInsets.all(SizeConfig.diagonal * 1),
+            child: Text(I18n.of(context).confirmed),
+          ),
+          direction: Axis.horizontal,
           node: TimelineNode(
-            indicator: DotIndicator(),
-            startConnector: SizedBox(
-                width: SizeConfig.diagonal * 5, child: SolidLineConnector()),
-            endConnector: SizedBox(
-              width: SizeConfig.diagonal * 2,
-              child: SolidLineConnector(),
+            direction: Axis.horizontal,
+            indicator: DotIndicator(
+              color: Color(Styling.primaryColor),
+              size: SizeConfig.diagonal * 3,
+              child: Icon(
+                Icons.check,
+                color: Color(Styling.accentColor),
+                size: SizeConfig.diagonal * 2,
+              ),
             ),
+            startConnector: SizedBox(
+              width: SizeConfig.diagonal * 4,
+              child: SolidLineConnector(
+                color: Color(Styling.primaryColor),
+              ),
+            ),
+            endConnector: SizedBox(
+              width: SizeConfig.diagonal * 4,
+              child: SolidLineConnector(
+                color: Color(Styling.primaryColor),
+              ),
+            ),
+          ),
+        ),
+        TimelineTile(
+          oppositeContents: Padding(
+            padding: EdgeInsets.all(SizeConfig.diagonal * 1),
+            child: Icon(
+              Icons.kitchen,
+              size: SizeConfig.diagonal * 4,
+              color: Color(Styling.primaryColor),
+            ),
+          ),
+          contents: Container(
+            padding: EdgeInsets.all(SizeConfig.diagonal * 1),
+            child: Text(I18n.of(context).preparing),
+          ),
+          direction: Axis.horizontal,
+          node: TimelineNode(
+            direction: Axis.horizontal,
+            indicator: DotIndicator(
+              color: Color(Styling.primaryColor),
+              size: SizeConfig.diagonal * 3,
+              child: Icon(
+                Icons.check,
+                color: Color(Styling.accentColor),
+                size: SizeConfig.diagonal * 2,
+              ),
+            ),
+            startConnector: SizedBox(
+              width: SizeConfig.diagonal * 4,
+              child: SolidLineConnector(
+                color: Color(Styling.primaryColor),
+              ),
+            ),
+            endConnector: SizedBox(
+              width: SizeConfig.diagonal * 4,
+              child: SolidLineConnector(
+                color: Color(Styling.primaryColor),
+              ),
+            ),
+          ),
+        ),
+        TimelineTile(
+          oppositeContents: Padding(
+            padding: EdgeInsets.all(SizeConfig.diagonal * 1),
+            child: Icon(
+              Icons.restaurant_menu,
+              size: SizeConfig.diagonal * 4,
+              color: Color(Styling.primaryColor),
+            ),
+          ),
+          contents: Container(
+            padding: EdgeInsets.all(SizeConfig.diagonal * 1),
+            child: Text(I18n.of(context).served),
+          ),
+          direction: Axis.horizontal,
+          node: TimelineNode(
+            direction: Axis.horizontal,
+            indicator: DotIndicator(
+              color: Color(Styling.primaryColor),
+              size: SizeConfig.diagonal * 3,
+              child: Icon(
+                Icons.check,
+                color: Color(Styling.accentColor),
+                size: SizeConfig.diagonal * 2,
+              ),
+            ),
+            startConnector: SizedBox(
+              width: SizeConfig.diagonal * 4,
+              child: SolidLineConnector(
+                color: Color(Styling.primaryColor),
+              ),
+            ),
+            endConnector: null,
           ),
         ),
       ],

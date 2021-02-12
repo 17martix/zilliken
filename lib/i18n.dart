@@ -79,6 +79,14 @@ class I18n {
 
   String get orderDeleted => _getText("orderDeleted");
 
+  String get pending => _getText("pending");
+
+  String get confirmed => _getText("confirmed");
+
+  String get preparing => _getText("preparing");
+
+  String get served => _getText("served");
+
   static Map<String, String> _localizedValues;
 
   static Map<String, String> _enValues = {
@@ -118,6 +126,10 @@ class I18n {
     "requit": "Required",
     "cancelOrder": "Cancel Order",
     "orderDeleted": "Order Deleted",
+    "pending": "Pending",
+    "confirmed": "Confirmed",
+    "preparing": "Preparing",
+    "served": "Served",
   };
 
   static Map<String, String> _frValues = {
@@ -157,6 +169,10 @@ class I18n {
     "requit": "Requis",
     "cancelOrder": "Annuler Commande",
     "orderDeleted": "Commande Annulé",
+    "pending": "En Attente",
+    "confirmed": "Confirmé",
+    "preparing": "En Préparation",
+    "served": "Servie",
   };
 
   static Map<String, Map<String, String>> _allValues = {

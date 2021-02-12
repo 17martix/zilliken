@@ -35,3 +35,7 @@ fone,Phone number,Numero de telephone
 requit,Required,Requis
 cancelOrder,Cancel Order,Annuler Commande
 orderDeleted,Order Deleted,Commande Annulé
+pending,Pending,En Attente
+confirmed,Confirmed,Confirmé
+preparing,Preparing,En Préparation
+served,Served,Servie
