@@ -34,6 +34,14 @@ gtotal,Grand Total,Grand total
 addr,Address,Adresse
 fone,Phone number,Numero de telephone
 requit,Required,Requis
+cancelOrder,Cancel Order,Annuler Commande
+orderDeleted,Order Deleted,Commande Annulé
+pending,Pending,En Attente
+confirmed,Confirmed,Confirmé
+preparing,Preparing,En Préparation
+served,Served,Servie
+number,Number,Nombre
+updateStatus,Mettre à Jour Le Statut de la Commande,Update The Status Of The Order
 vOrder,View My Order,Voir Ma Commande
 addWhat,What Do You Want to Add?,Que Voulez-vous Ajouter?
 category,Category,Catégorie

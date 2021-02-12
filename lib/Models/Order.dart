@@ -14,7 +14,7 @@ class Order {
   var grandTotal;
   int orderDate;
   int confirmedDate;
-  int prepationDate;
+  int preparationDate;
   int servedDate;
   int status;
   String userId;
@@ -33,7 +33,7 @@ class Order {
     this.orderDate,
     this.status,
     this.confirmedDate,
-    this.prepationDate,
+    this.preparationDate,
     this.servedDate,
     this.userId,
     this.userRole,
@@ -51,7 +51,7 @@ class Order {
     orderDate = document.data()[Fields.orderDate];
     status = document.data()[Fields.status];
     confirmedDate = document.data()[Fields.confirmedDate];
-    prepationDate = document.data()[Fields.prepationDate];
+    preparationDate = document.data()[Fields.preparationDate];
     servedDate = document.data()[Fields.servedDate];
     userId = document.data()[Fields.userId];
     userRole = document.data()[Fields.userRole];
@@ -64,10 +64,11 @@ class Order {
     instructions = document.data[Fields.instructions];
     orderLocation = document.data[Fields.orderLocation];
     grandTotal = document.data[Fields.grandTotal];
+    tableAdress = document.data[Fields.tableAdress];
     orderDate = document.data[Fields.orderDate];
     status = document.data[Fields.status];
     confirmedDate = document.data[Fields.confirmedDate];
-    prepationDate = document.data[Fields.prepationDate];
+    preparationDate = document.data[Fields.preparationDate];
     servedDate = document.data[Fields.servedDate];
     userId = document.data[Fields.userId];
     userRole = document.data[Fields.userRole];

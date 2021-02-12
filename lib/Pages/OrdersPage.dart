@@ -117,6 +117,7 @@ class _OrdersPageState extends State<OrdersPage> {
               ),
             ],
           ),
+<
           subtitle: Padding(
             padding: EdgeInsets.only(top: SizeConfig.diagonal * 1),
             child: Row(
@@ -144,6 +145,7 @@ class _OrdersPageState extends State<OrdersPage> {
                 ),
               ],
             ),
+
           ),
         ),
       ),
@@ -167,10 +169,12 @@ class _OrdersPageState extends State<OrdersPage> {
     return StreamBuilder<QuerySnapshot>(
       stream: commandes.snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+
         if (snapshot.data == null)
           return Center(
             child: Text(""),
           );
+
 
         return new ListView(
           children: snapshot.data.docs.map((DocumentSnapshot document) {

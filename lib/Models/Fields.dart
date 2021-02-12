@@ -22,7 +22,7 @@ class Fields {
   static final String status = 'status';
   static final String orderDate = 'orderDate';
   static final String confirmedDate = 'confirmedDate';
-  static final String prepationDate = 'prepationDate';
+  static final String preparationDate = 'preparationDate';
   static final String servedDate = 'servedDate';
   static final String userId = 'userId';
   static final String userRole = 'userRole';
@@ -44,7 +44,6 @@ class Fields {
   static final int confirmed = 2;
   static final int preparation = 3;
   static final int served = 4;
-
 
   static final String tableAdress = 'tableAdress';
   static final String phoneNumber = 'phoneNumber';
