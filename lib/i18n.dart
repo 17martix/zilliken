@@ -87,6 +87,10 @@ class I18n {
 
   String get served => _getText("served");
 
+  String get number => _getText("number");
+
+  String get updateStatus => _getText("updateStatus");
+
   static Map<String, String> _localizedValues;
 
   static Map<String, String> _enValues = {
@@ -130,6 +134,8 @@ class I18n {
     "confirmed": "Confirmed",
     "preparing": "Preparing",
     "served": "Served",
+    "number": "Number",
+    "updateStatus": "Mettre à Jour Le Statut de la Commande",
   };
 
   static Map<String, String> _frValues = {
@@ -173,6 +179,8 @@ class I18n {
     "confirmed": "Confirmé",
     "preparing": "En Préparation",
     "served": "Servie",
+    "number": "Nombre",
+    "updateStatus": "Update The Status Of The Order",
   };
 
   static Map<String, Map<String, String>> _allValues = {

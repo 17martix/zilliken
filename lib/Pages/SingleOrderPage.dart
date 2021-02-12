@@ -1,8 +1,10 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zilliken/Components/ZAppBar.dart';
 import 'package:zilliken/Components/ZRaisedButton.dart';
+import 'package:zilliken/Helpers/ConnectionStatus.dart';
 import 'package:zilliken/Helpers/SizeConfig.dart';
 import 'package:zilliken/Helpers/Styling.dart';
 import 'package:zilliken/Helpers/Utils.dart';
@@ -14,6 +16,8 @@ import 'package:zilliken/Services/Database.dart';
 import 'package:zilliken/i18n.dart';
 import 'package:intl/intl.dart';
 import 'package:timelines/timelines.dart';
+
+import 'DashboardPage.dart';
 
 class SingleOrderPage extends StatefulWidget {
   final Authentication auth;
@@ -38,8 +42,12 @@ class SingleOrderPage extends StatefulWidget {
 class _SingleOrderPageState extends State<SingleOrderPage> {
   var oneOrderDetails;
   var orderItems;
-  CollectionReference users =
-      FirebaseFirestore.instance.collection(Fields.order);
+  bool isDataBeingDeleted = false;
+  int _status = Fields.confirmed;
+  StreamSubscription _connectionChangeStream;
+  bool isOffline = false;
+
+  int _orderStatus = 0;
 
   @override
   void initState() {
@@ -51,15 +59,65 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
         .collection(Fields.order)
         .doc(widget.orderId)
         .collection(Fields.items);
+
+    FirebaseFirestore.instance
+        .collection(Fields.order)
+        .doc(widget.orderId)
+        .snapshots()
+        .listen((DocumentSnapshot documentSnapshot) {
+      setState(() {
+        _status = documentSnapshot.data()[Fields.status];
+      });
+    });
+
+    ConnectionStatus connectionStatus = ConnectionStatus.getInstance();
+    _connectionChangeStream =
+        connectionStatus.connectionChange.listen(connectionChanged);
+  }
+
+  void connectionChanged(dynamic hasConnection) {
+    setState(() {
+      isOffline = !hasConnection;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
-    return Scaffold(
-      appBar: buildAppBar(context),
-      body: ListView(
+    return WillPopScope(
+      onWillPop: () {
+        return Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DashboardPage(
+              db: widget.db,
+              auth: widget.auth,
+              userId: widget.userId,
+              userRole: widget.userRole,
+            ),
+          ),
+        );
+      },
+      child: Scaffold(
+        appBar: buildAppBar(context),
+        body: body(),
+      ),
+    );
+  }
+
+  Widget body() {
+    if (isDataBeingDeleted) {
+      return Center(
+        child: Text(""),
+      );
+    } else {
+      return ListView(
         children: [
+          if (widget.userRole == Fields.client) progressStatus(),
+          if (widget.userRole == Fields.chef ||
+              widget.userRole == Fields.admin ||
+              widget.userRole == Fields.developer)
+            statusUpdate(),
           orderItemStream(),
           informationStream(),
           Padding(
@@ -78,8 +136,8 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
             ),
           )
         ],
-      ),
-    );
+      );
+    }
   }
 
   Widget progressStatus() {
@@ -236,16 +294,106 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
     );
   }
 
+  Widget statusUpdate() {
+    return Container(
+      padding: EdgeInsets.all(SizeConfig.diagonal * 1),
+      child: new Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            margin: EdgeInsets.all(SizeConfig.diagonal * 1),
+            child: Text(
+              I18n.of(context).updateStatus,
+              style: new TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: SizeConfig.diagonal * 2,
+              ),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(
+                horizontal: SizeConfig.diagonal * 1,
+                vertical: SizeConfig.diagonal * 0.5),
+            child: Divider(height: 2.0, color: Colors.black),
+          ),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: new Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                new Radio(
+                  value: 0,
+                  groupValue: ,
+                  onChanged: handleStatusChange,
+                ),
+                new Text(
+                  I18n.of(context).pendingOrder,
+                  style: new TextStyle(
+                      fontSize: SizeConfig.safeBlockHorizontal * 3),
+                ),
+                new Radio(
+                  value: 1,
+                  groupValue: statusCode(widget.clientOrder),
+                  onChanged: handleStatusChange,
+                ),
+                new Text(
+                  I18n.of(context).confirmedOrder,
+                  style: new TextStyle(
+                    fontSize: SizeConfig.safeBlockHorizontal * 3,
+                  ),
+                ),
+                new Radio(
+                  value: 2,
+                  groupValue: statusCode(widget.clientOrder),
+                  onChanged: handleStatusChange,
+                ),
+                new Text(
+                  I18n.of(context).orderPreparation,
+                  style: new TextStyle(
+                    fontSize: SizeConfig.safeBlockHorizontal * 3,
+                  ),
+                ),
+                new Radio(
+                  value: 3,
+                  groupValue: statusCode(widget.clientOrder),
+                  onChanged: handleStatusChange,
+                ),
+                new Text(
+                  I18n.of(context).orderServed,
+                  style: new TextStyle(
+                    fontSize: SizeConfig.safeBlockHorizontal * 3,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void handleStatusChange(int value) {
+    setState(() {
+      statusText(widget.clientOrder, value);
+    });
+    widget.db.updateStatus(widget.orderId, widget.clientOrder, value);
+  }
+
   Widget orderItemStream() {
     return StreamBuilder<QuerySnapshot>(
       stream: orderItems.snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        if (snapshot.data == null)
+          return Center(
+            child: Text(""),
+          );
+
         return Padding(
           padding: EdgeInsets.only(
               left: SizeConfig.diagonal * 0.5,
               right: SizeConfig.diagonal * 0.5),
           child: Card(
-            elevation: 15,
+            elevation: 16,
             child: Column(
               children: [
                 Padding(
@@ -272,6 +420,25 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                     color: Color(Styling.primaryColor),
                     height: 1,
                     width: double.infinity,
+                  ),
+                ),
+                ListTile(
+                  onTap: () {},
+                  title: Text(
+                    I18n.of(context).items,
+                    style: TextStyle(
+                      color: Color(Styling.textColor),
+                      fontWeight: FontWeight.bold,
+                      fontSize: SizeConfig.diagonal * 1.5,
+                    ),
+                  ),
+                  trailing: Text(
+                    I18n.of(context).number,
+                    style: TextStyle(
+                      color: Color(Styling.textColor),
+                      fontWeight: FontWeight.bold,
+                      fontSize: SizeConfig.diagonal * 1.5,
+                    ),
                   ),
                 ),
                 Column(

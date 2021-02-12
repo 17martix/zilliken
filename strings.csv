@@ -39,3 +39,5 @@ pending,Pending,En Attente
 confirmed,Confirmed,Confirmé
 preparing,Preparing,En Préparation
 served,Served,Servie
+number,Number,Nombre
+updateStatus,Mettre à Jour Le Statut de la Commande,Update The Status Of The Order
