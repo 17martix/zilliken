@@ -2,6 +2,8 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:zilliken/Helpers/SizeConfig.dart';
 import 'package:zilliken/Helpers/Utils.dart';
 import 'package:zilliken/Models/Fields.dart';
 import 'package:zilliken/Models/Order.dart';
@@ -17,7 +19,7 @@ class OrdersPage extends StatefulWidget {
   final Database db;
   final String userId;
   final String userRole;
-  final DateFormat formatter = DateFormat('dd/MM/yyyy HH:mm');
+  final DateFormat formatter = DateFormat('dd/MM/yy HH:mm');
 
   OrdersPage({
     this.auth,
@@ -56,25 +58,16 @@ class _OrdersPageState extends State<OrdersPage> {
   @override
   Widget build(BuildContext context) {
     log("mon id est ${widget.userId}");
+    SizeConfig().init(context);
     return Scaffold(
       body: ordersList(),
     );
   }
 
-  /*Widget listView() {
-    return ListView(
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 8, right: 8),
-          child: item(),
-        )
-      ],
-    );
-  }*/
-
   Widget item(Order order) {
     return Padding(
-      padding: const EdgeInsets.only(left: 5, right: 5),
+      padding: EdgeInsets.only(
+          left: SizeConfig.diagonal * 1, right: SizeConfig.diagonal * 1),
       child: Card(
         elevation: 25,
         color: Colors.white70,
@@ -93,29 +86,66 @@ class _OrdersPageState extends State<OrdersPage> {
               ),
             );
           },
-          leading: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.restaurant_menu),
-            ],
+          leading: Icon(
+            order.orderLocation == 0
+                ? Icons.restaurant_menu
+                : FontAwesomeIcons.shoppingBag,
+            size: SizeConfig.diagonal * 3,
           ),
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                '${orderStatus(context, order)}',
-                style: TextStyle(color: colorPicker(order.status)),
+              Expanded(
+                flex: 1,
+                child: Text(
+                  '${orderStatus(context, order)}',
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.left,
+                  style: TextStyle(
+                      color: colorPicker(order.status),
+                      fontSize: SizeConfig.diagonal * 1.5),
+                ),
               ),
-              Text('${I18n.of(context).total} : ${order.grandTotal}'),
+              Expanded(
+                flex: 1,
+                child: Text(
+                  '${I18n.of(context).total} : ${order.grandTotal} ${I18n.of(context).fbu}',
+                  textAlign: TextAlign.right,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontSize: SizeConfig.diagonal * 1.5),
+                ),
+              ),
             ],
           ),
-          subtitle: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('${I18n.of(context).tableNumber} : ${order.tableAdress}'),
-              Text(
-                  '${I18n.of(context).orderDate} : ${widget.formatter.format(DateTime.fromMillisecondsSinceEpoch(order.orderDate))}'),
-            ],
+<
+          subtitle: Padding(
+            padding: EdgeInsets.only(top: SizeConfig.diagonal * 1),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  flex: 1,
+                  child: Text(
+                    order.orderLocation == 0
+                        ? '${I18n.of(context).tableNumber} : ${order.tableAdress}'
+                        : '${I18n.of(context).address} : ${order.tableAdress}',
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.left,
+                    style: TextStyle(fontSize: SizeConfig.diagonal * 1.5),
+                  ),
+                ),
+                Expanded(
+                  flex: 1,
+                  child: Text(
+                    '${widget.formatter.format(DateTime.fromMillisecondsSinceEpoch(order.orderDate))}',
+                    textAlign: TextAlign.right,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontSize: SizeConfig.diagonal * 1.5),
+                  ),
+                ),
+              ],
+            ),
+
           ),
         ),
       ),
@@ -139,6 +169,13 @@ class _OrdersPageState extends State<OrdersPage> {
     return StreamBuilder<QuerySnapshot>(
       stream: commandes.snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+
+        if (snapshot.data == null)
+          return Center(
+            child: Text(""),
+          );
+
+
         return new ListView(
           children: snapshot.data.docs.map((DocumentSnapshot document) {
             Order order = Order();

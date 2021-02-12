@@ -31,7 +31,7 @@ class Authentication {
     return user.uid;
   }
 
-  Future<User> getCurrentUser() async {
+  User getCurrentUser() {
     User user = _firebaseAuth.currentUser;
     return user;
   }

@@ -83,6 +83,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
 
   @override
   Widget build(BuildContext context) {
+
     SizeConfig().init(context);
     return WillPopScope(
       onWillPop: () {
@@ -112,6 +113,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
       );
     } else {
       return ListView(
+
         children: [
           if (widget.userRole == Fields.client) progressStatus(),
           if (widget.userRole == Fields.chef ||

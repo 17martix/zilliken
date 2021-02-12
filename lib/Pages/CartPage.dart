@@ -1,10 +1,17 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:zilliken/Components/ZAppBar.dart';
+import 'package:zilliken/Components/ZCircularProgress.dart';
 import 'package:zilliken/Components/ZRaisedButton.dart';
 import 'package:zilliken/Components/ZTextField.dart';
+import 'package:zilliken/Helpers/ConnectionStatus.dart';
+import 'package:zilliken/Helpers/NumericStepButton.dart';
+import 'package:zilliken/Helpers/SizeConfig.dart';
 import 'package:zilliken/Helpers/Styling.dart';
 import 'package:zilliken/Helpers/Utils.dart';
+import 'package:zilliken/Models/Fields.dart';
 import 'package:zilliken/Models/MenuItem.dart';
 import 'package:zilliken/Models/Order.dart';
 import 'package:zilliken/Models/OrderItem.dart';
@@ -12,34 +19,10 @@ import 'package:zilliken/Pages/SingleOrderPage.dart';
 import 'package:zilliken/Services/Authentication.dart';
 import 'package:zilliken/Services/Database.dart';
 import '../i18n.dart';
+import 'DisabledPage.dart';
 
 class CartPage extends StatefulWidget {
-  final List<OrderItem> clientOrder = [
-    OrderItem(
-      count: 2,
-      menuItem: MenuItem(
-          availability: 1,
-          id: "ffffaf",
-          name: "The",
-          category: "Boissons",
-          price: 2000,
-          rank: 2,
-          global: 2,
-          createdAt: 2424524),
-    ),
-    OrderItem(
-      count: 2,
-      menuItem: MenuItem(
-          availability: 1,
-          id: "ffffaf",
-          name: "Cafe",
-          category: "Boissons",
-          price: 4000,
-          rank: 3,
-          global: 3,
-          createdAt: 42353),
-    ),
-  ];
+  final List<OrderItem> clientOrder;
   final String userId;
   final String userRole;
   final Database db;
@@ -47,7 +30,7 @@ class CartPage extends StatefulWidget {
 
   CartPage({
     this.auth,
-    //this.clientOrder,
+    this.clientOrder,
     this.db,
     this.userId,
     this.userRole,
@@ -59,54 +42,94 @@ class CartPage extends StatefulWidget {
 
 class _CartPageState extends State<CartPage> {
   int restaurantOrRoomOrder = 0;
-  int abc = 1;
-
   TextEditingController choiceController = TextEditingController();
-
   int tax = 0;
 
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
-
   String tableAdress;
-
   String phone;
-
   String instruction;
+  List<OrderItem> clientOrder;
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  StreamSubscription _connectionChangeStream;
+  bool isOffline = false;
+  bool _isLoading = false;
+  bool _isTaxLoaded = false;
+  int enabled = 1;
 
   @override
   void initState() {
     super.initState();
+    clientOrder = widget.clientOrder;
     widget.db.getTax().then((value) {
       setState(() {
         tax = value;
+        _isTaxLoaded = true;
       });
+    });
+
+    ConnectionStatus connectionStatus = ConnectionStatus.getInstance();
+    _connectionChangeStream =
+        connectionStatus.connectionChange.listen(connectionChanged);
+
+    FirebaseFirestore.instance
+        .collection(Fields.configuration)
+        .doc(Fields.settings)
+        .snapshots()
+        .listen((DocumentSnapshot documentSnapshot) {
+      setState(() {
+        enabled = documentSnapshot.data()[Fields.enabled];
+      });
+    });
+  }
+
+  void connectionChanged(dynamic hasConnection) {
+    setState(() {
+      isOffline = !hasConnection;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: buildAppBar(context),
-      //body: orderlist(),
+    SizeConfig().init(context);
+    return enabled == 0
+        ? DisabledPage(
+            auth: widget.auth,
+            db: widget.db,
+            userId: widget.userId,
+            userRole: widget.userRole,
+          )
+        : Scaffold(
+            key: _scaffoldKey,
+            appBar: buildAppBar(context, widget.auth, true, false, null, null),
+            body: Stack(
+              children: [
+                body(),
+                ZCircularProgress(_isLoading),
+              ],
+            ),
+          );
+  }
 
-      body: SingleChildScrollView(
-        scrollDirection: Axis.vertical,
-        child: Column(
-          children: [
-            orderItems(),
-            order(),
-            bill(),
-          ],
-        ),
+  Widget body() {
+    return SingleChildScrollView(
+      scrollDirection: Axis.vertical,
+      child: Column(
+        children: [
+          orderItems(),
+          order(),
+          bill(),
+        ],
       ),
     );
   }
 
   Widget order() {
     return Card(
-      elevation: 10,
+      elevation: 16,
       child: Padding(
-        padding: EdgeInsets.all(8),
+        padding: EdgeInsets.all(SizeConfig.diagonal * 1),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -123,7 +146,7 @@ class _CartPageState extends State<CartPage> {
       mainAxisSize: MainAxisSize.min,
       children: [
         Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: EdgeInsets.all(SizeConfig.diagonal * 1),
           child: Text(
             I18n.of(context).orders,
             textAlign: TextAlign.center,
@@ -139,19 +162,111 @@ class _CartPageState extends State<CartPage> {
         ),
         ListView.builder(
           shrinkWrap: true,
-          itemCount: widget.clientOrder.length,
+          itemCount: clientOrder.length,
           itemBuilder: (context, position) {
-            return ListTile(
-              leading: Icon(
-                Icons.restaurant_menu,
-                color: Color(Styling.iconColor),
-              ),
-              title: Text(widget.clientOrder[position].menuItem.name),
-              subtitle: Text("${widget.clientOrder[position].menuItem.price}"),
-            );
+            return item(clientOrder[0].menuItem);
           },
         ),
       ],
+    );
+  }
+
+  Widget item(MenuItem menu) {
+    return Card(
+      elevation: 25,
+      color: Colors.white70,
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: SizeConfig.diagonal * 1.8,
+          vertical: SizeConfig.diagonal * 1.8,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Container(
+              padding: EdgeInsets.only(left: SizeConfig.diagonal * 1),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    menu.name,
+                    textAlign: TextAlign.left,
+                    style: TextStyle(
+                      color: Color(Styling.textColor),
+                      fontWeight: FontWeight.bold,
+                      fontSize: SizeConfig.diagonal * 1.5,
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: SizeConfig.diagonal * 1),
+                    child: Text(
+                      "${menu.price} ${I18n.of(context).fbu}",
+                      textAlign: TextAlign.left,
+                      style: TextStyle(
+                        color: Color(Styling.textColor),
+                        fontWeight: FontWeight.normal,
+                        fontSize: SizeConfig.diagonal * 1.5,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            isAlreadyOnTheOrder(clientOrder, menu.id)
+                ? NumericStepButton(
+                    counter: findOrderItem(clientOrder, menu.id).count,
+                    maxValue: 20,
+                    onChanged: (value) {
+                      OrderItem orderItem = findOrderItem(clientOrder, menu.id);
+                      if (value == 0) {
+                        setState(() {
+                          clientOrder.remove(orderItem);
+                        });
+                        //order.remove(orderItem);
+                      } else {
+                        setState(() {
+                          orderItem.count = value;
+                        });
+                        //orderItem.count = value;
+                      }
+                    },
+                  )
+                : InkWell(
+                    onTap: () {
+                      setState(() {
+                        clientOrder.add(OrderItem(
+                          menuItem: menu,
+                          count: 1,
+                        ));
+                      });
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Color(Styling.accentColor),
+                        ),
+                      ),
+                      margin: EdgeInsets.all(8),
+                      padding: EdgeInsets.all(8),
+                      child: Row(
+                        children: [
+                          Text(
+                            I18n.of(context).addItem,
+                            style:
+                                TextStyle(fontSize: SizeConfig.diagonal * 1.5),
+                          ),
+                          Icon(
+                            Icons.add,
+                            size: SizeConfig.diagonal * 1.5,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -160,13 +275,13 @@ class _CartPageState extends State<CartPage> {
       mainAxisSize: MainAxisSize.min,
       children: [
         Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: EdgeInsets.all(SizeConfig.diagonal * 1),
           child: Text(
             I18n.of(context).orderKind,
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: Color(Styling.iconColor),
-            ),
+                color: Color(Styling.iconColor),
+                fontSize: SizeConfig.diagonal * 1.5),
           ),
         ),
         Container(
@@ -248,7 +363,7 @@ class _CartPageState extends State<CartPage> {
                   ),
                 ),
               Padding(
-                padding: EdgeInsets.all(8.0),
+                padding: EdgeInsets.all(SizeConfig.diagonal * 1),
                 child: ZTextField(
                   onSaved: (newValue) => instruction = newValue,
                   label: I18n.of(context).instruction,
@@ -267,94 +382,103 @@ class _CartPageState extends State<CartPage> {
   }
 
   Widget bill() {
-    return Card(
-      elevation: 20,
-      child: Padding(
-        padding: EdgeInsets.all(8),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(9.0),
-              child: Text(
-                I18n.of(context).bil,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Color(Styling.iconColor),
-                ),
+    return _isTaxLoaded
+        ? Card(
+            elevation: 16,
+            child: Padding(
+              padding: EdgeInsets.all(SizeConfig.diagonal * 1),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.all(SizeConfig.diagonal * 1),
+                    child: Text(
+                      I18n.of(context).bil,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: SizeConfig.diagonal * 1.5,
+                        color: Color(Styling.textColor),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    width: double.infinity,
+                    height: 1,
+                    color: Color(Styling.accentColor),
+                  ),
+                  Column(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.all(SizeConfig.diagonal * 1),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              I18n.of(context).total,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: SizeConfig.diagonal * 1.5,
+                                color:
+                                    Color(Styling.textColor).withOpacity(0.7),
+                              ),
+                            ),
+                            Text(priceItemsTotal(context, clientOrder)),
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.all(SizeConfig.diagonal * 1),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              I18n.of(context).taxCharge,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color:
+                                    Color(Styling.accentColor).withOpacity(0.7),
+                                fontSize: SizeConfig.diagonal * 1.5,
+                              ),
+                            ),
+                            Text(appliedTax(context, clientOrder, tax)),
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.all(SizeConfig.diagonal * 1),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              I18n.of(context).gtotal,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Color(Styling.accentColor),
+                                fontSize: SizeConfig.diagonal * 1.5,
+                              ),
+                            ),
+                            Text(grandTotal(context, clientOrder, tax)),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  ZRaisedButton(
+                    onpressed: sendToFireBase,
+                    color: Color(Styling.accentColor),
+                    textIcon: Text(
+                      I18n.of(context).ordPlace,
+                      style: TextStyle(
+                        color: Color(Styling.primaryBackgroundColor),
+                        fontSize: SizeConfig.diagonal * 1.5,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-            Container(
-              width: double.infinity,
-              height: 1,
-              color: Color(Styling.accentColor),
-            ),
-            Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        I18n.of(context).total,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Color(Styling.accentColor),
-                        ),
-                      ),
-                      Text(priceItemsTotal(context, widget.clientOrder)),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        I18n.of(context).taxCharge,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Color(Styling.accentColor),
-                        ),
-                      ),
-                      Text(appliedTax(context, widget.clientOrder, tax)),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        I18n.of(context).gtotal,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.black,
-                        ),
-                      ),
-                      Text(grandTotal(context, widget.clientOrder, tax)),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            ZRaisedButton(
-              onpressed: sendToFireBase,
-              color: Color(Styling.accentColor),
-              textIcon: Text(
-                I18n.of(context).ordPlace,
-                style: TextStyle(
-                  color: Color(Styling.primaryBackgroundColor),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+          )
+        : ZCircularProgress(true);
   }
 
   bool validate() {
@@ -368,33 +492,73 @@ class _CartPageState extends State<CartPage> {
 
   Future<void> sendToFireBase() async {
     if (validate()) {
-      Order order = Order(
-        clientOrder: widget.clientOrder,
-        orderLocation: restaurantOrRoomOrder,
-        tableAdress: tableAdress,
-        phoneNumber: phone,
-        instructions: instruction,
-        grandTotal: grandTotalNumber(context, widget.clientOrder, tax),
-        orderDate: DateTime.now().millisecondsSinceEpoch,
-        confirmedDate: 0,
-        servedDate: 0,
-        status: 0,
-        userId: widget.userId,
-        userRole: widget.userRole,
-        taxPercentage: tax,
-        total: priceItemsTotalNumber(
-          context,
-          widget.clientOrder,
-        ),
-      );
-      await widget.db.placeOrder(order);
+      setState(() {
+        _isLoading = true;
+      });
 
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => SingleOrderPage(),
-        ),
-      );
+      if (isOffline) {
+        setState(() {
+          _isLoading = false;
+        });
+
+        _scaffoldKey.currentState.showSnackBar(
+          SnackBar(
+            content: Text(I18n.of(context).noInternet),
+          ),
+        );
+      } else {
+        try {
+          Order order = Order(
+            clientOrder: clientOrder,
+            orderLocation: restaurantOrRoomOrder,
+            tableAdress: tableAdress,
+            phoneNumber: phone,
+            instructions: instruction,
+            grandTotal: grandTotalNumber(context, clientOrder, tax),
+            orderDate: DateTime.now().millisecondsSinceEpoch,
+            confirmedDate: 0,
+            servedDate: 0,
+            status: 0,
+            userId: widget.userId,
+            userRole: widget.userRole,
+            taxPercentage: tax,
+            total: priceItemsTotalNumber(
+              context,
+              clientOrder,
+            ),
+          );
+          await widget.db.placeOrder(order);
+
+          setState(() {
+            _isLoading = false;
+          });
+
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => SingleOrderPage(
+                auth: widget.auth,
+                db: widget.db,
+                userId: widget.userId,
+                userRole: widget.userRole,
+                orderId: order.id,
+              ),
+            ),
+          );
+        } on Exception catch (e) {
+          //print('Error: $e');
+          setState(() {
+            _isLoading = false;
+            formKey.currentState.reset();
+          });
+
+          _scaffoldKey.currentState.showSnackBar(
+            SnackBar(
+              content: Text(e.toString()),
+            ),
+          );
+        }
+      }
     }
   }
 }

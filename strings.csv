@@ -12,7 +12,8 @@ ordPlace,Place order,Passer la Commande
 instruction,Do you have instructions?,Avez-vous des instructions?
 restaurantOrder,Restaurant Order,Commande de Restaurant
 total,Total,Total
-tableNumber,N. table,N. table
+tableNumber,Table N.,N. table
+address,Address,Adresse
 orderDate,Date,Date
 item,Item,Article
 items,Items,Articles
@@ -41,3 +42,14 @@ preparing,Preparing,En Préparation
 served,Served,Servie
 number,Number,Nombre
 updateStatus,Mettre à Jour Le Statut de la Commande,Update The Status Of The Order
+vOrder,View My Order,Voir Ma Commande
+addWhat,What Do You Want to Add?,Que Voulez-vous Ajouter?
+category,Category,Catégorie
+addItem,Add,Ajouter
+categoryName,Name of Categoy,Nom de la Categorie
+itemPrice,Price of Item,Prix de l'article
+itemName,Name of Item,Nom de l'article
+noInternet,No Internet Connection,Pas de Connexion Internet
+login,Log In,Se Connecter
+logout,Log Out,Se Deconnecter
+accountDisabled,This App Has Been Disabled,Cette Application a été Désactivé
