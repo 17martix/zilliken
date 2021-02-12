@@ -72,6 +72,11 @@ String appliedTax(context, List<OrderItem> order, int taxPercentage) {
   return "${taxPercentage}% = ${tax} ${I18n.of(context).fbu}";
 }
 
+String appliedTaxFromTotal(context, int total, int taxPercentage) {
+  double tax = (taxPercentage / 100) * total;
+  return "${taxPercentage}% = ${tax} ${I18n.of(context).fbu}";
+}
+
 String orderCardTtle(context, Order order) {
   int orderLength = order.clientOrder.length;
   String text;

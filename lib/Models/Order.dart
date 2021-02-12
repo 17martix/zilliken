@@ -64,6 +64,7 @@ class Order {
     instructions = document.data[Fields.instructions];
     orderLocation = document.data[Fields.orderLocation];
     grandTotal = document.data[Fields.grandTotal];
+    tableAdress = document.data[Fields.tableAdress];
     orderDate = document.data[Fields.orderDate];
     status = document.data[Fields.status];
     confirmedDate = document.data[Fields.confirmedDate];

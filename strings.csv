@@ -33,3 +33,5 @@ gtotal,Grand Total,Grand total
 addr,Address,Adresse
 fone,Phone number,Numero de telephone
 requit,Required,Requis
+cancelOrder,Cancel Order,Annuler Commande
+orderDeleted,Order Deleted,Commande Annulé

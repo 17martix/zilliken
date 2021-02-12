@@ -1,9 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:zilliken/Components/ZAppBar.dart';
+import 'package:zilliken/Components/ZRaisedButton.dart';
 import 'package:zilliken/Helpers/SizeConfig.dart';
 import 'package:zilliken/Helpers/Styling.dart';
+import 'package:zilliken/Helpers/Utils.dart';
 import 'package:zilliken/Models/Fields.dart';
 import 'package:zilliken/Models/Order.dart';
 import 'package:zilliken/Models/OrderItem.dart';
@@ -11,7 +12,7 @@ import 'package:zilliken/Services/Authentication.dart';
 import 'package:zilliken/Services/Database.dart';
 import 'package:zilliken/i18n.dart';
 import 'package:intl/intl.dart';
-import 'package:timeline_tile/timeline_tile.dart';
+import 'package:timelines/timelines.dart';
 
 class SingleOrderPage extends StatefulWidget {
   final Authentication auth;
@@ -36,11 +37,11 @@ class SingleOrderPage extends StatefulWidget {
 class _SingleOrderPageState extends State<SingleOrderPage> {
   var oneOrderDetails;
   var orderItems;
+  CollectionReference users = FirebaseFirestore.instance.collection('order');
 
   @override
   void initState() {
     super.initState();
-
     oneOrderDetails =
         FirebaseFirestore.instance.collection(Fields.order).doc(widget.orderId);
 
@@ -54,39 +55,79 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
   Widget build(BuildContext context) {
     SizeConfig().init(context);
     return Scaffold(
-      backgroundColor: Color(Styling.primaryColor),
       appBar: buildAppBar(context),
-      body: ListView(
+      body: progressStatus(),
+      /*ListView(
         children: [
-          visualStatus(),
+          progressStatus(),
           orderItemStream(),
-          billStream(),
           informationStream(),
+          Padding(
+            padding: EdgeInsets.only(
+                left: SizeConfig.diagonal * 0.5,
+                right: SizeConfig.diagonal * 0.5),
+            child: Card(
+              elevation: 15,
+              child: Column(
+                children: [
+                  billStream(),
+                  billStream2(),
+                  cancelOrder(),
+                ],
+              ),
+            ),
+          )
         ],
-      ),
+      ),*/
     );
   }
 
-  Widget visualStatus() {
-    return Container(
-      child: Column(
-        children: [
-          TimelineTile(
-            alignment: TimelineAlign.center,
-            isFirst: true,
+  Widget progressStatus() {
+    return Timeline(
+      scrollDirection: Axis.horizontal,
+      children: [
+        TimelineTile(
+          oppositeContents: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text('opposite\ncontents'),
           ),
-          TimelineTile(
-            alignment: TimelineAlign.center,
+          contents: Card(
+            child: Container(
+              padding: EdgeInsets.all(8.0),
+              child: Text('contents'),
+            ),
           ),
-          TimelineTile(
-            alignment: TimelineAlign.center,
+          node: TimelineNode(
+            indicator: DotIndicator(),
+            startConnector: null,
+            endConnector: SizedBox(
+              width: SizeConfig.diagonal * 5,
+              child: SolidLineConnector(),
+            ),
           ),
-          TimelineTile(
-            alignment: TimelineAlign.center,
-            isLast: true,
+        ),
+        TimelineTile(
+          oppositeContents: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text('opposite\ncontents'),
           ),
-        ],
-      ),
+          contents: Card(
+            child: Container(
+              padding: EdgeInsets.all(8.0),
+              child: Text('contents'),
+            ),
+          ),
+          node: TimelineNode(
+            indicator: DotIndicator(),
+            startConnector: SizedBox(
+                width: SizeConfig.diagonal * 5, child: SolidLineConnector()),
+            endConnector: SizedBox(
+              width: SizeConfig.diagonal * 2,
+              child: SolidLineConnector(),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -104,11 +145,29 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
               children: [
                 Padding(
                   padding: EdgeInsets.only(
-                    left: SizeConfig.diagonal * 1.5,
-                    right: SizeConfig.diagonal * 1.5,
-                    top: SizeConfig.diagonal * 1.5,
+                      left: SizeConfig.diagonal * 1.5,
+                      right: SizeConfig.diagonal * 1.5,
+                      top: SizeConfig.diagonal * 1.5,
+                      bottom: SizeConfig.diagonal * 1.5),
+                  child: Center(
+                    child: Text(
+                      I18n.of(context).order,
+                      style: TextStyle(
+                          color: Color(Styling.textColor),
+                          fontWeight: FontWeight.bold),
+                    ),
                   ),
-                  child: Center(child: Text(I18n.of(context).order)),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(
+                      left: SizeConfig.diagonal * 2,
+                      right: SizeConfig.diagonal * 2,
+                      bottom: SizeConfig.diagonal * 1.5),
+                  child: Container(
+                    color: Color(Styling.primaryColor),
+                    height: 1,
+                    width: double.infinity,
+                  ),
                 ),
                 Column(
                   mainAxisSize: MainAxisSize.min,
@@ -161,39 +220,42 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
     return StreamBuilder<QuerySnapshot>(
       stream: orderItems.snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        return Padding(
-          padding: EdgeInsets.only(
-              left: SizeConfig.diagonal * 0.5,
-              right: SizeConfig.diagonal * 0.5),
-          child: Card(
-            elevation: 15,
-            child: Column(
-              children: [
-                Padding(
-                  padding: EdgeInsets.only(
-                    bottom: SizeConfig.diagonal * 1.5,
-                    top: SizeConfig.diagonal * 1.5,
-                  ),
-                  child: Center(
-                    child: Text(
-                      I18n.of(context).billDetails,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+        return Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.only(
+                bottom: SizeConfig.diagonal * 1.5,
+                top: SizeConfig.diagonal * 1.5,
+              ),
+              child: Center(
+                child: Text(
+                  I18n.of(context).billDetails,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: snapshot.data.docs.map((DocumentSnapshot document) {
-                    OrderItem orderItem = OrderItem();
-                    orderItem.buildObject(document);
-                    return billElement(orderItem);
-                  }).toList(),
-                ),
-              ],
+              ),
             ),
-          ),
+            Padding(
+              padding: EdgeInsets.only(
+                  left: SizeConfig.diagonal * 2,
+                  right: SizeConfig.diagonal * 2,
+                  bottom: SizeConfig.diagonal * 1.5),
+              child: Container(
+                color: Color(Styling.primaryColor),
+                height: 1,
+                width: double.infinity,
+              ),
+            ),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: snapshot.data.docs.map((DocumentSnapshot document) {
+                OrderItem orderItem = OrderItem();
+                orderItem.buildObject(document);
+                return billElement(orderItem);
+              }).toList(),
+            ),
+          ],
         );
       },
     );
@@ -218,7 +280,79 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                 ),
               ),
               Text(
-                '${orderItem.menuItem.price}',
+                '${orderItem.menuItem.price} Fbu',
+                style: TextStyle(
+                  color: Color(Styling.textColor),
+                ),
+              )
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget billStream2() {
+    return StreamBuilder<DocumentSnapshot>(
+      stream: oneOrderDetails.snapshots(),
+      builder:
+          (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+        Order order = Order();
+        order.buildObjectAsync(snapshot);
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            billElement2(order),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget billElement2(Order order) {
+    return Column(
+      children: [
+        Padding(
+          padding: EdgeInsets.only(
+            left: SizeConfig.diagonal * 1.5,
+            right: SizeConfig.diagonal * 1.5,
+            bottom: SizeConfig.diagonal * 1.5,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                '${I18n.of(context).taxCharge}',
+                style: TextStyle(
+                  color: Color(Styling.textColor),
+                ),
+              ),
+              Text(
+                appliedTaxFromTotal(context, order.total, order.taxPercentage),
+                style: TextStyle(
+                  color: Color(Styling.textColor),
+                ),
+              )
+            ],
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.only(
+            left: SizeConfig.diagonal * 1.5,
+            right: SizeConfig.diagonal * 1.5,
+            bottom: SizeConfig.diagonal * 1.5,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                '${Fields.grandTotal}',
+                style: TextStyle(
+                  color: Color(Styling.textColor),
+                ),
+              ),
+              Text(
+                '${order.grandTotal} Fbu',
                 style: TextStyle(
                   color: Color(Styling.textColor),
                 ),
@@ -265,11 +399,23 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
               child: Text(
                 I18n.of(context).orderInformation,
                 style: TextStyle(
+                  fontWeight: FontWeight.bold,
                   color: Color(
                     Styling.textColor,
                   ),
                 ),
                 textAlign: TextAlign.center,
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.only(
+                  left: SizeConfig.diagonal * 2,
+                  right: SizeConfig.diagonal * 2,
+                  bottom: SizeConfig.diagonal * 1.5),
+              child: Container(
+                color: Color(Styling.primaryColor),
+                height: 1,
+                width: double.infinity,
               ),
             ),
             Padding(
@@ -290,18 +436,60 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                     ),
                   ),
                   Text(
-                      '${widget.formatter.format(DateTime.fromMillisecondsSinceEpoch(order.orderDate))}',
-                      style: TextStyle(
-                        color: Color(
-                          Styling.textColor,
-                        ),
-                      )),
+                    '${widget.formatter.format(DateTime.fromMillisecondsSinceEpoch(order.orderDate))}',
+                    style: TextStyle(
+                      color: Color(
+                        Styling.textColor,
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
+            Padding(
+              padding: EdgeInsets.only(
+                left: SizeConfig.diagonal * 1.5,
+                right: SizeConfig.diagonal * 1.5,
+                bottom: SizeConfig.diagonal * 1.5,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    '${tableAddressStatus(order)}',
+                    style: TextStyle(
+                      color: Color(
+                        Styling.textColor,
+                      ),
+                    ),
+                  ),
+                  Text(order.tableAdress),
+                ],
+              ),
+            )
           ],
         ),
       ),
+    );
+  }
+
+  String tableAddressStatus(Order order) {
+    String value;
+    if (order.orderLocation == 1) {
+      value = I18n.of(context).addr;
+    } else {
+      value = I18n.of(context).tableNumber;
+    }
+    return value;
+  }
+
+  Widget cancelOrder() {
+    return ZRaisedButton(
+      onpressed: () async {
+        await widget.db.cancelOrder(widget.orderId);
+        Navigator.pop(context);
+      },
+      textIcon: Text(I18n.of(context).cancelOrder),
     );
   }
 }
