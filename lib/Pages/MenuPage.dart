@@ -20,6 +20,8 @@ import 'package:zilliken/Services/Database.dart';
 
 import 'package:zilliken/i18n.dart';
 
+import 'CartPage.dart';
+
 class MenuPage extends StatefulWidget {
   final Authentication auth;
   final Database db;
@@ -289,25 +291,41 @@ class _MenuPageState extends State<MenuPage> {
   Widget showBill() {
     return Align(
         alignment: Alignment.bottomCenter,
-        child: Card(
-          color: Color(Styling.accentColor),
-          elevation: 16,
-          child: ListTile(
-            title: Text(
-              numberItems(context, clientOrder),
-              style: TextStyle(color: Color(Styling.primaryBackgroundColor)),
-            ),
-            subtitle: Text(
-              priceItems(context, clientOrder),
-              style: TextStyle(
-                color: Color(Styling.primaryBackgroundColor),
-                fontWeight: FontWeight.bold,
+        child: InkWell(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => CartPage(
+                  clientOrder: clientOrder,
+                  db: widget.db,
+                  auth: widget.auth,
+                  userId: widget.userId,
+                  userRole: widget.userRole,
+                ),
               ),
-            ),
-            trailing: Text(
-              I18n.of(context).vOrder,
-              style: TextStyle(
-                color: Color(Styling.primaryBackgroundColor),
+            );
+          },
+          child: Card(
+            color: Color(Styling.accentColor),
+            elevation: 16,
+            child: ListTile(
+              title: Text(
+                numberItems(context, clientOrder),
+                style: TextStyle(color: Color(Styling.primaryBackgroundColor)),
+              ),
+              subtitle: Text(
+                priceItems(context, clientOrder),
+                style: TextStyle(
+                  color: Color(Styling.primaryBackgroundColor),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              trailing: Text(
+                I18n.of(context).vOrder,
+                style: TextStyle(
+                  color: Color(Styling.primaryBackgroundColor),
+                ),
               ),
             ),
           ),
@@ -492,11 +510,13 @@ class _MenuPageState extends State<MenuPage> {
             children: [
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  height: 2,
-                  width: 70,
-                  color: Color(Styling.accentColor),
-                  padding: EdgeInsets.all(8),
+                child:Expanded(
+                    child: Container(
+                    height: 2,
+                    width: double.infinity,
+                    color: Color(Styling.accentColor),
+                    padding: EdgeInsets.all(8),
+                  ),
                 ),
               ),
               Text(
@@ -505,11 +525,14 @@ class _MenuPageState extends State<MenuPage> {
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  height: 2,
-                  width: 70,
-                  color: Color(Styling.accentColor),
-                  padding: EdgeInsets.all(8),
+                child:Expanded(
+                    child: Container(
+                    height: 2,
+                    width: double.infinity,
+                    
+                    color: Color(Styling.accentColor),
+                    padding: EdgeInsets.all(8),
+                  ),
                 ),
               ),
             ],

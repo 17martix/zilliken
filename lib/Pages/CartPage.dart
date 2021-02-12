@@ -56,7 +56,7 @@ class _CartPageState extends State<CartPage> {
   bool isOffline = false;
   bool _isLoading = false;
   bool _isTaxLoaded = false;
-  int enabled=1;
+  int enabled = 1;
 
   @override
   void initState() {
@@ -73,7 +73,7 @@ class _CartPageState extends State<CartPage> {
     _connectionChangeStream =
         connectionStatus.connectionChange.listen(connectionChanged);
 
-        FirebaseFirestore.instance
+    FirebaseFirestore.instance
         .collection(Fields.configuration)
         .doc(Fields.settings)
         .snapshots()
@@ -101,15 +101,15 @@ class _CartPageState extends State<CartPage> {
             userRole: widget.userRole,
           )
         : Scaffold(
-      key: _scaffoldKey,
-      appBar: buildAppBar(context, widget.auth, true, false, null, null),
-      body: Stack(
-        children: [
-          body(),
-          ZCircularProgress(_isLoading),
-        ],
-      ),
-    );
+            key: _scaffoldKey,
+            appBar: buildAppBar(context, widget.auth, true, false, null, null),
+            body: Stack(
+              children: [
+                body(),
+                ZCircularProgress(_isLoading),
+              ],
+            ),
+          );
   }
 
   Widget body() {
@@ -382,99 +382,103 @@ class _CartPageState extends State<CartPage> {
   }
 
   Widget bill() {
-    return _isTaxLoaded?Card(
-      elevation: 16,
-      child: Padding(
-        padding: EdgeInsets.all(SizeConfig.diagonal * 1),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
+    return _isTaxLoaded
+        ? Card(
+            elevation: 16,
+            child: Padding(
               padding: EdgeInsets.all(SizeConfig.diagonal * 1),
-              child: Text(
-                I18n.of(context).bil,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: SizeConfig.diagonal * 1.5,
-                  color: Color(Styling.textColor),
-                ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.all(SizeConfig.diagonal * 1),
+                    child: Text(
+                      I18n.of(context).bil,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: SizeConfig.diagonal * 1.5,
+                        color: Color(Styling.textColor),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    width: double.infinity,
+                    height: 1,
+                    color: Color(Styling.accentColor),
+                  ),
+                  Column(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.all(SizeConfig.diagonal * 1),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              I18n.of(context).total,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: SizeConfig.diagonal * 1.5,
+                                color:
+                                    Color(Styling.textColor).withOpacity(0.7),
+                              ),
+                            ),
+                            Text(priceItemsTotal(context, clientOrder)),
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.all(SizeConfig.diagonal * 1),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              I18n.of(context).taxCharge,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color:
+                                    Color(Styling.accentColor).withOpacity(0.7),
+                                fontSize: SizeConfig.diagonal * 1.5,
+                              ),
+                            ),
+                            Text(appliedTax(context, clientOrder, tax)),
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.all(SizeConfig.diagonal * 1),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              I18n.of(context).gtotal,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Color(Styling.accentColor),
+                                fontSize: SizeConfig.diagonal * 1.5,
+                              ),
+                            ),
+                            Text(grandTotal(context, clientOrder, tax)),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  ZRaisedButton(
+                    onpressed: sendToFireBase,
+                    color: Color(Styling.accentColor),
+                    textIcon: Text(
+                      I18n.of(context).ordPlace,
+                      style: TextStyle(
+                        color: Color(Styling.primaryBackgroundColor),
+                        fontSize: SizeConfig.diagonal * 1.5,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-            Container(
-              width: double.infinity,
-              height: 1,
-              color: Color(Styling.accentColor),
-            ),
-            Column(
-              children: [
-                Padding(
-                  padding: EdgeInsets.all(SizeConfig.diagonal * 1),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        I18n.of(context).total,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: SizeConfig.diagonal * 1.5,
-                          color: Color(Styling.textColor).withOpacity(0.7),
-                        ),
-                      ),
-                      Text(priceItemsTotal(context, clientOrder)),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.all(SizeConfig.diagonal * 1),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        I18n.of(context).taxCharge,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Color(Styling.accentColor).withOpacity(0.7),
-                          fontSize: SizeConfig.diagonal * 1.5,
-                        ),
-                      ),
-                      Text(appliedTax(context, clientOrder, tax)),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.all(SizeConfig.diagonal * 1),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        I18n.of(context).gtotal,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Color(Styling.accentColor),
-                          fontSize: SizeConfig.diagonal * 1.5,
-                        ),
-                      ),
-                      Text(grandTotal(context, clientOrder, tax)),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            ZRaisedButton(
-              onpressed: sendToFireBase,
-              color: Color(Styling.accentColor),
-              textIcon: Text(
-                I18n.of(context).ordPlace,
-                style: TextStyle(
-                  color: Color(Styling.primaryBackgroundColor),
-                  fontSize: SizeConfig.diagonal * 1.5,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    ):ZCircularProgress(true);
+          )
+        : ZCircularProgress(true);
   }
 
   bool validate() {
