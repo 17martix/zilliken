@@ -69,7 +69,7 @@ class _CartPageState extends State<CartPage> {
       });
     });
 
-     FirebaseFirestore.instance
+    FirebaseFirestore.instance
         .collection(Fields.configuration)
         .doc(Fields.settings)
         .snapshots()
@@ -528,7 +528,7 @@ class _CartPageState extends State<CartPage> {
             orderDate: DateTime.now().millisecondsSinceEpoch,
             confirmedDate: 0,
             servedDate: 0,
-            status: 0,
+            status: 1,
             userId: widget.userId,
             userRole: widget.userRole,
             taxPercentage: tax,
@@ -552,7 +552,7 @@ class _CartPageState extends State<CartPage> {
                 userId: widget.userId,
                 userRole: widget.userRole,
                 orderId: order.id,
-                 clientOrder: order,
+                clientOrder: order,
               ),
             ),
           );

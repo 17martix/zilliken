@@ -57,7 +57,7 @@ class _OrdersPageState extends State<OrdersPage> {
 
   @override
   Widget build(BuildContext context) {
-    log("mon id est ${widget.userId}");
+    log("mon id est ${widget.userId} et mo role est ${widget.userRole}");
     SizeConfig().init(context);
     return Scaffold(
       body: ordersList(),
@@ -82,7 +82,7 @@ class _OrdersPageState extends State<OrdersPage> {
                   userId: widget.userId,
                   userRole: widget.userRole,
                   orderId: order.id,
-                   clientOrder: order,
+                  clientOrder: order,
                 ),
               ),
             );
@@ -118,7 +118,6 @@ class _OrdersPageState extends State<OrdersPage> {
               ),
             ],
           ),
-
           subtitle: Padding(
             padding: EdgeInsets.only(top: SizeConfig.diagonal * 1),
             child: Row(
@@ -146,7 +145,6 @@ class _OrdersPageState extends State<OrdersPage> {
                 ),
               ],
             ),
-
           ),
         ),
       ),
@@ -170,17 +168,17 @@ class _OrdersPageState extends State<OrdersPage> {
     return StreamBuilder<QuerySnapshot>(
       stream: commandes.snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-
-        if (snapshot.data == null)
+        if (snapshot.data == null) {
           return Center(
             child: Text(""),
           );
+        }
 
-
-        return new ListView(
+        return ListView(
           children: snapshot.data.docs.map((DocumentSnapshot document) {
             Order order = Order();
             order.buildObject(document);
+
             return item(order);
           }).toList(),
         );

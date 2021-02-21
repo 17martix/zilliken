@@ -58,6 +58,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
   @override
   void initState() {
     super.initState();
+    _orderStatus = widget.clientOrder.status;
     oneOrderDetails =
         FirebaseFirestore.instance.collection(Fields.order).doc(widget.orderId);
 
@@ -159,7 +160,8 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                 children: [
                   billStream(),
                   billStream2(),
-                  cancelOrder(),
+                  if (_status == 0 && widget.userRole == 'client')
+                    cancelOrder(),
                 ],
               ),
             ),
@@ -177,12 +179,6 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
           stream: oneOrderDetails.snapshots(),
           builder:
               (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-            if (snapshot.hasError) {
-              return Center(
-                child: Text(""),
-              );
-            }
-
             if (snapshot.data == null)
               return Center(
                 child: Text(""),
@@ -191,7 +187,9 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
             Order order = Order();
             order.buildObjectAsync(snapshot);
 
-            return Expanded(
+            return Container(
+              width: double.infinity,
+              height: SizeConfig.diagonal * 25,
               child: progressStatus(order),
             );
           }),
@@ -199,241 +197,397 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
   }
 
   Widget progressStatus(Order order) {
-    return Timeline(
-      scrollDirection: Axis.horizontal,
-      children: [
-        TimelineTile(
-          oppositeContents: Padding(
-            padding: EdgeInsets.all(SizeConfig.diagonal * 1),
-            child: Icon(
-              Icons.access_alarm,
-              size: SizeConfig.diagonal * 4,
-              color: Color(Styling.primaryColor),
-            ),
-          ),
-          contents: Container(
-            padding: EdgeInsets.all(SizeConfig.diagonal * 1),
-            child: Text(I18n.of(context).pending),
-          ),
-          direction: Axis.horizontal,
-          node: TimelineNode(
-            direction: Axis.horizontal,
-            indicator: DotIndicator(
-              color: Color(Styling.primaryColor),
-              size: SizeConfig.diagonal * 3,
-              child: Icon(
-                Icons.check,
-                color: Color(Styling.accentColor),
-                size: SizeConfig.diagonal * 2,
+    return Padding(
+      padding: EdgeInsets.only(
+        left: SizeConfig.diagonal * 0.5,
+        right: SizeConfig.diagonal * 0.5,
+      ),
+      child: Card(
+        elevation: 16,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: EdgeInsets.only(
+                top: SizeConfig.diagonal * 1.5,
+                bottom: SizeConfig.diagonal * 1.5,
+              ),
+              child: Text(
+                I18n.of(context).orderStatus,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Color(
+                    Styling.textColor,
+                  ),
+                ),
+                textAlign: TextAlign.center,
               ),
             ),
-            startConnector: null,
-            endConnector: SizedBox(
-              width: SizeConfig.diagonal * 4,
-              child: SolidLineConnector(
+            Padding(
+              padding: EdgeInsets.only(
+                  left: SizeConfig.diagonal * 2,
+                  right: SizeConfig.diagonal * 2,
+                  bottom: SizeConfig.diagonal * 1.5),
+              child: Container(
                 color: Color(Styling.primaryColor),
+                height: 1,
+                width: double.infinity,
               ),
             ),
-          ),
+            Expanded(
+              child: Timeline(
+                scrollDirection: Axis.horizontal,
+                children: [
+                  TimelineTile(
+                    oppositeContents: Padding(
+                      padding: EdgeInsets.all(SizeConfig.diagonal * 1),
+                      child: Icon(
+                        Icons.access_alarm,
+                        size: SizeConfig.diagonal * 4,
+                        color: order.status == 1
+                            ? Color(Styling.accentColor)
+                            : Color(Styling.primaryColor),
+                      ),
+                    ),
+                    contents: Container(
+                      padding: EdgeInsets.all(SizeConfig.diagonal * 1),
+                      child: Text(
+                        I18n.of(context).pending,
+                        style: TextStyle(
+                          color: order.status == 1
+                              ? Color(Styling.accentColor)
+                              : Color(Styling.primaryColor),
+                        ),
+                      ),
+                    ),
+                    direction: Axis.horizontal,
+                    node: TimelineNode(
+                      direction: Axis.horizontal,
+                      indicator: DotIndicator(
+                        color: order.status == 1
+                            ? Color(Styling.accentColor)
+                            : Color(Styling.primaryColor),
+                        size: SizeConfig.diagonal * 3,
+                        child: order.status == 1
+                            ? Padding(
+                                padding:
+                                    EdgeInsets.all(SizeConfig.diagonal * 1),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.white),
+                                ),
+                              )
+                            : Icon(
+                                Icons.check,
+                                color: Color(Styling.accentColor),
+                                size: SizeConfig.diagonal * 2,
+                              ),
+                      ),
+                      startConnector: null,
+                      endConnector: SizedBox(
+                        width: SizeConfig.diagonal * 4,
+                        child: SolidLineConnector(
+                          color: order.status < 2
+                              ? Color(Styling.textColor).withOpacity(0.2)
+                              : Color(Styling.primaryColor),
+                        ),
+                      ),
+                    ),
+                  ),
+                  TimelineTile(
+                    oppositeContents: Padding(
+                      padding: EdgeInsets.all(SizeConfig.diagonal * 1),
+                      child: Icon(
+                        Icons.thumb_up,
+                        size: SizeConfig.diagonal * 4,
+                        color: order.status == 2
+                            ? Color(Styling.accentColor)
+                            : order.status < 2
+                                ? Color(Styling.textColor).withOpacity(0.2)
+                                : Color(Styling.primaryColor),
+                      ),
+                    ),
+                    contents: Container(
+                      padding: EdgeInsets.all(SizeConfig.diagonal * 1),
+                      child: Text(
+                        I18n.of(context).confirmed,
+                        style: TextStyle(
+                          color: order.status == 2
+                              ? Color(Styling.accentColor)
+                              : order.status < 2
+                                  ? Color(Styling.textColor).withOpacity(0.2)
+                                  : Color(Styling.primaryColor),
+                        ),
+                      ),
+                    ),
+                    direction: Axis.horizontal,
+                    node: TimelineNode(
+                      direction: Axis.horizontal,
+                      indicator: DotIndicator(
+                        color: order.status == 2
+                            ? Color(Styling.accentColor)
+                            : order.status < 2
+                                ? Color(Styling.textColor).withOpacity(0.2)
+                                : Color(Styling.primaryColor),
+                        size: SizeConfig.diagonal * 3,
+                        child: order.status == 2
+                            ? Padding(
+                                padding:
+                                    EdgeInsets.all(SizeConfig.diagonal * 1),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.white),
+                                ),
+                              )
+                            : order.status < 2
+                                ? null
+                                : Icon(
+                                    Icons.check,
+                                    color: Color(Styling.accentColor),
+                                    size: SizeConfig.diagonal * 2,
+                                  ),
+                      ),
+                      startConnector: SizedBox(
+                        width: SizeConfig.diagonal * 4,
+                        child: SolidLineConnector(
+                          color: order.status < 2
+                              ? Color(Styling.textColor).withOpacity(0.2)
+                              : Color(Styling.primaryColor),
+                        ),
+                      ),
+                      endConnector: SizedBox(
+                        width: SizeConfig.diagonal * 4,
+                        child: SolidLineConnector(
+                          color: order.status < 3
+                              ? Color(Styling.textColor).withOpacity(0.2)
+                              : Color(Styling.primaryColor),
+                        ),
+                      ),
+                    ),
+                  ),
+                  TimelineTile(
+                    oppositeContents: Padding(
+                      padding: EdgeInsets.all(SizeConfig.diagonal * 1),
+                      child: Icon(
+                        Icons.kitchen,
+                        size: SizeConfig.diagonal * 4,
+                        color: order.status == 3
+                            ? Color(Styling.accentColor)
+                            : order.status < 3
+                                ? Color(Styling.textColor).withOpacity(0.2)
+                                : Color(Styling.primaryColor),
+                      ),
+                    ),
+                    contents: Container(
+                      padding: EdgeInsets.all(SizeConfig.diagonal * 1),
+                      child: Text(
+                        I18n.of(context).confirmed,
+                        style: TextStyle(
+                          color: order.status == 3
+                              ? Color(Styling.accentColor)
+                              : order.status < 3
+                                  ? Color(Styling.textColor).withOpacity(0.2)
+                                  : Color(Styling.primaryColor),
+                        ),
+                      ),
+                    ),
+                    direction: Axis.horizontal,
+                    node: TimelineNode(
+                      direction: Axis.horizontal,
+                      indicator: DotIndicator(
+                        color: order.status == 3
+                            ? Color(Styling.accentColor)
+                            : order.status < 3
+                                ? Color(Styling.textColor).withOpacity(0.2)
+                                : Color(Styling.primaryColor),
+                        size: SizeConfig.diagonal * 3,
+                        child: order.status == 3
+                            ? Padding(
+                                padding:
+                                    EdgeInsets.all(SizeConfig.diagonal * 1),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.white),
+                                ),
+                              )
+                            : order.status < 3
+                                ? null
+                                : Icon(
+                                    Icons.check,
+                                    color: Color(Styling.accentColor),
+                                    size: SizeConfig.diagonal * 2,
+                                  ),
+                      ),
+                      startConnector: SizedBox(
+                        width: SizeConfig.diagonal * 4,
+                        child: SolidLineConnector(
+                          color: order.status < 3
+                              ? Color(Styling.textColor).withOpacity(0.2)
+                              : Color(Styling.primaryColor),
+                        ),
+                      ),
+                      endConnector: SizedBox(
+                        width: SizeConfig.diagonal * 4,
+                        child: SolidLineConnector(
+                          color: order.status < 4
+                              ? Color(Styling.textColor).withOpacity(0.2)
+                              : Color(Styling.primaryColor),
+                        ),
+                      ),
+                    ),
+                  ),
+                  TimelineTile(
+                    oppositeContents: Padding(
+                      padding: EdgeInsets.all(SizeConfig.diagonal * 1),
+                      child: Icon(
+                        Icons.kitchen,
+                        size: SizeConfig.diagonal * 4,
+                        color: order.status == 4
+                            ? Color(Styling.accentColor)
+                            : order.status < 4
+                                ? Color(Styling.textColor).withOpacity(0.2)
+                                : Color(Styling.primaryColor),
+                      ),
+                    ),
+                    contents: Container(
+                      padding: EdgeInsets.all(SizeConfig.diagonal * 1),
+                      child: Text(
+                        I18n.of(context).confirmed,
+                        style: TextStyle(
+                          color: order.status == 4
+                              ? Color(Styling.accentColor)
+                              : order.status < 4
+                                  ? Color(Styling.textColor).withOpacity(0.2)
+                                  : Color(Styling.primaryColor),
+                        ),
+                      ),
+                    ),
+                    direction: Axis.horizontal,
+                    node: TimelineNode(
+                      direction: Axis.horizontal,
+                      indicator: DotIndicator(
+                        color: order.status == 4
+                            ? Color(Styling.accentColor)
+                            : order.status < 4
+                                ? Color(Styling.textColor).withOpacity(0.2)
+                                : Color(Styling.primaryColor),
+                        size: SizeConfig.diagonal * 3,
+                        child: order.status < 4
+                            ? null
+                            : Icon(
+                                Icons.check,
+                                color: Color(Styling.primaryBackgroundColor),
+                                size: SizeConfig.diagonal * 2,
+                              ),
+                      ),
+                      startConnector: SizedBox(
+                        width: SizeConfig.diagonal * 4,
+                        child: SolidLineConnector(
+                          color: order.status < 4
+                              ? Color(Styling.textColor).withOpacity(0.2)
+                              : Color(Styling.primaryColor),
+                        ),
+                      ),
+                      endConnector: null,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
-        TimelineTile(
-          oppositeContents: Padding(
-            padding: EdgeInsets.all(SizeConfig.diagonal * 1),
-            child: Icon(
-              Icons.thumb_up,
-              size: SizeConfig.diagonal * 4,
-              color: Color(Styling.primaryColor),
-            ),
-          ),
-          contents: Container(
-            padding: EdgeInsets.all(SizeConfig.diagonal * 1),
-            child: Text(I18n.of(context).confirmed),
-          ),
-          direction: Axis.horizontal,
-          node: TimelineNode(
-            direction: Axis.horizontal,
-            indicator: DotIndicator(
-              color: Color(Styling.primaryColor),
-              size: SizeConfig.diagonal * 3,
-              child: Icon(
-                Icons.check,
-                color: Color(Styling.accentColor),
-                size: SizeConfig.diagonal * 2,
-              ),
-            ),
-            startConnector: SizedBox(
-              width: SizeConfig.diagonal * 4,
-              child: SolidLineConnector(
-                color: Color(Styling.primaryColor),
-              ),
-            ),
-            endConnector: SizedBox(
-              width: SizeConfig.diagonal * 4,
-              child: SolidLineConnector(
-                color: Color(Styling.primaryColor),
-              ),
-            ),
-          ),
-        ),
-        TimelineTile(
-          oppositeContents: Padding(
-            padding: EdgeInsets.all(SizeConfig.diagonal * 1),
-            child: Icon(
-              Icons.kitchen,
-              size: SizeConfig.diagonal * 4,
-              color: Color(Styling.primaryColor),
-            ),
-          ),
-          contents: Container(
-            padding: EdgeInsets.all(SizeConfig.diagonal * 1),
-            child: Text(I18n.of(context).preparing),
-          ),
-          direction: Axis.horizontal,
-          node: TimelineNode(
-            direction: Axis.horizontal,
-            indicator: DotIndicator(
-              color: Color(Styling.primaryColor),
-              size: SizeConfig.diagonal * 3,
-              child: Icon(
-                Icons.check,
-                color: Color(Styling.accentColor),
-                size: SizeConfig.diagonal * 2,
-              ),
-            ),
-            startConnector: SizedBox(
-              width: SizeConfig.diagonal * 4,
-              child: SolidLineConnector(
-                color: Color(Styling.primaryColor),
-              ),
-            ),
-            endConnector: SizedBox(
-              width: SizeConfig.diagonal * 4,
-              child: SolidLineConnector(
-                color: Color(Styling.primaryColor),
-              ),
-            ),
-          ),
-        ),
-        TimelineTile(
-          oppositeContents: Padding(
-            padding: EdgeInsets.all(SizeConfig.diagonal * 1),
-            child: Icon(
-              Icons.restaurant_menu,
-              size: SizeConfig.diagonal * 4,
-              color: Color(Styling.primaryColor),
-            ),
-          ),
-          contents: Container(
-            padding: EdgeInsets.all(SizeConfig.diagonal * 1),
-            child: Text(I18n.of(context).served),
-          ),
-          direction: Axis.horizontal,
-          node: TimelineNode(
-            direction: Axis.horizontal,
-            indicator: DotIndicator(
-              color: Color(Styling.primaryColor),
-              size: SizeConfig.diagonal * 3,
-              child: Icon(
-                Icons.check,
-                color: Color(Styling.accentColor),
-                size: SizeConfig.diagonal * 2,
-              ),
-            ),
-            startConnector: SizedBox(
-              width: SizeConfig.diagonal * 4,
-              child: SolidLineConnector(
-                color: Color(Styling.primaryColor),
-              ),
-            ),
-            endConnector: null,
-          ),
-        ),
-      ],
+      ),
     );
   }
 
   Widget statusUpdate() {
-    return Container(
-      padding: EdgeInsets.all(SizeConfig.diagonal * 1),
-      child: new Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            margin: EdgeInsets.all(SizeConfig.diagonal * 1),
-            child: Text(
-              I18n.of(context).updateStatus,
-              style: new TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: SizeConfig.diagonal * 2,
+    return Padding(
+      padding: EdgeInsets.only(
+          left: SizeConfig.diagonal * 0.5, right: SizeConfig.diagonal * 0.5),
+      child: Card(
+        elevation: 16,
+        child: new Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              margin: EdgeInsets.all(SizeConfig.diagonal * 1),
+              child: Text(
+                I18n.of(context).updateStatus,
+                style: new TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(
-                horizontal: SizeConfig.diagonal * 1,
-                vertical: SizeConfig.diagonal * 0.5),
-            child: Divider(height: 2.0, color: Colors.black),
-          ),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: new Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                new Radio(
-                  value: 1,
-                  groupValue: widget.clientOrder.status,
-                  onChanged: handleStatusChange,
-                ),
-                new Text(
-                  I18n.of(context).pendingOrder,
-                  style: new TextStyle(fontSize: SizeConfig.diagonal * 1.5),
-                ),
-                new Radio(
-                  value: 2,
-                  groupValue: widget.clientOrder.status,
-                  onChanged: handleStatusChange,
-                ),
-                new Text(
-                  I18n.of(context).confirmedOrder,
-                  style: new TextStyle(
-                    fontSize: SizeConfig.diagonal * 1.5,
-                  ),
-                ),
-                new Radio(
-                  value: 3,
-                  groupValue: widget.clientOrder.status,
-                  onChanged: handleStatusChange,
-                ),
-                new Text(
-                  I18n.of(context).orderPreparation,
-                  style: new TextStyle(
-                    fontSize: SizeConfig.diagonal * 1.5,
-                  ),
-                ),
-                new Radio(
-                  value: 4,
-                  groupValue: widget.clientOrder.status,
-                  onChanged: handleStatusChange,
-                ),
-                new Text(
-                  I18n.of(context).orderServed,
-                  style: new TextStyle(
-                    fontSize: SizeConfig.diagonal * 1.5,
-                  ),
-                ),
-              ],
+            Padding(
+              padding: EdgeInsets.symmetric(
+                  horizontal: SizeConfig.diagonal * 1,
+                  vertical: SizeConfig.diagonal * 0.5),
+              child: Divider(height: 2.0, color: Colors.black),
             ),
-          ),
-        ],
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: new Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  new Radio(
+                    value: 1,
+                    groupValue: _orderStatus,
+                    onChanged: handleStatusChange,
+                  ),
+                  new Text(
+                    I18n.of(context).pendingOrder,
+                    style: new TextStyle(fontSize: SizeConfig.diagonal * 1.5),
+                  ),
+                  new Radio(
+                    value: 2,
+                    groupValue: _orderStatus,
+                    onChanged: handleStatusChange,
+                  ),
+                  new Text(
+                    I18n.of(context).confirmedOrder,
+                    style: new TextStyle(
+                      fontSize: SizeConfig.diagonal * 1.5,
+                    ),
+                  ),
+                  new Radio(
+                    value: 3,
+                    groupValue: _orderStatus,
+                    onChanged: handleStatusChange,
+                  ),
+                  new Text(
+                    I18n.of(context).orderPreparation,
+                    style: new TextStyle(
+                      fontSize: SizeConfig.diagonal * 1.5,
+                    ),
+                  ),
+                  new Radio(
+                    value: 4,
+                    groupValue: _orderStatus,
+                    onChanged: handleStatusChange,
+                  ),
+                  new Text(
+                    I18n.of(context).orderServed,
+                    style: new TextStyle(
+                      fontSize: SizeConfig.diagonal * 1.5,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
   void handleStatusChange(int value) {
     setState(() {
-      widget.clientOrder.status = value;
+      _orderStatus = value;
     });
-    widget.db.updateStatus(widget.orderId, widget.clientOrder, value);
+    widget.db.updateStatus(widget.orderId, _orderStatus, value);
   }
 
   Widget orderItemStream() {
@@ -549,6 +703,11 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
     return StreamBuilder<QuerySnapshot>(
       stream: orderItems.snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        if (snapshot.data == null)
+          return Center(
+            child: Text(""),
+          );
+
         return Column(
           children: [
             Padding(
@@ -626,6 +785,11 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
       stream: oneOrderDetails.snapshots(),
       builder:
           (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+        if (snapshot.data == null)
+          return Center(
+            child: Text(""),
+          );
+
         Order order = Order();
         order.buildObjectAsync(snapshot);
         return Column(
@@ -675,7 +839,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                '${Fields.grandTotal}',
+                '${I18n.of(context).grandTotal}',
                 style: TextStyle(
                   color: Color(Styling.textColor),
                 ),
@@ -698,6 +862,11 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
       stream: oneOrderDetails.snapshots(),
       builder:
           (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+        if (snapshot.data == null)
+          return Center(
+            child: Text(""),
+          );
+
         Order order = Order();
         order.buildObjectAsync(snapshot);
         return Column(
@@ -717,7 +886,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
         right: SizeConfig.diagonal * 0.5,
       ),
       child: Card(
-        elevation: 15,
+        elevation: 16,
         child: Column(
           children: [
             Padding(

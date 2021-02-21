@@ -54,10 +54,11 @@ class Database {
   }
 
   Future<String> placeOrder(Order order) async {
-    var document = databaseReference.collection('orders').doc();
+    var document = databaseReference.collection(Fields.order).doc();
+    order.id = document.id;
 
     await document.set({
-      Fields.id: document.id,
+      Fields.id: order.id,
       Fields.orderLocation: order.orderLocation,
       Fields.phoneNumber: order.phoneNumber,
       Fields.tableAdress: order.tableAdress,
@@ -103,7 +104,7 @@ class Database {
         id: document.id,
         orderLocation: snapshot[Fields.orderLocation],
         tableAdress: snapshot[Fields.tableAdress],
-         phoneNumber: snapshot[Fields.phoneNumber],
+        phoneNumber: snapshot[Fields.phoneNumber],
         instructions: snapshot[Fields.instructions],
         grandTotal: snapshot[Fields.grandTotal],
         orderDate: snapshot[Fields.orderDate],
@@ -274,21 +275,21 @@ class Database {
     await document.update({Fields.availability: isEnabled});
   }
 
-  Future<void> updateStatus(String id, Order order, int value) async {
+  Future<void> updateStatus(String id, int status, int value) async {
     var document = databaseReference.collection(Fields.order).doc(id);
     int now = DateTime.now().millisecondsSinceEpoch.toInt();
-    if (value == 0) {
+    if (value == 1) {
       await document
           .update({Fields.status: Fields.pending, Fields.orderDate: now});
-    } else if (value == 1) {
+    } else if (value == 2) {
       await document.update({
         Fields.status: Fields.confirmed,
         Fields.confirmedDate: now,
       });
-    } else if (value == 2) {
+    } else if (value == 3) {
       await document.update(
           {Fields.status: Fields.preparation, Fields.preparationDate: now});
-    } else if (value == 3) {
+    } else if (value == 4) {
       await document
           .update({Fields.status: Fields.served, Fields.servedDate: now});
     }

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -485,10 +486,12 @@ class _MenuPageState extends State<MenuPage> {
           );
 
         return ListView(
+          shrinkWrap: true,
           children: snapshot.data.docs.map((DocumentSnapshot document) {
             MenuItem menu = MenuItem();
             menu.buildObject(document);
             return Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 if (menu.rank == 1) categoryRow(menu),
                 item(menu),
@@ -501,44 +504,26 @@ class _MenuPageState extends State<MenuPage> {
   }
 
   Widget categoryRow(MenuItem menu) {
-    return Row(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child:Expanded(
-                    child: Container(
-                    height: 2,
-                    width: double.infinity,
-                    color: Color(Styling.accentColor),
-                    padding: EdgeInsets.all(8),
-                  ),
-                ),
-              ),
-              Text(
-                menu.category,
-                style: TextStyle(fontSize: 15),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child:Expanded(
-                    child: Container(
-                    height: 2,
-                    width: double.infinity,
-                    
-                    color: Color(Styling.accentColor),
-                    padding: EdgeInsets.all(8),
-                  ),
-                ),
-              ),
-            ],
+    return Container(
+      margin: EdgeInsets.only(top: SizeConfig.diagonal * 2),
+      child: Column(
+        children: [
+          Text(
+            menu.category,
+            style: TextStyle(
+              color: Color(Styling.textColor),
+              fontWeight: FontWeight.bold,
+              fontSize: SizeConfig.diagonal * 1.5,
+            ),
           ),
-        ),
-      ],
+          Padding(
+            padding: EdgeInsets.symmetric(
+                horizontal: SizeConfig.diagonal * 2,
+                vertical: SizeConfig.diagonal * 0.5),
+            child: Divider(height: 2.0, color: Color(Styling.accentColor)),
+          ),
+        ],
+      ),
     );
   }
 
