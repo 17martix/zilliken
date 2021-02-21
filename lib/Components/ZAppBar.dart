@@ -6,7 +6,7 @@ import 'package:zilliken/Services/Authentication.dart';
 import 'package:zilliken/i18n.dart';
 
 AppBar buildAppBar(context, Authentication auth, bool isBackAllowed,
-    bool loginOptionAvailable, googleSign, logout) {
+    bool loginOptionAvailable, googleSign, logout,backFunction) {
   return AppBar(
     backgroundColor: Color(Styling.primaryBackgroundColor),
     elevation: 0,
@@ -17,7 +17,7 @@ AppBar buildAppBar(context, Authentication auth, bool isBackAllowed,
               color: Color(Styling.iconColor),
               size: SizeConfig.diagonal * 3,
             ),
-            onPressed: () {
+            onPressed: backFunction?? () {
               Navigator.pop(context);
             })
         : null,

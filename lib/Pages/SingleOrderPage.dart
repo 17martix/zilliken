@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -98,6 +99,20 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
     });
   }
 
+  void backFunction() {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => DashboardPage(
+          db: widget.db,
+          auth: widget.auth,
+          userId: widget.userId,
+          userRole: widget.userRole,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
@@ -123,8 +138,8 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
               userRole: widget.userRole,
             )
           : Scaffold(
-              appBar:
-                  buildAppBar(context, widget.auth, true, false, null, null),
+              appBar: buildAppBar(
+                  context, widget.auth, true, false, null, null, backFunction),
               body: Stack(
                 children: [
                   body(),
@@ -160,7 +175,9 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                 children: [
                   billStream(),
                   billStream2(),
-                  if (_status == 0 && widget.userRole == 'client')
+                  if ((_status == 1 && widget.userRole == Fields.client) ||
+                      widget.userRole == Fields.admin ||
+                      widget.userRole == Fields.developer)
                     cancelOrder(),
                 ],
               ),
@@ -383,7 +400,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                     contents: Container(
                       padding: EdgeInsets.all(SizeConfig.diagonal * 1),
                       child: Text(
-                        I18n.of(context).confirmed,
+                        I18n.of(context).preparing,
                         style: TextStyle(
                           color: order.status == 3
                               ? Color(Styling.accentColor)
@@ -443,7 +460,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                     oppositeContents: Padding(
                       padding: EdgeInsets.all(SizeConfig.diagonal * 1),
                       child: Icon(
-                        Icons.kitchen,
+                        Icons.restaurant_menu,
                         size: SizeConfig.diagonal * 4,
                         color: order.status == 4
                             ? Color(Styling.accentColor)
@@ -455,7 +472,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                     contents: Container(
                       padding: EdgeInsets.all(SizeConfig.diagonal * 1),
                       child: Text(
-                        I18n.of(context).confirmed,
+                        I18n.of(context).served,
                         style: TextStyle(
                           color: order.status == 4
                               ? Color(Styling.accentColor)
@@ -983,11 +1000,16 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
 
   Widget cancelOrder() {
     return ZRaisedButton(
+      leftPadding: SizeConfig.diagonal * 1,
+      rightPadding: SizeConfig.diagonal * 1,
       onpressed: () async {
         await widget.db.cancelOrder(widget.orderId);
         Navigator.pop(context);
       },
-      textIcon: Text(I18n.of(context).cancelOrder),
+      textIcon: Text(
+        I18n.of(context).cancelOrder,
+        style: TextStyle(color: Color(Styling.primaryBackgroundColor)),
+      ),
     );
   }
 }

@@ -6,6 +6,7 @@ import 'package:zilliken/Components/ZAppBar.dart';
 import 'package:zilliken/Helpers/ConnectionStatus.dart';
 import 'package:zilliken/Helpers/Styling.dart';
 import 'package:zilliken/Models/Fields.dart';
+import 'package:zilliken/Models/OrderItem.dart';
 import 'package:zilliken/Pages/MenuPage.dart';
 import 'package:zilliken/Pages/OrdersPage.dart';
 import 'package:zilliken/Services/Authentication.dart';
@@ -20,12 +21,14 @@ class DashboardPage extends StatefulWidget {
   final Database db;
   final String userId;
   final String userRole;
+  final List<OrderItem> clientOrder;
 
   DashboardPage({
     this.auth,
     this.userId,
     this.userRole,
     this.db,
+    this.clientOrder,
   });
 
   @override
@@ -76,7 +79,7 @@ class _DashboardPageState extends State<DashboardPage> {
         : Scaffold(
             key: _scaffoldKey,
             appBar: buildAppBar(
-                context, widget.auth, false, true, googleSign, logout),
+                context, widget.auth, false, true, googleSign, logout,null),
             body: body(),
             bottomNavigationBar: BottomNavigationBar(
               items: <BottomNavigationBarItem>[
@@ -112,6 +115,7 @@ class _DashboardPageState extends State<DashboardPage> {
           db: widget.db,
           userId: widget.userId,
           userRole: widget.userRole,
+          clientOrder: widget.clientOrder,
         );
         break;
       case 1:
@@ -128,6 +132,7 @@ class _DashboardPageState extends State<DashboardPage> {
           db: widget.db,
           userId: widget.userId,
           userRole: widget.userRole,
+          clientOrder: widget.clientOrder,
         );
         break;
     }

@@ -19,6 +19,7 @@ import 'package:zilliken/Pages/SingleOrderPage.dart';
 import 'package:zilliken/Services/Authentication.dart';
 import 'package:zilliken/Services/Database.dart';
 import '../i18n.dart';
+import 'DashboardPage.dart';
 import 'DisabledPage.dart';
 
 class CartPage extends StatefulWidget {
@@ -100,26 +101,58 @@ class _CartPageState extends State<CartPage> {
     });
   }
 
+  void backFunction(){
+    Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DashboardPage(
+              db: widget.db,
+              auth: widget.auth,
+              userId: widget.userId,
+              userRole: widget.userRole,
+              clientOrder: clientOrder,
+            ),
+          ),
+        );
+  }
+
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
-    return enabled == 0
-        ? DisabledPage(
-            auth: widget.auth,
-            db: widget.db,
-            userId: widget.userId,
-            userRole: widget.userRole,
-          )
-        : Scaffold(
-            key: _scaffoldKey,
-            appBar: buildAppBar(context, widget.auth, true, false, null, null),
-            body: Stack(
-              children: [
-                body(),
-                ZCircularProgress(_isLoading),
-              ],
+    return WillPopScope(
+      onWillPop: () {
+        return Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DashboardPage(
+              db: widget.db,
+              auth: widget.auth,
+              userId: widget.userId,
+              userRole: widget.userRole,
+              clientOrder: clientOrder,
             ),
-          );
+          ),
+        );
+      },
+      child: enabled == 0
+          ? DisabledPage(
+              auth: widget.auth,
+              db: widget.db,
+              userId: widget.userId,
+              userRole: widget.userRole,
+            )
+          : Scaffold(
+              key: _scaffoldKey,
+              appBar:
+                  buildAppBar(context, widget.auth, true, false, null, null,backFunction),
+              body: Stack(
+                children: [
+                  body(),
+                  ZCircularProgress(_isLoading),
+                ],
+              ),
+            ),
+    );
   }
 
   Widget body() {
@@ -166,15 +199,18 @@ class _CartPageState extends State<CartPage> {
           ),
         ),
         Container(
+          margin: EdgeInsets.symmetric(
+              horizontal: SizeConfig.diagonal * 2,
+              vertical: SizeConfig.diagonal * 1),
           width: double.infinity,
           height: 1,
-          color: Color(Styling.accentColor),
+          color: Color(Styling.primaryColor),
         ),
         ListView.builder(
           shrinkWrap: true,
           itemCount: clientOrder.length,
           itemBuilder: (context, position) {
-            return item(clientOrder[0].menuItem);
+            return item(clientOrder[position].menuItem);
           },
         ),
       ],
@@ -295,9 +331,10 @@ class _CartPageState extends State<CartPage> {
           ),
         ),
         Container(
+          margin: EdgeInsets.all(SizeConfig.diagonal * 1),
           width: double.infinity,
           height: 1,
-          color: Color(Styling.accentColor),
+          color: Color(Styling.primaryColor),
         ),
       ],
     );
@@ -351,11 +388,11 @@ class _CartPageState extends State<CartPage> {
                 icon: restaurantOrRoomOrder == 0
                     ? Icon(
                         Icons.restaurant_menu,
-                        color: Color(Styling.accentColor),
+                        color: Color(Styling.primaryColor),
                       )
                     : Icon(
                         Icons.shopping_cart,
-                        color: Color(Styling.accentColor),
+                        color: Color(Styling.primaryColor),
                       ),
               ),
               if (restaurantOrRoomOrder == 1)
@@ -368,21 +405,18 @@ class _CartPageState extends State<CartPage> {
                   icon: Icon(
                     Icons.phone_android,
                     color: Color(
-                      Styling.accentColor,
+                      Styling.primaryColor,
                     ),
                   ),
                 ),
-              Padding(
-                padding: EdgeInsets.all(SizeConfig.diagonal * 1),
-                child: ZTextField(
-                  onSaved: (newValue) => instruction = newValue,
-                  label: I18n.of(context).instruction,
-                  icon: Icon(
-                    Icons.info,
-                    color: Color(Styling.accentColor),
-                  ),
-                  keyboardType: TextInputType.text,
+              ZTextField(
+                onSaved: (newValue) => instruction = newValue,
+                label: I18n.of(context).instruction,
+                icon: Icon(
+                  Icons.info,
+                  color: Color(Styling.primaryColor),
                 ),
+                keyboardType: TextInputType.text,
               ),
             ],
           ),
@@ -412,9 +446,10 @@ class _CartPageState extends State<CartPage> {
                     ),
                   ),
                   Container(
+                    margin: EdgeInsets.all(SizeConfig.diagonal * 1),
                     width: double.infinity,
                     height: 1,
-                    color: Color(Styling.accentColor),
+                    color: Color(Styling.primaryColor),
                   ),
                   Column(
                     children: [
@@ -476,6 +511,8 @@ class _CartPageState extends State<CartPage> {
                   ZRaisedButton(
                     onpressed: sendToFireBase,
                     color: Color(Styling.accentColor),
+                    leftPadding: 0.0,
+                    rightPadding: 0.0,
                     textIcon: Text(
                       I18n.of(context).ordPlace,
                       style: TextStyle(
