@@ -74,6 +74,12 @@ class _MenuPageState extends State<MenuPage> {
     _connectionChangeStream =
         connectionStatus.connectionChange.listen(connectionChanged);
     _isLoading = false;
+
+    widget.db.getCategories().then((value) {
+      _catList.addAll(value);
+      _menuItem.category = _catList[0];
+      _isCategoryLoaded = true;
+    });
   }
 
   void commandesQuery(String category) {
@@ -156,13 +162,13 @@ class _MenuPageState extends State<MenuPage> {
             I18n.of(context).addWhat,
             style: new TextStyle(
               fontWeight: FontWeight.bold,
-              fontSize: SizeConfig.diagonal * 1.8,
+              fontSize: SizeConfig.diagonal * 1.5,
             ),
           ),
           Padding(
             padding: EdgeInsets.symmetric(
-                horizontal: SizeConfig.diagonal * 1.8,
-                vertical: SizeConfig.diagonal * 1.8),
+                horizontal: SizeConfig.diagonal * 1,
+                vertical: SizeConfig.diagonal * 1),
             child: Divider(height: 2.0, color: Colors.black),
           ),
           new Row(
@@ -175,7 +181,7 @@ class _MenuPageState extends State<MenuPage> {
               ),
               new Text(
                 I18n.of(context).item,
-                style: new TextStyle(fontSize: SizeConfig.diagonal * 1.8),
+                style: new TextStyle(fontSize: SizeConfig.diagonal * 1.5),
               ),
               new Radio(
                 value: 1,
@@ -185,7 +191,7 @@ class _MenuPageState extends State<MenuPage> {
               new Text(
                 I18n.of(context).category,
                 style: new TextStyle(
-                  fontSize: SizeConfig.diagonal * 1.8,
+                  fontSize: SizeConfig.diagonal * 1.5,
                 ),
               ),
             ],
@@ -223,7 +229,7 @@ class _MenuPageState extends State<MenuPage> {
                           elevation: 16,
                           style: TextStyle(
                             color: Color(Styling.accentColor),
-                            fontSize: SizeConfig.diagonal * 1.8,
+                            fontSize: SizeConfig.diagonal * 1.5,
                           ),
                           onChanged: (String newValue) {
                             setState(() {
@@ -237,7 +243,7 @@ class _MenuPageState extends State<MenuPage> {
                               child: Text(
                                 value,
                                 style: TextStyle(
-                                  fontSize: SizeConfig.diagonal * 1.8,
+                                  fontSize: SizeConfig.diagonal * 1.5,
                                 ),
                               ),
                             );
@@ -247,7 +253,7 @@ class _MenuPageState extends State<MenuPage> {
                         textIcon: Text(
                           I18n.of(context).addItem,
                           style: TextStyle(
-                            fontSize: SizeConfig.diagonal * 2,
+                            fontSize: SizeConfig.diagonal * 1.5,
                             color: Color(Styling.primaryBackgroundColor),
                           ),
                         ),
@@ -572,30 +578,37 @@ class _MenuPageState extends State<MenuPage> {
             widget.userRole == Fields.chef ||
                     widget.userRole == Fields.admin ||
                     widget.userRole == Fields.developer
-                ? SwitchListTile(
-                    activeColor: Color(Styling.accentColor),
-                    value: menu.availability == 1 ? true : false,
-                    onChanged: (isEnabled) => itemAvailability(isEnabled, menu),
+                ? Container(
+                    width: SizeConfig.diagonal * 20,
+                    child: SwitchListTile(
+                      activeColor: Color(Styling.accentColor),
+                      value: menu.availability == 1 ? true : false,
+                      onChanged: (isEnabled) =>
+                          itemAvailability(isEnabled, menu),
+                    ),
                   )
                 : isAlreadyOnTheOrder(clientOrder, menu.id)
-                    ? NumericStepButton(
-                        counter: findOrderItem(clientOrder, menu.id).count,
-                        maxValue: 20,
-                        onChanged: (value) {
-                          OrderItem orderItem =
-                              findOrderItem(clientOrder, menu.id);
-                          if (value == 0) {
-                            setState(() {
-                              clientOrder.remove(orderItem);
-                            });
-                            //order.remove(orderItem);
-                          } else {
-                            setState(() {
-                              orderItem.count = value;
-                            });
-                            //orderItem.count = value;
-                          }
-                        },
+                    ? Container(
+                        width: SizeConfig.diagonal * 20,
+                        child: NumericStepButton(
+                          counter: findOrderItem(clientOrder, menu.id).count,
+                          maxValue: 20,
+                          onChanged: (value) {
+                            OrderItem orderItem =
+                                findOrderItem(clientOrder, menu.id);
+                            if (value == 0) {
+                              setState(() {
+                                clientOrder.remove(orderItem);
+                              });
+                              //order.remove(orderItem);
+                            } else {
+                              setState(() {
+                                orderItem.count = value;
+                              });
+                              //orderItem.count = value;
+                            }
+                          },
+                        ),
                       )
                     : InkWell(
                         onTap: () {

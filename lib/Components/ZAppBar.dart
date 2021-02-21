@@ -55,7 +55,7 @@ Widget googleSignIN(googleSign) {
     icon: Icon(
       Icons.login,
       color: Color(Styling.iconColor),
-      size: SizeConfig.diagonal * 3,
+      size: SizeConfig.diagonal * 2.5,
     ),
     onPressed: googleSign,
   );
@@ -66,7 +66,7 @@ Widget logoutButton(logout) {
     icon: Icon(
       FontAwesomeIcons.powerOff,
       color: Color(Styling.iconColor),
-      size: SizeConfig.diagonal * 3,
+      size: SizeConfig.diagonal * 2.5,
     ),
     onPressed: logout,
   );
