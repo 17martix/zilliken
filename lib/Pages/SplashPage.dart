@@ -89,6 +89,19 @@ class _SplashPageState extends State<SplashPage> {
           ),
         ),
       );
+    } else if (user.isAnonymous) {
+      String role = Fields.client;
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => DashboardPage(
+            auth: widget.auth,
+            db: widget.db,
+            userId: user.uid,
+            userRole: role,
+          ),
+        ),
+      );
     } else {
       String role = await widget.db.getUserRole(user.uid);
       Navigator.pushReplacement(
