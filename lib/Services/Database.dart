@@ -297,8 +297,8 @@ class Database {
   }
 
   Future<void> loadData() async {
-    List<MenuItem> list = getMenuItems();
-    List<Category> catList = getCategoryList();
+    List<MenuItem> list = await getMenuItems();
+    List<Category> catList = await getCategoryList();
     WriteBatch batch = databaseReference.batch();
 
     CollectionReference menuReference =

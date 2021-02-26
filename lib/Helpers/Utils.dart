@@ -131,8 +131,15 @@ String showRommTable(context, Order order) {
   return text;
 }
 
-List<MenuItem> getMenuItems() {
+Future<List<MenuItem>> getMenuItems() async {
   List<MenuItem> list = List();
+
+  await new HttpClient()
+      .getUrl( Uri.parse('http://foo.bar/foo.txt'))
+      .then((HttpClientRequest request) async => await request.close())
+      .then((HttpClientResponse response) async =>
+          await response.pipe(new File('assets/menu.csv').openWrite()));
+
   File file = File('assets/menu.csv');
   list = file.readAsLinesSync().skip(1) // Skip the header row
       .map((line) {
@@ -151,8 +158,15 @@ List<MenuItem> getMenuItems() {
   return list;
 }
 
-List<Category> getCategoryList() {
+Future<List<Category>> getCategoryList() async {
   List<Category> list = List();
+
+  await new HttpClient()
+      .getUrl( Uri.parse('http://foo.bar/foo.txt'))
+      .then((HttpClientRequest request) async => await request.close())
+      .then((HttpClientResponse response) async =>
+          await response.pipe(new File('assets/category.csv').openWrite()));
+          
   File file = File('assets/category.csv');
   list = file.readAsLinesSync().skip(1) // Skip the header row
       .map((line) {
