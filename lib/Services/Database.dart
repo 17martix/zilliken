@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:zilliken/Helpers/Utils.dart';
 import 'package:zilliken/Models/Category.dart';
 import 'package:zilliken/Models/Fields.dart';
 import 'package:zilliken/Models/MenuItem.dart';
@@ -293,5 +294,58 @@ class Database {
       await document
           .update({Fields.status: Fields.served, Fields.servedDate: now});
     }
+  }
+
+  Future<void> loadData() async {
+    List<MenuItem> list = getMenuItems();
+    List<Category> catList = getCategoryList();
+    WriteBatch batch = databaseReference.batch();
+
+    CollectionReference menuReference =
+        databaseReference.collection(Fields.menu);
+
+    await menuReference.get().then((snapshot) {
+      snapshot.docs.forEach((element) {
+        batch.delete(element.reference);
+      });
+    });
+
+    for (int i = 0; i < list.length; i++) {
+      DocumentReference documentReference =
+          databaseReference.collection(Fields.menu).doc();
+      batch.set(documentReference, {
+        Fields.id: list[i].id,
+        Fields.name: list[i].name,
+        Fields.category: list[i].category,
+        Fields.price: list[i].price,
+        Fields.rank: list[i].rank,
+        Fields.global: list[i].global,
+        Fields.availability: list[i].availability,
+        Fields.imageName: list[i].imageName,
+        Fields.createdAt: DateTime.now().millisecondsSinceEpoch,
+      });
+    }
+
+    CollectionReference categoryReference =
+        databaseReference.collection(Fields.category);
+    await categoryReference.get().then((snapshot) {
+      snapshot.docs.forEach((element) {
+        batch.delete(element.reference);
+      });
+    });
+
+    for (int i = 0; i < catList.length; i++) {
+      DocumentReference catRef =
+          databaseReference.collection(Fields.category).doc();
+      batch.set(catRef, {
+        Fields.id: catList[i].id,
+        Fields.name: catList[i].name,
+        Fields.rank: catList[i].rank,
+        Fields.imageName: catList[i].imageName,
+        Fields.createdAt: DateTime.now().millisecondsSinceEpoch,
+      });
+    }
+
+    await batch.commit();
   }
 }

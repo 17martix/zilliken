@@ -119,6 +119,8 @@ class I18n {
 
   String get orderStatus => _getText("orderStatus");
 
+  String get loadData => _getText("loadData");
+
   static Map<String, String> _localizedValues;
 
   static Map<String, String> _enValues = {
@@ -178,6 +180,7 @@ class I18n {
     "accountDisabled": "This App Has Been Disabled",
     "grandTotal": "Grand Total",
     "orderStatus": "Order Status",
+    "loadData": "Load Data",
   };
 
   static Map<String, String> _frValues = {
@@ -237,6 +240,7 @@ class I18n {
     "accountDisabled": "Cette Application a été Désactivé",
     "grandTotal": "Total",
     "orderStatus": "Statut De La Commande",
+    "loadData": "Charger Les Données",
   };
 
   static Map<String, Map<String, String>> _allValues = {

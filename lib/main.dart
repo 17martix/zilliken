@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -27,6 +28,11 @@ Future<void> main() async {
   pushNotificationManager.init();
   connectionStatus.initialize();
 
+  await FirebaseFirestore.instance.enablePersistence();
+  FirebaseFirestore.instance.settings = Settings(persistenceEnabled: true);
+
+  FirebaseFirestore.instance.settings = Settings(cacheSizeBytes: 100000000);
+
   runApp(Zilliken());
 }
 
@@ -43,12 +49,10 @@ class Zilliken extends StatelessWidget {
       supportedLocales: I18nDelegate.supportedLocals,
       title: 'Zilliken',
       theme: buildTheme(),
-
       home: SplashPage(
         auth: Authentication(),
         db: Database(),
       ),
-
     );
   }
 

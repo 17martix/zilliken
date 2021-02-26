@@ -294,6 +294,18 @@ class _MenuPageState extends State<MenuPage> {
                     ],
                   ),
                 ),
+          if (widget.userRole == Fields.developer)
+            ZRaisedButton(
+              textIcon: Text(
+                I18n.of(context).loadData,
+                style: TextStyle(
+                  fontSize: SizeConfig.diagonal * 1.5,
+                  color: Color(Styling.primaryBackgroundColor),
+                ),
+              ),
+              bottomPadding: SizeConfig.diagonal * 1,
+              onpressed: loadData,
+            ),
         ],
       ),
     );
@@ -350,6 +362,43 @@ class _MenuPageState extends State<MenuPage> {
       return true;
     }
     return false;
+  }
+
+  void loadData() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    if (isOffline) {
+      setState(() {
+        _isLoading = false;
+      });
+
+      _scaffoldKey.currentState.showSnackBar(
+        SnackBar(
+          content: Text(I18n.of(context).noInternet),
+        ),
+      );
+    } else {
+      try {
+        await widget.db.loadData();
+
+        setState(() {
+          _isLoading = false;
+        });
+      } on Exception catch (e) {
+        //print('Error: $e');
+        setState(() {
+          _isLoading = false;
+        });
+
+        _scaffoldKey.currentState.showSnackBar(
+          SnackBar(
+            content: Text(e.toString()),
+          ),
+        );
+      }
+    }
   }
 
   void saveCategory() async {

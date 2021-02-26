@@ -1,5 +1,9 @@
+import 'dart:io';
+
 import 'package:zilliken/Models/Cart.dart';
+import 'package:zilliken/Models/Category.dart';
 import 'package:zilliken/Models/Fields.dart';
+import 'package:zilliken/Models/MenuItem.dart';
 import 'package:zilliken/Models/Order.dart';
 import 'package:zilliken/Models/OrderItem.dart';
 
@@ -125,4 +129,40 @@ String showRommTable(context, Order order) {
   else if (order.orderLocation == 1)
     text = "${I18n.of(context).roomNumber} : ${order.tableAdress}";
   return text;
+}
+
+List<MenuItem> getMenuItems() {
+  List<MenuItem> list = List();
+  File file = File('assets/menu.csv');
+  list = file.readAsLinesSync().skip(1) // Skip the header row
+      .map((line) {
+    final parts = line.split(',');
+    return MenuItem(
+      name: parts[0],
+      price: int.tryParse(parts[1]),
+      category: parts[2],
+      availability: int.tryParse(parts[3]),
+      rank: int.tryParse(parts[4]),
+      global: int.tryParse(parts[5]),
+      imageName: parts[6],
+    );
+  }).toList();
+
+  return list;
+}
+
+List<Category> getCategoryList() {
+  List<Category> list = List();
+  File file = File('assets/category.csv');
+  list = file.readAsLinesSync().skip(1) // Skip the header row
+      .map((line) {
+    final parts = line.split(',');
+    return Category(
+      name: parts[0],
+      rank: int.tryParse(parts[1]),
+      imageName: parts[2],
+    );
+  }).toList();
+
+  return list;
 }

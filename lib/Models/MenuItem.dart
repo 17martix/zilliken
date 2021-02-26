@@ -12,6 +12,7 @@ class MenuItem {
   int global;
   int availability;
   int createdAt;
+  String imageName;
 
   MenuItem({
     this.category,
@@ -22,6 +23,7 @@ class MenuItem {
     this.global,
     this.availability,
     this.createdAt,
+    this.imageName,
   });
 
   void buildObject(DocumentSnapshot document) {
@@ -33,6 +35,7 @@ class MenuItem {
     global = document.data()[Fields.global];
     availability = document.data()[Fields.availability];
     createdAt = document.data()[Fields.createdAt];
+    imageName = document.data()[Fields.imageName];
   }
 
   void buildObjectAsync(AsyncSnapshot<DocumentSnapshot> document) {
@@ -44,5 +47,6 @@ class MenuItem {
     global = document.data[Fields.global];
     availability = document.data[Fields.availability];
     createdAt = document.data[Fields.createdAt];
+    imageName = document.data[Fields.imageName];
   }
 }

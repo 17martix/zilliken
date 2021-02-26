@@ -51,4 +51,5 @@ class Fields {
 
   static final String settings = 'settings';
   static final String enabled = 'enabled';
+  static final String imageName = 'imageName';
 }
