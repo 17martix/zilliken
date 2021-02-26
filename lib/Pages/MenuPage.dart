@@ -64,6 +64,8 @@ class _MenuPageState extends State<MenuPage> {
   final _catformKey = GlobalKey<FormState>();
   List<String> _catList = new List();
 
+  double _yOffset = 8000;
+
   @override
   void initState() {
     super.initState();
@@ -84,6 +86,8 @@ class _MenuPageState extends State<MenuPage> {
       _menuItem.category = _catList[0];
       _isCategoryLoaded = true;
     });
+
+    if (clientOrder.length > 0) _yOffset = 0.0;
   }
 
   void commandesQuery(String category) {
@@ -122,23 +126,16 @@ class _MenuPageState extends State<MenuPage> {
 
   @override
   Widget build(BuildContext context) {
+    SizeConfig().init(context);
+    //_yOffset = SizeConfig.diagonal * 100;
     return Scaffold(
+      backgroundColor: Colors.transparent,
       key: _scaffoldKey,
-      body: Container(
-        decoration: BoxDecoration(
-            image: DecorationImage(
-          image: AssetImage('assets/Zilliken.jpg'),
-          fit: BoxFit.cover,
-        )),
-        child: Container(
-          color: Color(Styling.primaryBackgroundColor).withOpacity(0.7),
-          child: Stack(
-            children: [
-              body(),
-              ZCircularProgress(_isLoading),
-            ],
-          ),
-        ),
+      body: Stack(
+        children: [
+          body(),
+          ZCircularProgress(_isLoading),
+        ],
       ),
     );
   }
@@ -153,7 +150,7 @@ class _MenuPageState extends State<MenuPage> {
         Expanded(
           child: menulist(),
         ),
-        if (clientOrder.length > 0) showBill(),
+        /* if (clientOrder.length > 0)*/ showBill(),
       ],
     );
   }
@@ -310,47 +307,56 @@ class _MenuPageState extends State<MenuPage> {
   }
 
   Widget showBill() {
-    return Align(
-        alignment: Alignment.bottomCenter,
-        child: InkWell(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => CartPage(
-                  clientOrder: clientOrder,
-                  db: widget.db,
-                  auth: widget.auth,
-                  userId: widget.userId,
-                  userRole: widget.userRole,
+    return AnimatedContainer(
+      curve: Curves.fastLinearToSlowEaseIn,
+      duration: Duration(milliseconds: 600),
+      transform: Matrix4.translationValues(0, _yOffset, 1),
+      child: Align(
+          alignment: Alignment.bottomCenter,
+          child: InkWell(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CartPage(
+                    clientOrder: clientOrder,
+                    db: widget.db,
+                    auth: widget.auth,
+                    userId: widget.userId,
+                    userRole: widget.userRole,
+                  ),
                 ),
-              ),
-            );
-          },
-          child: Card(
-            color: Color(Styling.accentColor),
-            elevation: 16,
-            child: ListTile(
-              title: Text(
-                numberItems(context, clientOrder),
-                style: TextStyle(color: Color(Styling.primaryBackgroundColor)),
-              ),
-              subtitle: Text(
-                priceItems(context, clientOrder),
-                style: TextStyle(
-                  color: Color(Styling.primaryBackgroundColor),
-                  fontWeight: FontWeight.bold,
+              );
+            },
+            child: Card(
+              shape: RoundedRectangleBorder(
+                  borderRadius:
+                      BorderRadius.circular(SizeConfig.diagonal * 1.5)),
+              color: Color(Styling.accentColor),
+              elevation: 16,
+              child: ListTile(
+                title: Text(
+                  numberItems(context, clientOrder),
+                  style:
+                      TextStyle(color: Color(Styling.primaryBackgroundColor)),
                 ),
-              ),
-              trailing: Text(
-                I18n.of(context).vOrder,
-                style: TextStyle(
-                  color: Color(Styling.primaryBackgroundColor),
+                subtitle: Text(
+                  priceItems(context, clientOrder),
+                  style: TextStyle(
+                    color: Color(Styling.primaryBackgroundColor),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                trailing: Text(
+                  I18n.of(context).vOrder,
+                  style: TextStyle(
+                    color: Color(Styling.primaryBackgroundColor),
+                  ),
                 ),
               ),
             ),
-          ),
-        ));
+          )),
+    );
   }
 
   bool validateAndSaveCategory() {
@@ -549,11 +555,15 @@ class _MenuPageState extends State<MenuPage> {
 
   Widget item(MenuItem menu) {
     return Card(
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5)),
       elevation: 2,
       child: Row(
         children: [
           Container(
-            color: Colors.black,
+            decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.5),
+                borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5)),
             height: SizeConfig.diagonal * 10,
             width: SizeConfig.diagonal * 10,
           ),
@@ -620,6 +630,7 @@ class _MenuPageState extends State<MenuPage> {
                                 if (value == 0) {
                                   setState(() {
                                     clientOrder.remove(orderItem);
+                                    _yOffset = 8000;
                                   });
                                   //order.remove(orderItem);
                                 } else {
@@ -637,6 +648,7 @@ class _MenuPageState extends State<MenuPage> {
                                     menuItem: menu,
                                     count: 1,
                                   ));
+                                  _yOffset = 0.0;
                                 });
                               },
                               child: Container(

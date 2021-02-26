@@ -1,9 +1,11 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:zilliken/Components/ZAppBar.dart';
 import 'package:zilliken/Helpers/ConnectionStatus.dart';
+import 'package:zilliken/Helpers/SizeConfig.dart';
 import 'package:zilliken/Helpers/Styling.dart';
 import 'package:zilliken/Models/Fields.dart';
 import 'package:zilliken/Models/OrderItem.dart';
@@ -76,27 +78,40 @@ class _DashboardPageState extends State<DashboardPage> {
             userId: widget.userId,
             userRole: widget.userRole,
           )
-        : Scaffold(
-            key: _scaffoldKey,
-            appBar: buildAppBar(
-                context, widget.auth, false, true, googleSign, logout,null),
-            body: body(),
-            bottomNavigationBar: BottomNavigationBar(
-              items: <BottomNavigationBarItem>[
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.restaurant_menu_outlined),
-                  label: I18n.of(context).menu,
+        : Container(
+            decoration: BoxDecoration(
+                image: DecorationImage(
+              image: AssetImage('assets/Zilliken.jpg'),
+              fit: BoxFit.cover,
+            )),
+            child: Container(
+              color: Color(Styling.primaryBackgroundColor).withOpacity(0.7),
+              child: Scaffold(
+                key: _scaffoldKey,
+                backgroundColor: Colors.transparent,
+                appBar: buildAppBar(context, widget.auth, false, true,
+                    googleSign, logout, null),
+                body: body(),
+                bottomNavigationBar: CurvedNavigationBar(
+                  color: Colors.white.withOpacity(0.7),
+                  height: SizeConfig.diagonal * 6,
+                  animationDuration: Duration(milliseconds: 600),
+                  backgroundColor: Colors.transparent,
+                  items: <Widget>[
+                    Icon(Icons.restaurant_menu_outlined),
+                    Icon(Icons.shopping_bag),
+                  ],
+                  /*currentIndex: _selectedIndex,
+                  selectedItemColor: Color(
+                    Styling.primaryColor,
+                  ),*/
+                  onTap: (index) {
+                    setState(() {
+                      _selectedIndex = index;
+                    });
+                  },
                 ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.shopping_bag),
-                  label: I18n.of(context).orders,
-                ),
-              ],
-              currentIndex: _selectedIndex,
-              selectedItemColor: Color(
-                Styling.primaryColor,
               ),
-              onTap: _onItemTapped,
             ),
           );
   }
@@ -161,6 +176,7 @@ class _DashboardPageState extends State<DashboardPage> {
               ),
             ),
           );
+          
         }
       } on Exception catch (e) {
         //print('Error: $e');

@@ -36,6 +36,7 @@ dependencies:
   connectivity: ^2.0.0
   timelines: ^0.0.2+1
   google_sign_in: ^4.5.6
+  curved_navigation_bar: ^0.3.7
 
   flutter_localizations:
     sdk: flutter

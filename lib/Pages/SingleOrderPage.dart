@@ -170,6 +170,9 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                 left: SizeConfig.diagonal * 0.5,
                 right: SizeConfig.diagonal * 0.5),
             child: Card(
+              shape: RoundedRectangleBorder(
+                  borderRadius:
+                      BorderRadius.circular(SizeConfig.diagonal * 1.5)),
               elevation: 15,
               child: Column(
                 children: [
@@ -220,6 +223,8 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
         right: SizeConfig.diagonal * 0.5,
       ),
       child: Card(
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5)),
         elevation: 16,
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -621,6 +626,8 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
               left: SizeConfig.diagonal * 0.5,
               right: SizeConfig.diagonal * 0.5),
           child: Card(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5)),
             elevation: 16,
             child: Column(
               children: [
@@ -903,6 +910,9 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
         right: SizeConfig.diagonal * 0.5,
       ),
       child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5),
+        ),
         elevation: 16,
         child: Column(
           children: [
@@ -1002,10 +1012,10 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
     return ZRaisedButton(
       leftPadding: SizeConfig.diagonal * 1,
       rightPadding: SizeConfig.diagonal * 1,
-      onpressed: () async {
+      onpressed: () {},/*async {
         await widget.db.cancelOrder(widget.orderId);
         Navigator.pop(context);
-      },
+      },*/
       textIcon: Text(
         I18n.of(context).cancelOrder,
         style: TextStyle(color: Color(Styling.primaryBackgroundColor)),
