@@ -11,8 +11,8 @@ class SizeConfig {
 
   static double _safeAreaHorizontal;
   static double _safeAreaVertical;
-  static double _safeBlockHorizontal;
-  static double _safeBlockVertical;
+  static double safeBlockHorizontal;
+  static double safeBlockVertical;
   static double diagonal;
 
   void init(BuildContext context) {
@@ -26,9 +26,9 @@ class SizeConfig {
         _mediaQueryData.padding.left + _mediaQueryData.padding.right;
     _safeAreaVertical =
         _mediaQueryData.padding.top + _mediaQueryData.padding.bottom;
-    _safeBlockHorizontal = (_screenWidth - _safeAreaHorizontal) / 100;
-    _safeBlockVertical = (_screenHeight - _safeAreaVertical) / 100;
-    diagonal = sqrt((_safeBlockHorizontal * _safeBlockHorizontal) +
-        (_safeBlockVertical * _safeBlockVertical));
+    safeBlockHorizontal = (_screenWidth - _safeAreaHorizontal) / 100;
+    safeBlockVertical = (_screenHeight - _safeAreaVertical) / 100;
+    diagonal = sqrt((safeBlockHorizontal * safeBlockHorizontal) +
+        (safeBlockVertical * safeBlockVertical));
   }
 }

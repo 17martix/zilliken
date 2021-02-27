@@ -24,6 +24,7 @@ class DashboardPage extends StatefulWidget {
   final String userId;
   final String userRole;
   final List<OrderItem> clientOrder;
+  final int index;
 
   DashboardPage({
     this.auth,
@@ -31,6 +32,7 @@ class DashboardPage extends StatefulWidget {
     this.userRole,
     this.db,
     this.clientOrder,
+    this.index,
   });
 
   @override
@@ -44,8 +46,8 @@ class _DashboardPageState extends State<DashboardPage> {
   int _selectedIndex = 0;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   int enabled = 1;
-  double _xOffset1 = 0.0;
-  double _xOffset2 = 0.0;
+  double _xOffset1 = 0;
+  double _xOffset2 = 0;
 
   @override
   void initState() {
@@ -53,6 +55,12 @@ class _DashboardPageState extends State<DashboardPage> {
     ConnectionStatus connectionStatus = ConnectionStatus.getInstance();
     _connectionChangeStream =
         connectionStatus.connectionChange.listen(connectionChanged);
+
+    if (widget.index != null) {
+      setState(() {
+        _selectedIndex = widget.index;
+      });
+    }
 
     FirebaseFirestore.instance
         .collection(Fields.configuration)
@@ -73,6 +81,22 @@ class _DashboardPageState extends State<DashboardPage> {
 
   @override
   Widget build(BuildContext context) {
+    SizeConfig().init(context);
+    _xOffset2 = SizeConfig.safeBlockHorizontal * 0;
+    switch (_selectedIndex) {
+      case 0:
+        setState(() {
+          _xOffset1 = SizeConfig.safeBlockHorizontal * 0;
+          _xOffset2 = SizeConfig.safeBlockHorizontal * 100;
+        });
+        break;
+      case 1:
+        setState(() {
+          _xOffset1 = SizeConfig.safeBlockHorizontal * -100;
+          _xOffset2 = SizeConfig.safeBlockHorizontal * 0;
+        });
+        break;
+    }
     return enabled == 0
         ? DisabledPage(
             auth: widget.auth,
@@ -98,8 +122,9 @@ class _DashboardPageState extends State<DashboardPage> {
                   animationCurve: Curves.easeInBack,
                   color: Colors.white.withOpacity(0.7),
                   height: SizeConfig.diagonal * 6,
-                  animationDuration: Duration(milliseconds: 600),
+                  animationDuration: Duration(milliseconds: 800),
                   backgroundColor: Colors.transparent,
+                  index: _selectedIndex,
                   items: <Widget>[
                     Icon(Icons.restaurant_menu_outlined),
                     Icon(Icons.shopping_bag),
@@ -126,23 +151,34 @@ class _DashboardPageState extends State<DashboardPage> {
   }*/
 
   Widget body() {
-    /*return Stack(
+    return Stack(
       children: [
         AnimatedContainer(
-          child: MenuPage(),
+          child: MenuPage(
+            auth: widget.auth,
+            db: widget.db,
+            userId: widget.userId,
+            userRole: widget.userRole,
+            clientOrder: widget.clientOrder,
+          ),
           curve: Curves.easeInBack,
-          duration: Duration(milliseconds: 600),
+          duration: Duration(milliseconds: 800),
           transform: Matrix4.translationValues(_xOffset1, 0, 1),
         ),
         AnimatedContainer(
-          child: OrdersPage(),
+          child: OrdersPage(
+            auth: widget.auth,
+            db: widget.db,
+            userId: widget.userId,
+            userRole: widget.userRole,
+          ),
           curve: Curves.easeInBack,
-          duration: Duration(milliseconds: 600),
+          duration: Duration(milliseconds: 800),
           transform: Matrix4.translationValues(_xOffset2, 0, 1),
         )
       ],
-    );*/
-    switch (_selectedIndex) {
+    );
+    /*switch (_selectedIndex) {
       case 0:
         return MenuPage(
           auth: widget.auth,
@@ -169,7 +205,7 @@ class _DashboardPageState extends State<DashboardPage> {
           clientOrder: widget.clientOrder,
         );
         break;
-    }
+    }*/
   }
 
   /*Route _fromMenuToOrders() {

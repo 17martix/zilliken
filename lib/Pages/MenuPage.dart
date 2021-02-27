@@ -73,7 +73,10 @@ class _MenuPageState extends State<MenuPage> {
     setState(() {
       commandesQuery(selectedCategory);
       if (widget.clientOrder != null && widget.clientOrder.length > 0)
-        clientOrder = widget.clientOrder;
+        setState(() {
+          clientOrder = widget.clientOrder;
+          _yOffset = 0.0;
+        });
     });
 
     ConnectionStatus connectionStatus = ConnectionStatus.getInstance();
@@ -87,7 +90,7 @@ class _MenuPageState extends State<MenuPage> {
       _isCategoryLoaded = true;
     });
 
-    if (clientOrder.length > 0) _yOffset = 0.0;
+    //if (clientOrder.length > 0)
   }
 
   void commandesQuery(String category) {
@@ -489,13 +492,17 @@ class _MenuPageState extends State<MenuPage> {
             child: Text(""),
           );
 
-        return SingleChildScrollView(
-          child: Row(
-            children: snapshot.data.docs.map((DocumentSnapshot document) {
-              Category category = Category();
-              category.buildObject(document);
-              return categoryItem(category);
-            }).toList(),
+        return Container(
+          margin: EdgeInsets.symmetric(horizontal: SizeConfig.diagonal * 1),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: snapshot.data.docs.map((DocumentSnapshot document) {
+                Category category = Category();
+                category.buildObject(document);
+                return categoryItem(category);
+              }).toList(),
+            ),
           ),
         );
       },
@@ -653,6 +660,9 @@ class _MenuPageState extends State<MenuPage> {
                               },
                               child: Container(
                                 decoration: BoxDecoration(
+                                  color: Color(Styling.accentColor),
+                                  borderRadius: BorderRadius.circular(
+                                      SizeConfig.diagonal * 3),
                                   border: Border.all(
                                     color: Color(Styling.accentColor),
                                   ),
@@ -665,11 +675,14 @@ class _MenuPageState extends State<MenuPage> {
                                     Text(
                                       I18n.of(context).addItem,
                                       style: TextStyle(
+                                          color: Colors.white,
                                           fontSize: SizeConfig.diagonal * 1.5),
                                     ),
+                                    SizedBox(width: SizeConfig.diagonal * 0.5),
                                     Icon(
                                       Icons.add,
                                       size: SizeConfig.diagonal * 1.5,
+                                      color: Colors.white,
                                     ),
                                   ],
                                 ),
@@ -692,27 +705,22 @@ class _MenuPageState extends State<MenuPage> {
           commandesQuery(category.name);
         });
       },
-      child: Padding(
+      child: Container(
         padding: EdgeInsets.all(SizeConfig.diagonal * 1.5),
-        child: Column(
-          children: [
-            Text(
-              category.name,
-              style: TextStyle(
-                  color: selectedCategory == category.name
-                      ? Color(Styling.textColor)
-                      : Color(Styling.textColor).withOpacity(0.3),
-                  fontWeight: selectedCategory == category.name
-                      ? FontWeight.bold
-                      : FontWeight.normal),
-            ),
-            if (selectedCategory == category.name)
-              Container(
-                height: 2,
-                width: SizeConfig.diagonal * 2,
-                color: Color(Styling.accentColor),
-              ),
-          ],
+        decoration: BoxDecoration(
+            color: selectedCategory == category.name
+                ? Color(Styling.accentColor)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(SizeConfig.diagonal * 3)),
+        child: Text(
+          category.name,
+          style: TextStyle(
+              color: selectedCategory == category.name
+                  ? Colors.white
+                  : Color(Styling.textColor).withOpacity(0.3),
+              fontWeight: selectedCategory == category.name
+                  ? FontWeight.bold
+                  : FontWeight.normal),
         ),
       ),
     );

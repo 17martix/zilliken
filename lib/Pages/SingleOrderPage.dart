@@ -100,7 +100,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
   }
 
   void backFunction() {
-    Navigator.pushReplacement(
+    Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(
         builder: (context) => DashboardPage(
@@ -108,8 +108,10 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
           auth: widget.auth,
           userId: widget.userId,
           userRole: widget.userRole,
+          index: 1,
         ),
       ),
+      (Route<dynamic> route) => false,
     );
   }
 
@@ -118,7 +120,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
     SizeConfig().init(context);
     return WillPopScope(
       onWillPop: () {
-        return Navigator.pushReplacement(
+        return Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
             builder: (context) => DashboardPage(
@@ -126,8 +128,10 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
               auth: widget.auth,
               userId: widget.userId,
               userRole: widget.userRole,
+              index: 1,
             ),
           ),
+          (Route<dynamic> route) => false,
         );
       },
       child: enabled == 0
@@ -140,13 +144,11 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
           : Scaffold(
               appBar: buildAppBar(
                   context, widget.auth, true, false, null, null, backFunction),
-              body: Hero(tag: widget.orderId,
-                              child: Stack(
-                  children: [
-                    body(),
-                    ZCircularProgress(_isLoading),
-                  ],
-                ),
+              body: Stack(
+                children: [
+                  body(),
+                  ZCircularProgress(_isLoading),
+                ],
               ),
             ),
     );
@@ -155,7 +157,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
   Widget body() {
     if (isDataBeingDeleted) {
       return Center(
-        child: Text(""),
+        child: ZCircularProgress(true),
       );
     } else {
       return ListView(
@@ -1014,11 +1016,13 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
     return ZRaisedButton(
       leftPadding: SizeConfig.diagonal * 1,
       rightPadding: SizeConfig.diagonal * 1,
-      onpressed: () {},
-      /*async {
+      onpressed: () async {
+        setState(() {
+          isDataBeingDeleted = true;
+        });
         await widget.db.cancelOrder(widget.orderId);
-        Navigator.pop(context);
-      },*/
+        backFunction();
+      },
       textIcon: Text(
         I18n.of(context).cancelOrder,
         style: TextStyle(color: Color(Styling.primaryBackgroundColor)),

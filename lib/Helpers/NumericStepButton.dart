@@ -27,60 +27,62 @@ class NumericStepButton extends StatefulWidget {
 class _NumericStepButtonState extends State<NumericStepButton> {
   @override
   Widget build(BuildContext context) {
-    return Wrap(
-      alignment: WrapAlignment.end,
-      children: [
-        Container(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              IconButton(
-                icon: Icon(
-                  Icons.remove,
-                  color: Theme.of(context).accentColor,
-                ),
-                padding: EdgeInsets.symmetric(vertical: 0.0, horizontal: 0.0),
-                iconSize: SizeConfig.diagonal * 2,
-                color: Theme.of(context).primaryColor,
-                onPressed: () {
-                  setState(() {
-                    if (widget.counter > widget.minValue) {
-                      widget.counter--;
-                    }
-                    widget.onChanged(widget.counter);
-                  });
-                },
-              ),
-              Text(
-                "${widget.counter}",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Color(Styling.textColor),
-                  fontSize: SizeConfig.diagonal * 1.5,
-                ),
-              ),
-              IconButton(
-                icon: Icon(
-                  Icons.add,
-                  color: Theme.of(context).accentColor,
-                ),
-                padding: EdgeInsets.symmetric(vertical: 0.0, horizontal: 0.0),
-                iconSize: SizeConfig.diagonal * 2,
-                color: Theme.of(context).primaryColor,
-                onPressed: () {
-                  setState(() {
-                    if (widget.counter < widget.maxValue) {
-                      widget.counter++;
-                    }
-                    widget.onChanged(widget.counter);
-                  });
-                },
-              ),
-            ],
+    return Container(
+      margin: EdgeInsets.all(SizeConfig.diagonal * 1),
+      padding: EdgeInsets.all(SizeConfig.diagonal * 1),
+      decoration: BoxDecoration(
+          color: Color(Styling.accentColor),
+          borderRadius: BorderRadius.circular(SizeConfig.diagonal * 3)),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          InkWell(
+            onTap: () {
+              setState(() {
+                if (widget.counter > widget.minValue) {
+                  widget.counter--;
+                }
+                widget.onChanged(widget.counter);
+              });
+            },
+            child: Icon(
+              Icons.remove,
+              color: Colors.white,
+              size: SizeConfig.diagonal * 2,
+            ),
           ),
-        ),
-      ],
+          SizedBox(
+            width: SizeConfig.diagonal * 1.1,
+          ),
+          Text(
+            "${widget.counter}",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: SizeConfig.diagonal * 1.5,
+            ),
+          ),
+          SizedBox(
+            width: SizeConfig.diagonal * 1.1,
+          ),
+          InkWell(
+            onTap: () {
+              setState(() {
+                if (widget.counter < widget.maxValue) {
+                  widget.counter++;
+                }
+                widget.onChanged(widget.counter);
+              });
+            },
+            child: Icon(
+              Icons.add,
+              color: Colors.white,
+              size: SizeConfig.diagonal * 2,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
