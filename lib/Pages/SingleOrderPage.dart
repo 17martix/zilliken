@@ -140,11 +140,13 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
           : Scaffold(
               appBar: buildAppBar(
                   context, widget.auth, true, false, null, null, backFunction),
-              body: Stack(
-                children: [
-                  body(),
-                  ZCircularProgress(_isLoading),
-                ],
+              body: Hero(tag: widget.orderId,
+                              child: Stack(
+                  children: [
+                    body(),
+                    ZCircularProgress(_isLoading),
+                  ],
+                ),
               ),
             ),
     );
@@ -1012,7 +1014,8 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
     return ZRaisedButton(
       leftPadding: SizeConfig.diagonal * 1,
       rightPadding: SizeConfig.diagonal * 1,
-      onpressed: () {},/*async {
+      onpressed: () {},
+      /*async {
         await widget.db.cancelOrder(widget.orderId);
         Navigator.pop(context);
       },*/

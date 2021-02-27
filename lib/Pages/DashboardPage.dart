@@ -44,6 +44,8 @@ class _DashboardPageState extends State<DashboardPage> {
   int _selectedIndex = 0;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   int enabled = 1;
+  double _xOffset1 = 0.0;
+  double _xOffset2 = 0.0;
 
   @override
   void initState() {
@@ -93,6 +95,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     googleSign, logout, null),
                 body: body(),
                 bottomNavigationBar: CurvedNavigationBar(
+                  animationCurve: Curves.easeInBack,
                   color: Colors.white.withOpacity(0.7),
                   height: SizeConfig.diagonal * 6,
                   animationDuration: Duration(milliseconds: 600),
@@ -116,13 +119,29 @@ class _DashboardPageState extends State<DashboardPage> {
           );
   }
 
-  void _onItemTapped(int index) {
+  /*void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
-  }
+  }*/
 
   Widget body() {
+    /*return Stack(
+      children: [
+        AnimatedContainer(
+          child: MenuPage(),
+          curve: Curves.easeInBack,
+          duration: Duration(milliseconds: 600),
+          transform: Matrix4.translationValues(_xOffset1, 0, 1),
+        ),
+        AnimatedContainer(
+          child: OrdersPage(),
+          curve: Curves.easeInBack,
+          duration: Duration(milliseconds: 600),
+          transform: Matrix4.translationValues(_xOffset2, 0, 1),
+        )
+      ],
+    );*/
     switch (_selectedIndex) {
       case 0:
         return MenuPage(
@@ -153,6 +172,32 @@ class _DashboardPageState extends State<DashboardPage> {
     }
   }
 
+  /*Route _fromMenuToOrders() {
+    return PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) => OrdersPage(
+              auth: widget.auth,
+              db: widget.db,
+              userId: widget.userId,
+              userRole: widget.userRole,
+            ),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return child;
+        });
+  }
+
+  Route _fromOrdersToMenu() {
+    return PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) => OrdersPage(
+              auth: widget.auth,
+              db: widget.db,
+              userId: widget.userId,
+              userRole: widget.userRole,
+            ),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return child;
+        });
+  }*/
+
   void googleSign() async {
     String userId = "";
 
@@ -176,7 +221,6 @@ class _DashboardPageState extends State<DashboardPage> {
               ),
             ),
           );
-          
         }
       } on Exception catch (e) {
         //print('Error: $e');
