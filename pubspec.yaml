@@ -36,6 +36,7 @@ dependencies:
   connectivity: ^2.0.0
   timelines: ^0.0.2+1
   google_sign_in: ^4.5.6
+  curved_navigation_bar: ^0.3.7
 
   flutter_localizations:
     sdk: flutter
@@ -63,6 +64,201 @@ flutter:
 
   assets:
     - assets/logo.jpg
+    - assets/Zilliken.jpg
+    - assets/tea.jpg
+    - assets/ginger tea.jpg
+    - assets/cafe.jpeg
+    - assets/expresso.jpg
+    - assets/chocolat chaud.jpeg
+    - assets/the marocain.jpg
+    - assets/the-vert.jpg
+    - assets/African tee.png
+    - assets/eau plate.jpg
+    - assets/eaupetillante.jpeg
+    - assets/fanta.jpg
+    - assets/passion.jpg
+    - assets/viva.jpeg
+    - assets/royal.jpg
+    - assets/leffe.jpg
+    - assets/heineken.jpg
+    - assets/windhoek.png
+    - assets/soupe de poulet legume.jpg
+    - assets/soupe de legume.jpg
+    - assets/soupe boeuf_legume.jpg
+    - assets/soupe italienne.jpg
+    - assets/omelette jambon fromage.jpg
+    - assets/omelette_speciale.jpg
+    - assets/omelette espagnole.jpg
+    - assets/oeuf_sur_le_plat.jpg
+    - assets/soupe_de_brocolis.jpg
+    - assets/soupe de carotte.jpg
+    - assets/sandwich jambon fromage.jpg
+    - assets/croque monsieur.jpg
+    - assets/fromagedechevre.jpeg
+    - assets/tranche_de_baguette_au_pesto.jpg
+    - assets/minibrochette_au_filet_de_boeuf.jpeg
+    - assets/toastdecaptaine.jpeg
+    - assets/minibrochetteaupoulet.jpeg
+    - assets/salademixteaufromagedechevre.jpeg
+    - assets/salademixte.jpeg
+    - assets/salademixteaublancdepouletaveclardon.jpeg
+    - assets/tranchedemozarellasurtomate.jpeg
+    - assets/sangalabatonnetauxpoireaux.jpeg
+    - assets/sangalaaucurry.jpeg
+    - assets/sangalamenuiere.jpeg
+    - assets/sangalagratineeauxepinards.jpeg
+    - assets/sangalavinotheque.jpeg
+    - assets/sangalaauvinblanc.jpeg
+    - assets/sangalaalorange.jpeg
+    - assets/sangalatapisse.jpeg
+    - assets/sangalaencubeaulaitdecoco.jpeg
+    - assets/sangalacremeauxchampignons.jpeg
+    #- assets/crevettessauteesaubeurre.jpeg
+    - assets/mukekeentier.jpeg
+    - assets/croquettepoisson.jpeg
+    - assets/calamar.jpeg
+    - assets/gambasmoyen.jpeg
+    - assets/tagliatelleavecchampignon.jpeg
+    #- assets/tagliatelleaupoule
+    - assets/tagliatelleemincedepouletauxchampignons.jpeg
+    #- assets/tagliatelleemincedeboeuffromageblanc.jpeg
+    - assets/steak de filet de boeuf.jpg
+    - assets/steak hawaien.jpg
+    - assets/steakvinoteque.jpeg
+    - assets/steak avec gambas.jpg
+    - assets/steakalexander.jpeg
+    - assets/filet de boeuf au miel et sesame.jpg
+    - assets/steak champignon creme.jpg
+    - assets/filet facile.jpg
+    - assets/filet espagnol.jpg
+    - assets/gigot de chevre.jpg
+    - assets/gigot d'agneau entier pour 2 personnes.jpg
+    - assets/langue de boeuf cuit aux legumes.jpeg
+    - assets/ragout de chevre.jpg
+    - assets/gratin de boeuf aux pommes de terre et epinards.jpg
+    - assets/ragout-de-chevre-aux-champigons-et-carottes.jpeg
+    - assets/hamburger-frites.jpg
+    - assets/mozzarelle cheeseburger-frites.jpg
+    - assets/royal mozzarella cheeseburger-frite.jpg
+    - assets/emince de blanc de poulet avec ses champignons noirs.jpg
+    - assets/emince-de-blanc-de-poulet-au-curry.jpeg
+    - assets/emince de blanc de poulet vinotheque.jpg
+    - assets/blanc de poulet tapisse de ses legumes.jpeg
+    - assets/quiche vegetarien avec salade.jpg
+    - assets/quiche jambon avec salade.jpg
+    - assets/saumon fume.jpg
+    - assets/CAPITAINE FUMÉ(100g).jpeg
+    - assets/riz blanc,riz au curry.jpg
+    - assets/legumes mixtes.jpg
+    - assets/epinard.jpg
+    - assets/pomme nature,puree,croquettes,pommes de terre sautee aux oigons et lardon.jpg
+    - assets/frites.jpg
+    - assets/petite salade.jpg
+    - assets/couscous.jpg
+    - assets/pommes de terre sautee aux legumes.jpg
+    - assets/eau plate.jpg
+    - assets/eaupetillante.jpeg
+    - assets/fanta.jpg
+    - assets/passion.jpg
+    - assets/viva.jpeg
+    - assets/royal.jpg
+    - assets/leffe.jpg
+    - assets/heineken.jpg
+    - assets/américano.jpeg
+    - assets/hakunamatata.jpeg
+    - assets/greenpoison.jpeg
+    - assets/tequilasunrise.jpeg
+    - assets/specialgirl.jpeg
+    - assets/punchpassion.jpeg
+    - assets/appletini.jpeg
+    - assets/longisland.jpeg
+    - assets/moetetchandon.jpeg
+    - assets/veuveclicquot.jpeg
+    - assets/ST MILLIONEX.jpeg
+    - assets/royalsalute.jpeg
+    - assets/chivas18.jpeg
+    - assets/chivas12.jpeg
+    - assets/glenfidich12.jpeg
+    - assets/courvoisier.jpeg
+    - assets/martel.jpeg
+    - assets/hennessy.jpeg
+    - assets/remymartinvsop.jpeg
+    - assets/gold.jpeg
+    #- assets/ELBING SEC,(1,01).jpeg
+    - assets/ELBLING  CLASSIC ,SEC.jpeg
+    #- assets/ELBLING FILIUS DEMI-SEC.JPEG
+    - assets/CUVEE MUSCHELKALK (PINOT ELBING),SEC.jpeg
+    - assets/RIESLING, SEC.jpeg
+    - assets/RIESLING,  CRU CLASSE,DEMI-SEC.jpeg
+    - assets/RIESLING VENDAGE TARDIVE,VIELLES VIGNES.jpeg
+    - assets/PINOT BLANC, SEC.jpeg
+    - assets/PINOT GRIS BARRIQUE,SEC.jpeg
+    - assets/PINOT AUXERROIS,SEC.jpeg
+    - assets/SAUVIGNON BLANC,SEC.jpeg
+    - assets/SAUVIGNON BLANC, FUME,SEC.jpeg
+    - assets/CHARDONNAY,SEC.jpeg
+    - assets/ELBING ROSE, SEC.jpeg
+    - assets/PINOT NOIR,ROSE,DEMI-SEC.jpeg
+    - assets/BLANC DE NOIR,SEC.jpeg
+    - assets/DORNFELDER SEC,(1,01).jpeg
+    - assets/DORNFELDER DEMI-SEC.jpeg
+    - assets/PINOT NOIR ,SEC.jpeg
+    - assets/PINOT NOIR SELECTION BARRIQUE,SEC.JPEG
+    - assets/CUVEE JEAN BAPTISTE,SEC.jpeg
+    - assets/RIESLING VIN MOUSSEUX , SEC 1).jpeg
+    - assets/CUVEE PINOTELBING EXTRA BRUT 1).jpeg
+    #- assets/ELBING ROSE SEC , VIN MOUSSEUX 1)
+    - assets/ANANAS  ORANGE MANGUE.jpeg
+    - assets/ANANAS  GINGEMBRE ORANGE.jpeg
+    - assets/ORANGE CONCOMBRE ANANAS.jpeg
+    - assets/MOCKTAIL (MOJITO SANS ALCOOL.jpeg
+    - assets/hakunamatata.jpeg
+    - assets/mojito.jpeg
+    - assets/greenpoison.jpeg
+    - assets/tequilasunrise.jpeg
+    - assets/pinacolada.jpeg
+    - assets/specialgirl.jpeg
+    - assets/américano.jpeg
+    - assets/CAMPARI SPRITZ(Campari, Vin Blanc, Soda).jpeg
+    - assets/GREEN POISON(Gin, Jus d’orange, Menthe).jpeg
+    - assets/BACARDI(Bacardi, Jus de Citron, Grenadine).jpeg
+    - assets/SPECIAL BOY(Martini, Tonic, Rum, Crème De Cassis).jpeg
+    - assets/appletini.jpeg
+    - assets/PUNCH PASSION(Rum, Fruito).jpeg
+    - assets/GIN FIZZ(Gin, Jus de citron, Silop de sucre, Soda).jpeg
+    - assets/CUBA LIBRE(rum –coca cola –lime –soda).jpeg
+    - assets/ZIZI COIN COIN(cointreau -jus de citron).jpeg
+    - assets/NEGRONI(campari –martini-gin- soda).jpeg
+    - assets/GIN TONIC(gin, glacons, tranche de citron, tige romarin).jpeg
+    - assets/LONG ISLAND(gin, tequilla, rum, vodka, cointreau, coca, jus de citron).jpeg
+    - assets/VINOTHÈQUE(martini, glaçons rouge).jpeg
+    - assets/tequila.jpeg
+    - assets/campari.jpeg
+    - assets/baccardi.jpeg
+    - assets/martini.jpeg
+    - assets/vodka.jpeg
+    - assets/gingordons.jpeg
+    - assets/ginferdinands.jpeg
+    - assets/cointreau.jpeg
+    - assets/cremedecassis.jpeg
+    - assets/grandmarnier.jpeg
+    - assets/jackdaniels.jpeg
+    - assets/henessy.jpeg
+    - assets/chivas.jpeg
+    - assets/goldlabel.jpeg
+    - assets/martel.jpeg
+    - assets/bombay.jpeg
+    - assets/crepenature.jpeg
+    - assets/crepenutella.jpeg
+    - assets/crepenutellaavecbouledeglace.jpeg
+    - assets/crepecitron.jpeg
+    - assets/crepemiel.jpeg
+    - assets/crepeultime.jpeg
+    - assets/fruitsdesaison.jpeg
+    - assets/saladedefruit.jpeg
+    - assets/moelleuxauchocolat.jpeg
+    - assets/bouledeglacevanille.jpeg
+    - assets/brownieauchocolat.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

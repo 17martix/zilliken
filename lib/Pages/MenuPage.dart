@@ -64,6 +64,8 @@ class _MenuPageState extends State<MenuPage> {
   final _catformKey = GlobalKey<FormState>();
   List<String> _catList = new List();
 
+  double _yOffset = 8000;
+
   @override
   void initState() {
     super.initState();
@@ -71,7 +73,10 @@ class _MenuPageState extends State<MenuPage> {
     setState(() {
       commandesQuery(selectedCategory);
       if (widget.clientOrder != null && widget.clientOrder.length > 0)
-        clientOrder = widget.clientOrder;
+        setState(() {
+          clientOrder = widget.clientOrder;
+          _yOffset = 0.0;
+        });
     });
 
     ConnectionStatus connectionStatus = ConnectionStatus.getInstance();
@@ -84,6 +89,8 @@ class _MenuPageState extends State<MenuPage> {
       _menuItem.category = _catList[0];
       _isCategoryLoaded = true;
     });
+
+    //if (clientOrder.length > 0)
   }
 
   void commandesQuery(String category) {
@@ -122,7 +129,10 @@ class _MenuPageState extends State<MenuPage> {
 
   @override
   Widget build(BuildContext context) {
+    SizeConfig().init(context);
+    //_yOffset = SizeConfig.diagonal * 100;
     return Scaffold(
+      backgroundColor: Colors.transparent,
       key: _scaffoldKey,
       body: Stack(
         children: [
@@ -143,7 +153,7 @@ class _MenuPageState extends State<MenuPage> {
         Expanded(
           child: menulist(),
         ),
-        if (clientOrder.length > 0) showBill(),
+        /* if (clientOrder.length > 0)*/ showBill(),
       ],
     );
   }
@@ -312,47 +322,56 @@ class _MenuPageState extends State<MenuPage> {
   }
 
   Widget showBill() {
-    return Align(
-        alignment: Alignment.bottomCenter,
-        child: InkWell(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => CartPage(
-                  clientOrder: clientOrder,
-                  db: widget.db,
-                  auth: widget.auth,
-                  userId: widget.userId,
-                  userRole: widget.userRole,
+    return AnimatedContainer(
+      curve: Curves.fastLinearToSlowEaseIn,
+      duration: Duration(milliseconds: 600),
+      transform: Matrix4.translationValues(0, _yOffset, 1),
+      child: Align(
+          alignment: Alignment.bottomCenter,
+          child: InkWell(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CartPage(
+                    clientOrder: clientOrder,
+                    db: widget.db,
+                    auth: widget.auth,
+                    userId: widget.userId,
+                    userRole: widget.userRole,
+                  ),
                 ),
-              ),
-            );
-          },
-          child: Card(
-            color: Color(Styling.accentColor),
-            elevation: 16,
-            child: ListTile(
-              title: Text(
-                numberItems(context, clientOrder),
-                style: TextStyle(color: Color(Styling.primaryBackgroundColor)),
-              ),
-              subtitle: Text(
-                priceItems(context, clientOrder),
-                style: TextStyle(
-                  color: Color(Styling.primaryBackgroundColor),
-                  fontWeight: FontWeight.bold,
+              );
+            },
+            child: Card(
+              shape: RoundedRectangleBorder(
+                  borderRadius:
+                      BorderRadius.circular(SizeConfig.diagonal * 1.5)),
+              color: Color(Styling.accentColor),
+              elevation: 16,
+              child: ListTile(
+                title: Text(
+                  numberItems(context, clientOrder),
+                  style:
+                      TextStyle(color: Color(Styling.primaryBackgroundColor)),
                 ),
-              ),
-              trailing: Text(
-                I18n.of(context).vOrder,
-                style: TextStyle(
-                  color: Color(Styling.primaryBackgroundColor),
+                subtitle: Text(
+                  priceItems(context, clientOrder),
+                  style: TextStyle(
+                    color: Color(Styling.primaryBackgroundColor),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                trailing: Text(
+                  I18n.of(context).vOrder,
+                  style: TextStyle(
+                    color: Color(Styling.primaryBackgroundColor),
+                  ),
                 ),
               ),
             ),
-          ),
-        ));
+          )),
+    );
   }
 
   bool validateAndSaveCategory() {
@@ -522,13 +541,17 @@ class _MenuPageState extends State<MenuPage> {
             child: Text(""),
           );
 
-        return SingleChildScrollView(
-          child: Row(
-            children: snapshot.data.docs.map((DocumentSnapshot document) {
-              Category category = Category();
-              category.buildObject(document);
-              return categoryItem(category);
-            }).toList(),
+        return Container(
+          margin: EdgeInsets.symmetric(horizontal: SizeConfig.diagonal * 1),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: snapshot.data.docs.map((DocumentSnapshot document) {
+                Category category = Category();
+                category.buildObject(document);
+                return categoryItem(category);
+              }).toList(),
+            ),
           ),
         );
       },
@@ -588,119 +611,135 @@ class _MenuPageState extends State<MenuPage> {
 
   Widget item(MenuItem menu) {
     return Card(
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5)),
       elevation: 2,
-      child: Column(
+      child: Row(
         children: [
-          Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: SizeConfig.diagonal * 1.8,
-              vertical: SizeConfig.diagonal * 1.8,
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  padding: EdgeInsets.only(left: SizeConfig.diagonal * 1),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        menu.name,
-                        textAlign: TextAlign.left,
-                        style: TextStyle(
-                          color: Color(Styling.textColor),
-                          fontWeight: FontWeight.bold,
-                          fontSize: SizeConfig.diagonal * 1.5,
-                        ),
-                      ),
-                      SizedBox(width: SizeConfig.diagonal * 1),
-                      Padding(
-                        padding: EdgeInsets.only(top: SizeConfig.diagonal * 1),
-                        child: Text(
-                          "${menu.price} ${I18n.of(context).fbu}",
+          Container(
+            decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.5),
+                borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5)),
+            height: SizeConfig.diagonal * 10,
+            width: SizeConfig.diagonal * 10,
+          ),
+          Expanded(
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: SizeConfig.diagonal * 1.8,
+                vertical: SizeConfig.diagonal * 1.8,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    padding: EdgeInsets.only(left: SizeConfig.diagonal * 1),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          menu.name,
                           textAlign: TextAlign.left,
                           style: TextStyle(
                             color: Color(Styling.textColor),
-                            fontWeight: FontWeight.normal,
+                            fontWeight: FontWeight.bold,
                             fontSize: SizeConfig.diagonal * 1.5,
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-                widget.userRole == Fields.chef ||
-                        widget.userRole == Fields.admin ||
-                        widget.userRole == Fields.developer
-                    ? Expanded(
-                        child: SwitchListTile(
-                          activeColor: Color(Styling.accentColor),
-                          value: menu.availability == 1 ? true : false,
-                          onChanged: (isEnabled) =>
-                              itemAvailability(isEnabled, menu),
-                        ),
-                      )
-                    : isAlreadyOnTheOrder(clientOrder, menu.id)
-                        ? NumericStepButton(
-                            counter: findOrderItem(clientOrder, menu.id).count,
-                            maxValue: 20,
-                            onChanged: (value) {
-                              OrderItem orderItem =
-                                  findOrderItem(clientOrder, menu.id);
-                              if (value == 0) {
-                                setState(() {
-                                  clientOrder.remove(orderItem);
-                                });
-                                //order.remove(orderItem);
-                              } else {
-                                setState(() {
-                                  orderItem.count = value;
-                                });
-                                //orderItem.count = value;
-                              }
-                            },
-                          )
-                        : InkWell(
-                            onTap: () {
-                              setState(() {
-                                clientOrder.add(OrderItem(
-                                  menuItem: menu,
-                                  count: 1,
-                                ));
-                              });
-                            },
-                            child: Container(
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: Color(Styling.accentColor),
-                                ),
-                              ),
-                              margin: EdgeInsets.all(SizeConfig.diagonal * 1),
-                              padding: EdgeInsets.all(SizeConfig.diagonal * 1),
-                              child: Row(
-                                children: [
-                                  Text(
-                                    I18n.of(context).addItem,
-                                    style: TextStyle(
-                                        fontSize: SizeConfig.diagonal * 1.5),
-                                  ),
-                                  Icon(
-                                    Icons.add,
-                                    size: SizeConfig.diagonal * 1.5,
-                                  ),
-                                ],
-                              ),
+                        SizedBox(width: SizeConfig.diagonal * 1),
+                        Padding(
+                          padding:
+                              EdgeInsets.only(top: SizeConfig.diagonal * 1),
+                          child: Text(
+                            "${menu.price} ${I18n.of(context).fbu}",
+                            textAlign: TextAlign.left,
+                            style: TextStyle(
+                              color: Color(Styling.textColor),
+                              fontWeight: FontWeight.normal,
+                              fontSize: SizeConfig.diagonal * 1.5,
                             ),
                           ),
-              ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  widget.userRole == Fields.chef ||
+                          widget.userRole == Fields.admin ||
+                          widget.userRole == Fields.developer
+                      ? Expanded(
+                          child: SwitchListTile(
+                            activeColor: Color(Styling.accentColor),
+                            value: menu.availability == 1 ? true : false,
+                            onChanged: (isEnabled) =>
+                                itemAvailability(isEnabled, menu),
+                          ),
+                        )
+                      : isAlreadyOnTheOrder(clientOrder, menu.id)
+                          ? NumericStepButton(
+                              counter:
+                                  findOrderItem(clientOrder, menu.id).count,
+                              maxValue: 20,
+                              onChanged: (value) {
+                                OrderItem orderItem =
+                                    findOrderItem(clientOrder, menu.id);
+                                if (value == 0) {
+                                  setState(() {
+                                    clientOrder.remove(orderItem);
+                                    _yOffset = 8000;
+                                  });
+                                  //order.remove(orderItem);
+                                } else {
+                                  setState(() {
+                                    orderItem.count = value;
+                                  });
+                                  //orderItem.count = value;
+                                }
+                              },
+                            )
+                          : InkWell(
+                              onTap: () {
+                                setState(() {
+                                  clientOrder.add(OrderItem(
+                                    menuItem: menu,
+                                    count: 1,
+                                  ));
+                                  _yOffset = 0.0;
+                                });
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Color(Styling.accentColor),
+                                  borderRadius: BorderRadius.circular(
+                                      SizeConfig.diagonal * 3),
+                                  border: Border.all(
+                                    color: Color(Styling.accentColor),
+                                  ),
+                                ),
+                                margin: EdgeInsets.all(SizeConfig.diagonal * 1),
+                                padding:
+                                    EdgeInsets.all(SizeConfig.diagonal * 1),
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      I18n.of(context).addItem,
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: SizeConfig.diagonal * 1.5),
+                                    ),
+                                    SizedBox(width: SizeConfig.diagonal * 0.5),
+                                    Icon(
+                                      Icons.add,
+                                      size: SizeConfig.diagonal * 1.5,
+                                      color: Colors.white,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                ],
+              ),
             ),
-          ),
-          Container(
-            margin: EdgeInsets.symmetric(horizontal: SizeConfig.diagonal * 4),
-            width: double.infinity,
-            height: 1,
-            color: Color(Styling.textColor).withOpacity(0.1),
           ),
         ],
       ),
@@ -715,27 +754,22 @@ class _MenuPageState extends State<MenuPage> {
           commandesQuery(category.name);
         });
       },
-      child: Padding(
+      child: Container(
         padding: EdgeInsets.all(SizeConfig.diagonal * 1.5),
-        child: Column(
-          children: [
-            Text(
-              category.name,
-              style: TextStyle(
-                  color: selectedCategory == category.name
-                      ? Color(Styling.textColor)
-                      : Color(Styling.textColor).withOpacity(0.3),
-                  fontWeight: selectedCategory == category.name
-                      ? FontWeight.bold
-                      : FontWeight.normal),
-            ),
-            if (selectedCategory == category.name)
-              Container(
-                height: 2,
-                width: SizeConfig.diagonal * 2,
-                color: Color(Styling.accentColor),
-              ),
-          ],
+        decoration: BoxDecoration(
+            color: selectedCategory == category.name
+                ? Color(Styling.accentColor)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(SizeConfig.diagonal * 3)),
+        child: Text(
+          category.name,
+          style: TextStyle(
+              color: selectedCategory == category.name
+                  ? Colors.white
+                  : Color(Styling.textColor).withOpacity(0.3),
+              fontWeight: selectedCategory == category.name
+                  ? FontWeight.bold
+                  : FontWeight.normal),
         ),
       ),
     );

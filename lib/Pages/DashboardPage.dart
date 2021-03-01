@@ -1,9 +1,11 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:zilliken/Components/ZAppBar.dart';
 import 'package:zilliken/Helpers/ConnectionStatus.dart';
+import 'package:zilliken/Helpers/SizeConfig.dart';
 import 'package:zilliken/Helpers/Styling.dart';
 import 'package:zilliken/Models/Fields.dart';
 import 'package:zilliken/Models/OrderItem.dart';
@@ -22,6 +24,7 @@ class DashboardPage extends StatefulWidget {
   final String userId;
   final String userRole;
   final List<OrderItem> clientOrder;
+  final int index;
 
   DashboardPage({
     this.auth,
@@ -29,6 +32,7 @@ class DashboardPage extends StatefulWidget {
     this.userRole,
     this.db,
     this.clientOrder,
+    this.index,
   });
 
   @override
@@ -42,6 +46,8 @@ class _DashboardPageState extends State<DashboardPage> {
   int _selectedIndex = 0;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   int enabled = 1;
+  double _xOffset1 = 0;
+  double _xOffset2 = 0;
 
   @override
   void initState() {
@@ -49,6 +55,12 @@ class _DashboardPageState extends State<DashboardPage> {
     ConnectionStatus connectionStatus = ConnectionStatus.getInstance();
     _connectionChangeStream =
         connectionStatus.connectionChange.listen(connectionChanged);
+
+    if (widget.index != null) {
+      setState(() {
+        _selectedIndex = widget.index;
+      });
+    }
 
     FirebaseFirestore.instance
         .collection(Fields.configuration)
@@ -69,6 +81,22 @@ class _DashboardPageState extends State<DashboardPage> {
 
   @override
   Widget build(BuildContext context) {
+    SizeConfig().init(context);
+    _xOffset2 = SizeConfig.safeBlockHorizontal * 0;
+    switch (_selectedIndex) {
+      case 0:
+        setState(() {
+          _xOffset1 = SizeConfig.safeBlockHorizontal * 0;
+          _xOffset2 = SizeConfig.safeBlockHorizontal * 100;
+        });
+        break;
+      case 1:
+        setState(() {
+          _xOffset1 = SizeConfig.safeBlockHorizontal * -100;
+          _xOffset2 = SizeConfig.safeBlockHorizontal * 0;
+        });
+        break;
+    }
     return enabled == 0
         ? DisabledPage(
             auth: widget.auth,
@@ -76,39 +104,81 @@ class _DashboardPageState extends State<DashboardPage> {
             userId: widget.userId,
             userRole: widget.userRole,
           )
-        : Scaffold(
-            key: _scaffoldKey,
-            appBar: buildAppBar(
-                context, widget.auth, false, true, googleSign, logout,null),
-            body: body(),
-            bottomNavigationBar: BottomNavigationBar(
-              items: <BottomNavigationBarItem>[
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.restaurant_menu_outlined),
-                  label: I18n.of(context).menu,
+        : Container(
+            decoration: BoxDecoration(
+                image: DecorationImage(
+              image: AssetImage('assets/Zilliken.jpg'),
+              fit: BoxFit.cover,
+            )),
+            child: Container(
+              color: Color(Styling.primaryBackgroundColor).withOpacity(0.7),
+              child: Scaffold(
+                key: _scaffoldKey,
+                backgroundColor: Colors.transparent,
+                appBar: buildAppBar(context, widget.auth, false, true,
+                    googleSign, logout, null),
+                body: body(),
+                bottomNavigationBar: CurvedNavigationBar(
+                  animationCurve: Curves.easeInBack,
+                  color: Colors.white.withOpacity(0.7),
+                  height: SizeConfig.diagonal * 6,
+                  animationDuration: Duration(milliseconds: 800),
+                  backgroundColor: Colors.transparent,
+                  index: _selectedIndex,
+                  items: <Widget>[
+                    Icon(Icons.restaurant_menu_outlined),
+                    Icon(Icons.shopping_bag),
+                  ],
+                  /*currentIndex: _selectedIndex,
+                  selectedItemColor: Color(
+                    Styling.primaryColor,
+                  ),*/
+                  onTap: (index) {
+                    setState(() {
+                      _selectedIndex = index;
+                    });
+                  },
                 ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.shopping_bag),
-                  label: I18n.of(context).orders,
-                ),
-              ],
-              currentIndex: _selectedIndex,
-              selectedItemColor: Color(
-                Styling.primaryColor,
               ),
-              onTap: _onItemTapped,
             ),
           );
   }
 
-  void _onItemTapped(int index) {
+  /*void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
-  }
+  }*/
 
   Widget body() {
-    switch (_selectedIndex) {
+    return Stack(
+      children: [
+        AnimatedContainer(
+          child: MenuPage(
+            auth: widget.auth,
+            db: widget.db,
+            userId: widget.userId,
+            userRole: widget.userRole,
+            clientOrder: widget.clientOrder,
+          ),
+          curve: Curves.easeInBack,
+          duration: Duration(milliseconds: 800),
+          transform: Matrix4.translationValues(_xOffset1, 0, 1),
+        ),
+        AnimatedContainer(
+          child: OrdersPage(
+            auth: widget.auth,
+            db: widget.db,
+            userId: widget.userId,
+            userRole: widget.userRole,
+          ),
+          curve: Curves.easeInBack,
+          duration: Duration(milliseconds: 800),
+          transform: Matrix4.translationValues(_xOffset2, 0, 1),
+        )
+      ],
+    );
+    /*switch (_selectedIndex) {
       case 0:
         return MenuPage(
           auth: widget.auth,
@@ -135,8 +205,34 @@ class _DashboardPageState extends State<DashboardPage> {
           clientOrder: widget.clientOrder,
         );
         break;
-    }
+    }*/
   }
+
+  /*Route _fromMenuToOrders() {
+    return PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) => OrdersPage(
+              auth: widget.auth,
+              db: widget.db,
+              userId: widget.userId,
+              userRole: widget.userRole,
+            ),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return child;
+        });
+  }
+
+  Route _fromOrdersToMenu() {
+    return PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) => OrdersPage(
+              auth: widget.auth,
+              db: widget.db,
+              userId: widget.userId,
+              userRole: widget.userRole,
+            ),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return child;
+        });
+  }*/
 
   void googleSign() async {
     String userId = "";

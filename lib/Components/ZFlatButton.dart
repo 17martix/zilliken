@@ -21,6 +21,8 @@ class ZFlatButton extends StatelessWidget {
       padding: EdgeInsets.fromLTRB(
           0.0, 0, 0.0, bottomVerticalSpace ?? SizeConfig.diagonal * 2),
       child: FlatButton(
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5)),
           child: Text(text,
               style: TextStyle(
                 fontSize: SizeConfig.diagonal * 4,

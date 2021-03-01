@@ -60,6 +60,7 @@ class _OrdersPageState extends State<OrdersPage> {
     log("mon id est ${widget.userId} et mo role est ${widget.userRole}");
     SizeConfig().init(context);
     return Scaffold(
+      backgroundColor: Colors.transparent,
       body: ordersList(),
     );
   }
@@ -67,83 +68,90 @@ class _OrdersPageState extends State<OrdersPage> {
   Widget item(Order order) {
     return Padding(
       padding: EdgeInsets.only(
-          left: SizeConfig.diagonal * 1, right: SizeConfig.diagonal * 1),
+          left: SizeConfig.diagonal * 0.2, right: SizeConfig.diagonal * 0.2),
       child: Card(
-        elevation: 25,
-        color: Colors.white70,
-        child: ListTile(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => SingleOrderPage(
-                  auth: widget.auth,
-                  db: widget.db,
-                  userId: widget.userId,
-                  userRole: widget.userRole,
-                  orderId: order.id,
-                  clientOrder: order,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5)),
+        elevation: 16,
+        color: Colors.white,
+        child: Container(
+          alignment: Alignment.center,
+          height: SizeConfig.diagonal * 10,
+          width: SizeConfig.diagonal * 10,
+          child: ListTile(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SingleOrderPage(
+                    auth: widget.auth,
+                    db: widget.db,
+                    userId: widget.userId,
+                    userRole: widget.userRole,
+                    orderId: order.id,
+                    clientOrder: order,
+                  ),
                 ),
-              ),
-            );
-          },
-          leading: Icon(
-            order.orderLocation == 0
-                ? Icons.restaurant_menu
-                : FontAwesomeIcons.shoppingBag,
-            size: SizeConfig.diagonal * 3,
-          ),
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                flex: 1,
-                child: Text(
-                  '${orderStatus(context, order)}',
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.left,
-                  style: TextStyle(
-                      color: colorPicker(order.status),
-                      fontSize: SizeConfig.diagonal * 1.5),
-                ),
-              ),
-              Expanded(
-                flex: 1,
-                child: Text(
-                  '${I18n.of(context).total} : ${order.grandTotal} ${I18n.of(context).fbu}',
-                  textAlign: TextAlign.right,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(fontSize: SizeConfig.diagonal * 1.5),
-                ),
-              ),
-            ],
-          ),
-          subtitle: Padding(
-            padding: EdgeInsets.only(top: SizeConfig.diagonal * 1),
-            child: Row(
+              );
+            },
+            leading: Icon(
+              order.orderLocation == 0
+                  ? FontAwesomeIcons.listAlt
+                  : FontAwesomeIcons.truckMoving,
+              size: SizeConfig.diagonal * 4,
+            ),
+            title: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
                   flex: 1,
                   child: Text(
-                    order.orderLocation == 0
-                        ? '${I18n.of(context).tableNumber} : ${order.tableAdress}'
-                        : '${I18n.of(context).address} : ${order.tableAdress}',
+                    '${orderStatus(context, order)}',
                     overflow: TextOverflow.ellipsis,
                     textAlign: TextAlign.left,
-                    style: TextStyle(fontSize: SizeConfig.diagonal * 1.5),
+                    style: TextStyle(
+                        color: colorPicker(order.status),
+                        fontSize: SizeConfig.diagonal * 1.5),
                   ),
                 ),
                 Expanded(
                   flex: 1,
                   child: Text(
-                    '${widget.formatter.format(DateTime.fromMillisecondsSinceEpoch(order.orderDate))}',
+                    '${I18n.of(context).total} : ${order.grandTotal} ${I18n.of(context).fbu}',
                     textAlign: TextAlign.right,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(fontSize: SizeConfig.diagonal * 1.5),
                   ),
                 ),
               ],
+            ),
+            subtitle: Padding(
+              padding: EdgeInsets.only(top: SizeConfig.diagonal * 1),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: Text(
+                      order.orderLocation == 0
+                          ? '${I18n.of(context).tableNumber} : ${order.tableAdress}'
+                          : '${I18n.of(context).address} : ${order.tableAdress}',
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.left,
+                      style: TextStyle(fontSize: SizeConfig.diagonal * 1.5),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 1,
+                    child: Text(
+                      '${widget.formatter.format(DateTime.fromMillisecondsSinceEpoch(order.orderDate))}',
+                      textAlign: TextAlign.right,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(fontSize: SizeConfig.diagonal * 1.5),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

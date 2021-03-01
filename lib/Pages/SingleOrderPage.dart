@@ -100,7 +100,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
   }
 
   void backFunction() {
-    Navigator.pushReplacement(
+    Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(
         builder: (context) => DashboardPage(
@@ -108,8 +108,10 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
           auth: widget.auth,
           userId: widget.userId,
           userRole: widget.userRole,
+          index: 1,
         ),
       ),
+      (Route<dynamic> route) => false,
     );
   }
 
@@ -118,7 +120,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
     SizeConfig().init(context);
     return WillPopScope(
       onWillPop: () {
-        return Navigator.pushReplacement(
+        return Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
             builder: (context) => DashboardPage(
@@ -126,8 +128,10 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
               auth: widget.auth,
               userId: widget.userId,
               userRole: widget.userRole,
+              index: 1,
             ),
           ),
+          (Route<dynamic> route) => false,
         );
       },
       child: enabled == 0
@@ -153,7 +157,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
   Widget body() {
     if (isDataBeingDeleted) {
       return Center(
-        child: Text(""),
+        child: ZCircularProgress(true),
       );
     } else {
       return ListView(
@@ -170,6 +174,9 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                 left: SizeConfig.diagonal * 0.5,
                 right: SizeConfig.diagonal * 0.5),
             child: Card(
+              shape: RoundedRectangleBorder(
+                  borderRadius:
+                      BorderRadius.circular(SizeConfig.diagonal * 1.5)),
               elevation: 15,
               child: Column(
                 children: [
@@ -220,6 +227,8 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
         right: SizeConfig.diagonal * 0.5,
       ),
       child: Card(
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5)),
         elevation: 16,
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -621,6 +630,8 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
               left: SizeConfig.diagonal * 0.5,
               right: SizeConfig.diagonal * 0.5),
           child: Card(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5)),
             elevation: 16,
             child: Column(
               children: [
@@ -903,6 +914,9 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
         right: SizeConfig.diagonal * 0.5,
       ),
       child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5),
+        ),
         elevation: 16,
         child: Column(
           children: [
@@ -1003,8 +1017,11 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
       leftPadding: SizeConfig.diagonal * 1,
       rightPadding: SizeConfig.diagonal * 1,
       onpressed: () async {
+        setState(() {
+          isDataBeingDeleted = true;
+        });
         await widget.db.cancelOrder(widget.orderId);
-        Navigator.pop(context);
+        backFunction();
       },
       textIcon: Text(
         I18n.of(context).cancelOrder,

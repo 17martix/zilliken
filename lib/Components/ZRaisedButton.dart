@@ -34,6 +34,9 @@ class ZRaisedButton extends StatelessWidget {
           height: SizeConfig.diagonal * 6,
           width: double.infinity,
           child: new RaisedButton(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5),
+            ),
             elevation: 5.0,
             color: color != null ? color : Color(Styling.accentColor),
             child: textIcon,

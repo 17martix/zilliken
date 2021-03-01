@@ -28,13 +28,24 @@ class _DisabledPageState extends State<DisabledPage> {
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
-    return Scaffold(
-      body: Center(
-        child: Text(
-          I18n.of(context).accountDisabled,
-          textAlign: TextAlign.center,
-          style: new TextStyle(
-            fontSize: SizeConfig.diagonal * 2,
+    return Container(
+      decoration: BoxDecoration(
+          image: DecorationImage(
+        image: AssetImage('assets/Zilliken.jpg'),
+        fit: BoxFit.cover,
+      )),
+      child: Container(
+        color: Color(Styling.primaryBackgroundColor).withOpacity(0.7),
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          body: Center(
+            child: Text(
+              I18n.of(context).accountDisabled,
+              textAlign: TextAlign.center,
+              style: new TextStyle(
+                fontSize: SizeConfig.diagonal * 2,
+              ),
+            ),
           ),
         ),
       ),
