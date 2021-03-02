@@ -1,5 +1,7 @@
 import 'dart:io';
+import 'dart:convert';
 
+import 'package:flutter/services.dart';
 import 'package:zilliken/Models/Cart.dart';
 import 'package:zilliken/Models/Category.dart';
 import 'package:zilliken/Models/Fields.dart';
@@ -134,15 +136,29 @@ String showRommTable(context, Order order) {
 Future<List<MenuItem>> getMenuItems() async {
   List<MenuItem> list = List();
 
-  await new HttpClient()
+  /*await new HttpClient()
       .getUrl( Uri.parse('http://foo.bar/foo.txt'))
       .then((HttpClientRequest request) async => await request.close())
       .then((HttpClientResponse response) async =>
-          await response.pipe(new File('assets/menu.csv').openWrite()));
+          await response.pipe(new File('assets/menu.csv').openWrite()));*/
 
-  File file = File('assets/menu.csv');
+  /*File file = File('assets/menu.csv');
   list = file.readAsLinesSync().skip(1) // Skip the header row
       .map((line) {
+    final parts = line.split(',');
+    return MenuItem(
+      name: parts[0],
+      price: int.tryParse(parts[1]),
+      category: parts[2],
+      availability: int.tryParse(parts[3]),
+      rank: int.tryParse(parts[4]),
+      global: int.tryParse(parts[5]),
+      imageName: parts[6],
+    );
+  }).toList();*/
+
+  String text = await rootBundle.loadString('assets/menu.csv');
+  list = LineSplitter.split(text).map((line) {
     final parts = line.split(',');
     return MenuItem(
       name: parts[0],
@@ -161,15 +177,25 @@ Future<List<MenuItem>> getMenuItems() async {
 Future<List<Category>> getCategoryList() async {
   List<Category> list = List();
 
-  await new HttpClient()
+  /*await new HttpClient()
       .getUrl( Uri.parse('http://foo.bar/foo.txt'))
       .then((HttpClientRequest request) async => await request.close())
       .then((HttpClientResponse response) async =>
-          await response.pipe(new File('assets/category.csv').openWrite()));
-          
-  File file = File('assets/category.csv');
+          await response.pipe(new File('assets/category.csv').openWrite()));*/
+
+  /*File file = File('assets/category.csv');
   list = file.readAsLinesSync().skip(1) // Skip the header row
       .map((line) {
+    final parts = line.split(',');
+    return Category(
+      name: parts[0],
+      rank: int.tryParse(parts[1]),
+      imageName: parts[2],
+    );
+  }).toList();*/
+
+  String text = await rootBundle.loadString('assets/category.csv');
+  list = LineSplitter.split(text).map((line) {
     final parts = line.split(',');
     return Category(
       name: parts[0],

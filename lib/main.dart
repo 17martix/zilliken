@@ -28,7 +28,6 @@ Future<void> main() async {
   pushNotificationManager.init();
   connectionStatus.initialize();
 
-  await FirebaseFirestore.instance.enablePersistence();
   FirebaseFirestore.instance.settings = Settings(persistenceEnabled: true);
 
   FirebaseFirestore.instance.settings = Settings(cacheSizeBytes: 100000000);
