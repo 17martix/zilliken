@@ -314,7 +314,7 @@ class Database {
       DocumentReference documentReference =
           databaseReference.collection(Fields.menu).doc();
       batch.set(documentReference, {
-        Fields.id: list[i].id,
+        Fields.id: documentReference.id,
         Fields.name: list[i].name,
         Fields.category: list[i].category,
         Fields.price: list[i].price,
@@ -338,7 +338,7 @@ class Database {
       DocumentReference catRef =
           databaseReference.collection(Fields.category).doc();
       batch.set(catRef, {
-        Fields.id: catList[i].id,
+        Fields.id: catRef.id,
         Fields.name: catList[i].name,
         Fields.rank: catList[i].rank,
         Fields.imageName: catList[i].imageName,

@@ -133,6 +133,14 @@ String showRommTable(context, Order order) {
   return text;
 }
 
+String capitalize(String text) {
+  String firstLetter = text[0];
+  firstLetter = firstLetter.toUpperCase();
+  String remaining = text.substring(1);
+  remaining = remaining.toLowerCase();
+  return firstLetter + remaining;
+}
+
 Future<List<MenuItem>> getMenuItems() async {
   List<MenuItem> list = List();
 
@@ -161,9 +169,9 @@ Future<List<MenuItem>> getMenuItems() async {
   list = LineSplitter.split(text).map((line) {
     final parts = line.split(',');
     return MenuItem(
-      name: parts[0],
+      name: capitalize(parts[0]),
       price: int.tryParse(parts[1]),
-      category: parts[2],
+      category: capitalize(parts[2]),
       availability: int.tryParse(parts[3]),
       rank: int.tryParse(parts[4]),
       global: int.tryParse(parts[5]),
@@ -198,7 +206,7 @@ Future<List<Category>> getCategoryList() async {
   list = LineSplitter.split(text).map((line) {
     final parts = line.split(',');
     return Category(
-      name: parts[0],
+      name: capitalize(parts[0]),
       rank: int.tryParse(parts[1]),
       imageName: parts[2],
     );

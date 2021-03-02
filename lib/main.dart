@@ -8,7 +8,6 @@ import 'package:zilliken/Services/Authentication.dart';
 import 'package:zilliken/Services/Database.dart';
 
 import 'Helpers/ConnectionStatus.dart';
-import 'Helpers/PushNotificationManager.dart';
 import 'Helpers/Styling.dart';
 
 import 'Pages/DashboardPage.dart';
@@ -24,8 +23,6 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   ConnectionStatus connectionStatus = ConnectionStatus.getInstance();
-  PushNotificationManager pushNotificationManager = PushNotificationManager();
-  pushNotificationManager.init();
   connectionStatus.initialize();
 
   FirebaseFirestore.instance.settings = Settings(persistenceEnabled: true);

@@ -29,7 +29,6 @@ dependencies:
   firebase_analytics: ^6.0.2
   firebase_auth: ^0.18.1+2
   cloud_firestore: ^0.14.1+3
-  firebase_messaging: ^7.0.3
   flutter_svg: ^0.19.1
   font_awesome_flutter: ^8.10.0
   flutter_statusbarcolor: ^0.2.3
@@ -150,10 +149,8 @@ flutter:
     - assets/quiche jambon avec salade.jpg
     - assets/saumon fume.jpg
     - assets/CAPITAINE FUMÉ(100g).jpeg
-    - assets/riz blanc,riz au curry.jpg
     - assets/legumes mixtes.jpg
     - assets/epinard.jpg
-    - assets/pomme nature,puree,croquettes,pommes de terre sautee aux oigons et lardon.jpg
     - assets/frites.jpg
     - assets/petite salade.jpg
     - assets/couscous.jpg
@@ -186,30 +183,12 @@ flutter:
     - assets/hennessy.jpeg
     - assets/remymartinvsop.jpeg
     - assets/gold.jpeg
-    #- assets/ELBING SEC,(1,01).jpeg
-    - assets/ELBLING  CLASSIC ,SEC.jpeg
-    #- assets/ELBLING FILIUS DEMI-SEC.JPEG
-    - assets/CUVEE MUSCHELKALK (PINOT ELBING),SEC.jpeg
-    - assets/RIESLING, SEC.jpeg
-    - assets/RIESLING,  CRU CLASSE,DEMI-SEC.jpeg
-    - assets/RIESLING VENDAGE TARDIVE,VIELLES VIGNES.jpeg
-    - assets/PINOT BLANC, SEC.jpeg
-    - assets/PINOT GRIS BARRIQUE,SEC.jpeg
-    - assets/PINOT AUXERROIS,SEC.jpeg
-    - assets/SAUVIGNON BLANC,SEC.jpeg
-    - assets/SAUVIGNON BLANC, FUME,SEC.jpeg
-    - assets/CHARDONNAY,SEC.jpeg
-    - assets/ELBING ROSE, SEC.jpeg
-    - assets/PINOT NOIR,ROSE,DEMI-SEC.jpeg
-    - assets/BLANC DE NOIR,SEC.jpeg
-    - assets/DORNFELDER SEC,(1,01).jpeg
+    - assets/ELBLING  CLASSIC SEC.jpeg
+    - assets/CUVEE MUSCHELKALK (PINOT ELBING)SEC.jpeg
+    - assets/RIESLING SEC.jpeg
+    - assets/RIESLING VENDAGE TARDIVEVIELLES VIGNES.jpeg
     - assets/DORNFELDER DEMI-SEC.jpeg
-    - assets/PINOT NOIR ,SEC.jpeg
-    - assets/PINOT NOIR SELECTION BARRIQUE,SEC.JPEG
-    - assets/CUVEE JEAN BAPTISTE,SEC.jpeg
-    - assets/RIESLING VIN MOUSSEUX , SEC 1).jpeg
     - assets/CUVEE PINOTELBING EXTRA BRUT 1).jpeg
-    #- assets/ELBING ROSE SEC , VIN MOUSSEUX 1)
     - assets/ANANAS  ORANGE MANGUE.jpeg
     - assets/ANANAS  GINGEMBRE ORANGE.jpeg
     - assets/ORANGE CONCOMBRE ANANAS.jpeg
@@ -221,19 +200,15 @@ flutter:
     - assets/pinacolada.jpeg
     - assets/specialgirl.jpeg
     - assets/américano.jpeg
-    - assets/CAMPARI SPRITZ(Campari, Vin Blanc, Soda).jpeg
-    - assets/GREEN POISON(Gin, Jus d’orange, Menthe).jpeg
-    - assets/BACARDI(Bacardi, Jus de Citron, Grenadine).jpeg
-    - assets/SPECIAL BOY(Martini, Tonic, Rum, Crème De Cassis).jpeg
+    - assets/BACARDI(Bacardi Jus de Citron Grenadine).jpeg
     - assets/appletini.jpeg
-    - assets/PUNCH PASSION(Rum, Fruito).jpeg
-    - assets/GIN FIZZ(Gin, Jus de citron, Silop de sucre, Soda).jpeg
+    - assets/GIN FIZZ(Gin Jus de citron Silop de sucre Soda).jpeg
     - assets/CUBA LIBRE(rum –coca cola –lime –soda).jpeg
     - assets/ZIZI COIN COIN(cointreau -jus de citron).jpeg
     - assets/NEGRONI(campari –martini-gin- soda).jpeg
-    - assets/GIN TONIC(gin, glacons, tranche de citron, tige romarin).jpeg
-    - assets/LONG ISLAND(gin, tequilla, rum, vodka, cointreau, coca, jus de citron).jpeg
-    - assets/VINOTHÈQUE(martini, glaçons rouge).jpeg
+    - assets/GIN TONIC(gin glacons tranche de citron tige romarin).jpeg
+    - assets/LONG ISLAND(gin tequilla rum vodka cointreau coca jus de citron).jpeg
+    - assets/VINOTHÈQUE(martini glaçons rouge).jpeg
     - assets/tequila.jpeg
     - assets/campari.jpeg
     - assets/baccardi.jpeg
@@ -261,6 +236,38 @@ flutter:
     - assets/moelleuxauchocolat.jpeg
     - assets/bouledeglacevanille.jpeg
     - assets/brownieauchocolat.jpeg
+    - assets/TAGLIATELLE ÉMINCÉ DE POULET AVEC CHAMPIGNON.jpeg
+    - assets/TAGLIATELLE ÉMINCÉ DE BOEUF FROMAGE DE CHÈVRE.jpeg
+    - assets/riz blancriz au curry.jpg
+    - assets/pomme naturepureecroquettespommes de terre sautee aux oigons et lardon.jpg
+    - assets/ST ISTEPLEX.jpeg
+    - assets/ELBING SEC(101).jpeg
+    - assets/ELBLING FILIUS DEMI-SEC.JPEG
+    - assets/CUVEE MUSCHELKALK (PINOT ELBING)SEC.jpeg
+    - assets/RIESLING SEC.jpeg
+    - assets/RIESLING  CRU CLASSEDEMI-SEC.jpeg
+    - assets/PINOT BLANC SEC.jpeg
+    - assets/PINOT AUXERROISSEC.jpeg
+    - assets/SAUVIGNON BLANCSEC.jpeg
+    - assets/SAUVIGNON BLANC FUMESEC.jpeg
+    - assets/CHARDONNAYSEC.jpeg
+    - assets/ELBING ROSE SEC.jpeg
+    - assets/PINOT NOIRROSEDEMI-SEC.jpeg
+    - assets/BLANC DE NOIRSEC.jpeg
+    - assets/DORNFELDER SEC(101).jpeg
+    - assets/PINOT NOIR SEC.jpeg
+    - assets/PINOT NOIR SELECTION BARRIQUESEC.JPEG
+    - assets/CUVEE JEAN BAPTISTESEC.jpeg
+    - assets/RIESLING VIN MOUSSEUX  SEC 1).jpeg
+    - assets/ELBING ROSE SEC  VIN MOUSSEUX 1).jpeg
+    - assets/CAMPARI SPRITZ(Campari Vin Blanc Soda).jpeg
+    - assets/GREEN POISON(Gin Jus d’orange Menthe).jpeg
+    - assets/SPECIAL BOY(Martini Tonic Rum Crème De Cassis).jpeg
+    - assets/PUNCH PASSION(Rum Fruito).jpeg
+    - assets/CREVETTES SAUTÉES AU BEURRE ET À L'AIL.jpeg
+    - assets/PINOT GRIS BARRIQUESEC.jpeg
+    - assets/CUVEE PINOTELBING EXTRA BRUT 1).jpeg
+
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
