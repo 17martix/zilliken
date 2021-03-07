@@ -236,112 +236,126 @@ class _CartPageState extends State<CartPage> {
     return Card(
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5)),
-      elevation: 16,
-      color: Colors.white,
+      elevation: 2,
       child: Row(
         children: [
           Container(
             decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.5),
-                borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5)),
+              // color: Colors.black.withOpacity(0.5),
+              borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5),
+              image: DecorationImage(
+                image: AssetImage("assets/${menu.imageName}"),
+                fit: BoxFit.cover,
+              ),
+            ),
             height: SizeConfig.diagonal * 10,
             width: SizeConfig.diagonal * 10,
           ),
           Expanded(
             child: Container(
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: SizeConfig.diagonal * 1.8,
-                  vertical: SizeConfig.diagonal * 1.8,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      padding: EdgeInsets.only(left: SizeConfig.diagonal * 1),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            menu.name,
-                            textAlign: TextAlign.left,
-                            style: TextStyle(
-                              color: Color(Styling.textColor),
-                              fontWeight: FontWeight.bold,
-                              fontSize: SizeConfig.diagonal * 1.5,
-                            ),
-                          ),
-                          Padding(
-                            padding:
-                                EdgeInsets.only(top: SizeConfig.diagonal * 1),
-                            child: Text(
-                              "${menu.price} ${I18n.of(context).fbu}",
-                              textAlign: TextAlign.left,
-                              style: TextStyle(
-                                color: Color(Styling.textColor),
-                                fontWeight: FontWeight.normal,
-                                fontSize: SizeConfig.diagonal * 1.5,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+              padding: EdgeInsets.all(SizeConfig.diagonal * 1),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    menu.name,
+                    textAlign: TextAlign.left,
+                    //overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: Color(Styling.textColor),
+                      fontWeight: FontWeight.bold,
+                      fontSize: SizeConfig.diagonal * 1.5,
                     ),
-                    isAlreadyOnTheOrder(clientOrder, menu.id)
-                        ? NumericStepButton(
-                            counter: findOrderItem(clientOrder, menu.id).count,
-                            maxValue: 20,
-                            onChanged: (value) {
-                              OrderItem orderItem =
-                                  findOrderItem(clientOrder, menu.id);
-                              if (value == 0) {
+                  ),
+                  SizedBox(width: SizeConfig.diagonal * 1),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        flex: 1,
+                        child: Text(
+                          "${menu.price} ${I18n.of(context).fbu}",
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                            color: Color(Styling.textColor),
+                            fontWeight: FontWeight.normal,
+                            fontSize: SizeConfig.diagonal * 1.5,
+                          ),
+                        ),
+                      ),
+                      isAlreadyOnTheOrder(clientOrder, menu.id)
+                          ? Expanded(
+                              flex: 1,
+                              child: NumericStepButton(
+                                counter:
+                                    findOrderItem(clientOrder, menu.id).count,
+                                maxValue: 20,
+                                onChanged: (value) {
+                                  OrderItem orderItem =
+                                      findOrderItem(clientOrder, menu.id);
+                                  if (value == 0) {
+                                    setState(() {
+                                      clientOrder.remove(orderItem);
+                                    });
+                                    //order.remove(orderItem);
+                                  } else {
+                                    setState(() {
+                                      orderItem.count = value;
+                                    });
+                                    //orderItem.count = value;
+                                  }
+                                },
+                              ),
+                            )
+                          : InkWell(
+                              onTap: () {
                                 setState(() {
-                                  clientOrder.remove(orderItem);
+                                  clientOrder.add(OrderItem(
+                                    menuItem: menu,
+                                    count: 1,
+                                  ));
                                 });
-                                //order.remove(orderItem);
-                              } else {
-                                setState(() {
-                                  orderItem.count = value;
-                                });
-                                //orderItem.count = value;
-                              }
-                            },
-                          )
-                        : InkWell(
-                            onTap: () {
-                              setState(() {
-                                clientOrder.add(OrderItem(
-                                  menuItem: menu,
-                                  count: 1,
-                                ));
-                              });
-                            },
-                            child: Container(
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: Color(Styling.accentColor),
+                              },
+                              child: Expanded(
+                                flex: 1,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Color(Styling.accentColor),
+                                    borderRadius: BorderRadius.circular(
+                                        SizeConfig.diagonal * 3),
+                                    border: Border.all(
+                                      color: Color(Styling.accentColor),
+                                    ),
+                                  ),
+                                  margin:
+                                      EdgeInsets.all(SizeConfig.diagonal * 1),
+                                  padding:
+                                      EdgeInsets.all(SizeConfig.diagonal * 1),
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        I18n.of(context).addItem,
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize:
+                                                SizeConfig.diagonal * 1.5),
+                                      ),
+                                      SizedBox(
+                                          width: SizeConfig.diagonal * 0.5),
+                                      Icon(
+                                        Icons.add,
+                                        size: SizeConfig.diagonal * 1.5,
+                                        color: Colors.white,
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                              margin: EdgeInsets.all(8),
-                              padding: EdgeInsets.all(8),
-                              child: Row(
-                                children: [
-                                  Text(
-                                    I18n.of(context).addItem,
-                                    style: TextStyle(
-                                        fontSize: SizeConfig.diagonal * 1.5),
-                                  ),
-                                  Icon(
-                                    Icons.add,
-                                    size: SizeConfig.diagonal * 1.5,
-                                  ),
-                                ],
-                              ),
                             ),
-                          ),
-                  ],
-                ),
+                    ],
+                  ),
+                ],
               ),
             ),
           ),

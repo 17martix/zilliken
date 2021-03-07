@@ -111,7 +111,7 @@ class _DashboardPageState extends State<DashboardPage> {
               fit: BoxFit.cover,
             )),
             child: Container(
-              color: Color(Styling.primaryBackgroundColor).withOpacity(0.7),
+              color: Color(Styling.textColor).withOpacity(0.5),
               child: Scaffold(
                 key: _scaffoldKey,
                 backgroundColor: Colors.transparent,

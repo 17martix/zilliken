@@ -6,16 +6,10 @@ class Category {
   String id;
   String name;
   int rank;
-   int createdAt;
-     String imageName;
+  int createdAt;
+  String imageName;
 
-  Category({
-    this.id,
-    this.name,
-    this.rank,
-    this.createdAt,
-    this.imageName
-  });
+  Category({this.id, this.name, this.rank, this.createdAt, this.imageName});
 
   void buildObject(DocumentSnapshot document) {
     id = document.id;

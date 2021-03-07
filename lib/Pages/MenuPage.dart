@@ -575,7 +575,7 @@ class _MenuPageState extends State<MenuPage> {
             return Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                if (menu.rank == 1) categoryRow(menu),
+                //if (menu.rank == 1) categoryRow(menu),
                 item(menu),
               ],
             );
@@ -644,132 +644,123 @@ class _MenuPageState extends State<MenuPage> {
             width: SizeConfig.diagonal * 10,
           ),
           Expanded(
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: SizeConfig.diagonal * 1.8,
-                vertical: SizeConfig.diagonal * 1.8,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            child: Container(
+              padding: EdgeInsets.all(SizeConfig.diagonal * 1),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    flex: 2,
-                    child: Container(
-                      padding: EdgeInsets.only(left: SizeConfig.diagonal * 1),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            menu.name,
-                            textAlign: TextAlign.left,
-                            style: TextStyle(
-                              color: Color(Styling.textColor),
-                              fontWeight: FontWeight.bold,
-                              fontSize: SizeConfig.diagonal * 1.5,
-                            ),
-                          ),
-                          SizedBox(width: SizeConfig.diagonal * 1),
-                          Padding(
-                            padding:
-                                EdgeInsets.only(top: SizeConfig.diagonal * 1),
-                            child: Text(
-                              "${menu.price} ${I18n.of(context).fbu}",
-                              textAlign: TextAlign.left,
-                              style: TextStyle(
-                                color: Color(Styling.textColor),
-                                fontWeight: FontWeight.normal,
-                                fontSize: SizeConfig.diagonal * 1.5,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                  Text(
+                    menu.name,
+                    textAlign: TextAlign.left,
+                    //overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: Color(Styling.textColor),
+                      fontWeight: FontWeight.bold,
+                      fontSize: SizeConfig.diagonal * 1.5,
                     ),
                   ),
-                  widget.userRole == Fields.chef ||
-                          widget.userRole == Fields.admin ||
-                          widget.userRole == Fields.developer
-                      ? Expanded(
-                          flex: 1,
-                          child: SwitchListTile(
-                            activeColor: Color(Styling.accentColor),
-                            value: menu.availability == 1 ? true : false,
-                            onChanged: (isEnabled) =>
-                                itemAvailability(isEnabled, menu),
+                  SizedBox(width: SizeConfig.diagonal * 1),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        flex: 1,
+                        child: Text(
+                          "${menu.price} ${I18n.of(context).fbu}",
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                            color: Color(Styling.textColor),
+                            fontWeight: FontWeight.normal,
+                            fontSize: SizeConfig.diagonal * 1.5,
                           ),
-                        )
-                      : isAlreadyOnTheOrder(clientOrder, menu.id)
+                        ),
+                      ),
+                      widget.userRole == Fields.chef ||
+                              widget.userRole == Fields.admin ||
+                              widget.userRole == Fields.developer
                           ? Expanded(
                               flex: 1,
-                              child: NumericStepButton(
-                                counter:
-                                    findOrderItem(clientOrder, menu.id).count,
-                                maxValue: 20,
-                                onChanged: (value) {
-                                  OrderItem orderItem =
-                                      findOrderItem(clientOrder, menu.id);
-                                  if (value == 0) {
-                                    setState(() {
-                                      clientOrder.remove(orderItem);
-                                      _yOffset = 8000;
-                                    });
-                                    //order.remove(orderItem);
-                                  } else {
-                                    setState(() {
-                                      orderItem.count = value;
-                                    });
-                                    //orderItem.count = value;
-                                  }
-                                },
+                              child: SwitchListTile(
+                                activeColor: Color(Styling.accentColor),
+                                value: menu.availability == 1 ? true : false,
+                                onChanged: (isEnabled) =>
+                                    itemAvailability(isEnabled, menu),
                               ),
                             )
-                          : InkWell(
-                              onTap: () {
-                                setState(() {
-                                  clientOrder.add(OrderItem(
-                                    menuItem: menu,
-                                    count: 1,
-                                  ));
-                                  _yOffset = 0.0;
-                                });
-                              },
-                              child: Expanded(
-                                flex: 1,
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: Color(Styling.accentColor),
-                                    borderRadius: BorderRadius.circular(
-                                        SizeConfig.diagonal * 3),
-                                    border: Border.all(
-                                      color: Color(Styling.accentColor),
+                          : isAlreadyOnTheOrder(clientOrder, menu.id)
+                              ? Expanded(
+                                  flex: 1,
+                                  child: NumericStepButton(
+                                    counter: findOrderItem(clientOrder, menu.id)
+                                        .count,
+                                    maxValue: 20,
+                                    onChanged: (value) {
+                                      OrderItem orderItem =
+                                          findOrderItem(clientOrder, menu.id);
+                                      if (value == 0) {
+                                        setState(() {
+                                          clientOrder.remove(orderItem);
+                                          _yOffset = 8000;
+                                        });
+                                        //order.remove(orderItem);
+                                      } else {
+                                        setState(() {
+                                          orderItem.count = value;
+                                        });
+                                        //orderItem.count = value;
+                                      }
+                                    },
+                                  ),
+                                )
+                              : InkWell(
+                                  onTap: () {
+                                    setState(() {
+                                      clientOrder.add(OrderItem(
+                                        menuItem: menu,
+                                        count: 1,
+                                      ));
+                                      _yOffset = 0.0;
+                                    });
+                                  },
+                                  child: Expanded(
+                                    flex: 1,
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: Color(Styling.accentColor),
+                                        borderRadius: BorderRadius.circular(
+                                            SizeConfig.diagonal * 3),
+                                        border: Border.all(
+                                          color: Color(Styling.accentColor),
+                                        ),
+                                      ),
+                                      margin: EdgeInsets.all(
+                                          SizeConfig.diagonal * 1),
+                                      padding: EdgeInsets.all(
+                                          SizeConfig.diagonal * 1),
+                                      child: Row(
+                                        children: [
+                                          Text(
+                                            I18n.of(context).addItem,
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize:
+                                                    SizeConfig.diagonal * 1.5),
+                                          ),
+                                          SizedBox(
+                                              width: SizeConfig.diagonal * 0.5),
+                                          Icon(
+                                            Icons.add,
+                                            size: SizeConfig.diagonal * 1.5,
+                                            color: Colors.white,
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
-                                  margin:
-                                      EdgeInsets.all(SizeConfig.diagonal * 1),
-                                  padding:
-                                      EdgeInsets.all(SizeConfig.diagonal * 1),
-                                  child: Row(
-                                    children: [
-                                      Text(
-                                        I18n.of(context).addItem,
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize:
-                                                SizeConfig.diagonal * 1.5),
-                                      ),
-                                      SizedBox(
-                                          width: SizeConfig.diagonal * 0.5),
-                                      Icon(
-                                        Icons.add,
-                                        size: SizeConfig.diagonal * 1.5,
-                                        color: Colors.white,
-                                      ),
-                                    ],
-                                  ),
                                 ),
-                              ),
-                            ),
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -788,21 +779,38 @@ class _MenuPageState extends State<MenuPage> {
         });
       },
       child: Container(
-        padding: EdgeInsets.all(SizeConfig.diagonal * 1.5),
+        width: SizeConfig.diagonal * 25,
+        height: SizeConfig.diagonal * 15,
+        margin: EdgeInsets.all(SizeConfig.diagonal * 0.5),
         decoration: BoxDecoration(
-            color: selectedCategory == category.name
-                ? Color(Styling.accentColor)
-                : Colors.transparent,
-            borderRadius: BorderRadius.circular(SizeConfig.diagonal * 3)),
-        child: Text(
-          category.name,
-          style: TextStyle(
-              color: selectedCategory == category.name
-                  ? Colors.white
-                  : Color(Styling.textColor).withOpacity(0.3),
-              fontWeight: selectedCategory == category.name
-                  ? FontWeight.bold
-                  : FontWeight.normal),
+          image: DecorationImage(
+              image: AssetImage('assets/soupe boeuf_legume.jpg'),
+              fit: BoxFit.cover),
+          color: selectedCategory == category.name
+              ? Color(Styling.accentColor)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(SizeConfig.diagonal * 3),
+        ),
+        child: Container(
+          padding: EdgeInsets.all(SizeConfig.diagonal * 0.5),
+          decoration: BoxDecoration(
+            color: Colors.black.withOpacity(0.3),
+            borderRadius: BorderRadius.circular(SizeConfig.diagonal * 3),
+          ),
+          child: Center(
+            child: Text(
+              category.name,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontSize: SizeConfig.diagonal * 2,
+                  color: selectedCategory == category.name
+                      ? Colors.white
+                      : Color(Styling.textColor).withOpacity(0.3),
+                  fontWeight: selectedCategory == category.name
+                      ? FontWeight.bold
+                      : FontWeight.normal),
+            ),
+          ),
         ),
       ),
     );
