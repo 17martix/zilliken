@@ -153,7 +153,7 @@ class _MenuPageState extends State<MenuPage> {
         Expanded(
           child: menulist(),
         ),
-        /* if (clientOrder.length > 0)*/ showBill(),
+        if (clientOrder.length > 0) showBill(),
       ],
     );
   }
@@ -567,7 +567,22 @@ class _MenuPageState extends State<MenuPage> {
             child: Text(""),
           );
 
-        return ListView(
+        return ListView.builder(
+          itemCount: snapshot.data.docs.length,
+          itemBuilder: (context, index) {
+            MenuItem menu = MenuItem();
+            menu.buildObject(snapshot.data.docs[index]);
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (menu.rank == 1) categoryRow(menu),
+                item(menu),
+              ],
+            );
+          },
+        );
+
+        /* return ListView(
           shrinkWrap: true,
           children: snapshot.data.docs.map((DocumentSnapshot document) {
             MenuItem menu = MenuItem();
@@ -580,7 +595,7 @@ class _MenuPageState extends State<MenuPage> {
               ],
             );
           }).toList(),
-        );
+        );*/
       },
     );
   }
