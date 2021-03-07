@@ -784,7 +784,7 @@ class _MenuPageState extends State<MenuPage> {
         margin: EdgeInsets.all(SizeConfig.diagonal * 0.5),
         decoration: BoxDecoration(
           image: DecorationImage(
-              image: AssetImage('assets/soupe boeuf_legume.jpg'),
+              image: AssetImage('assets/${category.imageName}'),
               fit: BoxFit.cover),
           color: selectedCategory == category.name
               ? Color(Styling.accentColor)

@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zilliken/Helpers/SizeConfig.dart';
+import 'package:zilliken/Helpers/Styling.dart';
 import 'package:zilliken/Helpers/Utils.dart';
 import 'package:zilliken/Models/Fields.dart';
 import 'package:zilliken/Models/Order.dart';
@@ -176,9 +177,17 @@ class _OrdersPageState extends State<OrdersPage> {
     return StreamBuilder<QuerySnapshot>(
       stream: commandes.snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        if (snapshot.data == null) {
+        if (snapshot.data == null || snapshot.data.docs.length <= 0) {
           return Center(
-            child: Text(""),
+            child: Text(
+              I18n.of(context).orderPlaceholder,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: SizeConfig.diagonal * 2,
+                color: Color(Styling.primaryColor),
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           );
         }
 

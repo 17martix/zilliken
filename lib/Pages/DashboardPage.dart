@@ -111,7 +111,7 @@ class _DashboardPageState extends State<DashboardPage> {
               fit: BoxFit.cover,
             )),
             child: Container(
-              color: Color(Styling.textColor).withOpacity(0.5),
+              color: Color(Styling.primaryBackgroundColor).withOpacity(0.7),
               child: Scaffold(
                 key: _scaffoldKey,
                 backgroundColor: Colors.transparent,
@@ -119,10 +119,11 @@ class _DashboardPageState extends State<DashboardPage> {
                     googleSign, logout, null),
                 body: body(),
                 bottomNavigationBar: CurvedNavigationBar(
-                  animationCurve: Curves.easeInBack,
+                  //animationCurve: Curves.easeInBack,
                   color: Colors.white.withOpacity(0.7),
                   height: SizeConfig.diagonal * 6,
-                  animationDuration: Duration(milliseconds: 800),
+                  //animationDuration: Duration(milliseconds: 800),
+                  animationDuration: Duration(milliseconds: 0),
                   backgroundColor: Colors.transparent,
                   index: _selectedIndex,
                   items: <Widget>[
@@ -151,7 +152,7 @@ class _DashboardPageState extends State<DashboardPage> {
   }*/
 
   Widget body() {
-    return Stack(
+    /*return Stack(
       children: [
         AnimatedContainer(
           child: MenuPage(
@@ -177,8 +178,8 @@ class _DashboardPageState extends State<DashboardPage> {
           transform: Matrix4.translationValues(_xOffset2, 0, 1),
         )
       ],
-    );
-    /*switch (_selectedIndex) {
+    );*/
+    switch (_selectedIndex) {
       case 0:
         return MenuPage(
           auth: widget.auth,
@@ -205,7 +206,7 @@ class _DashboardPageState extends State<DashboardPage> {
           clientOrder: widget.clientOrder,
         );
         break;
-    }*/
+    }
   }
 
   /*Route _fromMenuToOrders() {

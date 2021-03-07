@@ -121,6 +121,8 @@ class I18n {
 
   String get loadData => _getText("loadData");
 
+  String get orderPlaceholder => _getText("orderPlaceholder");
+
   static Map<String, String> _localizedValues;
 
   static Map<String, String> _enValues = {
@@ -181,6 +183,7 @@ class I18n {
     "grandTotal": "Grand Total",
     "orderStatus": "Order Status",
     "loadData": "Load Data",
+    "orderPlaceholder": "Your Orders Will Appear Here",
   };
 
   static Map<String, String> _frValues = {
@@ -241,6 +244,7 @@ class I18n {
     "grandTotal": "Total",
     "orderStatus": "Statut De La Commande",
     "loadData": "Charger Les Données",
+    "orderPlaceholder": "Vos Commandes Apparaîtront Ici",
   };
 
   static Map<String, Map<String, String>> _allValues = {
