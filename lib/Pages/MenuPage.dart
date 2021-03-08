@@ -785,6 +785,9 @@ class _MenuPageState extends State<MenuPage> {
         decoration: BoxDecoration(
           image: DecorationImage(
               image: AssetImage('assets/${category.imageName}'),
+              colorFilter: selectedCategory != category.name
+                  ? ColorFilter.mode(Colors.white, BlendMode.saturation)
+                  : null,
               fit: BoxFit.cover),
           color: selectedCategory == category.name
               ? Color(Styling.accentColor)
@@ -803,9 +806,7 @@ class _MenuPageState extends State<MenuPage> {
               textAlign: TextAlign.center,
               style: TextStyle(
                   fontSize: SizeConfig.diagonal * 2,
-                  color: selectedCategory == category.name
-                      ? Colors.white
-                      : Color(Styling.textColor).withOpacity(0.3),
+                  color: Colors.white,
                   fontWeight: selectedCategory == category.name
                       ? FontWeight.bold
                       : FontWeight.normal),
