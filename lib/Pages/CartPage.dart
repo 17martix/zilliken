@@ -296,49 +296,54 @@ class _CartPageState extends State<CartPage> {
                                 },
                               ),
                             )
-                          : InkWell(
-                              onTap: () {
-                                setState(() {
-                                  clientOrder.add(OrderItem(
-                                    menuItem: menu,
-                                    count: 1,
-                                  ));
-                                });
-                              },
-                              child: Expanded(
-                                flex: 1,
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: Color(Styling.accentColor),
-                                    borderRadius: BorderRadius.circular(
-                                        SizeConfig.diagonal * 3),
-                                    border: Border.all(
-                                      color: Color(Styling.accentColor),
+                          : Expanded(
+                              flex: 1,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  InkWell(
+                                    onTap: () {
+                                      setState(() {
+                                        clientOrder.add(OrderItem(
+                                          menuItem: menu,
+                                          count: 1,
+                                        ));
+                                      });
+                                    },
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: Color(Styling.accentColor),
+                                        borderRadius: BorderRadius.circular(
+                                            SizeConfig.diagonal * 3),
+                                        border: Border.all(
+                                          color: Color(Styling.accentColor),
+                                        ),
+                                      ),
+                                      margin: EdgeInsets.all(
+                                          SizeConfig.diagonal * 1),
+                                      padding: EdgeInsets.all(
+                                          SizeConfig.diagonal * 1),
+                                      child: Row(
+                                        children: [
+                                          Text(
+                                            I18n.of(context).addItem,
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize:
+                                                    SizeConfig.diagonal * 1.5),
+                                          ),
+                                          SizedBox(
+                                              width: SizeConfig.diagonal * 0.5),
+                                          Icon(
+                                            Icons.add,
+                                            size: SizeConfig.diagonal * 1.5,
+                                            color: Colors.white,
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
-                                  margin:
-                                      EdgeInsets.all(SizeConfig.diagonal * 1),
-                                  padding:
-                                      EdgeInsets.all(SizeConfig.diagonal * 1),
-                                  child: Row(
-                                    children: [
-                                      Text(
-                                        I18n.of(context).addItem,
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize:
-                                                SizeConfig.diagonal * 1.5),
-                                      ),
-                                      SizedBox(
-                                          width: SizeConfig.diagonal * 0.5),
-                                      Icon(
-                                        Icons.add,
-                                        size: SizeConfig.diagonal * 1.5,
-                                        color: Colors.white,
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                                ],
                               ),
                             ),
                     ],
@@ -582,7 +587,7 @@ class _CartPageState extends State<CartPage> {
       });
 
       bool isOnline = await DataConnectionChecker().hasConnection;
-      if (!isOnline) {
+      if (isOnline) {
         setState(() {
           _isLoading = false;
         });

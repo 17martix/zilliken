@@ -65,11 +65,12 @@ class _MenuPageState extends State<MenuPage> {
 
     setState(() {
       commandesQuery(selectedCategory);
-      if (widget.clientOrder != null && widget.clientOrder.length > 0)
-        setState(() {
-          clientOrder = widget.clientOrder;
-        });
     });
+
+    if (widget.clientOrder != null && widget.clientOrder.length > 0)
+      setState(() {
+        clientOrder = widget.clientOrder;
+      });
 
     _isLoading = false;
 
@@ -364,8 +365,8 @@ class _MenuPageState extends State<MenuPage> {
       _isLoading = true;
     });
 
-bool isOnline= await DataConnectionChecker().hasConnection;
-    if (!isOnline) {
+    bool isOnline = await DataConnectionChecker().hasConnection;
+    if (isOnline) {
       setState(() {
         _isLoading = false;
       });
@@ -403,8 +404,8 @@ bool isOnline= await DataConnectionChecker().hasConnection;
         _isLoading = true;
       });
 
-bool isOnline= await DataConnectionChecker().hasConnection;
-      if (!isOnline) {
+      bool isOnline = await DataConnectionChecker().hasConnection;
+      if (isOnline) {
         setState(() {
           _isLoading = false;
         });
@@ -466,8 +467,8 @@ bool isOnline= await DataConnectionChecker().hasConnection;
         _isLoading = true;
       });
 
-bool isOnline= await DataConnectionChecker().hasConnection;
-      if (!isOnline) {
+      bool isOnline = await DataConnectionChecker().hasConnection;
+      if (isOnline) {
         setState(() {
           _isLoading = false;
         });

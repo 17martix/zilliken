@@ -38,7 +38,6 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
-
   int _selectedIndex = 0;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   int enabled = 1;
@@ -225,8 +224,8 @@ class _DashboardPageState extends State<DashboardPage> {
   void googleSign() async {
     String userId = "";
 
-bool isOnline= await DataConnectionChecker().hasConnection;
-      if (!isOnline) {
+    bool isOnline = await DataConnectionChecker().hasConnection;
+    if (isOnline) {
       _scaffoldKey.currentState.showSnackBar(
         SnackBar(
           content: Text(I18n.of(context).noInternet),
