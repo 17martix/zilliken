@@ -48,6 +48,7 @@ class Fields {
   static final String tableAdress = 'tableAdress';
   static final String phoneNumber = 'phoneNumber';
   static final String tout = 'Tout';
+  static final String boissonsChaudes = 'Boissons chaudes';
 
   static final String settings = 'settings';
   static final String enabled = 'enabled';

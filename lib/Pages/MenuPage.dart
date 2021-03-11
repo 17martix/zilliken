@@ -47,7 +47,7 @@ class _MenuPageState extends State<MenuPage> {
   var categories = FirebaseFirestore.instance
       .collection(Fields.category)
       .orderBy(Fields.rank, descending: false);
-  String selectedCategory = Fields.tout;
+  String selectedCategory = Fields.boissonsChaudes;
   List<OrderItem> clientOrder = List<OrderItem>();
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -64,8 +64,6 @@ class _MenuPageState extends State<MenuPage> {
   final _catformKey = GlobalKey<FormState>();
   List<String> _catList = new List();
 
-  double _yOffset = 8000;
-
   @override
   void initState() {
     super.initState();
@@ -75,7 +73,6 @@ class _MenuPageState extends State<MenuPage> {
       if (widget.clientOrder != null && widget.clientOrder.length > 0)
         setState(() {
           clientOrder = widget.clientOrder;
-          _yOffset = 0.0;
         });
     });
 
@@ -322,56 +319,49 @@ class _MenuPageState extends State<MenuPage> {
   }
 
   Widget showBill() {
-    return AnimatedContainer(
-      curve: Curves.fastLinearToSlowEaseIn,
-      duration: Duration(milliseconds: 600),
-      transform: Matrix4.translationValues(0, _yOffset, 1),
-      child: Align(
-          alignment: Alignment.bottomCenter,
-          child: InkWell(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => CartPage(
-                    clientOrder: clientOrder,
-                    db: widget.db,
-                    auth: widget.auth,
-                    userId: widget.userId,
-                    userRole: widget.userRole,
-                  ),
+    return Align(
+        alignment: Alignment.bottomCenter,
+        child: InkWell(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => CartPage(
+                  clientOrder: clientOrder,
+                  db: widget.db,
+                  auth: widget.auth,
+                  userId: widget.userId,
+                  userRole: widget.userRole,
                 ),
-              );
-            },
-            child: Card(
-              shape: RoundedRectangleBorder(
-                  borderRadius:
-                      BorderRadius.circular(SizeConfig.diagonal * 1.5)),
-              color: Color(Styling.accentColor),
-              elevation: 16,
-              child: ListTile(
-                title: Text(
-                  numberItems(context, clientOrder),
-                  style:
-                      TextStyle(color: Color(Styling.primaryBackgroundColor)),
+              ),
+            );
+          },
+          child: Card(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5)),
+            color: Color(Styling.accentColor),
+            elevation: 16,
+            child: ListTile(
+              title: Text(
+                numberItems(context, clientOrder),
+                style: TextStyle(color: Color(Styling.primaryBackgroundColor)),
+              ),
+              subtitle: Text(
+                priceItems(context, clientOrder),
+                style: TextStyle(
+                  color: Color(Styling.primaryBackgroundColor),
+                  fontWeight: FontWeight.bold,
                 ),
-                subtitle: Text(
-                  priceItems(context, clientOrder),
-                  style: TextStyle(
-                    color: Color(Styling.primaryBackgroundColor),
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                trailing: Text(
-                  I18n.of(context).vOrder,
-                  style: TextStyle(
-                    color: Color(Styling.primaryBackgroundColor),
-                  ),
+              ),
+              trailing: Text(
+                I18n.of(context).vOrder,
+                style: TextStyle(
+                  color: Color(Styling.primaryBackgroundColor),
                 ),
               ),
             ),
-          )),
-    );
+          ),
+        ));
   }
 
   bool validateAndSaveCategory() {
@@ -701,7 +691,6 @@ class _MenuPageState extends State<MenuPage> {
                                       if (value == 0) {
                                         setState(() {
                                           clientOrder.remove(orderItem);
-                                          _yOffset = 8000;
                                         });
                                         //order.remove(orderItem);
                                       } else {
@@ -720,7 +709,6 @@ class _MenuPageState extends State<MenuPage> {
                                         menuItem: menu,
                                         count: 1,
                                       ));
-                                      _yOffset = 0.0;
                                     });
                                   },
                                   child: Expanded(

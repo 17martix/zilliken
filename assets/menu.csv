@@ -89,22 +89,14 @@ FRITES,0,ACCOMPAGNEMENTS,1,5,88,frites.jpg
 PETITE SALADE,0,ACCOMPAGNEMENTS,1,6,89,petite salade.jpg
 COUSCOUS,0,ACCOMPAGNEMENTS,1,7,90,couscous.jpg
 POMMES DE TERRE SAUTÉE AUX LÉGUMES,0,ACCOMPAGNEMENTS,1,8,91,pommes de terre sautee aux legumes.jpg
-EAU PLATE,3000,BOISSONS FRAICHES,1,1,92,eau plate.jpg
-EAU PÉTILLANTE,3000,BOISSONS FRAICHES,1,2,93,eaupetillante.jpeg
-FANTA,3000,BOISSONS FRAICHES,1,3,94,fanta.jpg
-FRUITO (Passion et Ananas ),3500,BOISSONS FRAICHES,1,4,95,passion.jpg
-VIVA,3000,BOISSONS FRAICHES,1,5,96,viva.jpeg
-ROYAL,8000,BOISSONS FRAICHES,1,6,97,royal.jpg
-LEFFE,15000,BOISSONS FRAICHES,1,7,98,leffe.jpg
-HEINEKEN,8000,BOISSONS FRAICHES,1,8,99,heineken.jpg
-AMERICANO(Maninicamparieau petillante,17000,COCKTAIL,1,1,100,américano.jpeg
-HAKUNAMATATA (jus d'ananasjus d'orangeginvodka),17000,COCKTAIL,1,2,101,hakunamatata.jpeg
-GREEN POISON (ginjus d'orangementhe),17000,COCKTAIL,1,3,102,greenpoison.jpeg
-TEQUILA SUNRISE (Tequilajus d'orangegrenadine),17000,COCKTAIL,1,4,103,tequilasunrise.jpeg
-SPECIAL GIRL (martiniRum BlancGinPassionGrenadine,17000,COCKTAIL,1,5,104,specialgirl.jpeg
-PUNCH PASSION (Rum BlancFruito passion,15000,COCKTAIL,1,6,105,punchpassion.jpeg
-APPLETINI ( Vodkajus de pomme),15000,COCKTAIL,1,7,106,appletini.jpeg
-LONG ISLAND,20000,COCKTAIL,1,8,107,longisland.jpeg
+AMERICANO(Maninicamparieau petillante,17000,COCKTAILS,1,1,100,américano.jpeg
+HAKUNAMATATA (jus d'ananasjus d'orangeginvodka),17000,COCKTAILS,1,2,101,hakunamatata.jpeg
+GREEN POISON (ginjus d'orangementhe),17000,COCKTAILS,1,3,102,greenpoison.jpeg
+TEQUILA SUNRISE (Tequilajus d'orangegrenadine),17000,COCKTAILS,1,4,103,tequilasunrise.jpeg
+SPECIAL GIRL (martiniRum BlancGinPassionGrenadine,17000,COCKTAILS,1,5,104,specialgirl.jpeg
+PUNCH PASSION (Rum BlancFruito passion,15000,COCKTAILS,1,6,105,punchpassion.jpeg
+APPLETINI ( Vodkajus de pomme),15000,COCKTAILS,1,7,106,appletini.jpeg
+LONG ISLAND,20000,COCKTAILS,1,8,107,longisland.jpeg
 MOET ET CHANDON,250000,AUTRES,1,1,108,moetetchandon.jpeg
 VEUVE CLICQUOT,250000,AUTRES,1,2,109,veuveclicquot.jpeg
 ST ISTEPLEX,180000,AUTRES,1,3,110,ST ISTEPLEX.jpeg
@@ -118,7 +110,7 @@ MARTEL,650000,AUTRES,1,10,117,martel.jpeg
 HENNESSY,435000,AUTRES,1,11,118,hennessy.jpeg
 REMY MARTIN VSOP,390000,AUTRES,1,12,119,remymartinvsop.jpeg
 GOLD 1L,350000,AUTRES,1,13,120,gold.jpeg
-ELBLING SEC 101,53000,VINS BLANCS,1,1,121,ELBING SEC 101.jpeg
+ELBLING SEC 101,53000,VINS BLANCS,1,1,121,ELBLING SEC 101.jpeg
 ELBLING  CLASSIC SEC,53000,VINS BLANCS,1,2,122,ELBLING  CLASSIC SEC.jpeg
 ELBLING FILIUS DEMI-SEC ,56000,VINS BLANCS,1,3,123,ELBLING FILIUS DEMI-SEC.JPEG
 CUVEE MUSCHELKALK (PINOT/ELBING)SEC,57000,VINS BLANCS,1,4,124,CUVEE MUSCHELKALK (PINOT ELBING) SEC.jpeg
@@ -166,22 +158,22 @@ NEGRONI (campari –martini-gin- soda),12000,COCKTAILS,1,17,165,NEGRONI(campari 
 GIN TONIC (gin glacons tranche de citron tige romarin),12000,COCKTAILS,1,18,166,GIN TONIC(gin glacons tranche de citron tige romarin).jpeg
 LONG ISLAND (gin tequilla rum vodka cointreau coca jus de citron),15000,COCKTAILS,1,19,167,LONG ISLAND(gin tequilla rum vodka cointreau coca jus de citron).jpeg
 VINOTHÈQUE (martini glaçons rouge),12000,COCKTAILS,1,20,168,VINOTHÈQUE(martini glaçons rouge).jpeg
-TEQUILLA,7000,DIGESTIFS (4cl),1,1,169,tequila.jpeg
-CAMPARI,7000,DIGESTIFS (4cl),1,2,170,campari.jpeg
-BACARDI,7000,DIGESTIFS (4cl),1,3,171,baccardi.jpeg
-MARTINI,5000,DIGESTIFS (4cl),1,4,172,martini.jpeg
-VODKA,7000,DIGESTIFS (4cl),1,5,173,vodka.jpeg
-GIN GORDON’S,7000,DIGESTIFS (4cl),1,6,174,gingordons.jpeg
-GIN FERDINAND’S,15000,DIGESTIFS (4cl),1,7,175,ginferdinands.jpeg
-COINTREAU,12000,DIGESTIFS (4cl),1,8,176,cointreau.jpeg
-CRÈME DE CASSIS,10000,DIGESTIFS (4cl),1,9,177,cremedecassis.jpeg
-GRAND-MARNIER,12000,DIGESTIFS (4cl),1,10,178,grandmarnier.jpeg
-JACK DANIELS,10000,DIGESTIFS (4cl),1,11,179,jackdaniels.jpeg
-HENNESSY,10000,DIGESTIFS (4cl),1,12,180,henessy.jpeg
-CHIVAS,8000,DIGESTIFS (4cl),1,13,181,chivas.jpeg
-GOLD LABEL,15000,DIGESTIFS (4cl),1,14,182,goldlabel.jpeg
-MARTELL,20000,DIGESTIFS (4cl),1,15,183,martel.jpeg
-BOMBAY,10000,DIGESTIFS (4cl),1,16,184,bombay.jpeg
+TEQUILLA,7000,DIGESTIFS,1,1,169,tequila.jpeg
+CAMPARI,7000,DIGESTIFS,1,2,170,campari.jpeg
+BACARDI,7000,DIGESTIFS,1,3,171,baccardi.jpeg
+MARTINI,5000,DIGESTIFS,1,4,172,martini.jpeg
+VODKA,7000,DIGESTIFS,1,5,173,vodka.jpeg
+GIN GORDON’S,7000,DIGESTIFS,1,6,174,gingordons.jpeg
+GIN FERDINAND’S,15000,DIGESTIFS,1,7,175,ginferdinands.jpeg
+COINTREAU,12000,DIGESTIFS,1,8,176,cointreau.jpeg
+CRÈME DE CASSIS,10000,DIGESTIFS,1,9,177,cremedecassis.jpeg
+GRAND-MARNIER,12000,DIGESTIFS,1,10,178,grandmarnier.jpeg
+JACK DANIELS,10000,DIGESTIFS,1,11,179,jackdaniels.jpeg
+HENNESSY,10000,DIGESTIFS,1,12,180,henessy.jpeg
+CHIVAS,8000,DIGESTIFS,1,13,181,chivas.jpeg
+GOLD LABEL,15000,DIGESTIFS,1,14,182,goldlabel.jpeg
+MARTELL,20000,DIGESTIFS,1,15,183,martel.jpeg
+BOMBAY,10000,DIGESTIFS,1,16,184,bombay.jpeg
 CRÊPE NATURE,5000,DESSERTS,1,1,185,crepenature.jpeg
 CRÊPE NUTELLA,8000,DESSERTS,1,2,186,crepenutella.jpeg
 CRÊPE NUTELLA AVEC BOULE DE GLACE,10000,DESSERTS,1,3,187,crepenutellaavecbouledeglace.jpeg
