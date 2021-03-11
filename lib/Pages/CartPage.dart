@@ -1,12 +1,12 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:flutter/material.dart';
 import 'package:zilliken/Components/ZAppBar.dart';
 import 'package:zilliken/Components/ZCircularProgress.dart';
 import 'package:zilliken/Components/ZRaisedButton.dart';
 import 'package:zilliken/Components/ZTextField.dart';
-import 'package:zilliken/Helpers/ConnectionStatus.dart';
 import 'package:zilliken/Helpers/NumericStepButton.dart';
 import 'package:zilliken/Helpers/SizeConfig.dart';
 import 'package:zilliken/Helpers/Styling.dart';
@@ -53,8 +53,6 @@ class _CartPageState extends State<CartPage> {
   List<OrderItem> clientOrder;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  StreamSubscription _connectionChangeStream;
-  bool isOffline = false;
   bool _isLoading = false;
   bool _isTaxLoaded = false;
   int enabled = 1;
@@ -80,10 +78,6 @@ class _CartPageState extends State<CartPage> {
       });
     });
 
-    ConnectionStatus connectionStatus = ConnectionStatus.getInstance();
-    _connectionChangeStream =
-        connectionStatus.connectionChange.listen(connectionChanged);
-
     FirebaseFirestore.instance
         .collection(Fields.configuration)
         .doc(Fields.settings)
@@ -92,12 +86,6 @@ class _CartPageState extends State<CartPage> {
       setState(() {
         enabled = documentSnapshot.data()[Fields.enabled];
       });
-    });
-  }
-
-  void connectionChanged(dynamic hasConnection) {
-    setState(() {
-      isOffline = !hasConnection;
     });
   }
 
@@ -593,7 +581,8 @@ class _CartPageState extends State<CartPage> {
         _isLoading = true;
       });
 
-      if (isOffline) {
+      bool isOnline = await DataConnectionChecker().hasConnection;
+      if (!isOnline) {
         setState(() {
           _isLoading = false;
         });

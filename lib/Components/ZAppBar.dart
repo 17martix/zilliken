@@ -3,7 +3,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zilliken/Helpers/SizeConfig.dart';
 import 'package:zilliken/Helpers/Styling.dart';
 import 'package:zilliken/Services/Authentication.dart';
-import 'package:zilliken/i18n.dart';
 
 AppBar buildAppBar(context, Authentication auth, bool isBackAllowed,
     bool loginOptionAvailable, googleSign, logout, backFunction) {

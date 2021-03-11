@@ -1,10 +1,8 @@
-import 'dart:async';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:flutter/material.dart';
 import 'package:zilliken/Components/ZAppBar.dart';
-import 'package:zilliken/Helpers/ConnectionStatus.dart';
 import 'package:zilliken/Helpers/SizeConfig.dart';
 import 'package:zilliken/Helpers/Styling.dart';
 import 'package:zilliken/Models/Fields.dart';
@@ -40,8 +38,6 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
-  StreamSubscription _connectionChangeStream;
-  bool isOffline = false;
 
   int _selectedIndex = 0;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -52,9 +48,6 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   void initState() {
     super.initState();
-    ConnectionStatus connectionStatus = ConnectionStatus.getInstance();
-    _connectionChangeStream =
-        connectionStatus.connectionChange.listen(connectionChanged);
 
     if (widget.index != null) {
       setState(() {
@@ -70,12 +63,6 @@ class _DashboardPageState extends State<DashboardPage> {
       setState(() {
         enabled = documentSnapshot.data()[Fields.enabled];
       });
-    });
-  }
-
-  void connectionChanged(dynamic hasConnection) {
-    setState(() {
-      isOffline = !hasConnection;
     });
   }
 
@@ -238,7 +225,8 @@ class _DashboardPageState extends State<DashboardPage> {
   void googleSign() async {
     String userId = "";
 
-    if (isOffline) {
+bool isOnline= await DataConnectionChecker().hasConnection;
+      if (!isOnline) {
       _scaffoldKey.currentState.showSnackBar(
         SnackBar(
           content: Text(I18n.of(context).noInternet),

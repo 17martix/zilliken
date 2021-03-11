@@ -66,7 +66,7 @@ class _SplashPageState extends State<SplashPage> {
           radius: SizeConfig.diagonal * 10,
           backgroundColor: Colors.transparent,
           child: Image(
-            image: AssetImage('assets/logo.jpg'),
+            image: AssetImage('assets/logo.png'),
           ),
         ),
       ),

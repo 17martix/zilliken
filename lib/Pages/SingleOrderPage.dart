@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -6,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:zilliken/Components/ZAppBar.dart';
 import 'package:zilliken/Components/ZCircularProgress.dart';
 import 'package:zilliken/Components/ZRaisedButton.dart';
-import 'package:zilliken/Helpers/ConnectionStatus.dart';
 import 'package:zilliken/Helpers/SizeConfig.dart';
 import 'package:zilliken/Helpers/Styling.dart';
 import 'package:zilliken/Helpers/Utils.dart';
@@ -50,8 +48,6 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
   bool isDataBeingDeleted = false;
   int _status = Fields.confirmed;
   bool _isLoading = false;
-  StreamSubscription _connectionChangeStream;
-  bool isOffline = false;
 
   int _orderStatus = 0;
   int enabled = 1;
@@ -86,16 +82,6 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
       setState(() {
         enabled = documentSnapshot.data()[Fields.enabled];
       });
-    });
-
-    ConnectionStatus connectionStatus = ConnectionStatus.getInstance();
-    _connectionChangeStream =
-        connectionStatus.connectionChange.listen(connectionChanged);
-  }
-
-  void connectionChanged(dynamic hasConnection) {
-    setState(() {
-      isOffline = !hasConnection;
     });
   }
 

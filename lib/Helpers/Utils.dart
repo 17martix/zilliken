@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
@@ -51,7 +50,7 @@ String grandTotal(context, List<OrderItem> order, int taxPercentage) {
   Cart cart = cartCount(order);
   double tax = (taxPercentage / 100) * cart.totalPrice;
   double total = cart.totalPrice + tax;
-  return "${total} ${I18n.of(context).fbu}";
+  return "$total ${I18n.of(context).fbu}";
 }
 
 double grandTotalNumber(context, List<OrderItem> order, int taxPercentage) {
@@ -75,12 +74,12 @@ Cart cartCount(List<OrderItem> order) {
 String appliedTax(context, List<OrderItem> order, int taxPercentage) {
   Cart cart = cartCount(order);
   double tax = (taxPercentage / 100) * cart.totalPrice;
-  return "${taxPercentage}% = ${tax} ${I18n.of(context).fbu}";
+  return "$taxPercentage% = $tax ${I18n.of(context).fbu}";
 }
 
 String appliedTaxFromTotal(context, int total, int taxPercentage) {
   double tax = (taxPercentage / 100) * total;
-  return "${taxPercentage}% = ${tax} ${I18n.of(context).fbu}";
+  return "$taxPercentage% = $tax ${I18n.of(context).fbu}";
 }
 
 String orderCardTtle(context, Order order) {
@@ -121,7 +120,7 @@ String itemTotal(context, OrderItem orderItem) {
 
 String itemTax(context, Order order) {
   var value = order.total * order.taxPercentage / 100;
-  return "${order.taxPercentage}% = ${value} ${I18n.of(context).fbu}";
+  return "${order.taxPercentage}% = $value ${I18n.of(context).fbu}";
 }
 
 String showRommTable(context, Order order) {

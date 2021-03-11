@@ -1,12 +1,9 @@
-import 'dart:async';
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:flutter/material.dart';
 import 'package:zilliken/Components/ZCircularProgress.dart';
 import 'package:zilliken/Components/ZRaisedButton.dart';
 import 'package:zilliken/Components/ZTextField.dart';
-import 'package:zilliken/Helpers/ConnectionStatus.dart';
 import 'package:zilliken/Helpers/NumericStepButton.dart';
 import 'package:zilliken/Helpers/SizeConfig.dart';
 import "package:zilliken/Helpers/Styling.dart";
@@ -51,8 +48,6 @@ class _MenuPageState extends State<MenuPage> {
   List<OrderItem> clientOrder = List<OrderItem>();
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-  StreamSubscription _connectionChangeStream;
-  bool isOffline = false;
   bool _isLoading;
 
   int _itemorCategory = 0;
@@ -76,9 +71,6 @@ class _MenuPageState extends State<MenuPage> {
         });
     });
 
-    ConnectionStatus connectionStatus = ConnectionStatus.getInstance();
-    _connectionChangeStream =
-        connectionStatus.connectionChange.listen(connectionChanged);
     _isLoading = false;
 
     widget.db.getCategories().then((value) {
@@ -116,12 +108,6 @@ class _MenuPageState extends State<MenuPage> {
             .orderBy(Fields.global, descending: false);
       }
     }
-  }
-
-  void connectionChanged(dynamic hasConnection) {
-    setState(() {
-      isOffline = !hasConnection;
-    });
   }
 
   @override
@@ -378,7 +364,8 @@ class _MenuPageState extends State<MenuPage> {
       _isLoading = true;
     });
 
-    if (isOffline) {
+bool isOnline= await DataConnectionChecker().hasConnection;
+    if (!isOnline) {
       setState(() {
         _isLoading = false;
       });
@@ -416,7 +403,8 @@ class _MenuPageState extends State<MenuPage> {
         _isLoading = true;
       });
 
-      if (isOffline) {
+bool isOnline= await DataConnectionChecker().hasConnection;
+      if (!isOnline) {
         setState(() {
           _isLoading = false;
         });
@@ -478,7 +466,8 @@ class _MenuPageState extends State<MenuPage> {
         _isLoading = true;
       });
 
-      if (isOffline) {
+bool isOnline= await DataConnectionChecker().hasConnection;
+      if (!isOnline) {
         setState(() {
           _isLoading = false;
         });
@@ -702,49 +691,56 @@ class _MenuPageState extends State<MenuPage> {
                                     },
                                   ),
                                 )
-                              : InkWell(
-                                  onTap: () {
-                                    setState(() {
-                                      clientOrder.add(OrderItem(
-                                        menuItem: menu,
-                                        count: 1,
-                                      ));
-                                    });
-                                  },
-                                  child: Expanded(
-                                    flex: 1,
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        color: Color(Styling.accentColor),
-                                        borderRadius: BorderRadius.circular(
-                                            SizeConfig.diagonal * 3),
-                                        border: Border.all(
-                                          color: Color(Styling.accentColor),
+                              : Expanded(
+                                  flex: 1,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      InkWell(
+                                        onTap: () {
+                                          setState(() {
+                                            clientOrder.add(OrderItem(
+                                              menuItem: menu,
+                                              count: 1,
+                                            ));
+                                          });
+                                        },
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            color: Color(Styling.accentColor),
+                                            borderRadius: BorderRadius.circular(
+                                                SizeConfig.diagonal * 3),
+                                            border: Border.all(
+                                              color: Color(Styling.accentColor),
+                                            ),
+                                          ),
+                                          margin: EdgeInsets.all(
+                                              SizeConfig.diagonal * 1),
+                                          padding: EdgeInsets.all(
+                                              SizeConfig.diagonal * 1),
+                                          child: Row(
+                                            children: [
+                                              Text(
+                                                I18n.of(context).addItem,
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize:
+                                                        SizeConfig.diagonal *
+                                                            1.5),
+                                              ),
+                                              SizedBox(
+                                                  width: SizeConfig.diagonal *
+                                                      0.5),
+                                              Icon(
+                                                Icons.add,
+                                                size: SizeConfig.diagonal * 1.5,
+                                                color: Colors.white,
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ),
-                                      margin: EdgeInsets.all(
-                                          SizeConfig.diagonal * 1),
-                                      padding: EdgeInsets.all(
-                                          SizeConfig.diagonal * 1),
-                                      child: Row(
-                                        children: [
-                                          Text(
-                                            I18n.of(context).addItem,
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize:
-                                                    SizeConfig.diagonal * 1.5),
-                                          ),
-                                          SizedBox(
-                                              width: SizeConfig.diagonal * 0.5),
-                                          Icon(
-                                            Icons.add,
-                                            size: SizeConfig.diagonal * 1.5,
-                                            color: Colors.white,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
+                                    ],
                                   ),
                                 ),
                     ],

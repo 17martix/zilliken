@@ -6,24 +6,15 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:zilliken/Pages/SplashPage.dart';
 import 'package:zilliken/Services/Authentication.dart';
 import 'package:zilliken/Services/Database.dart';
-
-import 'Helpers/ConnectionStatus.dart';
 import 'Helpers/Styling.dart';
 
-import 'Pages/DashboardPage.dart';
-import 'Pages/SingleOrderPage.dart';
 import 'Pages/SplashPage.dart';
 import 'Services/Database.dart';
-import 'i18n.dart';
-
-import 'Pages/CartPage.dart';
 import 'i18n.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  ConnectionStatus connectionStatus = ConnectionStatus.getInstance();
-  connectionStatus.initialize();
 
   FirebaseFirestore.instance.settings = Settings(persistenceEnabled: true);
 
