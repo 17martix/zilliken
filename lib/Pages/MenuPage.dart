@@ -366,7 +366,7 @@ class _MenuPageState extends State<MenuPage> {
     });
 
     bool isOnline = await DataConnectionChecker().hasConnection;
-    if (isOnline) {
+    if (!isOnline) {
       setState(() {
         _isLoading = false;
       });
@@ -405,7 +405,7 @@ class _MenuPageState extends State<MenuPage> {
       });
 
       bool isOnline = await DataConnectionChecker().hasConnection;
-      if (isOnline) {
+      if (!isOnline) {
         setState(() {
           _isLoading = false;
         });
@@ -468,7 +468,7 @@ class _MenuPageState extends State<MenuPage> {
       });
 
       bool isOnline = await DataConnectionChecker().hasConnection;
-      if (isOnline) {
+      if (!isOnline) {
         setState(() {
           _isLoading = false;
         });
@@ -653,6 +653,7 @@ class _MenuPageState extends State<MenuPage> {
                             color: Color(Styling.textColor),
                             fontWeight: FontWeight.normal,
                             fontSize: SizeConfig.diagonal * 1.5,
+                            //fontFamily: "assets/Cochin.ttf",
                           ),
                         ),
                       ),

@@ -60,6 +60,11 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
+  fonts:
+    - family: Cochin
+      fonts:
+        - asset: assets/fonts/Cochin.ttf
+
   # To add assets to your application, add an assets section, like this:
 
   assets:

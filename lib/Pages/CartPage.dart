@@ -209,13 +209,20 @@ class _CartPageState extends State<CartPage> {
           height: 1,
           color: Color(Styling.primaryColor),
         ),
-        ListView.builder(
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          children: clientOrder.map((orderItem) {
+            return item(orderItem.menuItem);
+          }).toList(),
+        ),
+
+        /* ListView.builder(
           shrinkWrap: true,
           itemCount: clientOrder.length,
           itemBuilder: (context, position) {
             return item(clientOrder[position].menuItem);
           },
-        ),
+        ),*/
       ],
     );
   }
@@ -587,7 +594,7 @@ class _CartPageState extends State<CartPage> {
       });
 
       bool isOnline = await DataConnectionChecker().hasConnection;
-      if (isOnline) {
+      if (!isOnline) {
         setState(() {
           _isLoading = false;
         });

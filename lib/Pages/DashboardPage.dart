@@ -225,7 +225,7 @@ class _DashboardPageState extends State<DashboardPage> {
     String userId = "";
 
     bool isOnline = await DataConnectionChecker().hasConnection;
-    if (isOnline) {
+    if (!isOnline) {
       _scaffoldKey.currentState.showSnackBar(
         SnackBar(
           content: Text(I18n.of(context).noInternet),
