@@ -101,13 +101,34 @@ class _DashboardPageState extends State<DashboardPage> {
               child: Scaffold(
                 key: _scaffoldKey,
                 backgroundColor: Colors.transparent,
-                appBar: buildAppBar(context, widget.auth, false, true,
+                 appBar: buildAppBar(context, widget.auth, false, true,
                     googleSign, logout, null),
                 body: body(),
+                /*bottomNavigationBar: BottomNavigationBar(
+                  items: <BottomNavigationBarItem>[
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.restaurant_menu_outlined),
+                      label: I18n.of(context).menu,
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.shopping_bag),
+                      label: I18n.of(context).orders,
+                    ),
+                  ],
+                  currentIndex: _selectedIndex,
+                  selectedItemColor: Color(
+                    Styling.primaryColor,
+                  ),
+                  onTap: (index) {
+                    setState(() {
+                      _selectedIndex = index;
+                    });
+                  },
+                ),*/
                 bottomNavigationBar: CurvedNavigationBar(
                   //animationCurve: Curves.easeInBack,
                   color: Colors.white.withOpacity(0.7),
-                  height: SizeConfig.diagonal * 6,
+                  //height: SizeConfig.diagonal * 6,
                   //animationDuration: Duration(milliseconds: 800),
                   animationDuration: Duration(milliseconds: 0),
                   backgroundColor: Colors.transparent,
