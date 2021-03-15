@@ -270,7 +270,7 @@ class _CartPageState extends State<CartPage> {
                       Expanded(
                         flex: 1,
                         child: Text(
-                          "${menu.price} ${I18n.of(context).fbu}",
+                          "${formatNumber(menu.price)} ${I18n.of(context).fbu}",
                           textAlign: TextAlign.left,
                           style: TextStyle(
                             color: Color(Styling.textColor),

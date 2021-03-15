@@ -782,7 +782,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                 ),
               ),
               Text(
-                '${orderItem.menuItem.price} Fbu',
+                '${formatNumber(orderItem.menuItem.price)} Fbu',
                 style: TextStyle(
                   color: Color(Styling.textColor),
                 ),
@@ -817,6 +817,13 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
   }
 
   Widget billElement2(Order order) {
+    int grandTotal;
+    if (order.grandTotal is double) {
+      grandTotal = order.grandTotal.round();
+    } else {
+      grandTotal = order.grandTotal;
+    }
+
     return Column(
       children: [
         Padding(
@@ -859,7 +866,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                 ),
               ),
               Text(
-                '${order.grandTotal} Fbu',
+                '${formatNumber(grandTotal)} Fbu',
                 style: TextStyle(
                   color: Color(Styling.textColor),
                 ),

@@ -12,7 +12,7 @@ import 'package:zilliken/Models/Category.dart';
 import 'package:zilliken/Models/Fields.dart';
 import 'package:zilliken/Models/MenuItem.dart';
 import 'package:zilliken/Models/OrderItem.dart';
-
+import 'package:intl/intl.dart';
 import 'package:zilliken/Services/Authentication.dart';
 import 'package:zilliken/Services/Database.dart';
 
@@ -647,7 +647,7 @@ class _MenuPageState extends State<MenuPage> {
                       Expanded(
                         flex: 1,
                         child: Text(
-                          "${menu.price} ${I18n.of(context).fbu}",
+                          "${formatNumber(menu.price)} ${I18n.of(context).fbu}",
                           textAlign: TextAlign.left,
                           style: TextStyle(
                             color: Color(Styling.textColor),

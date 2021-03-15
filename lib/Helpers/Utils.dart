@@ -33,12 +33,12 @@ String numberItems(context, List<OrderItem> order) {
 
 String priceItems(context, List<OrderItem> order) {
   Cart cart = cartCount(order);
-  return "${I18n.of(context).total} : ${cart.totalPrice} ${I18n.of(context).fbu}";
+  return "${I18n.of(context).total} : ${formatNumber(cart.totalPrice)} ${I18n.of(context).fbu}";
 }
 
 String priceItemsTotal(context, List<OrderItem> order) {
   Cart cart = cartCount(order);
-  return "${cart.totalPrice} ${I18n.of(context).fbu}";
+  return "${formatNumber(cart.totalPrice)} ${I18n.of(context).fbu}";
 }
 
 int priceItemsTotalNumber(context, List<OrderItem> order) {
@@ -50,7 +50,8 @@ String grandTotal(context, List<OrderItem> order, int taxPercentage) {
   Cart cart = cartCount(order);
   double tax = (taxPercentage / 100) * cart.totalPrice;
   double total = cart.totalPrice + tax;
-  return "$total ${I18n.of(context).fbu}";
+  int roundedTotal = total.round();
+  return "${formatNumber(roundedTotal)} ${I18n.of(context).fbu}";
 }
 
 double grandTotalNumber(context, List<OrderItem> order, int taxPercentage) {
@@ -74,12 +75,14 @@ Cart cartCount(List<OrderItem> order) {
 String appliedTax(context, List<OrderItem> order, int taxPercentage) {
   Cart cart = cartCount(order);
   double tax = (taxPercentage / 100) * cart.totalPrice;
-  return "$taxPercentage% = $tax ${I18n.of(context).fbu}";
+  int roundedTax = tax.round();
+  return "$taxPercentage% = ${formatNumber(roundedTax)} ${I18n.of(context).fbu}";
 }
 
 String appliedTaxFromTotal(context, int total, int taxPercentage) {
   double tax = (taxPercentage / 100) * total;
-  return "$taxPercentage% = $tax ${I18n.of(context).fbu}";
+  int roundedTax = tax.round();
+  return "$taxPercentage% = ${formatNumber(roundedTax)} ${I18n.of(context).fbu}";
 }
 
 String orderCardTtle(context, Order order) {
@@ -212,4 +215,19 @@ Future<List<Category>> getCategoryList() async {
   }).toList();
 
   return list;
+}
+
+String formatNumber(int number) {
+  String oldNumber = "$number";
+  String newNumber = '';
+  for (int i = oldNumber.length - 1; i >= 0; i--) {
+    newNumber = oldNumber[i] + newNumber;
+    if (i != oldNumber.length - 1 && i != 0) {
+      int remaining = (oldNumber.length - i) % 3;
+      if (remaining == 0) {
+        newNumber = ' ' + newNumber;
+      }
+    }
+  }
+  return newNumber;
 }
