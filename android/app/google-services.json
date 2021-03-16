@@ -1,20 +1,20 @@
 {
   "project_info": {
-    "project_number": "532513764082",
-    "project_id": "zilliken-7672c",
-    "storage_bucket": "zilliken-7672c.appspot.com"
+    "project_number": "17656016644",
+    "project_id": "zilliken-914b2",
+    "storage_bucket": "zilliken-914b2.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:532513764082:android:01d4cf59647f99f0c5966b",
+        "mobilesdk_app_id": "1:17656016644:android:df212a4df833f830c5aa51",
         "android_client_info": {
           "package_name": "net.visionplusplus.zilliken"
         }
       },
       "oauth_client": [
         {
-          "client_id": "532513764082-f6fnrt3eqc7vavcq1st2la8tdae1u3ac.apps.googleusercontent.com",
+          "client_id": "17656016644-pjuljuma194c8jpqqpn6u4uu9fm4668h.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "net.visionplusplus.zilliken",
@@ -22,20 +22,20 @@
           }
         },
         {
-          "client_id": "532513764082-r5gh8hf1eipiv3829dpmni6rn38ijgee.apps.googleusercontent.com",
+          "client_id": "17656016644-4f05krhv7ccrbmkvktk7k56id9s7ols9.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBcieliCMpqVviYm3f56IosaE7phJdj3Es"
+          "current_key": "AIzaSyD19LG25GIecWouGLjrIksrwUHTsMmLtU8"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "532513764082-r5gh8hf1eipiv3829dpmni6rn38ijgee.apps.googleusercontent.com",
+              "client_id": "17656016644-4f05krhv7ccrbmkvktk7k56id9s7ols9.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

@@ -2,11 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:zilliken/Pages/SplashPage.dart';
 import 'package:zilliken/Services/Authentication.dart';
 import 'package:zilliken/Services/Database.dart';
 import 'Helpers/Styling.dart';
+import 'package:flutter/foundation.dart' show kDebugMode;
 
 import 'Pages/SplashPage.dart';
 import 'Services/Database.dart';
@@ -18,7 +19,17 @@ Future<void> main() async {
 
   FirebaseFirestore.instance.settings = Settings(persistenceEnabled: true);
 
-  FirebaseFirestore.instance.settings = Settings(cacheSizeBytes: 100000000);
+  FirebaseFirestore.instance.settings = Settings(cacheSizeBytes: 300000000);
+
+  if (kDebugMode) {
+    // Force disable Crashlytics collection while doing every day development.
+    // Temporarily toggle this to true if you want to test crash reporting in your app.
+    await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(false);
+  } else {
+    // Handle Crashlytics enabled status when not in Debug,
+    // e.g. allow your users to opt-in to crash reporting.
+    await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
+  }
 
   runApp(Zilliken());
 }

@@ -288,7 +288,7 @@ class _MenuPageState extends State<MenuPage> {
                     ],
                   ),
                 ),
-          if (widget.userRole == Fields.developer)
+          if (widget.userRole == Fields.developer || widget.userRole == Fields.admin)
             ZRaisedButton(
               textIcon: Text(
                 I18n.of(context).loadData,
