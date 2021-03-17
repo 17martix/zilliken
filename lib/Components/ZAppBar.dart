@@ -30,11 +30,11 @@ AppBar buildAppBar(context, Authentication auth, bool isBackAllowed,
           children: <TextSpan>[
             TextSpan(
               text: 'Z',
-              style: TextStyle(color: Color(Styling.primaryColor)),
+              style: TextStyle(color: Color(Styling.primaryColor),fontSize: SizeConfig.diagonal*2,),
             ),
             TextSpan(
               text: 'illiken',
-              style: TextStyle(color: Color(Styling.accentColor)),
+              style: TextStyle(color: Color(Styling.accentColor),fontSize: SizeConfig.diagonal*2,),
             ),
           ],
         ),

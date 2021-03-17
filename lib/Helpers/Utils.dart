@@ -1,9 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:zilliken/FirebaseImage/firebase_image.dart';
 import 'package:zilliken/Models/Cart.dart';
 import 'package:zilliken/Models/Category.dart';
 import 'package:zilliken/Models/Fields.dart';
@@ -272,13 +270,14 @@ String formatNumber(int number) {
 }
 
 Future<bool> hasConnection() async {
-try {
-  final result = await InternetAddress.lookup('google.com').timeout(Duration(seconds: 10));
-  if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-    return true;
+  try {
+    final result = await InternetAddress.lookup('google.com')
+        .timeout(Duration(seconds: 10));
+    if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+      return true;
+    }
+  } on SocketException catch (_) {
+    return false;
   }
-} on SocketException catch (_) {
   return false;
-}
-return false;
 }

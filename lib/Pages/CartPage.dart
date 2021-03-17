@@ -7,6 +7,7 @@ import 'package:zilliken/Components/ZAppBar.dart';
 import 'package:zilliken/Components/ZCircularProgress.dart';
 import 'package:zilliken/Components/ZRaisedButton.dart';
 import 'package:zilliken/Components/ZTextField.dart';
+import 'package:zilliken/FirebaseImage/firebase_image.dart';
 import 'package:zilliken/Helpers/NumericStepButton.dart';
 import 'package:zilliken/Helpers/SizeConfig.dart';
 import 'package:zilliken/Helpers/Styling.dart';
@@ -204,6 +205,7 @@ class _CartPageState extends State<CartPage> {
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Color(Styling.iconColor),
+              fontSize: SizeConfig.diagonal * 1.5,
             ),
           ),
         ),
@@ -245,7 +247,11 @@ class _CartPageState extends State<CartPage> {
               // color: Colors.black.withOpacity(0.5),
               borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5),
               image: DecorationImage(
-                image: AssetImage("assets/${menu.imageName}"),
+                image: //AssetImage("assets/${menu.imageName}"),
+                    FirebaseImage(
+                  '${widget.db.firebaseBucket}/images/${menu.imageName}',
+                  cacheRefreshStrategy: CacheRefreshStrategy.NEVER,
+                ),
                 fit: BoxFit.cover,
               ),
             ),
@@ -417,13 +423,23 @@ class _CartPageState extends State<CartPage> {
                   value: 0,
                   groupValue: restaurantOrRoomOrder,
                   onChanged: restaurantRoomChange),
-              Text(I18n.of(context).restaurantOrder),
+              Text(
+                I18n.of(context).restaurantOrder,
+                style: TextStyle(
+                  fontSize: SizeConfig.diagonal * 1.5,
+                ),
+              ),
               Radio(
                 value: 1,
                 groupValue: restaurantOrRoomOrder,
                 onChanged: restaurantRoomChange,
               ),
-              Text(I18n.of(context).livrdomicile),
+              Text(
+                I18n.of(context).livrdomicile,
+                style: TextStyle(
+                  fontSize: SizeConfig.diagonal * 1.5,
+                ),
+              ),
             ],
           ),
         ),
@@ -529,7 +545,7 @@ class _CartPageState extends State<CartPage> {
                                     Color(Styling.textColor).withOpacity(0.7),
                               ),
                             ),
-                            Text(priceItemsTotal(context, clientOrder)),
+                            Text(priceItemsTotal(context, clientOrder),style: TextStyle(fontSize: SizeConfig.diagonal*1.5,),),
                           ],
                         ),
                       ),
@@ -547,7 +563,7 @@ class _CartPageState extends State<CartPage> {
                                 fontSize: SizeConfig.diagonal * 1.5,
                               ),
                             ),
-                            Text(appliedTax(context, clientOrder, tax)),
+                            Text(appliedTax(context, clientOrder, tax),style: TextStyle(fontSize: SizeConfig.diagonal*1.5,),),
                           ],
                         ),
                       ),
@@ -564,7 +580,7 @@ class _CartPageState extends State<CartPage> {
                                 fontSize: SizeConfig.diagonal * 1.5,
                               ),
                             ),
-                            Text(grandTotal(context, clientOrder, tax)),
+                            Text(grandTotal(context, clientOrder, tax),style: TextStyle(fontSize: SizeConfig.diagonal*1.5,),),
                           ],
                         ),
                       ),

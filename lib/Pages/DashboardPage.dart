@@ -138,12 +138,12 @@ class _DashboardPageState extends State<DashboardPage> {
                   },
                 ),*/
                 bottomNavigationBar: CurvedNavigationBar(
-                  //animationCurve: Curves.easeInBack,
+                  animationCurve: Curves.easeInBack,
                   color: Colors.white.withOpacity(0.7),
                   height: 50,
                   //height: SizeConfig.diagonal * 6,
-                  //animationDuration: Duration(milliseconds: 800),
-                  animationDuration: Duration(milliseconds: 0),
+                  animationDuration: Duration(milliseconds: 800),
+                  //animationDuration: Duration(milliseconds: 0),
                   backgroundColor: Colors.transparent,
                   index: _selectedIndex,
                   items: <Widget>[
@@ -172,15 +172,16 @@ class _DashboardPageState extends State<DashboardPage> {
   }*/
 
   Widget body() {
-    /*return Stack(
+    return Stack(
       children: [
         AnimatedContainer(
           child: MenuPage(
             auth: widget.auth,
-            db: widget.db,
-            userId: widget.userId,
-            userRole: widget.userRole,
-            clientOrder: widget.clientOrder,
+          db: widget.db,
+          userId: widget.userId,
+          userRole: widget.userRole,
+          clientOrder: widget.clientOrder,
+          messaging: widget.messaging,
           ),
           curve: Curves.easeInBack,
           duration: Duration(milliseconds: 800),
@@ -189,17 +190,18 @@ class _DashboardPageState extends State<DashboardPage> {
         AnimatedContainer(
           child: OrdersPage(
             auth: widget.auth,
-            db: widget.db,
-            userId: widget.userId,
-            userRole: widget.userRole,
+          db: widget.db,
+          userId: widget.userId,
+          userRole: widget.userRole,
+          messaging: widget.messaging,
           ),
           curve: Curves.easeInBack,
           duration: Duration(milliseconds: 800),
           transform: Matrix4.translationValues(_xOffset2, 0, 1),
         )
       ],
-    );*/
-    switch (_selectedIndex) {
+    );
+   /* switch (_selectedIndex) {
       case 0:
         return MenuPage(
           auth: widget.auth,
@@ -229,7 +231,7 @@ class _DashboardPageState extends State<DashboardPage> {
           messaging: widget.messaging,
         );
         break;
-    }
+    }*/
   }
 
   /*Route _fromMenuToOrders() {
@@ -260,7 +262,6 @@ class _DashboardPageState extends State<DashboardPage> {
 
   void googleSign() async {
     String userId = "";
-    try {
     bool isOnline = await hasConnection();
     if (!isOnline) {
       _scaffoldKey.currentState.showSnackBar(
@@ -284,16 +285,16 @@ class _DashboardPageState extends State<DashboardPage> {
                 messaging: widget.messaging,
               ),
             ),
+          );
+        }
+      } on Exception catch (e) {
+        //print('Error: $e');
+        _scaffoldKey.currentState.showSnackBar(
+          SnackBar(
+            content: Text(e.toString()),
           ),
         );
       }
-    } on Exception catch (e) {
-      //print('Error: $e');
-      _scaffoldKey.currentState.showSnackBar(
-        SnackBar(
-          content: Text(e.toString()),
-        ),
-      );
     }
   }
 

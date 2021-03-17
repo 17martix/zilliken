@@ -134,9 +134,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
           : Scaffold(
               appBar: buildAppBar(
                   context, widget.auth, true, false, null, null, backFunction),
-              body: 
-                  body(),
-                
+              body: body(),
             ),
     );
   }
@@ -220,6 +218,8 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
         elevation: 16,
         child: Column(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Padding(
               padding: EdgeInsets.only(
@@ -233,6 +233,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                   color: Color(
                     Styling.textColor,
                   ),
+                  fontSize: SizeConfig.diagonal * 1.5
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -268,6 +269,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                       child: Text(
                         I18n.of(context).pending,
                         style: TextStyle(
+                          fontSize: SizeConfig.diagonal * 1.5,
                           color: order.status == 1
                               ? Color(Styling.accentColor)
                               : Color(Styling.primaryColor),
@@ -327,6 +329,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                       child: Text(
                         I18n.of(context).confirmed,
                         style: TextStyle(
+                          fontSize: SizeConfig.diagonal * 1.5,
                           color: order.status == 2
                               ? Color(Styling.accentColor)
                               : order.status < 2
@@ -399,6 +402,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                       child: Text(
                         I18n.of(context).preparing,
                         style: TextStyle(
+                          fontSize: SizeConfig.diagonal * 1.5,
                           color: order.status == 3
                               ? Color(Styling.accentColor)
                               : order.status < 3
@@ -471,6 +475,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                       child: Text(
                         I18n.of(context).served,
                         style: TextStyle(
+                          fontSize: SizeConfig.diagonal * 1.5,
                           color: order.status == 4
                               ? Color(Styling.accentColor)
                               : order.status < 4
@@ -532,6 +537,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                 I18n.of(context).updateStatus,
                 style: new TextStyle(
                   fontWeight: FontWeight.bold,
+                  fontSize: SizeConfig.diagonal * 1.5,
                 ),
               ),
             ),
@@ -633,6 +639,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                     child: Text(
                       I18n.of(context).order,
                       style: TextStyle(
+                        fontSize: SizeConfig.diagonal * 1.5,
                           color: Color(Styling.textColor),
                           fontWeight: FontWeight.bold),
                     ),
@@ -702,6 +709,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                   '${orderItem.menuItem.name}',
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
+                    fontSize: SizeConfig.diagonal * 1.5,
                     color: Color(Styling.textColor),
                   ),
                 ),

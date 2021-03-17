@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:zilliken/Components/ZCircularProgress.dart';
 import 'package:zilliken/Components/ZRaisedButton.dart';
 import 'package:zilliken/Components/ZTextField.dart';
 import 'package:zilliken/FirebaseImage/firebase_image.dart';
@@ -333,19 +332,21 @@ class _MenuPageState extends State<MenuPage> {
             child: ListTile(
               title: Text(
                 numberItems(context, clientOrder),
-                style: TextStyle(color: Color(Styling.primaryBackgroundColor)),
+                style: TextStyle(color: Color(Styling.primaryBackgroundColor),fontSize: SizeConfig.diagonal*1.5,),
               ),
               subtitle: Text(
                 priceItems(context, clientOrder),
                 style: TextStyle(
                   color: Color(Styling.primaryBackgroundColor),
                   fontWeight: FontWeight.bold,
+                  fontSize: SizeConfig.diagonal*1.5,
                 ),
               ),
               trailing: Text(
                 I18n.of(context).vOrder,
                 style: TextStyle(
                   color: Color(Styling.primaryBackgroundColor),
+                  fontSize: SizeConfig.diagonal*1.5,
                 ),
               ),
             ),
@@ -656,20 +657,26 @@ class _MenuPageState extends State<MenuPage> {
       elevation: 2,
       child: Row(
         children: [
-          Container(
-            decoration: BoxDecoration(
-              // color: Colors.black.withOpacity(0.5),
-              borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5),
-              image: DecorationImage(
-                image: FirebaseImage(
-                  '${widget.db.firebaseBucket}/images/${menu.imageName}',
-                  cacheRefreshStrategy: CacheRefreshStrategy.NEVER,
+          InkWell(
+            onLongPress: (widget.userRole == Fields.developer ||
+                    widget.userRole == Fields.admin)
+                ? () => changeImage(menu.imageName)
+                : () {},
+            child: Container(
+              decoration: BoxDecoration(
+                // color: Colors.black.withOpacity(0.5),
+                borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5),
+                image: DecorationImage(
+                  image: FirebaseImage(
+                    '${widget.db.firebaseBucket}/images/${menu.imageName}',
+                    cacheRefreshStrategy: CacheRefreshStrategy.NEVER,
+                  ),
+                  fit: BoxFit.cover,
                 ),
-                fit: BoxFit.cover,
               ),
+              height: SizeConfig.diagonal * 10,
+              width: SizeConfig.diagonal * 10,
             ),
-            height: SizeConfig.diagonal * 10,
-            width: SizeConfig.diagonal * 10,
           ),
           Expanded(
             child: Container(
@@ -806,6 +813,10 @@ class _MenuPageState extends State<MenuPage> {
 
   Widget categoryItem(Category category) {
     return InkWell(
+      onLongPress: (widget.userRole == Fields.developer ||
+              widget.userRole == Fields.admin)
+          ? () => changeImage(category.imageName)
+          : () {},
       onTap: () {
         setState(() {
           selectedCategory = category.name;
@@ -820,9 +831,9 @@ class _MenuPageState extends State<MenuPage> {
           image: DecorationImage(
               image: /*AssetImage("assets/frites.jpg"),*/
                   FirebaseImage(
-                  '${widget.db.firebaseBucket}/images/${category.imageName}',
-                  cacheRefreshStrategy: CacheRefreshStrategy.NEVER,
-                ),
+                '${widget.db.firebaseBucket}/images/${category.imageName}',
+                cacheRefreshStrategy: CacheRefreshStrategy.NEVER,
+              ),
               colorFilter: selectedCategory != category.name
                   ? ColorFilter.mode(Colors.white, BlendMode.saturation)
                   : null,

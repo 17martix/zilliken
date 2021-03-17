@@ -23,10 +23,10 @@ class OrdersPage extends StatefulWidget {
   final DateFormat formatter = DateFormat('dd/MM/yy HH:mm');
 
   OrdersPage({
-   @required this.auth,
-   @required this.db,
-   @required this.userId,
-   @required this.userRole,
+    @required this.auth,
+    @required this.db,
+    @required this.userId,
+    @required this.userRole,
     @required this.messaging,
   });
 
@@ -47,6 +47,7 @@ class _OrdersPageState extends State<OrdersPage> {
             .collection(Fields.order)
             .where(Fields.userId, isEqualTo: widget.userId)
             .orderBy(Fields.status, descending: false);
+        //.orderBy(Fields.orderDate, descending: true);
       });
     } else {
       setState(() {
@@ -68,6 +69,13 @@ class _OrdersPageState extends State<OrdersPage> {
   }
 
   Widget item(Order order) {
+    int grandTotal;
+    if (order.grandTotal is double) {
+      grandTotal = order.grandTotal.round();
+    } else {
+      grandTotal = order.grandTotal;
+    }
+
     return Padding(
       padding: EdgeInsets.only(
           left: SizeConfig.diagonal * 0.2, right: SizeConfig.diagonal * 0.2),
@@ -120,7 +128,7 @@ class _OrdersPageState extends State<OrdersPage> {
                 Expanded(
                   flex: 1,
                   child: Text(
-                    '${I18n.of(context).total} : ${order.grandTotal} ${I18n.of(context).fbu}',
+                    '${I18n.of(context).total} : ${formatNumber(grandTotal)} ${I18n.of(context).fbu}',
                     textAlign: TextAlign.right,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(fontSize: SizeConfig.diagonal * 1.5),
