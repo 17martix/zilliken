@@ -6,6 +6,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:zilliken/Components/ZCircularProgress.dart';
 import 'package:zilliken/Components/ZRaisedButton.dart';
 import 'package:zilliken/Components/ZTextField.dart';
+import 'package:zilliken/FirebaseImage/firebase_image.dart';
 import 'package:zilliken/Helpers/NumericStepButton.dart';
 import 'package:zilliken/Helpers/SizeConfig.dart';
 import "package:zilliken/Helpers/Styling.dart";
@@ -660,7 +661,10 @@ class _MenuPageState extends State<MenuPage> {
               // color: Colors.black.withOpacity(0.5),
               borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5),
               image: DecorationImage(
-                image: AssetImage("assets/${menu.imageName}"),
+                image: FirebaseImage(
+                  '${widget.db.firebaseBucket}/images/${menu.imageName}',
+                  cacheRefreshStrategy: CacheRefreshStrategy.NEVER,
+                ),
                 fit: BoxFit.cover,
               ),
             ),
@@ -814,7 +818,11 @@ class _MenuPageState extends State<MenuPage> {
         margin: EdgeInsets.all(SizeConfig.diagonal * 0.5),
         decoration: BoxDecoration(
           image: DecorationImage(
-              image: AssetImage('assets/${category.imageName}'),
+              image: /*AssetImage("assets/frites.jpg"),*/
+                  FirebaseImage(
+                  '${widget.db.firebaseBucket}/images/${category.imageName}',
+                  cacheRefreshStrategy: CacheRefreshStrategy.NEVER,
+                ),
               colorFilter: selectedCategory != category.name
                   ? ColorFilter.mode(Colors.white, BlendMode.saturation)
                   : null,

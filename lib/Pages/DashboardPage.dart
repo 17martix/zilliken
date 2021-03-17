@@ -260,7 +260,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
   void googleSign() async {
     String userId = "";
-
+    try {
     bool isOnline = await hasConnection();
     if (!isOnline) {
       _scaffoldKey.currentState.showSnackBar(
@@ -284,16 +284,16 @@ class _DashboardPageState extends State<DashboardPage> {
                 messaging: widget.messaging,
               ),
             ),
-          );
-        }
-      } on Exception catch (e) {
-        //print('Error: $e');
-        _scaffoldKey.currentState.showSnackBar(
-          SnackBar(
-            content: Text(e.toString()),
           ),
         );
       }
+    } on Exception catch (e) {
+      //print('Error: $e');
+      _scaffoldKey.currentState.showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
     }
   }
 
