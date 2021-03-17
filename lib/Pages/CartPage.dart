@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:zilliken/Components/ZAppBar.dart';
 import 'package:zilliken/Components/ZCircularProgress.dart';
 import 'package:zilliken/Components/ZRaisedButton.dart';
@@ -18,6 +18,7 @@ import 'package:zilliken/Models/OrderItem.dart';
 import 'package:zilliken/Pages/SingleOrderPage.dart';
 import 'package:zilliken/Services/Authentication.dart';
 import 'package:zilliken/Services/Database.dart';
+import 'package:zilliken/Services/Messaging.dart';
 import '../i18n.dart';
 import 'DashboardPage.dart';
 import 'DisabledPage.dart';
@@ -28,13 +29,15 @@ class CartPage extends StatefulWidget {
   final String userRole;
   final Database db;
   final Authentication auth;
+  final Messaging messaging;
 
   CartPage({
-    this.auth,
-    this.clientOrder,
-    this.db,
-    this.userId,
-    this.userRole,
+    @required this.auth,
+    @required this.clientOrder,
+    @required this.db,
+    @required this.userId,
+    @required this.userRole,
+    @required this.messaging,
   });
 
   @override
@@ -43,7 +46,7 @@ class CartPage extends StatefulWidget {
 
 class _CartPageState extends State<CartPage> {
   int restaurantOrRoomOrder = 0;
-  TextEditingController choiceController = TextEditingController();
+  TextEditingController _choiceController = TextEditingController();
   int tax = 0;
 
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
@@ -53,9 +56,11 @@ class _CartPageState extends State<CartPage> {
   List<OrderItem> clientOrder;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  bool _isLoading = false;
   bool _isTaxLoaded = false;
   int enabled = 1;
+
+  var _phoneController = TextEditingController();
+  var _instructionController = TextEditingController();
 
   @override
   void initState() {
@@ -99,6 +104,7 @@ class _CartPageState extends State<CartPage> {
           userId: widget.userId,
           userRole: widget.userRole,
           clientOrder: clientOrder,
+          messaging: widget.messaging,
         ),
       ),
       (Route<dynamic> route) => false,
@@ -119,6 +125,7 @@ class _CartPageState extends State<CartPage> {
               userId: widget.userId,
               userRole: widget.userRole,
               clientOrder: clientOrder,
+              messaging: widget.messaging,
             ),
           ),
           (Route<dynamic> route) => false,
@@ -147,7 +154,6 @@ class _CartPageState extends State<CartPage> {
                   body: Stack(
                     children: [
                       body(),
-                      ZCircularProgress(_isLoading),
                     ],
                   ),
                 ),
@@ -391,7 +397,11 @@ class _CartPageState extends State<CartPage> {
   void restaurantRoomChange(int value) {
     setState(() {
       restaurantOrRoomOrder = value;
-      choiceController.clear();
+      FocusScope.of(context).unfocus();
+      _choiceController.clear();
+      _phoneController.clear();
+      _instructionController.clear();
+      formKey.currentState.reset();
     });
   }
 
@@ -423,7 +433,7 @@ class _CartPageState extends State<CartPage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               ZTextField(
-                controller: choiceController,
+                controller: _choiceController,
                 onSaved: (newValue) => tableAdress = newValue,
                 validator: (value) =>
                     value.isEmpty ? I18n.of(context).requit : null,
@@ -446,6 +456,7 @@ class _CartPageState extends State<CartPage> {
               if (restaurantOrRoomOrder == 1)
                 ZTextField(
                   onSaved: (newValue) => phone = newValue,
+                  controller: _phoneController,
                   validator: (value) =>
                       value.isEmpty ? I18n.of(context).requit : null,
                   keyboardType: TextInputType.phone,
@@ -460,6 +471,7 @@ class _CartPageState extends State<CartPage> {
               ZTextField(
                 onSaved: (newValue) => instruction = newValue,
                 label: I18n.of(context).instruction,
+                controller: _instructionController,
                 icon: Icon(
                   Icons.info,
                   color: Color(Styling.primaryColor),
@@ -589,15 +601,11 @@ class _CartPageState extends State<CartPage> {
 
   Future<void> sendToFireBase() async {
     if (validate()) {
-      setState(() {
-        _isLoading = true;
-      });
+      EasyLoading.show(status: I18n.of(context).loading);
 
-      bool isOnline = await DataConnectionChecker().hasConnection;
+      bool isOnline = await hasConnection();
       if (!isOnline) {
-        setState(() {
-          _isLoading = false;
-        });
+        EasyLoading.dismiss();
 
         _scaffoldKey.currentState.showSnackBar(
           SnackBar(
@@ -627,9 +635,7 @@ class _CartPageState extends State<CartPage> {
           );
           await widget.db.placeOrder(order);
 
-          setState(() {
-            _isLoading = false;
-          });
+          EasyLoading.dismiss();
 
           Navigator.push(
             context,
@@ -641,13 +647,14 @@ class _CartPageState extends State<CartPage> {
                 userRole: widget.userRole,
                 orderId: order.id,
                 clientOrder: order,
+                messaging: widget.messaging,
               ),
             ),
           );
         } on Exception catch (e) {
           //print('Error: $e');
+          EasyLoading.dismiss();
           setState(() {
-            _isLoading = false;
             formKey.currentState.reset();
           });
 

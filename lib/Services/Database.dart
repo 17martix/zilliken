@@ -1,23 +1,39 @@
+
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:zilliken/FirebaseImage/firebase_image.dart';
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/services.dart';
 import 'package:zilliken/Helpers/Utils.dart';
 import 'package:zilliken/Models/Category.dart';
 import 'package:zilliken/Models/Fields.dart';
 import 'package:zilliken/Models/MenuItem.dart';
 import 'package:zilliken/Models/Order.dart';
 import 'package:zilliken/Models/OrderItem.dart';
+import 'package:zilliken/Models/Result.dart';
 import 'package:zilliken/Models/UserProfile.dart';
+import 'package:multi_image_picker/multi_image_picker.dart';
+
+import '../i18n.dart';
 
 class Database {
   final databaseReference = FirebaseFirestore.instance;
   final FirebaseStorage storage = FirebaseStorage.instance;
   final String firebaseBucket = "gs://zilliken-914b2.appspot.com";
 
-  Future<String> getUserRole(String userId) async {
+  Future<void> setToken(String userId, String token) async {
+    await databaseReference.collection(Fields.users).doc(userId).update({
+      Fields.token: token,
+    });
+  }
+
+  Future<String> getUserRole(String userId, String token) async {
     String role = Fields.client;
     await databaseReference
         .collection(Fields.users)
@@ -27,21 +43,20 @@ class Database {
       if (snapshot.exists) {
         role = snapshot.data()[Fields.role].toString();
       } else {
-        await createProfile(userId);
+        await createProfile(userId, token);
       }
     });
 
     return role;
   }
 
-  Future<String> createProfile(
-    String userId,
-  ) async {
+  Future<String> createProfile(String userId, String token) async {
     String role = Fields.client;
     await databaseReference.collection(Fields.users).doc(userId).set({
       Fields.id: userId,
       Fields.role: role,
       Fields.receiveNotifications: 1,
+      Fields.token: token,
     });
 
     return role;
@@ -303,9 +318,9 @@ class Database {
     }
   }
 
-  Future<void> loadData() async {
-    List<MenuItem> list = await getMenuItems();
-    List<Category> catList = await getCategoryList();
+  Future<void> loadData(File menu, File category) async {
+    List<MenuItem> list = await getMenuItemsFromFile(menu);
+    List<Category> catList = await getCategoryListFromFile(category);
     WriteBatch batch = databaseReference.batch();
 
     CollectionReference menuReference =
@@ -354,5 +369,94 @@ class Database {
     }
 
     await batch.commit();
+
+    /* List<MenuItem> list = await getMenuItems();
+    List<Category> catList = await getCategoryList();
+    WriteBatch batch = databaseReference.batch();
+
+    CollectionReference menuReference =
+        databaseReference.collection(Fields.menu);
+
+    await menuReference.get().then((snapshot) {
+      snapshot.docs.forEach((element) {
+        batch.delete(element.reference);
+      });
+    });
+
+    for (int i = 0; i < list.length; i++) {
+      DocumentReference documentReference =
+          databaseReference.collection(Fields.menu).doc();
+      batch.set(documentReference, {
+        Fields.id: documentReference.id,
+        Fields.name: list[i].name,
+        Fields.category: list[i].category,
+        Fields.price: list[i].price,
+        Fields.rank: list[i].rank,
+        Fields.global: list[i].global,
+        Fields.availability: list[i].availability,
+        Fields.imageName: list[i].imageName,
+        Fields.createdAt: DateTime.now().millisecondsSinceEpoch,
+      });
+    }
+
+    CollectionReference categoryReference =
+        databaseReference.collection(Fields.category);
+    await categoryReference.get().then((snapshot) {
+      snapshot.docs.forEach((element) {
+        batch.delete(element.reference);
+      });
+    });
+
+    for (int i = 0; i < catList.length; i++) {
+      DocumentReference catRef =
+          databaseReference.collection(Fields.category).doc();
+      batch.set(catRef, {
+        Fields.id: catRef.id,
+        Fields.name: catList[i].name,
+        Fields.rank: catList[i].rank,
+        Fields.imageName: catList[i].imageName,
+        Fields.createdAt: DateTime.now().millisecondsSinceEpoch,
+      });
+    }
+
+    await batch.commit();*/
+  }
+
+  Future<Result> updateImage(
+    context,
+    List<Asset> images,
+    String name,
+  ) async {
+    Result result =
+        Result(isSuccess: false, message: I18n.of(context).operationFailed);
+
+   /* if (name == null || name == '' || name.isEmpty) {
+      name = "${DateTime.now().millisecondsSinceEpoch.toString()}.jpg";
+    }*/
+
+    try {
+       for (int i = 0; i < images.length; i++) {
+        double imageDesiredWidth = 500;
+        double getAspectRatio(double originalSize, double desiredSize) =>
+            desiredSize / originalSize;
+        final aspectRatio = getAspectRatio(
+            images[i].originalWidth.toDouble(), imageDesiredWidth);
+        ByteData byteData = await images[i].getThumbByteData(
+            (images[i].originalWidth * aspectRatio).round(),
+            (images[i].originalHeight * aspectRatio).round(),
+            quality: 60);
+
+        // ByteData byteData = await images[i].getByteData();
+        List<int> imageData = byteData.buffer.asUint8List();
+        Reference ref = storage.ref("images/$name");
+        TaskSnapshot uploadTask = await ref.putData(imageData);
+
+        String url = await uploadTask.ref.getDownloadURL();
+      }
+    } on FirebaseException catch (e) {
+      result =
+          Result(isSuccess: false, message: I18n.of(context).operationFailed);
+    }
+    return result;
   }
 }

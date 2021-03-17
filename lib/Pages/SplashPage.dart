@@ -8,15 +8,18 @@ import 'package:zilliken/Models/Fields.dart';
 import 'package:zilliken/Pages/DashboardPage.dart';
 import 'package:zilliken/Services/Authentication.dart';
 import 'package:zilliken/Services/Database.dart';
+import 'package:zilliken/Services/Messaging.dart';
 import 'package:zilliken/i18n.dart';
 
 class SplashPage extends StatefulWidget {
   final Authentication auth;
   final Database db;
+  final Messaging messaging;
 
   SplashPage({
-    this.auth,
-    this.db,
+    @required this.auth,
+    @required this.db,
+    @required this.messaging,
   });
 
   @override
@@ -27,6 +30,7 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
+
     Timer(
       Duration(seconds: 2),
       isLoggedIn,
@@ -74,10 +78,12 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   void isLoggedIn() async {
+    widget.messaging.firebaseMessaging.requestPermission();
     User user = widget.auth.getCurrentUser();
     if (user?.uid == null) {
       String id = await widget.auth.anonymousSignIn();
-      String role = Fields.client;
+      String token = await widget.messaging.firebaseMessaging.getToken();
+      String role = await widget.db.getUserRole(id, token);
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -86,6 +92,7 @@ class _SplashPageState extends State<SplashPage> {
             db: widget.db,
             userId: id,
             userRole: role,
+            messaging: widget.messaging,
           ),
         ),
       );
@@ -99,11 +106,13 @@ class _SplashPageState extends State<SplashPage> {
             db: widget.db,
             userId: user.uid,
             userRole: role,
+            messaging: widget.messaging,
           ),
         ),
       );
     } else {
-      String role = await widget.db.getUserRole(user.uid);
+      String token = await widget.messaging.firebaseMessaging.getToken();
+      String role = await widget.db.getUserRole(user.uid, token);
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -112,6 +121,7 @@ class _SplashPageState extends State<SplashPage> {
             db: widget.db,
             userId: user.uid,
             userRole: role,
+            messaging: widget.messaging,
           ),
         ),
       );

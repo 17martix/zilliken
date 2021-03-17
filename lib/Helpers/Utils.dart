@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -186,6 +187,42 @@ Future<List<MenuItem>> getMenuItems() async {
   return list;
 }
 
+Future<List<MenuItem>> getMenuItemsFromFile(File file) async {
+  List<MenuItem> list = List();
+
+  list = file.readAsLinesSync().skip(1) // Skip the header row
+      .map((line) {
+    final parts = line.split(',');
+    return MenuItem(
+      name: capitalize(parts[0]),
+      price: int.tryParse(parts[1]),
+      category: capitalize(parts[2]),
+      availability: int.tryParse(parts[3]),
+      rank: int.tryParse(parts[4]),
+      global: int.tryParse(parts[5]),
+      imageName: parts[6],
+    );
+  }).toList();
+
+  return list;
+}
+
+Future<List<Category>> getCategoryListFromFile(File file) async {
+  List<Category> list = List();
+
+  list = file.readAsLinesSync().skip(1) // Skip the header row
+      .map((line) {
+    final parts = line.split(',');
+    return Category(
+      name: capitalize(parts[0]),
+      rank: int.tryParse(parts[1]),
+      imageName: parts[2],
+    );
+  }).toList();
+
+  return list;
+}
+
 Future<List<Category>> getCategoryList() async {
   List<Category> list = List();
 
@@ -232,4 +269,16 @@ String formatNumber(int number) {
     }
   }
   return newNumber;
+}
+
+Future<bool> hasConnection() async {
+try {
+  final result = await InternetAddress.lookup('google.com').timeout(Duration(seconds: 10));
+  if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+    return true;
+  }
+} on SocketException catch (_) {
+  return false;
+}
+return false;
 }
