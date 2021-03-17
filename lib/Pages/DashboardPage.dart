@@ -11,6 +11,7 @@ import 'package:zilliken/Pages/MenuPage.dart';
 import 'package:zilliken/Pages/OrdersPage.dart';
 import 'package:zilliken/Services/Authentication.dart';
 import 'package:zilliken/Services/Database.dart';
+import 'package:zilliken/Services/Messaging.dart';
 import 'package:zilliken/i18n.dart';
 
 import 'DisabledPage.dart';
@@ -21,15 +22,17 @@ class DashboardPage extends StatefulWidget {
   final Database db;
   final String userId;
   final String userRole;
+  final Messaging messaging;
   final List<OrderItem> clientOrder;
   final int index;
 
   DashboardPage({
-    this.auth,
-    this.userId,
-    this.userRole,
-    this.db,
+    @required this.auth,
+    @required this.userId,
+    @required this.userRole,
+    @required this.db,
     this.clientOrder,
+    @required this.messaging,
     this.index,
   });
 
@@ -63,6 +66,15 @@ class _DashboardPageState extends State<DashboardPage> {
         enabled = documentSnapshot.data()[Fields.enabled];
       });
     });
+
+    widget.messaging.listenMessage(
+      context,
+      widget.auth,
+      widget.db,
+      widget.userId,
+      widget.userRole,
+      widget.messaging,
+    );
   }
 
   @override
@@ -101,7 +113,7 @@ class _DashboardPageState extends State<DashboardPage> {
               child: Scaffold(
                 key: _scaffoldKey,
                 backgroundColor: Colors.transparent,
-                 appBar: buildAppBar(context, widget.auth, false, true,
+                appBar: buildAppBar(context, widget.auth, false, true,
                     googleSign, logout, null),
                 body: body(),
                 /*bottomNavigationBar: BottomNavigationBar(
@@ -128,6 +140,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 bottomNavigationBar: CurvedNavigationBar(
                   //animationCurve: Curves.easeInBack,
                   color: Colors.white.withOpacity(0.7),
+                  height: 50,
                   //height: SizeConfig.diagonal * 6,
                   //animationDuration: Duration(milliseconds: 800),
                   animationDuration: Duration(milliseconds: 0),
@@ -194,6 +207,7 @@ class _DashboardPageState extends State<DashboardPage> {
           userId: widget.userId,
           userRole: widget.userRole,
           clientOrder: widget.clientOrder,
+          messaging: widget.messaging,
         );
         break;
       case 1:
@@ -202,6 +216,7 @@ class _DashboardPageState extends State<DashboardPage> {
           db: widget.db,
           userId: widget.userId,
           userRole: widget.userRole,
+          messaging: widget.messaging,
         );
         break;
       default:
@@ -211,6 +226,7 @@ class _DashboardPageState extends State<DashboardPage> {
           userId: widget.userId,
           userRole: widget.userRole,
           clientOrder: widget.clientOrder,
+          messaging: widget.messaging,
         );
         break;
     }
@@ -255,6 +271,8 @@ class _DashboardPageState extends State<DashboardPage> {
     } else {
       try {
         userId = await widget.auth.signInWithGoogle();
+        String token = await widget.messaging.firebaseMessaging.getToken();
+        await widget.db.setToken(userId, token);
 
         if (userId.length > 0 && userId != null) {
           Navigator.pushReplacement(
@@ -263,6 +281,7 @@ class _DashboardPageState extends State<DashboardPage> {
               builder: (context) => SplashPage(
                 auth: widget.auth,
                 db: widget.db,
+                messaging: widget.messaging,
               ),
             ),
           );
@@ -287,6 +306,7 @@ class _DashboardPageState extends State<DashboardPage> {
             builder: (context) => SplashPage(
                   auth: widget.auth,
                   db: widget.db,
+                  messaging: widget.messaging,
                 )),
       );
     } on Exception catch (e) {

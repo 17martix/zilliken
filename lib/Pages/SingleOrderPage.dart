@@ -13,6 +13,7 @@ import 'package:zilliken/Models/Order.dart';
 import 'package:zilliken/Models/OrderItem.dart';
 import 'package:zilliken/Services/Authentication.dart';
 import 'package:zilliken/Services/Database.dart';
+import 'package:zilliken/Services/Messaging.dart';
 import 'package:zilliken/i18n.dart';
 import 'package:intl/intl.dart';
 import 'package:timelines/timelines.dart';
@@ -27,15 +28,17 @@ class SingleOrderPage extends StatefulWidget {
   final String userRole;
   final String orderId;
   final Order clientOrder;
+  final Messaging messaging;
   final DateFormat formatter = DateFormat('dd/MM/yyyy  HH:mm');
 
   SingleOrderPage({
-    this.auth,
-    this.db,
-    this.userId,
-    this.userRole,
-    this.orderId,
-    this.clientOrder,
+    @required this.auth,
+    @required this.db,
+    @required this.userId,
+    @required this.userRole,
+    @required this.orderId,
+    @required this.clientOrder,
+    @required this.messaging,
   });
 
   @override
@@ -49,7 +52,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
   int _status = Fields.confirmed;
   bool _isLoading = false;
 
-  int _orderStatus = 0;
+  int _orderStatus = 1;
   int enabled = 1;
 
   @override
@@ -94,6 +97,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
           auth: widget.auth,
           userId: widget.userId,
           userRole: widget.userRole,
+          messaging: widget.messaging,
           index: 1,
         ),
       ),
@@ -114,6 +118,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
               auth: widget.auth,
               userId: widget.userId,
               userRole: widget.userRole,
+              messaging: widget.messaging,
               index: 1,
             ),
           ),
@@ -149,9 +154,10 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
       return ListView(
         children: [
           if (widget.userRole == Fields.client) progressionTimeLine(),
-          if (widget.userRole == Fields.chef ||
-              widget.userRole == Fields.admin ||
+          if (widget.userRole == Fields.admin ||
               widget.userRole == Fields.developer)
+            statusUpdate(),
+          if (widget.userRole == Fields.chef && _orderStatus != 4)
             statusUpdate(),
           orderItemStream(),
           informationStream(),
@@ -694,18 +700,28 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                '${orderItem.menuItem.name}',
-                style: TextStyle(
-                  color: Color(Styling.textColor),
+              Expanded(
+                flex: 4,
+                child: Text(
+                  '${orderItem.menuItem.name}',
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: Color(Styling.textColor),
+                  ),
                 ),
               ),
-              Text(
-                '${orderItem.count}',
-                style: TextStyle(
-                  color: Color(Styling.textColor),
+              SizedBox(width: SizeConfig.diagonal * 1),
+              Expanded(
+                flex: 1,
+                child: Text(
+                  '${orderItem.count}',
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.end,
+                  style: TextStyle(
+                    color: Color(Styling.textColor),
+                  ),
                 ),
-              )
+              ),
             ],
           ),
         ),
@@ -775,18 +791,28 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                '${orderItem.menuItem.name} x ${orderItem.count}',
-                style: TextStyle(
-                  color: Color(Styling.textColor),
+              Expanded(
+                flex: 3,
+                child: Text(
+                  '${orderItem.menuItem.name} x ${orderItem.count}',
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: Color(Styling.textColor),
+                  ),
                 ),
               ),
-              Text(
-                '${formatNumber(orderItem.menuItem.price)} Fbu',
-                style: TextStyle(
-                  color: Color(Styling.textColor),
+              SizedBox(width: SizeConfig.diagonal * 1),
+              Expanded(
+                flex: 1,
+                child: Text(
+                  '${formatNumber(orderItem.menuItem.price)} Fbu',
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.end,
+                  style: TextStyle(
+                    color: Color(Styling.textColor),
+                  ),
                 ),
-              )
+              ),
             ],
           ),
         ),
@@ -835,18 +861,29 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                '${I18n.of(context).taxCharge}',
-                style: TextStyle(
-                  color: Color(Styling.textColor),
+              Expanded(
+                flex: 1,
+                child: Text(
+                  '${I18n.of(context).taxCharge}',
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: Color(Styling.textColor),
+                  ),
                 ),
               ),
-              Text(
-                appliedTaxFromTotal(context, order.total, order.taxPercentage),
-                style: TextStyle(
-                  color: Color(Styling.textColor),
+              SizedBox(width: SizeConfig.diagonal * 1),
+              Expanded(
+                flex: 1,
+                child: Text(
+                  appliedTaxFromTotal(
+                      context, order.total, order.taxPercentage),
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.end,
+                  style: TextStyle(
+                    color: Color(Styling.textColor),
+                  ),
                 ),
-              )
+              ),
             ],
           ),
         ),
@@ -859,18 +896,28 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                '${I18n.of(context).grandTotal}',
-                style: TextStyle(
-                  color: Color(Styling.textColor),
+              Expanded(
+                flex: 1,
+                child: Text(
+                  '${I18n.of(context).grandTotal}',
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: Color(Styling.textColor),
+                  ),
                 ),
               ),
-              Text(
-                '${formatNumber(grandTotal)} Fbu',
-                style: TextStyle(
-                  color: Color(Styling.textColor),
+              SizedBox(width: SizeConfig.diagonal * 1),
+              Expanded(
+                flex: 1,
+                child: Text(
+                  '${formatNumber(grandTotal)} Fbu',
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.end,
+                  style: TextStyle(
+                    color: Color(Styling.textColor),
+                  ),
                 ),
-              )
+              ),
             ],
           ),
         ),
@@ -949,19 +996,29 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    '${I18n.of(context).orderDate}',
-                    style: TextStyle(
-                      color: Color(
-                        Styling.textColor,
+                  Expanded(
+                    flex: 1,
+                    child: Text(
+                      '${I18n.of(context).orderDate}',
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: Color(
+                          Styling.textColor,
+                        ),
                       ),
                     ),
                   ),
-                  Text(
-                    '${widget.formatter.format(DateTime.fromMillisecondsSinceEpoch(order.orderDate))}',
-                    style: TextStyle(
-                      color: Color(
-                        Styling.textColor,
+                  SizedBox(width: SizeConfig.diagonal * 1),
+                  Expanded(
+                    flex: 1,
+                    child: Text(
+                      '${widget.formatter.format(DateTime.fromMillisecondsSinceEpoch(order.orderDate))}',
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.end,
+                      style: TextStyle(
+                        color: Color(
+                          Styling.textColor,
+                        ),
                       ),
                     ),
                   ),
@@ -977,15 +1034,32 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    '${tableAddressStatus(order)}',
-                    style: TextStyle(
-                      color: Color(
-                        Styling.textColor,
+                  Expanded(
+                    flex: 1,
+                    child: Text(
+                      '${tableAddressStatus(order)}',
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: Color(
+                          Styling.textColor,
+                        ),
                       ),
                     ),
                   ),
-                  Text(order.tableAdress),
+                  SizedBox(width: SizeConfig.diagonal * 1),
+                  Expanded(
+                    flex: 1,
+                    child: Text(
+                      order.tableAdress,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.end,
+                      style: TextStyle(
+                        color: Color(
+                          Styling.textColor,
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             )

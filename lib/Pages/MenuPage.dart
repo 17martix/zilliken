@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:flutter/material.dart';
@@ -12,9 +14,10 @@ import 'package:zilliken/Models/Category.dart';
 import 'package:zilliken/Models/Fields.dart';
 import 'package:zilliken/Models/MenuItem.dart';
 import 'package:zilliken/Models/OrderItem.dart';
-import 'package:intl/intl.dart';
 import 'package:zilliken/Services/Authentication.dart';
 import 'package:zilliken/Services/Database.dart';
+import 'package:zilliken/Services/Messaging.dart';
+import 'package:file_picker/file_picker.dart';
 
 import 'package:zilliken/i18n.dart';
 
@@ -26,13 +29,15 @@ class MenuPage extends StatefulWidget {
   final String userId;
   final String userRole;
   final List<OrderItem> clientOrder;
+  final Messaging messaging;
 
   MenuPage({
-    this.auth,
-    this.db,
-    this.userId,
-    this.userRole,
-    this.clientOrder,
+    @required this.auth,
+    @required this.db,
+    @required this.userId,
+    @required this.userRole,
+    @required this.clientOrder,
+    @required this.messaging,
   });
 
   @override
@@ -288,7 +293,8 @@ class _MenuPageState extends State<MenuPage> {
                     ],
                   ),
                 ),
-          if (widget.userRole == Fields.developer || widget.userRole == Fields.admin)
+          if (widget.userRole == Fields.developer ||
+              widget.userRole == Fields.admin)
             ZRaisedButton(
               textIcon: Text(
                 I18n.of(context).loadData,
@@ -319,6 +325,7 @@ class _MenuPageState extends State<MenuPage> {
                   auth: widget.auth,
                   userId: widget.userId,
                   userRole: widget.userRole,
+                  messaging: widget.messaging,
                 ),
               ),
             );
@@ -361,6 +368,70 @@ class _MenuPageState extends State<MenuPage> {
   }
 
   void loadData() async {
+    FilePickerResult result = await FilePicker.platform.pickFiles(
+      allowMultiple: true,
+      type: FileType.custom,
+      allowedExtensions: ['.csv'],
+    );
+
+    if (result != null) {
+      setState(() {
+      _isLoading = true;
+    });
+
+    bool isOnline = await DataConnectionChecker().hasConnection;
+    if (!isOnline) {
+      setState(() {
+        _isLoading = false;
+      });
+
+      _scaffoldKey.currentState.showSnackBar(
+        SnackBar(
+          content: Text(I18n.of(context).noInternet),
+        ),
+      );
+    }else {
+      try {
+        List<File> files = result.paths.map((path) => File(path)).toList();
+      File menu;
+      File category;
+
+      for (int i = 0; i < files.length; i++) {
+        PlatformFile platformFile = result.files[i];
+        print(platformFile.name);
+        if (platformFile.name == 'menu') {
+          menu = files[i];
+        }
+
+        if (platformFile.name == 'category') {
+          category = files[i];
+        }
+      }
+        await widget.db.loadData(menu,category);
+
+        setState(() {
+          _isLoading = false;
+        });
+      } on Exception catch (e) {
+        //print('Error: $e');
+        setState(() {
+          _isLoading = false;
+        });
+
+        _scaffoldKey.currentState.showSnackBar(
+          SnackBar(
+            content: Text(e.toString()),
+          ),
+        );
+      }
+    }
+
+
+    } else {
+      // User canceled the picker
+    }
+
+/*
     setState(() {
       _isLoading = true;
     });
@@ -395,7 +466,7 @@ class _MenuPageState extends State<MenuPage> {
           ),
         );
       }
-    }
+    }*/
   }
 
   void saveCategory() async {

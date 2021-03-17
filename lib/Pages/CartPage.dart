@@ -18,6 +18,7 @@ import 'package:zilliken/Models/OrderItem.dart';
 import 'package:zilliken/Pages/SingleOrderPage.dart';
 import 'package:zilliken/Services/Authentication.dart';
 import 'package:zilliken/Services/Database.dart';
+import 'package:zilliken/Services/Messaging.dart';
 import '../i18n.dart';
 import 'DashboardPage.dart';
 import 'DisabledPage.dart';
@@ -28,13 +29,15 @@ class CartPage extends StatefulWidget {
   final String userRole;
   final Database db;
   final Authentication auth;
+  final Messaging messaging;
 
   CartPage({
-    this.auth,
-    this.clientOrder,
-    this.db,
-    this.userId,
-    this.userRole,
+   @required this.auth,
+  @required  this.clientOrder,
+  @required  this.db,
+  @required  this.userId,
+  @required  this.userRole,
+  @required this.messaging,
   });
 
   @override
@@ -99,6 +102,7 @@ class _CartPageState extends State<CartPage> {
           userId: widget.userId,
           userRole: widget.userRole,
           clientOrder: clientOrder,
+           messaging: widget.messaging,
         ),
       ),
       (Route<dynamic> route) => false,
@@ -119,6 +123,7 @@ class _CartPageState extends State<CartPage> {
               userId: widget.userId,
               userRole: widget.userRole,
               clientOrder: clientOrder,
+              messaging: widget.messaging,
             ),
           ),
           (Route<dynamic> route) => false,
@@ -641,6 +646,7 @@ class _CartPageState extends State<CartPage> {
                 userRole: widget.userRole,
                 orderId: order.id,
                 clientOrder: order,
+                messaging: widget.messaging,
               ),
             ),
           );

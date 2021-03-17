@@ -10,6 +10,7 @@ import 'package:zilliken/Pages/SingleOrderPage.dart';
 import 'package:zilliken/Services/Authentication.dart';
 import 'package:intl/intl.dart';
 import 'package:zilliken/Services/Database.dart';
+import 'package:zilliken/Services/Messaging.dart';
 
 import '../i18n.dart';
 
@@ -18,13 +19,15 @@ class OrdersPage extends StatefulWidget {
   final Database db;
   final String userId;
   final String userRole;
+  final Messaging messaging;
   final DateFormat formatter = DateFormat('dd/MM/yy HH:mm');
 
   OrdersPage({
-    this.auth,
-    this.db,
-    this.userId,
-    this.userRole,
+   @required this.auth,
+   @required this.db,
+   @required this.userId,
+   @required this.userRole,
+    @required this.messaging,
   });
 
   @override
@@ -89,6 +92,7 @@ class _OrdersPageState extends State<OrdersPage> {
                     userRole: widget.userRole,
                     orderId: order.id,
                     clientOrder: order,
+                    messaging: widget.messaging,
                   ),
                 ),
               );

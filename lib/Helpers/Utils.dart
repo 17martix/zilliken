@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:zilliken/Models/Cart.dart';
@@ -178,6 +179,42 @@ Future<List<MenuItem>> getMenuItems() async {
       rank: int.tryParse(parts[4]),
       global: int.tryParse(parts[5]),
       imageName: parts[6],
+    );
+  }).toList();
+
+  return list;
+}
+
+Future<List<MenuItem>> getMenuItemsFromFile(File file) async {
+  List<MenuItem> list = List();
+
+  list = file.readAsLinesSync().skip(1) // Skip the header row
+      .map((line) {
+    final parts = line.split(',');
+    return MenuItem(
+      name: capitalize(parts[0]),
+      price: int.tryParse(parts[1]),
+      category: capitalize(parts[2]),
+      availability: int.tryParse(parts[3]),
+      rank: int.tryParse(parts[4]),
+      global: int.tryParse(parts[5]),
+      imageName: parts[6],
+    );
+  }).toList();
+
+  return list;
+}
+
+Future<List<Category>> getCategoryListFromFile(File file) async {
+  List<Category> list = List();
+
+  list = file.readAsLinesSync().skip(1) // Skip the header row
+      .map((line) {
+    final parts = line.split(',');
+    return Category(
+      name: capitalize(parts[0]),
+      rank: int.tryParse(parts[1]),
+      imageName: parts[2],
     );
   }).toList();
 
