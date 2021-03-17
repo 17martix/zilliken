@@ -101,7 +101,7 @@ class _DashboardPageState extends State<DashboardPage> {
               child: Scaffold(
                 key: _scaffoldKey,
                 backgroundColor: Colors.transparent,
-                 appBar: buildAppBar(context, widget.auth, false, true,
+                appBar: buildAppBar(context, widget.auth, false, true,
                     googleSign, logout, null),
                 body: body(),
                 /*bottomNavigationBar: BottomNavigationBar(
@@ -244,37 +244,27 @@ class _DashboardPageState extends State<DashboardPage> {
 
   void googleSign() async {
     String userId = "";
+    try {
+      userId = await widget.auth.signInWithGoogle();
 
-    bool isOnline = await DataConnectionChecker().hasConnection;
-    if (!isOnline) {
-      _scaffoldKey.currentState.showSnackBar(
-        SnackBar(
-          content: Text(I18n.of(context).noInternet),
-        ),
-      );
-    } else {
-      try {
-        userId = await widget.auth.signInWithGoogle();
-
-        if (userId.length > 0 && userId != null) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => SplashPage(
-                auth: widget.auth,
-                db: widget.db,
-              ),
+      if (userId.length > 0 && userId != null) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => SplashPage(
+              auth: widget.auth,
+              db: widget.db,
             ),
-          );
-        }
-      } on Exception catch (e) {
-        //print('Error: $e');
-        _scaffoldKey.currentState.showSnackBar(
-          SnackBar(
-            content: Text(e.toString()),
           ),
         );
       }
+    } on Exception catch (e) {
+      //print('Error: $e');
+      _scaffoldKey.currentState.showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
     }
   }
 
