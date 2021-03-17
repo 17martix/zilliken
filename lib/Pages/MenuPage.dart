@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:zilliken/Components/ZCircularProgress.dart';
 import 'package:zilliken/Components/ZRaisedButton.dart';
 import 'package:zilliken/Components/ZTextField.dart';
@@ -18,6 +18,7 @@ import 'package:zilliken/Services/Authentication.dart';
 import 'package:zilliken/Services/Database.dart';
 import 'package:zilliken/Services/Messaging.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:multi_image_picker/multi_image_picker.dart';
 
 import 'package:zilliken/i18n.dart';
 
@@ -53,7 +54,6 @@ class _MenuPageState extends State<MenuPage> {
   List<OrderItem> clientOrder = List<OrderItem>();
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-  bool _isLoading;
 
   int _itemorCategory = 0;
   MenuItem _menuItem = MenuItem();
@@ -76,8 +76,6 @@ class _MenuPageState extends State<MenuPage> {
       setState(() {
         clientOrder = widget.clientOrder;
       });
-
-    _isLoading = false;
 
     widget.db.getCategories().then((value) {
       _catList.addAll(value);
@@ -123,12 +121,7 @@ class _MenuPageState extends State<MenuPage> {
     return Scaffold(
       backgroundColor: Colors.transparent,
       key: _scaffoldKey,
-      body: Stack(
-        children: [
-          body(),
-          ZCircularProgress(_isLoading),
-        ],
-      ),
+      body: body(),
     );
   }
 
@@ -150,7 +143,21 @@ class _MenuPageState extends State<MenuPage> {
   Widget addItemCategory() {
     return Column(
       children: [
-        chooseCategoryOrItems(),
+        //chooseCategoryOrItems(),
+        if (widget.userRole == Fields.developer ||
+            widget.userRole == Fields.admin)
+          ZRaisedButton(
+            textIcon: Text(
+              I18n.of(context).loadData,
+              style: TextStyle(
+                fontSize: SizeConfig.diagonal * 1.5,
+                color: Color(Styling.primaryBackgroundColor),
+              ),
+            ),
+            bottomPadding: SizeConfig.diagonal * 1,
+            topPadding: SizeConfig.diagonal * 1,
+            onpressed: loadData,
+          ),
       ],
     );
   }
@@ -293,19 +300,6 @@ class _MenuPageState extends State<MenuPage> {
                     ],
                   ),
                 ),
-          if (widget.userRole == Fields.developer ||
-              widget.userRole == Fields.admin)
-            ZRaisedButton(
-              textIcon: Text(
-                I18n.of(context).loadData,
-                style: TextStyle(
-                  fontSize: SizeConfig.diagonal * 1.5,
-                  color: Color(Styling.primaryBackgroundColor),
-                ),
-              ),
-              bottomPadding: SizeConfig.diagonal * 1,
-              onpressed: loadData,
-            ),
         ],
       ),
     );
@@ -375,58 +369,48 @@ class _MenuPageState extends State<MenuPage> {
     );
 
     if (result != null) {
-      setState(() {
-      _isLoading = true;
-    });
+      EasyLoading.show(status: I18n.of(context).loading);
 
-    bool isOnline = await DataConnectionChecker().hasConnection;
-    if (!isOnline) {
-      setState(() {
-        _isLoading = false;
-      });
-
-      _scaffoldKey.currentState.showSnackBar(
-        SnackBar(
-          content: Text(I18n.of(context).noInternet),
-        ),
-      );
-    }else {
-      try {
-        List<File> files = result.paths.map((path) => File(path)).toList();
-      File menu;
-      File category;
-
-      for (int i = 0; i < files.length; i++) {
-        PlatformFile platformFile = result.files[i];
-        print(platformFile.name);
-        if (platformFile.name == 'menu') {
-          menu = files[i];
-        }
-
-        if (platformFile.name == 'category') {
-          category = files[i];
-        }
-      }
-        await widget.db.loadData(menu,category);
-
-        setState(() {
-          _isLoading = false;
-        });
-      } on Exception catch (e) {
-        //print('Error: $e');
-        setState(() {
-          _isLoading = false;
-        });
+      bool isOnline = await hasConnection();
+      if (!isOnline) {
+        EasyLoading.dismiss();
 
         _scaffoldKey.currentState.showSnackBar(
           SnackBar(
-            content: Text(e.toString()),
+            content: Text(I18n.of(context).noInternet),
           ),
         );
+      } else {
+        try {
+          List<File> files = result.paths.map((path) => File(path)).toList();
+          File menu;
+          File category;
+
+          for (int i = 0; i < files.length; i++) {
+            PlatformFile platformFile = result.files[i];
+            print(platformFile.name);
+            if (platformFile.name == 'menu') {
+              menu = files[i];
+            }
+
+            if (platformFile.name == 'category') {
+              category = files[i];
+            }
+          }
+          await widget.db.loadData(menu, category);
+
+          EasyLoading.dismiss();
+        } on Exception catch (e) {
+          //print('Error: $e');
+          EasyLoading.dismiss();
+
+          _scaffoldKey.currentState.showSnackBar(
+            SnackBar(
+              content: Text(e.toString()),
+            ),
+          );
+        }
       }
-    }
-
-
     } else {
       // User canceled the picker
     }
@@ -471,15 +455,11 @@ class _MenuPageState extends State<MenuPage> {
 
   void saveCategory() async {
     if (validateAndSaveCategory()) {
-      setState(() {
-        _isLoading = true;
-      });
+      EasyLoading.show(status: I18n.of(context).loading);
 
-      bool isOnline = await DataConnectionChecker().hasConnection;
+      bool isOnline = await hasConnection();
       if (!isOnline) {
-        setState(() {
-          _isLoading = false;
-        });
+        EasyLoading.dismiss();
 
         _scaffoldKey.currentState.showSnackBar(
           SnackBar(
@@ -499,17 +479,15 @@ class _MenuPageState extends State<MenuPage> {
             });
           });
 
-          setState(() {
-            _isLoading = false;
-          });
+          EasyLoading.dismiss();
 
           setState(() {
             _catformKey.currentState.reset();
           });
         } on Exception catch (e) {
           //print('Error: $e');
+          EasyLoading.dismiss();
           setState(() {
-            _isLoading = false;
             _catformKey.currentState.reset();
           });
 
@@ -534,15 +512,11 @@ class _MenuPageState extends State<MenuPage> {
 
   void saveItem() async {
     if (validateAndSaveItem()) {
-      setState(() {
-        _isLoading = true;
-      });
+      EasyLoading.show(status: I18n.of(context).loading);
 
-      bool isOnline = await DataConnectionChecker().hasConnection;
+      bool isOnline = await hasConnection();
       if (!isOnline) {
-        setState(() {
-          _isLoading = false;
-        });
+        EasyLoading.dismiss();
 
         _scaffoldKey.currentState.showSnackBar(
           SnackBar(
@@ -553,17 +527,16 @@ class _MenuPageState extends State<MenuPage> {
         try {
           await widget.db.addItem(_menuItem);
 
-          setState(() {
-            _isLoading = false;
-          });
+          EasyLoading.dismiss();
 
           setState(() {
             _formKey.currentState.reset();
           });
         } on Exception catch (e) {
           //print('Error: $e');
+
+          EasyLoading.dismiss();
           setState(() {
-            _isLoading = false;
             _formKey.currentState.reset();
           });
 
@@ -890,6 +863,69 @@ class _MenuPageState extends State<MenuPage> {
           content: Text(e.toString()),
         ),
       );
+    }
+  }
+
+  void changeImage(String name) async {
+    List<Asset> images;
+
+    setState(() {
+      images = List<Asset>();
+    });
+
+    List<Asset> resultList;
+    String error;
+
+    try {
+      resultList = await MultiImagePicker.pickImages(
+        enableCamera: true,
+        maxImages: 1,
+        materialOptions: MaterialOptions(
+          //actionBarTitle: "Action bar",
+          allViewTitle: I18n.of(context).pickImages,
+          actionBarColor: "#122F41",
+          actionBarTitleColor: "#ffffff",
+          lightStatusBar: false,
+          statusBarColor: '#122F41',
+          startInAllView: true,
+          selectCircleStrokeColor: "#C49A6C",
+          selectionLimitReachedText: I18n.of(context).cantSelect,
+        ),
+      );
+    } on Exception catch (e) {
+      error = e.toString();
+    }
+
+    if (!mounted) {
+      return;
+    }
+
+    setState(() {
+      images = resultList;
+    });
+
+    if (images != null && images.length > 0) {
+      EasyLoading.show(status: I18n.of(context).loading);
+      bool isOnline = await hasConnection();
+      if (!isOnline) {
+        EasyLoading.dismiss();
+        _scaffoldKey.currentState
+            .showSnackBar(SnackBar(content: Text(I18n.of(context).noInternet)));
+      } else {
+        try {
+          await widget.db.updateImage(context, images, name);
+          EasyLoading.dismiss();
+          _scaffoldKey.currentState.showSnackBar(
+              SnackBar(content: Text(I18n.of(context).photoChanged)));
+        } on Exception catch (e) {
+          EasyLoading.dismiss();
+          _scaffoldKey.currentState.showSnackBar(
+            SnackBar(
+              content: Text(e.toString()),
+            ),
+          );
+        }
+      }
     }
   }
 }

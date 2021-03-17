@@ -123,6 +123,16 @@ class I18n {
 
   String get orderPlaceholder => _getText("orderPlaceholder");
 
+  String get operationFailed => _getText("operationFailed");
+
+  String get operationSucceeded => _getText("operationSucceeded");
+
+  String get pickImages => _getText("pickImages");
+
+  String get cantSelect => _getText("cantSelect");
+
+  String get photoChanged => _getText("photoChanged");
+
   static Map<String, String> _localizedValues;
 
   static Map<String, String> _enValues = {
@@ -184,6 +194,12 @@ class I18n {
     "orderStatus": "Order Status",
     "loadData": "Load Data",
     "orderPlaceholder": "Your Orders Will Appear Here",
+    "operationFailed": "Operation Failed. Try Again Later",
+    "operationSucceeded": "Operation Succeeded",
+    "pickImages": "Pick An Image",
+    "cantSelect": "You can't select any more",
+    "photoChanged":
+        "Profile Picture Changed. It may take some time to reflect in the app",
   };
 
   static Map<String, String> _frValues = {
@@ -245,6 +261,12 @@ class I18n {
     "orderStatus": "Statut De La Commande",
     "loadData": "Charger Les Données",
     "orderPlaceholder": "Vos Commandes Apparaîtront Ici",
+    "operationFailed": "L'opération a échoué. Reéssayez Plus Tard",
+    "operationSucceeded": "L'Opération a réussie",
+    "pickImages": "Choisir Une Image",
+    "cantSelect": "Vous ne pouvez plus sélectionner",
+    "photoChanged":
+        "Image de profil changée. La réflexion dans l'application peut prendre un certain temps",
   };
 
   static Map<String, Map<String, String>> _allValues = {

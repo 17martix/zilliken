@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
-import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:flutter/material.dart';
 import 'package:zilliken/Components/ZAppBar.dart';
 import 'package:zilliken/Helpers/SizeConfig.dart';
 import 'package:zilliken/Helpers/Styling.dart';
+import 'package:zilliken/Helpers/Utils.dart';
 import 'package:zilliken/Models/Fields.dart';
 import 'package:zilliken/Models/OrderItem.dart';
 import 'package:zilliken/Pages/MenuPage.dart';
@@ -261,7 +261,7 @@ class _DashboardPageState extends State<DashboardPage> {
   void googleSign() async {
     String userId = "";
 
-    bool isOnline = await DataConnectionChecker().hasConnection;
+    bool isOnline = await hasConnection();
     if (!isOnline) {
       _scaffoldKey.currentState.showSnackBar(
         SnackBar(

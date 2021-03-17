@@ -50,7 +50,6 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
   var orderItems;
   bool isDataBeingDeleted = false;
   int _status = Fields.confirmed;
-  bool _isLoading = false;
 
   int _orderStatus = 1;
   int enabled = 1;
@@ -135,12 +134,9 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
           : Scaffold(
               appBar: buildAppBar(
                   context, widget.auth, true, false, null, null, backFunction),
-              body: Stack(
-                children: [
+              body: 
                   body(),
-                  ZCircularProgress(_isLoading),
-                ],
-              ),
+                
             ),
     );
   }

@@ -57,3 +57,8 @@ grandTotal,Grand Total,Total
 orderStatus,Order Status,Statut De La Commande
 loadData,Load Data,Charger Les Données
 orderPlaceholder,Your Orders Will Appear Here,Vos Commandes Apparaîtront Ici
+operationFailed,Operation Failed. Try Again Later,L'opération a échoué. Reéssayez Plus Tard
+operationSucceeded,Operation Succeeded,L'Opération a réussie
+pickImages,Pick An Image,Choisir Une Image
+cantSelect,You can't select any more,Vous ne pouvez plus sélectionner
+photoChanged,Profile Picture Changed. It may take some time to reflect in the app,Image de profil changée. La réflexion dans l'application peut prendre un certain temps
