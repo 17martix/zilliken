@@ -32,12 +32,12 @@ class CartPage extends StatefulWidget {
   final Messaging messaging;
 
   CartPage({
-   @required this.auth,
-  @required  this.clientOrder,
-  @required  this.db,
-  @required  this.userId,
-  @required  this.userRole,
-  @required this.messaging,
+    @required this.auth,
+    @required this.clientOrder,
+    @required this.db,
+    @required this.userId,
+    @required this.userRole,
+    @required this.messaging,
   });
 
   @override
@@ -102,7 +102,7 @@ class _CartPageState extends State<CartPage> {
           userId: widget.userId,
           userRole: widget.userRole,
           clientOrder: clientOrder,
-           messaging: widget.messaging,
+          messaging: widget.messaging,
         ),
       ),
       (Route<dynamic> route) => false,
@@ -397,6 +397,7 @@ class _CartPageState extends State<CartPage> {
     setState(() {
       restaurantOrRoomOrder = value;
       choiceController.clear();
+      formKey.currentState.reset();
     });
   }
 
