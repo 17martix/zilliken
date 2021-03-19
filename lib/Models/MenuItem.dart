@@ -11,7 +11,7 @@ class MenuItem {
   int rank;
   int global;
   int availability;
-  int createdAt;
+  Timestamp createdAt;
   String imageName;
 
   MenuItem({

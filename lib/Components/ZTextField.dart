@@ -35,6 +35,7 @@ class ZTextField extends StatelessWidget {
       child: TextFormField(
         onSaved: onSaved,
         maxLines: maxLines ?? 1,
+        minLines: 1,
         controller: controller,
         validator: validator,
         autofocus: false,

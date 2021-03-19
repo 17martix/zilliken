@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:zilliken/Components/ZAppBar.dart';
 import 'package:zilliken/Components/ZCircularProgress.dart';
@@ -488,6 +489,7 @@ class _CartPageState extends State<CartPage> {
                 onSaved: (newValue) => instruction = newValue,
                 label: I18n.of(context).instruction,
                 controller: _instructionController,
+                maxLines: 5,
                 icon: Icon(
                   Icons.info,
                   color: Color(Styling.primaryColor),
@@ -545,7 +547,12 @@ class _CartPageState extends State<CartPage> {
                                     Color(Styling.textColor).withOpacity(0.7),
                               ),
                             ),
-                            Text(priceItemsTotal(context, clientOrder),style: TextStyle(fontSize: SizeConfig.diagonal*1.5,),),
+                            Text(
+                              priceItemsTotal(context, clientOrder),
+                              style: TextStyle(
+                                fontSize: SizeConfig.diagonal * 1.5,
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -563,7 +570,12 @@ class _CartPageState extends State<CartPage> {
                                 fontSize: SizeConfig.diagonal * 1.5,
                               ),
                             ),
-                            Text(appliedTax(context, clientOrder, tax),style: TextStyle(fontSize: SizeConfig.diagonal*1.5,),),
+                            Text(
+                              appliedTax(context, clientOrder, tax),
+                              style: TextStyle(
+                                fontSize: SizeConfig.diagonal * 1.5,
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -580,7 +592,12 @@ class _CartPageState extends State<CartPage> {
                                 fontSize: SizeConfig.diagonal * 1.5,
                               ),
                             ),
-                            Text(grandTotal(context, clientOrder, tax),style: TextStyle(fontSize: SizeConfig.diagonal*1.5,),),
+                            Text(
+                              grandTotal(context, clientOrder, tax),
+                              style: TextStyle(
+                                fontSize: SizeConfig.diagonal * 1.5,
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -637,9 +654,9 @@ class _CartPageState extends State<CartPage> {
             phoneNumber: phone,
             instructions: instruction,
             grandTotal: grandTotalNumber(context, clientOrder, tax),
-            orderDate: DateTime.now().millisecondsSinceEpoch,
-            confirmedDate: 0,
-            servedDate: 0,
+            orderDate: null,
+            confirmedDate: null,
+            servedDate: null,
             status: 1,
             userId: widget.userId,
             userRole: widget.userRole,

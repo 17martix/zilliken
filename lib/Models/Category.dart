@@ -6,7 +6,7 @@ class Category {
   String id;
   String name;
   int rank;
-  int createdAt;
+  Timestamp createdAt;
   String imageName;
 
   Category({this.id, this.name, this.rank, this.createdAt, this.imageName});

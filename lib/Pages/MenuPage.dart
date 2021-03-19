@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -332,21 +333,24 @@ class _MenuPageState extends State<MenuPage> {
             child: ListTile(
               title: Text(
                 numberItems(context, clientOrder),
-                style: TextStyle(color: Color(Styling.primaryBackgroundColor),fontSize: SizeConfig.diagonal*1.5,),
+                style: TextStyle(
+                  color: Color(Styling.primaryBackgroundColor),
+                  fontSize: SizeConfig.diagonal * 1.5,
+                ),
               ),
               subtitle: Text(
                 priceItems(context, clientOrder),
                 style: TextStyle(
                   color: Color(Styling.primaryBackgroundColor),
                   fontWeight: FontWeight.bold,
-                  fontSize: SizeConfig.diagonal*1.5,
+                  fontSize: SizeConfig.diagonal * 1.5,
                 ),
               ),
               trailing: Text(
                 I18n.of(context).vOrder,
                 style: TextStyle(
                   color: Color(Styling.primaryBackgroundColor),
-                  fontSize: SizeConfig.diagonal*1.5,
+                  fontSize: SizeConfig.diagonal * 1.5,
                 ),
               ),
             ),
@@ -390,18 +394,28 @@ class _MenuPageState extends State<MenuPage> {
 
           for (int i = 0; i < files.length; i++) {
             PlatformFile platformFile = result.files[i];
-            print(platformFile.name);
-            if (platformFile.name == 'menu') {
+            log(platformFile.name);
+            if (platformFile.name == 'menu.csv') {
               menu = files[i];
             }
 
-            if (platformFile.name == 'category') {
+            if (platformFile.name == 'category.csv') {
               category = files[i];
             }
           }
-          await widget.db.loadData(menu, category);
 
-          EasyLoading.dismiss();
+          if (menu == null || category == null) {
+            EasyLoading.dismiss();
+
+            _scaffoldKey.currentState.showSnackBar(
+              SnackBar(
+                content: Text("menu or category null"),
+              ),
+            );
+          } else {
+            await widget.db.sendData(menu, category);
+            EasyLoading.dismiss();
+          }
         } on Exception catch (e) {
           //print('Error: $e');
           EasyLoading.dismiss();

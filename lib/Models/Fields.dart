@@ -55,4 +55,5 @@ class Fields {
   static final String imageName = 'imageName';
 
   static final String token = 'token';
+  static final String lastSeenAt = 'lastSeenAt';
 }

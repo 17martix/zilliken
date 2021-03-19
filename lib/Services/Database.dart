@@ -1,7 +1,7 @@
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:zilliken/Helpers/Utils.dart';
@@ -51,6 +51,7 @@ class Database {
       Fields.role: role,
       Fields.receiveNotifications: 1,
       Fields.token: token,
+      Fields.lastSeenAt: FieldValue.serverTimestamp(),
     });
 
     return role;
@@ -82,10 +83,10 @@ class Database {
       Fields.instructions: order.instructions,
       Fields.grandTotal: order.grandTotal,
       Fields.status: order.status,
-      Fields.orderDate: order.orderDate,
-      Fields.confirmedDate: order.confirmedDate,
+      Fields.orderDate: FieldValue.serverTimestamp(),
+      /*Fields.confirmedDate: order.confirmedDate,
       Fields.preparationDate: order.preparationDate,
-      Fields.servedDate: order.servedDate,
+      Fields.servedDate: order.servedDate,*/
       Fields.userId: order.userId,
       Fields.userRole: order.userRole,
       Fields.taxPercentage: order.taxPercentage,
@@ -125,6 +126,9 @@ class Database {
         instructions: snapshot[Fields.instructions],
         grandTotal: snapshot[Fields.grandTotal],
         orderDate: snapshot[Fields.orderDate],
+        confirmedDate: snapshot[Fields.confirmedDate] ?? null,
+        preparationDate: snapshot[Fields.preparationDate] ?? null,
+        servedDate: snapshot[Fields.servedDate] ?? null,
         clientOrder: items,
       );
     });
@@ -211,6 +215,7 @@ class Database {
         id: id,
         role: role,
         receiveNotifications: receiveNotifications,
+        lastSeenAt: snapshot[Fields.lastSeenAt],
       );
     });
 
@@ -253,7 +258,7 @@ class Database {
       Fields.category: menuItem.category,
       Fields.name: menuItem.name,
       Fields.price: menuItem.price,
-      Fields.createdAt: DateTime.now().millisecondsSinceEpoch.toInt(),
+      Fields.createdAt: FieldValue.serverTimestamp(),
       Fields.rank: rank,
       Fields.global: global,
     });
@@ -277,7 +282,7 @@ class Database {
     var document = databaseReference.collection(Fields.category).doc();
     await document.set({
       Fields.name: category.name,
-      Fields.createdAt: DateTime.now().millisecondsSinceEpoch.toInt(),
+      Fields.createdAt: FieldValue.serverTimestamp(),
       Fields.rank: rank,
     });
   }
@@ -294,30 +299,110 @@ class Database {
 
   Future<void> updateStatus(String id, int status, int value) async {
     var document = databaseReference.collection(Fields.order).doc(id);
-    int now = DateTime.now().millisecondsSinceEpoch.toInt();
     if (value == 1) {
-      await document
-          .update({Fields.status: Fields.pending, Fields.orderDate: now});
+      await document.update({
+        Fields.status: Fields.pending,
+        Fields.orderDate: FieldValue.serverTimestamp(),
+      });
     } else if (value == 2) {
       await document.update({
         Fields.status: Fields.confirmed,
-        Fields.confirmedDate: now,
+        Fields.confirmedDate: FieldValue.serverTimestamp(),
       });
     } else if (value == 3) {
-      await document.update(
-          {Fields.status: Fields.preparation, Fields.preparationDate: now});
+      await document.update({
+        Fields.status: Fields.preparation,
+        Fields.preparationDate: FieldValue.serverTimestamp(),
+      });
     } else if (value == 4) {
-      await document
-          .update({Fields.status: Fields.served, Fields.servedDate: now});
+      await document.update({
+        Fields.status: Fields.served,
+        Fields.servedDate: FieldValue.serverTimestamp(),
+      });
     }
   }
 
-  Future<void> loadData(File menu, File category) async {
+  Future<void> sendData(File menu, File category) async {
     List<MenuItem> list = await getMenuItemsFromFile(menu);
+    List<Category> catList = await getCategoryListFromFile(category);
+    WriteBatch catBatch = databaseReference.batch();
+
+    CollectionReference menuReference =
+        databaseReference.collection(Fields.menu);
+
+    await menuReference.get().then((snapshot) {
+      snapshot.docs.forEach((element) {
+        catBatch.delete(element.reference);
+      });
+    });
+
+    CollectionReference categoryReference =
+        databaseReference.collection(Fields.category);
+    await categoryReference.get().then((snapshot) {
+      snapshot.docs.forEach((element) {
+        catBatch.delete(element.reference);
+      });
+    });
+
+    for (int i = 0; i < catList.length; i++) {
+      DocumentReference catRef =
+          databaseReference.collection(Fields.category).doc();
+      catBatch.set(catRef, {
+        Fields.id: catRef.id,
+        Fields.name: catList[i].name,
+        Fields.rank: catList[i].rank,
+        Fields.imageName: catList[i].imageName,
+        Fields.createdAt: FieldValue.serverTimestamp(),
+      });
+    }
+    await catBatch.commit();
+
+    List<MenuItem> list1 = list.sublist(0, (list.length / 2).floor());
+    List<MenuItem> list2 = list.sublist((list.length / 2).floor());
+    WriteBatch batch1 = databaseReference.batch();
+    WriteBatch batch2 = databaseReference.batch();
+
+    for (int i = 0; i < list1.length; i++) {
+      DocumentReference documentReference =
+          databaseReference.collection(Fields.menu).doc();
+      batch1.set(documentReference, {
+        Fields.id: documentReference.id,
+        Fields.name: list1[i].name,
+        Fields.category: list1[i].category,
+        Fields.price: list1[i].price,
+        Fields.rank: list1[i].rank,
+        Fields.global: list1[i].global,
+        Fields.availability: list1[i].availability,
+        Fields.imageName: list1[i].imageName,
+        Fields.createdAt: FieldValue.serverTimestamp(),
+      });
+    }
+    await batch1.commit();
+
+    for (int i = 0; i < list2.length; i++) {
+      DocumentReference documentReference =
+          databaseReference.collection(Fields.menu).doc();
+      batch2.set(documentReference, {
+        Fields.id: documentReference.id,
+        Fields.name: list2[i].name,
+        Fields.category: list2[i].category,
+        Fields.price: list2[i].price,
+        Fields.rank: list2[i].rank,
+        Fields.global: list2[i].global,
+        Fields.availability: list2[i].availability,
+        Fields.imageName: list2[i].imageName,
+        Fields.createdAt: FieldValue.serverTimestamp(),
+      });
+    }
+    await batch2.commit();
+  }
+
+  Future<void> loadData(File menu, File category) async {
+    //List<MenuItem> list = await getMenuItemsFromFile(menu);
     List<Category> catList = await getCategoryListFromFile(category);
     WriteBatch batch = databaseReference.batch();
 
-    CollectionReference menuReference =
+    /* CollectionReference menuReference =
         databaseReference.collection(Fields.menu);
 
     await menuReference.get().then((snapshot) {
@@ -338,9 +423,9 @@ class Database {
         Fields.global: list[i].global,
         Fields.availability: list[i].availability,
         Fields.imageName: list[i].imageName,
-        Fields.createdAt: DateTime.now().millisecondsSinceEpoch,
+        Fields.createdAt: FieldValue.serverTimestamp(),
       });
-    }
+    }*/
 
     CollectionReference categoryReference =
         databaseReference.collection(Fields.category);
@@ -358,7 +443,7 @@ class Database {
         Fields.name: catList[i].name,
         Fields.rank: catList[i].rank,
         Fields.imageName: catList[i].imageName,
-        Fields.createdAt: DateTime.now().millisecondsSinceEpoch,
+        Fields.createdAt: FieldValue.serverTimestamp(),
       });
     }
 
@@ -424,12 +509,12 @@ class Database {
     Result result =
         Result(isSuccess: false, message: I18n.of(context).operationFailed);
 
-   /* if (name == null || name == '' || name.isEmpty) {
+    /* if (name == null || name == '' || name.isEmpty) {
       name = "${DateTime.now().millisecondsSinceEpoch.toString()}.jpg";
     }*/
 
     try {
-       for (int i = 0; i < images.length; i++) {
+      for (int i = 0; i < images.length; i++) {
         double imageDesiredWidth = 500;
         double getAspectRatio(double originalSize, double desiredSize) =>
             desiredSize / originalSize;

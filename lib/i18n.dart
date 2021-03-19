@@ -133,6 +133,8 @@ class I18n {
 
   String get photoChanged => _getText("photoChanged");
 
+  String get instr => _getText("instr");
+
   static Map<String, String> _localizedValues;
 
   static Map<String, String> _enValues = {
@@ -200,6 +202,7 @@ class I18n {
     "cantSelect": "You can't select any more",
     "photoChanged":
         "Profile Picture Changed. It may take some time to reflect in the app",
+    "instr": "Instructions",
   };
 
   static Map<String, String> _frValues = {
@@ -267,6 +270,7 @@ class I18n {
     "cantSelect": "Vous ne pouvez plus sélectionner",
     "photoChanged":
         "Image de profil changée. La réflexion dans l'application peut prendre un certain temps",
+    "instr": "Instructions",
   };
 
   static Map<String, Map<String, String>> _allValues = {

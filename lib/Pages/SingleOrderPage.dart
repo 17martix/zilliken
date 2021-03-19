@@ -29,7 +29,7 @@ class SingleOrderPage extends StatefulWidget {
   final String orderId;
   final Order clientOrder;
   final Messaging messaging;
-  final DateFormat formatter = DateFormat('dd/MM/yyyy  HH:mm');
+  final DateFormat formatter = DateFormat('HH:mm');
 
   SingleOrderPage({
     @required this.auth,
@@ -149,9 +149,8 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
         children: [
           if (widget.userRole == Fields.client) progressionTimeLine(),
           if (widget.userRole == Fields.admin ||
-              widget.userRole == Fields.developer)
-            statusUpdate(),
-          if (widget.userRole == Fields.chef && _orderStatus != 4)
+              widget.userRole == Fields.developer ||
+              widget.userRole == Fields.chef)
             statusUpdate(),
           orderItemStream(),
           informationStream(),
@@ -168,7 +167,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                 children: [
                   billStream(),
                   billStream2(),
-                  if ((_status == 1 && widget.userRole == Fields.client) ||
+                  if ((_status <= 2 && widget.userRole == Fields.client) ||
                       widget.userRole == Fields.admin ||
                       widget.userRole == Fields.developer)
                     cancelOrder(),
@@ -229,12 +228,11 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
               child: Text(
                 I18n.of(context).orderStatus,
                 style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Color(
-                    Styling.textColor,
-                  ),
-                  fontSize: SizeConfig.diagonal * 1.5
-                ),
+                    fontWeight: FontWeight.bold,
+                    color: Color(
+                      Styling.textColor,
+                    ),
+                    fontSize: SizeConfig.diagonal * 1.5),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -266,14 +264,31 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                     ),
                     contents: Container(
                       padding: EdgeInsets.all(SizeConfig.diagonal * 1),
-                      child: Text(
-                        I18n.of(context).pending,
-                        style: TextStyle(
-                          fontSize: SizeConfig.diagonal * 1.5,
-                          color: order.status == 1
-                              ? Color(Styling.accentColor)
-                              : Color(Styling.primaryColor),
-                        ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            I18n.of(context).pending,
+                            style: TextStyle(
+                              fontSize: SizeConfig.diagonal * 1.5,
+                              color: order.status == 1
+                                  ? Color(Styling.accentColor)
+                                  : Color(Styling.primaryColor),
+                            ),
+                          ),
+                          SizedBox(height: SizeConfig.diagonal * 1),
+                          Text(
+                            order.orderDate == null
+                                ? ""
+                                : '${widget.formatter.format(order.orderDate.toDate())}',
+                            style: TextStyle(
+                              fontSize: SizeConfig.diagonal * 1.5,
+                              color: order.status == 1
+                                  ? Color(Styling.accentColor)
+                                  : Color(Styling.primaryColor),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     direction: Axis.horizontal,
@@ -326,16 +341,39 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                     ),
                     contents: Container(
                       padding: EdgeInsets.all(SizeConfig.diagonal * 1),
-                      child: Text(
-                        I18n.of(context).confirmed,
-                        style: TextStyle(
-                          fontSize: SizeConfig.diagonal * 1.5,
-                          color: order.status == 2
-                              ? Color(Styling.accentColor)
-                              : order.status < 2
-                                  ? Color(Styling.textColor).withOpacity(0.2)
-                                  : Color(Styling.primaryColor),
-                        ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            I18n.of(context).confirmed,
+                            style: TextStyle(
+                              fontSize: SizeConfig.diagonal * 1.5,
+                              color: order.status == 2
+                                  ? Color(Styling.accentColor)
+                                  : order.status < 2
+                                      ? Color(Styling.textColor)
+                                          .withOpacity(0.2)
+                                      : Color(Styling.primaryColor),
+                            ),
+                          ),
+                          SizedBox(
+                            height: SizeConfig.diagonal * 1,
+                          ),
+                          Text(
+                            order.confirmedDate == null
+                                ? ""
+                                : '${widget.formatter.format(order.confirmedDate.toDate())}',
+                            style: TextStyle(
+                              fontSize: SizeConfig.diagonal * 1.5,
+                              color: order.status == 2
+                                  ? Color(Styling.accentColor)
+                                  : order.status < 2
+                                      ? Color(Styling.textColor)
+                                          .withOpacity(0.2)
+                                      : Color(Styling.primaryColor),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     direction: Axis.horizontal,
@@ -399,16 +437,37 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                     ),
                     contents: Container(
                       padding: EdgeInsets.all(SizeConfig.diagonal * 1),
-                      child: Text(
-                        I18n.of(context).preparing,
-                        style: TextStyle(
-                          fontSize: SizeConfig.diagonal * 1.5,
-                          color: order.status == 3
-                              ? Color(Styling.accentColor)
-                              : order.status < 3
-                                  ? Color(Styling.textColor).withOpacity(0.2)
-                                  : Color(Styling.primaryColor),
-                        ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            I18n.of(context).preparing,
+                            style: TextStyle(
+                              fontSize: SizeConfig.diagonal * 1.5,
+                              color: order.status == 3
+                                  ? Color(Styling.accentColor)
+                                  : order.status < 3
+                                      ? Color(Styling.textColor)
+                                          .withOpacity(0.2)
+                                      : Color(Styling.primaryColor),
+                            ),
+                          ),
+                          SizedBox(height: SizeConfig.diagonal * 1),
+                          Text(
+                            order.preparationDate == null
+                                ? ""
+                                : '${widget.formatter.format(order.preparationDate.toDate())}',
+                            style: TextStyle(
+                              fontSize: SizeConfig.diagonal * 1.5,
+                              color: order.status == 3
+                                  ? Color(Styling.accentColor)
+                                  : order.status < 3
+                                      ? Color(Styling.textColor)
+                                          .withOpacity(0.2)
+                                      : Color(Styling.primaryColor),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     direction: Axis.horizontal,
@@ -472,16 +531,37 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                     ),
                     contents: Container(
                       padding: EdgeInsets.all(SizeConfig.diagonal * 1),
-                      child: Text(
-                        I18n.of(context).served,
-                        style: TextStyle(
-                          fontSize: SizeConfig.diagonal * 1.5,
-                          color: order.status == 4
-                              ? Color(Styling.accentColor)
-                              : order.status < 4
-                                  ? Color(Styling.textColor).withOpacity(0.2)
-                                  : Color(Styling.primaryColor),
-                        ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            I18n.of(context).served,
+                            style: TextStyle(
+                              fontSize: SizeConfig.diagonal * 1.5,
+                              color: order.status == 4
+                                  ? Color(Styling.accentColor)
+                                  : order.status < 4
+                                      ? Color(Styling.textColor)
+                                          .withOpacity(0.2)
+                                      : Color(Styling.primaryColor),
+                            ),
+                          ),
+                          SizedBox(height: SizeConfig.diagonal * 1),
+                          Text(
+                            order.servedDate == null
+                                ? ""
+                                : '${widget.formatter.format(order.servedDate.toDate())}',
+                            style: TextStyle(
+                              fontSize: SizeConfig.diagonal * 1.5,
+                              color: order.status == 4
+                                  ? Color(Styling.accentColor)
+                                  : order.status < 4
+                                      ? Color(Styling.textColor)
+                                          .withOpacity(0.2)
+                                      : Color(Styling.primaryColor),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     direction: Axis.horizontal,
@@ -639,7 +719,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                     child: Text(
                       I18n.of(context).order,
                       style: TextStyle(
-                        fontSize: SizeConfig.diagonal * 1.5,
+                          fontSize: SizeConfig.diagonal * 1.5,
                           color: Color(Styling.textColor),
                           fontWeight: FontWeight.bold),
                     ),
@@ -1016,7 +1096,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                   Expanded(
                     flex: 1,
                     child: Text(
-                      '${widget.formatter.format(DateTime.fromMillisecondsSinceEpoch(order.orderDate))}',
+                      '${widget.formatter.format(order.orderDate.toDate())}',
                       overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.end,
                       style: TextStyle(
@@ -1066,7 +1146,46 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                   ),
                 ],
               ),
-            )
+            ),
+            if (order.instructions != null && order.instructions != '')
+              Padding(
+                padding: EdgeInsets.only(
+                  left: SizeConfig.diagonal * 1.5,
+                  right: SizeConfig.diagonal * 1.5,
+                  bottom: SizeConfig.diagonal * 1.5,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      flex: 1,
+                      child: Text(
+                        I18n.of(context).instr,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: Color(
+                            Styling.textColor,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: SizeConfig.diagonal * 1),
+                    Expanded(
+                      flex: 1,
+                      child: Text(
+                        order.instructions,
+                        overflow: TextOverflow.visible,
+                        textAlign: TextAlign.end,
+                        style: TextStyle(
+                          color: Color(
+                            Styling.textColor,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
           ],
         ),
       ),
