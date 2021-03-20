@@ -2,7 +2,8 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:google_maps_place_picker/google_maps_place_picker.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:zilliken/Components/ZAppBar.dart';
 import 'package:zilliken/Components/ZCircularProgress.dart';
@@ -32,6 +33,7 @@ class CartPage extends StatefulWidget {
   final Database db;
   final Authentication auth;
   final Messaging messaging;
+  final kInitialPosition = LatLng(-33.8567844, 151.213108);
 
   CartPage({
     @required this.auth,
@@ -449,6 +451,42 @@ class _CartPageState extends State<CartPage> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              if (restaurantOrRoomOrder == 1)
+                SizedBox(
+                  width: double.infinity,
+                  child: TextButton(
+                    child: Row(children: [
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: SizeConfig.diagonal * 0.5),
+                        child: Icon(
+                          Icons.location_on,
+                          color: Color(Styling.primaryColor),
+                        ),
+                      ),
+                      Text(
+                        I18n.of(context).selectLocation,
+                        textAlign: TextAlign.left,
+                      )
+                    ]),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => PlacePicker(
+                            apiKey: getMapsKey(), // Put YOUR OWN KEY here.
+                            onPlacePicked: (result) {
+                              print(result.adrAddress);
+                              Navigator.of(context).pop();
+                            },
+                            initialPosition: widget.kInitialPosition,
+                            useCurrentLocation: true,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
               ZTextField(
                 controller: _choiceController,
                 onSaved: (newValue) => tableAdress = newValue,

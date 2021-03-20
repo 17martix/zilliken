@@ -706,6 +706,7 @@ class _MenuPageState extends State<MenuPage> {
                     style: TextStyle(
                       color: Color(Styling.textColor),
                       fontWeight: FontWeight.bold,
+                      height: 1,
                       fontSize: SizeConfig.diagonal * 1.5,
                     ),
                   ),

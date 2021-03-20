@@ -1177,6 +1177,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                         overflow: TextOverflow.visible,
                         textAlign: TextAlign.end,
                         style: TextStyle(
+                          height: 1,
                           color: Color(
                             Styling.textColor,
                           ),

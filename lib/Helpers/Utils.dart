@@ -281,3 +281,14 @@ Future<bool> hasConnection() async {
   }
   return false;
 }
+
+String getMapsKey() {
+  String key;
+  if (Platform.isAndroid) {
+    key = "AIzaSyCOCHr54YA02I6vq2vd5Wuf9a1qWSlFU70";
+  } else if (Platform.isIOS) {
+    key = "AIzaSyD3e3F8wOwsHFyPiBRK6pjzT6gxbDsp-oU";
+  }
+
+  return key;
+}
