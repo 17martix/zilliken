@@ -56,4 +56,9 @@ class Fields {
 
   static final String token = 'token';
   static final String lastSeenAt = 'lastSeenAt';
+
+  static final String addressName = 'addressName';
+  static final String geoPoint = 'geoPoint';
+  static final String addresses = 'addresses';
+  static final String typedAddress = 'typedAddress';
 }

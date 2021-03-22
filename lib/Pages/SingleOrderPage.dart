@@ -1,7 +1,10 @@
+import 'dart:async';
 import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+import 'package:location/location.dart';
 import 'package:zilliken/Components/ZAppBar.dart';
 import 'package:zilliken/Components/ZCircularProgress.dart';
 import 'package:zilliken/Components/ZRaisedButton.dart';
@@ -17,6 +20,7 @@ import 'package:zilliken/Services/Messaging.dart';
 import 'package:zilliken/i18n.dart';
 import 'package:intl/intl.dart';
 import 'package:timelines/timelines.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'DashboardPage.dart';
 import 'DisabledPage.dart';
@@ -54,6 +58,31 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
   int _orderStatus = 1;
   int enabled = 1;
 
+  double CAMERA_ZOOM = 16;
+  double CAMERA_TILT = 80;
+  double CAMERA_BEARING = 30;
+  LatLng SOURCE_LOCATION = LatLng(42.747932, -71.167889);
+  LatLng DEST_LOCATION = LatLng(37.335685, -122.0605916);
+
+  Completer<GoogleMapController> _controller = Completer();
+  Set<Marker> _markers = Set<Marker>();
+
+// for my drawn routes on the map
+  Set<Polyline> _polylines = Set<Polyline>();
+  List<LatLng> polylineCoordinates = [];
+  PolylinePoints polylinePoints;
+
+// for my custom marker pins
+  BitmapDescriptor sourceIcon;
+  BitmapDescriptor destinationIcon;
+
+// the user's initial location and current location
+// as it moves
+  LocationData currentLocation; // a reference to the destination location
+  LocationData destinationLocation; // wrapper around the location API
+  Location location;
+  CameraPosition initialCameraPosition;
+
   @override
   void initState() {
     super.initState();
@@ -85,6 +114,74 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
         enabled = documentSnapshot.data()[Fields.enabled];
       });
     });
+
+    // create an instance of Location
+    location = new Location();
+    polylinePoints = PolylinePoints();
+
+    // subscribe to changes in the user's location
+    // by "listening" to the location's onLocationChanged event
+    location.changeSettings(accuracy: LocationAccuracy.high);
+    location.onLocationChanged.listen((LocationData cLoc) {
+      // cLoc contains the lat and long of the
+      // current user's position in real time,
+      // so we're holding on to it
+      currentLocation = cLoc;
+      updatePinOnMap();
+    }); // set custom marker pins
+    setSourceAndDestinationIcons(); // set the initial location
+    setInitialLocation();
+  }
+
+  void setInitialLocation() async {
+    // set the initial location by pulling the user's
+    // current location from the location's getLocation()
+    currentLocation = await location.getLocation();
+
+    // hard-coded destination for this example
+    destinationLocation = LocationData.fromMap({
+      "latitude": DEST_LOCATION.latitude,
+      "longitude": DEST_LOCATION.longitude
+    });
+  }
+
+  void setSourceAndDestinationIcons() async {
+    sourceIcon = await BitmapDescriptor.fromAssetImage(
+        ImageConfiguration(devicePixelRatio: 2.5), 'assets/driving_pin.png');
+
+    destinationIcon = await BitmapDescriptor.fromAssetImage(
+        ImageConfiguration(devicePixelRatio: 2.5),
+        'assets/destination_map_marker.png');
+  }
+
+  void updatePinOnMap() async {
+    // create a new CameraPosition instance
+    // every time the location changes, so the camera
+    // follows the pin as it moves with an animation
+    CameraPosition cPosition = CameraPosition(
+      zoom: CAMERA_ZOOM,
+      tilt: CAMERA_TILT,
+      bearing: CAMERA_BEARING,
+      target: LatLng(currentLocation.latitude, currentLocation.longitude),
+    );
+
+    final GoogleMapController controller = await _controller.future;
+    controller.animateCamera(CameraUpdate.newCameraPosition(
+        cPosition)); // do this inside the setState() so Flutter gets notified
+    // that a widget update is due
+    setState(() {
+      // updated position
+      var pinPosition =
+          LatLng(currentLocation.latitude, currentLocation.longitude);
+
+      // the trick is to remove the marker (by id)
+      // and add it again at the updated location
+      _markers.removeWhere((m) => m.markerId.value == '‘sourcePin’');
+      _markers.add(Marker(
+          markerId: MarkerId('sourcePin'),
+          position: pinPosition, // updated position
+          icon: sourceIcon));
+    });
   }
 
   void backFunction() {
@@ -107,6 +204,20 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
+    initialCameraPosition = CameraPosition(
+        zoom: CAMERA_ZOOM,
+        tilt: CAMERA_TILT,
+        bearing: CAMERA_BEARING,
+        target: SOURCE_LOCATION);
+
+    if (currentLocation != null) {
+      initialCameraPosition = CameraPosition(
+          target: LatLng(currentLocation.latitude, currentLocation.longitude),
+          zoom: CAMERA_ZOOM,
+          tilt: CAMERA_TILT,
+          bearing: CAMERA_BEARING);
+    }
+
     return WillPopScope(
       onWillPop: () {
         return Navigator.pushAndRemoveUntil(
@@ -147,6 +258,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
     } else {
       return ListView(
         children: [
+          showMap(),
           if (widget.userRole == Fields.client) progressionTimeLine(),
           if (widget.userRole == Fields.admin ||
               widget.userRole == Fields.developer ||
@@ -177,6 +289,74 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
           )
         ],
       );
+    }
+  }
+
+  Widget showMap() {
+    return Container(
+      width: double.infinity,
+      height: SizeConfig.diagonal * 50,
+      child: Stack(
+        children: [
+          GoogleMap(
+              myLocationEnabled: true,
+              compassEnabled: true,
+              tiltGesturesEnabled: false,
+              markers: _markers,
+              polylines: _polylines,
+              mapType: MapType.normal,
+              initialCameraPosition: initialCameraPosition,
+              onMapCreated: (GoogleMapController controller) {
+                _controller.complete(
+                    controller); // my map has completed being created;
+                // i'm ready to show the pins on the map
+                showPinsOnMap();
+              }),
+        ],
+      ),
+    );
+  }
+
+  void showPinsOnMap() {
+    // get a LatLng for the source location
+    // from the LocationData currentLocation object
+    var pinPosition = LatLng(
+        currentLocation.latitude,
+        currentLocation
+            .longitude); // get a LatLng out of the LocationData object
+    var destPosition = LatLng(destinationLocation.latitude,
+        destinationLocation.longitude); // add the initial source location pin
+    _markers.add(Marker(
+        markerId: MarkerId('sourcePin'),
+        position: pinPosition,
+        icon: sourceIcon)); // destination pin
+    _markers.add(Marker(
+        markerId: MarkerId('destPin'),
+        position: destPosition,
+        icon:
+            destinationIcon)); // set the route lines on the map from source to destination
+    // for more info follow this tutorial
+    setPolylines();
+  }
+
+  void setPolylines() async {
+    PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
+      getMapsKey(),
+      PointLatLng(currentLocation.latitude, currentLocation.longitude),
+      PointLatLng(destinationLocation.latitude, destinationLocation.longitude),
+    );
+    if (result != null) {
+      result.points.forEach((PointLatLng point) {
+        polylineCoordinates.add(LatLng(point.latitude, point.longitude));
+      });
+
+      setState(() {
+        _polylines.add(Polyline(
+            width: 5, // set the width of the polylines
+            polylineId: PolylineId('poly'),
+            color: Color(Styling.accentColor),
+            points: polylineCoordinates));
+      });
     }
   }
 

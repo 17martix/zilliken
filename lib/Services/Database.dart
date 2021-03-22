@@ -5,6 +5,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 
 import 'package:flutter/services.dart';
 import 'package:zilliken/Helpers/Utils.dart';
+import 'package:zilliken/Models/Address.dart';
 import 'package:zilliken/Models/Category.dart';
 import 'package:zilliken/Models/Fields.dart';
 import 'package:zilliken/Models/MenuItem.dart';
@@ -84,13 +85,15 @@ class Database {
       Fields.grandTotal: order.grandTotal,
       Fields.status: order.status,
       Fields.orderDate: FieldValue.serverTimestamp(),
-      /*Fields.confirmedDate: order.confirmedDate,
+      Fields.confirmedDate: order.confirmedDate,
       Fields.preparationDate: order.preparationDate,
-      Fields.servedDate: order.servedDate,*/
+      Fields.servedDate: order.servedDate,
       Fields.userId: order.userId,
       Fields.userRole: order.userRole,
       Fields.taxPercentage: order.taxPercentage,
       Fields.total: order.total,
+      Fields.geoPoint: order.geoPoint,
+      Fields.addressName: order.addressName,
     }).then((value) async {
       for (int i = 0; i < order.clientOrder.length; i++) {
         await databaseReference
@@ -149,6 +152,23 @@ class Database {
       }
       await document.delete();
     });
+  }
+
+  Future<List<Address>> getAddressList(String userId) async {
+    List<Address> addressList;
+    var collection = databaseReference
+        .collection(Fields.users)
+        .doc(userId)
+        .collection(Fields.addresses);
+    await collection.get().then((snapshot) {
+      snapshot.docs.map((DocumentSnapshot document) {
+        Address address = Address();
+        address.buildObject(document);
+        addressList.add(address);
+      });
+    });
+
+    return addressList;
   }
 
   Future<List<OrderItem>> getOrderItems(String orderId) async {
@@ -537,5 +557,30 @@ class Database {
           Result(isSuccess: false, message: I18n.of(context).operationFailed);
     }
     return result;
+  }
+
+  Future<void> deleteAddress(String userId, String addressId) async {
+    var document = databaseReference
+        .collection(Fields.users)
+        .doc(userId)
+        .collection(Fields.addresses)
+        .doc(addressId);
+    await document.delete();
+  }
+
+  Future<void> addAddress(String userId, Address address) async {
+    var document = databaseReference
+        .collection(Fields.users)
+        .doc(userId)
+        .collection(Fields.addresses)
+        .doc();
+    address.id = document.id;
+    await document.set({
+      Fields.id: address.id,
+      Fields.geoPoint: address.geoPoint,
+      Fields.addressName: address.addressName,
+      Fields.typedAddress: address.typedAddress,
+      Fields.phoneNumber: address.phoneNumber,
+    });
   }
 }

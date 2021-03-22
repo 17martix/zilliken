@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +15,7 @@ import 'package:zilliken/Helpers/NumericStepButton.dart';
 import 'package:zilliken/Helpers/SizeConfig.dart';
 import 'package:zilliken/Helpers/Styling.dart';
 import 'package:zilliken/Helpers/Utils.dart';
+import 'package:zilliken/Models/Address.dart';
 import 'package:zilliken/Models/Fields.dart';
 import 'package:zilliken/Models/MenuItem.dart';
 import 'package:zilliken/Models/Order.dart';
@@ -58,6 +60,7 @@ class _CartPageState extends State<CartPage> {
   String phone;
   String instruction;
   List<OrderItem> clientOrder;
+  List<Address> addressList;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   bool _isTaxLoaded = false;
@@ -65,6 +68,9 @@ class _CartPageState extends State<CartPage> {
 
   var _phoneController = TextEditingController();
   var _instructionController = TextEditingController();
+
+  String addressName;
+  GeoPoint geoPoint;
 
   @override
   void initState() {
@@ -74,6 +80,12 @@ class _CartPageState extends State<CartPage> {
       setState(() {
         tax = value;
         _isTaxLoaded = true;
+      });
+    });
+
+    widget.db.getAddressList(widget.userId).then((value) {
+      setState(() {
+        addressList = value;
       });
     });
 
@@ -190,9 +202,150 @@ class _CartPageState extends State<CartPage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             showOrder(),
+            if (restaurantOrRoomOrder == 1 &&
+                (addressList != null && addressList.length > 0))
+              showSavedAddresses(),
             showChoice(),
+            if (restaurantOrRoomOrder == 1 &&
+                (addressList != null &&
+                    addressList.length > 0 &&
+                    addressList.length < 3) &&
+                (_choiceController.text != null &&
+                    geoPoint != null &&
+                    addressName != null &&
+                    _phoneController.text != null))
+              showSaveButton(),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget showSaveButton() {
+    return IconButton(
+      icon: Icon(
+        Icons.check,
+        size: SizeConfig.diagonal * 2.5,
+      ),
+      onPressed: () async {
+        EasyLoading.show(status: I18n.of(context).loading);
+        bool isOnline = await hasConnection();
+        if (!isOnline) {
+          EasyLoading.dismiss();
+
+          _scaffoldKey.currentState.showSnackBar(
+            SnackBar(
+              content: Text(I18n.of(context).noInternet),
+            ),
+          );
+        } else {
+          try {
+            Address address = Address();
+            address.geoPoint = geoPoint;
+            address.addressName = addressName;
+            address.typedAddress = _choiceController.text;
+            address.phoneNumber = _phoneController.text;
+
+            await widget.db.addAddress(widget.userId, address);
+            setState(() {
+              addressList.add(address);
+            });
+            EasyLoading.dismiss();
+          } on Exception catch (e) {
+            //print('Error: $e');
+            EasyLoading.dismiss();
+            setState(() {
+              formKey.currentState.reset();
+            });
+
+            _scaffoldKey.currentState.showSnackBar(
+              SnackBar(
+                content: Text(e.toString()),
+              ),
+            );
+          }
+        }
+      },
+    );
+  }
+
+  Widget showSavedAddresses() {
+    return Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: addressList.map((address) {
+          return addressItem(address);
+        }).toList());
+  }
+
+  Widget addressItem(Address address) {
+    return FlatButton(
+      onPressed: () {
+        setState(() {
+          _choiceController.text = address.typedAddress;
+          addressName = address.addressName;
+          geoPoint = address.geoPoint;
+          _phoneController.text = address.phoneNumber;
+        });
+      },
+      color: Color(Styling.primaryColor),
+      child: Row(
+        children: [
+          Text(
+            address.addressName,
+            style: TextStyle(
+                color: Color(Styling.primaryBackgroundColor),
+                fontSize: SizeConfig.diagonal * 1.5),
+          ),
+          SizedBox(width: SizeConfig.diagonal * 1),
+          PopupMenuButton(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5),
+            ),
+            offset: Offset(-125, 40),
+            itemBuilder: (context) => [
+              PopupMenuItem(child: Text(I18n.of(context).delete), value: 0),
+            ],
+            onSelected: (value) async {
+              switch (value) {
+                case 0:
+                  EasyLoading.show(status: I18n.of(context).loading);
+
+                  bool isOnline = await hasConnection();
+                  if (!isOnline) {
+                    EasyLoading.dismiss();
+
+                    _scaffoldKey.currentState.showSnackBar(
+                      SnackBar(
+                        content: Text(I18n.of(context).noInternet),
+                      ),
+                    );
+                  } else {
+                    try {
+                      await widget.db.deleteAddress(widget.userId, address.id);
+                      setState(() {
+                        addressList
+                            .removeWhere((element) => element.id == address.id);
+                      });
+                      EasyLoading.dismiss();
+                    } on Exception catch (e) {
+                      //print('Error: $e');
+                      EasyLoading.dismiss();
+                      setState(() {
+                        formKey.currentState.reset();
+                      });
+
+                      _scaffoldKey.currentState.showSnackBar(
+                        SnackBar(
+                          content: Text(e.toString()),
+                        ),
+                      );
+                    }
+                  }
+                  break;
+              }
+            },
+          ),
+        ],
       ),
     );
   }
@@ -465,26 +618,13 @@ class _CartPageState extends State<CartPage> {
                         ),
                       ),
                       Text(
-                        I18n.of(context).selectLocation,
+                        addressName == null
+                            ? I18n.of(context).selectLocation
+                            : addressName,
                         textAlign: TextAlign.left,
                       )
                     ]),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => PlacePicker(
-                            apiKey: getMapsKey(), // Put YOUR OWN KEY here.
-                            onPlacePicked: (result) {
-                              print(result.adrAddress);
-                              Navigator.of(context).pop();
-                            },
-                            initialPosition: widget.kInitialPosition,
-                            useCurrentLocation: true,
-                          ),
-                        ),
-                      );
-                    },
+                    onPressed: selectLocation,
                   ),
                 ),
               ZTextField(
@@ -538,6 +678,28 @@ class _CartPageState extends State<CartPage> {
           ),
         ),
       ],
+    );
+  }
+
+  void selectLocation() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PlacePicker(
+          apiKey: getMapsKey(), // Put YOUR OWN KEY here.
+          onPlacePicked: (result) {
+            setState(() {
+              addressName = result.formattedAddress;
+              log("address is ${addressName}");
+              geoPoint = GeoPoint(
+                  result.geometry.location.lat, result.geometry.location.lng);
+            });
+            Navigator.of(context).pop();
+          },
+          initialPosition: widget.kInitialPosition,
+          useCurrentLocation: true,
+        ),
+      ),
     );
   }
 
@@ -672,6 +834,10 @@ class _CartPageState extends State<CartPage> {
 
   Future<void> sendToFireBase() async {
     if (validate()) {
+      while (addressName == null || addressName == '') {
+        selectLocation();
+      }
+
       EasyLoading.show(status: I18n.of(context).loading);
 
       bool isOnline = await hasConnection();
