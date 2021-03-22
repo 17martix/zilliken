@@ -32,6 +32,7 @@ class MenuPage extends StatefulWidget {
   final String userRole;
   final List<OrderItem> clientOrder;
   final Messaging messaging;
+  final MenuItem menuItem = MenuItem();
 
   MenuPage({
     @required this.auth,
@@ -64,6 +65,13 @@ class _MenuPageState extends State<MenuPage> {
   final _formKey = GlobalKey<FormState>();
   final _catformKey = GlobalKey<FormState>();
   List<String> _catList = new List();
+
+  bool showEDialog = false;
+
+  double _offset;
+
+  TextEditingController _nameController = TextEditingController();
+  TextEditingController _priceController = TextEditingController();
 
   @override
   void initState() {
@@ -120,6 +128,7 @@ class _MenuPageState extends State<MenuPage> {
     SizeConfig().init(context);
     //_yOffset = SizeConfig.diagonal * 100;
     return Scaffold(
+      resizeToAvoidBottomPadding: true,
       backgroundColor: Colors.transparent,
       key: _scaffoldKey,
       body: body(),
@@ -127,19 +136,71 @@ class _MenuPageState extends State<MenuPage> {
   }
 
   Widget body() {
-    return Column(
+    return Stack(
       children: [
-        if (widget.userRole == Fields.admin ||
-            widget.userRole == Fields.developer)
-          addItemCategory(),
-        categoryList(),
-        Expanded(
-          child: menulist(),
+        Column(
+          children: [
+            if (widget.userRole == Fields.admin ||
+                widget.userRole == Fields.developer)
+              addItemCategory(),
+            categoryList(),
+            Expanded(
+              child: menulist(),
+            ),
+            if (clientOrder.length > 0) showBill(),
+          ],
         ),
-        if (clientOrder.length > 0) showBill(),
+
+        //editDialog(),
       ],
     );
   }
+
+  /*Widget editDialog() {
+    if (showEDialog == false) {
+      _offset = SizeConfig.diagonal * 82;
+    } else if (showEDialog == true) {
+      _offset = SizeConfig.diagonal * 46.3;
+    }
+    return AnimatedContainer(
+      padding: EdgeInsets.only(
+          left: SizeConfig.diagonal * 1, right: SizeConfig.diagonal * 1),
+      width: double.infinity,
+      transform: Matrix4.translationValues(0, _offset, 1),
+      curve: Curves.bounceInOut,
+      duration: Duration(milliseconds: 800),
+      color: Colors.amberAccent,
+      height: SizeConfig.diagonal * 30.2,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          SizedBox(
+            height: SizeConfig.diagonal * 3,
+          ),
+          ZTextField(
+            icon: Icon(Icons.restaurant),
+            hint: I18n.of(context).itemName,
+            controller: _nameController,
+            //focusNode: Focus.of(context).hasFocus,
+          ),
+          ZTextField(
+            icon: Icon(Icons.restaurant),
+            hint: I18n.of(context).itemPrice,
+            controller: _priceController,
+          ),
+          ZRaisedButton(
+            onpressed: () async {
+              setState(() {
+                showEDialog = false;
+              });
+              await widget.db.updateDetails(widget.menuItem);
+            },
+            textIcon: Text(I18n.of(context).save),
+          ),
+        ],
+      ),
+    );
+  }*/
 
   Widget addItemCategory() {
     return Column(
@@ -693,131 +754,215 @@ class _MenuPageState extends State<MenuPage> {
             ),
           ),
           Expanded(
-            child: Container(
-              padding: EdgeInsets.all(SizeConfig.diagonal * 1),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    menu.name,
-                    textAlign: TextAlign.left,
-                    //overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: Color(Styling.textColor),
-                      fontWeight: FontWeight.bold,
-                      height: 1,
-                      fontSize: SizeConfig.diagonal * 1.5,
-                    ),
-                  ),
-                  SizedBox(width: SizeConfig.diagonal * 1),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        flex: 1,
-                        child: Text(
-                          "${formatNumber(menu.price)} ${I18n.of(context).fbu}",
-                          textAlign: TextAlign.left,
-                          style: TextStyle(
-                            color: Color(Styling.textColor),
-                            fontWeight: FontWeight.normal,
-                            fontSize: SizeConfig.diagonal * 1.5,
-                            //fontFamily: "assets/Cochin.ttf",
-                          ),
-                        ),
-                      ),
-                      widget.userRole == Fields.chef ||
-                              widget.userRole == Fields.admin ||
-                              widget.userRole == Fields.developer
-                          ? Expanded(
-                              flex: 1,
-                              child: SwitchListTile(
-                                activeColor: Color(Styling.accentColor),
-                                value: menu.availability == 1 ? true : false,
-                                onChanged: (isEnabled) =>
-                                    itemAvailability(isEnabled, menu),
+            child: InkWell(
+              onTap: widget.userRole == Fields.admin
+                  ? () {
+                      setState(() {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return Dialog(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(
+                                  SizeConfig.diagonal * 1.5,
+                                ),
                               ),
-                            )
-                          : isAlreadyOnTheOrder(clientOrder, menu.id)
-                              ? Expanded(
-                                  flex: 1,
-                                  child: NumericStepButton(
-                                    counter: findOrderItem(clientOrder, menu.id)
-                                        .count,
-                                    maxValue: 20,
-                                    onChanged: (value) {
-                                      OrderItem orderItem =
-                                          findOrderItem(clientOrder, menu.id);
-                                      if (value == 0) {
-                                        setState(() {
-                                          clientOrder.remove(orderItem);
-                                        });
-                                        //order.remove(orderItem);
-                                      } else {
-                                        setState(() {
-                                          orderItem.count = value;
-                                        });
-                                        //orderItem.count = value;
-                                      }
-                                    },
-                                  ),
-                                )
-                              : Expanded(
-                                  flex: 1,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      InkWell(
-                                        onTap: () {
-                                          setState(() {
-                                            clientOrder.add(OrderItem(
-                                              menuItem: menu,
-                                              count: 1,
-                                            ));
-                                          });
-                                        },
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            color: Color(Styling.accentColor),
-                                            borderRadius: BorderRadius.circular(
-                                                SizeConfig.diagonal * 3),
-                                            border: Border.all(
-                                              color: Color(Styling.accentColor),
-                                            ),
-                                          ),
-                                          margin: EdgeInsets.all(
-                                              SizeConfig.diagonal * 1),
-                                          padding: EdgeInsets.all(
-                                              SizeConfig.diagonal * 1),
-                                          child: Row(
-                                            children: [
-                                              Text(
-                                                I18n.of(context).addItem,
-                                                style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize:
-                                                        SizeConfig.diagonal *
-                                                            1.5),
-                                              ),
-                                              SizedBox(
-                                                  width: SizeConfig.diagonal *
-                                                      0.5),
-                                              Icon(
-                                                Icons.add,
-                                                size: SizeConfig.diagonal * 1.5,
-                                                color: Colors.white,
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ],
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(
+                                    SizeConfig.diagonal * 1.5,
                                   ),
                                 ),
-                    ],
-                  ),
-                ],
+                                padding: EdgeInsets.only(
+                                    left: SizeConfig.diagonal * 0.9,
+                                    right: SizeConfig.diagonal * 0.9),
+                                height: SizeConfig.diagonal * 28.5,
+                                //color: Colors.amber,
+                                child: Column(
+                                  children: [
+                                    SizedBox(
+                                      height: SizeConfig.diagonal * 2.5,
+                                    ),
+                                    ZTextField(
+                                      hint: I18n.of(context).itemName,
+                                      validator: (String value) {
+                                        if (value.isEmpty) {
+                                          return I18n.of(context).itemName;
+                                        }
+                                      },
+                                      icon: Icon(Icons.restaurant),
+                                      controller: _nameController,
+                                    ),
+                                    ZTextField(
+                                      hint: I18n.of(context).itemPrice,
+                                      validator: (String value) {
+                                        if (value.isEmpty) {
+                                          return I18n.of(context).itemPrice;
+                                        }
+                                      },
+                                      icon: Icon(Icons.restaurant),
+                                      controller: _priceController,
+                                    ),
+                                    ZRaisedButton(
+                                      onpressed: () async {
+                                        setState(() {
+                                          menu.name = _nameController.text;
+                                          menu.price =
+                                              int.parse(_priceController.text);
+                                        });
+                                        Navigator.of(context).pop();
+                                        try {
+                                          await widget.db.updateDetails(menu);
+                                        } catch (e) {
+                                          SnackBar(
+                                            content: Text(e),
+                                          );
+                                        }
+                                        _nameController.clear();
+                                        _priceController.clear();
+                                      },
+                                      textIcon: Text(I18n.of(context).save),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                        //showEDialog = true;
+                      });
+                    }
+                  : () {},
+              child: Container(
+                padding: EdgeInsets.all(SizeConfig.diagonal * 1),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      menu.name,
+                      textAlign: TextAlign.left,
+                      //overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: Color(Styling.textColor),
+                        fontWeight: FontWeight.bold,
+                        height: 1,
+                        fontSize: SizeConfig.diagonal * 1.5,
+                      ),
+                    ),
+                    SizedBox(width: SizeConfig.diagonal * 1),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          flex: 1,
+                          child: Text(
+                            "${formatNumber(menu.price)} ${I18n.of(context).fbu}",
+                            textAlign: TextAlign.left,
+                            style: TextStyle(
+                              color: Color(Styling.textColor),
+                              fontWeight: FontWeight.normal,
+                              fontSize: SizeConfig.diagonal * 1.5,
+                              //fontFamily: "assets/Cochin.ttf",
+                            ),
+                          ),
+                        ),
+                        widget.userRole == Fields.chef ||
+                                widget.userRole == Fields.admin ||
+                                widget.userRole == Fields.developer
+                            ? Expanded(
+                                flex: 1,
+                                child: SwitchListTile(
+                                  activeColor: Color(Styling.accentColor),
+                                  value: menu.availability == 1 ? true : false,
+                                  onChanged: (isEnabled) =>
+                                      itemAvailability(isEnabled, menu),
+                                ),
+                              )
+                            : isAlreadyOnTheOrder(clientOrder, menu.id)
+                                ? Expanded(
+                                    flex: 1,
+                                    child: NumericStepButton(
+                                      counter:
+                                          findOrderItem(clientOrder, menu.id)
+                                              .count,
+                                      maxValue: 20,
+                                      onChanged: (value) {
+                                        OrderItem orderItem =
+                                            findOrderItem(clientOrder, menu.id);
+                                        if (value == 0) {
+                                          setState(() {
+                                            clientOrder.remove(orderItem);
+                                          });
+                                          //order.remove(orderItem);
+                                        } else {
+                                          setState(() {
+                                            orderItem.count = value;
+                                          });
+                                          //orderItem.count = value;
+                                        }
+                                      },
+                                    ),
+                                  )
+                                : Expanded(
+                                    flex: 1,
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        InkWell(
+                                          onTap: () {
+                                            setState(() {
+                                              clientOrder.add(OrderItem(
+                                                menuItem: menu,
+                                                count: 1,
+                                              ));
+                                            });
+                                          },
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              color: Color(Styling.accentColor),
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                      SizeConfig.diagonal * 3),
+                                              border: Border.all(
+                                                color:
+                                                    Color(Styling.accentColor),
+                                              ),
+                                            ),
+                                            margin: EdgeInsets.all(
+                                                SizeConfig.diagonal * 1),
+                                            padding: EdgeInsets.all(
+                                                SizeConfig.diagonal * 1),
+                                            child: Row(
+                                              children: [
+                                                Text(
+                                                  I18n.of(context).addItem,
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize:
+                                                          SizeConfig.diagonal *
+                                                              1.5),
+                                                ),
+                                                SizedBox(
+                                                    width: SizeConfig.diagonal *
+                                                        0.5),
+                                                Icon(
+                                                  Icons.add,
+                                                  size:
+                                                      SizeConfig.diagonal * 1.5,
+                                                  color: Colors.white,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

@@ -538,4 +538,13 @@ class Database {
     }
     return result;
   }
+
+  Future<void> updateDetails(MenuItem menu) async {
+    DocumentReference details =
+        FirebaseFirestore.instance.collection(Fields.menu).doc(menu.id);
+    await details.update({
+      Fields.name:menu.name,
+      Fields.price:menu.price,
+    });
+  }
 }

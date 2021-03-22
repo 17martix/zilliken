@@ -137,6 +137,8 @@ class I18n {
 
   String get selectLocation => _getText("selectLocation");
 
+  String get save => _getText("save");
+
   static Map<String, String> _localizedValues;
 
   static Map<String, String> _enValues = {
@@ -206,6 +208,7 @@ class I18n {
         "Profile Picture Changed. It may take some time to reflect in the app",
     "instr": "Instructions",
     "selectLocation": "Select A Location",
+    "save": "Save",
   };
 
   static Map<String, String> _frValues = {
@@ -275,6 +278,7 @@ class I18n {
         "Image de profil changée. La réflexion dans l'application peut prendre un certain temps",
     "instr": "Instructions",
     "selectLocation": "Sélectionnez un emplacement",
+    "save": "Enregistrer",
   };
 
   static Map<String, Map<String, String>> _allValues = {
