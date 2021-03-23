@@ -133,6 +133,20 @@ class I18n {
 
   String get photoChanged => _getText("photoChanged");
 
+  String get yourphonenumber => _getText("yourphonenumber");
+
+  String get requiredInput => _getText("requiredInput");
+
+  String get signin => _getText("signin");
+
+  String get smscode => _getText("smscode");
+
+  String get confirm => _getText("confirm");
+
+  String get yourname => _getText("yourname");
+
+  String get signUp => _getText("signUp");
+
   static Map<String, String> _localizedValues;
 
   static Map<String, String> _enValues = {
@@ -200,6 +214,13 @@ class I18n {
     "cantSelect": "You can't select any more",
     "photoChanged":
         "Profile Picture Changed. It may take some time to reflect in the app",
+    "yourphonenumber": "Your Phone Number",
+    "requiredInput": "*Required",
+    "signin": "Sign In",
+    "smscode": "SMS Code",
+    "confirm": "Confirm",
+    "yourname": "Enter Your Name",
+    "signUp": "Sign UP",
   };
 
   static Map<String, String> _frValues = {
@@ -267,6 +288,13 @@ class I18n {
     "cantSelect": "Vous ne pouvez plus sélectionner",
     "photoChanged":
         "Image de profil changée. La réflexion dans l'application peut prendre un certain temps",
+    "yourphonenumber": "Votre Numero de telephone",
+    "requiredInput": "*Requis",
+    "signin": "S'identifier",
+    "smscode": "Code SMS",
+    "confirm": "Confirmer",
+    "yourname": "Entrez Votre Nom",
+    "signUp": "Inscrivez-Vous",
   };
 
   static Map<String, Map<String, String>> _allValues = {

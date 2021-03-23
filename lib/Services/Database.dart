@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:zilliken/Helpers/Utils.dart';
 import 'package:zilliken/Models/Category.dart';
 import 'package:zilliken/Models/Fields.dart';
+import 'package:zilliken/Models/Folders.dart';
 import 'package:zilliken/Models/MenuItem.dart';
 import 'package:zilliken/Models/Order.dart';
 import 'package:zilliken/Models/OrderItem.dart';
@@ -15,6 +16,7 @@ import 'package:zilliken/Models/UserProfile.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 
 import '../i18n.dart';
+
 
 class Database {
   final databaseReference = FirebaseFirestore.instance;
@@ -28,7 +30,7 @@ class Database {
   }
 
   Future<String> getUserRole(String userId, String token) async {
-    String role = Fields.client;
+    String role = "";
     await databaseReference
         .collection(Fields.users)
         .doc(userId)
@@ -36,8 +38,6 @@ class Database {
         .then((snapshot) async {
       if (snapshot.exists) {
         role = snapshot.data()[Fields.role].toString();
-      } else {
-        await createProfile(userId, token);
       }
     });
 
@@ -147,6 +147,45 @@ class Database {
     });
   }
 
+
+Future<Result> createAccount(context, UserProfile userProfile) async {
+    Result result =
+        Result(isSuccess: false, message: I18n.of(context).operationFailed);
+    DocumentReference newUserReference =
+        databaseReference.collection(Fields.users).doc(userProfile.id);
+    try {
+      ByteData byteData = await rootBundle.load('assets/anonymous.png');
+      List<int> imageData = byteData.buffer.asUint8List();
+      String name = "${userProfile.id}.jpg";
+      Reference ref = storage.ref("${Folders.accounts}/${name}");
+      TaskSnapshot uploadTask = await ref.putData(imageData);
+    } on FirebaseException catch (e) {
+      result =
+          Result(isSuccess: false, message: I18n.of(context).operationFailed);
+    }
+
+    await newUserReference
+        .set({
+          Fields.id: userProfile.id,
+          Fields.name: userProfile.name,
+          Fields.role: userProfile.role,
+          Fields.phoneNumber: userProfile.phoneNumber,
+          
+        
+         
+          Fields.createdAt: FieldValue.serverTimestamp(),
+         
+        })
+        .whenComplete(() => result = Result(
+            isSuccess: true, message: I18n.of(context).operationSucceeded))
+        .catchError((error) => result = Result(
+            isSuccess: false, message: I18n.of(context).operationFailed));
+
+    return result;
+  }
+
+
+
   Future<List<OrderItem>> getOrderItems(String orderId) async {
     List<OrderItem> clientOrder;
     var collection = databaseReference
@@ -210,7 +249,9 @@ class Database {
       userProfile = UserProfile(
         id: id,
         role: role,
-        receiveNotifications: receiveNotifications,
+        name:snapshot[Fields.name],
+         phoneNumber:snapshot[Fields.phoneNumber],
+        
       );
     });
 

@@ -218,7 +218,7 @@ class _MenuPageState extends State<MenuPage> {
                         validator: (value) =>
                             value.isEmpty ? I18n.of(context).requit : null,
                         keyboardType: TextInputType.text,
-                        icon: Icon(Icons.restaurant_menu),
+                        icon: Icons.restaurant_menu,
                         obsecure: false,
                         hint: I18n.of(context).itemName,
                       ),
@@ -227,7 +227,7 @@ class _MenuPageState extends State<MenuPage> {
                         validator: (value) =>
                             value.isEmpty ? I18n.of(context).requit : null,
                         keyboardType: TextInputType.number,
-                        icon: Icon(Icons.monetization_on),
+                        icon: Icons.monetization_on,
                         obsecure: false,
                         hint: I18n.of(context).itemPrice,
                       ),
@@ -282,7 +282,7 @@ class _MenuPageState extends State<MenuPage> {
                         validator: (value) =>
                             value.isEmpty ? I18n.of(context).requit : null,
                         keyboardType: TextInputType.text,
-                        icon: Icon(Icons.category),
+                        icon: Icons.category,
                         obsecure: false,
                         hint: I18n.of(context).categoryName,
                       ),
@@ -332,21 +332,24 @@ class _MenuPageState extends State<MenuPage> {
             child: ListTile(
               title: Text(
                 numberItems(context, clientOrder),
-                style: TextStyle(color: Color(Styling.primaryBackgroundColor),fontSize: SizeConfig.diagonal*1.5,),
+                style: TextStyle(
+                  color: Color(Styling.primaryBackgroundColor),
+                  fontSize: SizeConfig.diagonal * 1.5,
+                ),
               ),
               subtitle: Text(
                 priceItems(context, clientOrder),
                 style: TextStyle(
                   color: Color(Styling.primaryBackgroundColor),
                   fontWeight: FontWeight.bold,
-                  fontSize: SizeConfig.diagonal*1.5,
+                  fontSize: SizeConfig.diagonal * 1.5,
                 ),
               ),
               trailing: Text(
                 I18n.of(context).vOrder,
                 style: TextStyle(
                   color: Color(Styling.primaryBackgroundColor),
-                  fontSize: SizeConfig.diagonal*1.5,
+                  fontSize: SizeConfig.diagonal * 1.5,
                 ),
               ),
             ),

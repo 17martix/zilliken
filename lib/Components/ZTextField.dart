@@ -1,10 +1,12 @@
+import 'package:country_list_pick/country_list_pick.dart';
 import 'package:flutter/material.dart';
+import 'package:zilliken/Helpers/Styling.dart';
 
 import '../Helpers/SizeConfig.dart';
 
 class ZTextField extends StatelessWidget {
   final FormFieldSetter<String> onSaved;
-  final Icon icon;
+  final IconData icon;
   final String hint;
   final bool obsecure;
   final String label;
@@ -14,6 +16,8 @@ class ZTextField extends StatelessWidget {
   final FormFieldValidator<String> validator;
   final int maxLines;
   final suffix;
+  final outsidePrefix;
+  final onFieldSubmitted;
 
   ZTextField({
     this.icon,
@@ -27,6 +31,8 @@ class ZTextField extends StatelessWidget {
     this.controller,
     this.maxLines,
     this.suffix,
+    this.outsidePrefix,
+      this.onFieldSubmitted,
   });
 
   @override
@@ -40,6 +46,7 @@ class ZTextField extends StatelessWidget {
         autofocus: false,
         obscureText: obsecure,
         keyboardType: keyboardType,
+          onFieldSubmitted: onFieldSubmitted ?? null,
         inputFormatters: inputFormatters,
         style: TextStyle(
           fontSize: SizeConfig.diagonal * 1.5,
@@ -53,13 +60,12 @@ class ZTextField extends StatelessWidget {
           labelStyle: TextStyle(
             fontSize: SizeConfig.diagonal * 1.5,
           ),
-          prefixIcon: Padding(
-            child: IconTheme(
-              data: IconThemeData(color: Theme.of(context).primaryColor),
-              child: icon,
-            ),
-            padding: EdgeInsets.only(left: 0, right: 0),
-          ),
+          prefixIcon: icon ??
+              Icon(
+                icon,
+                size: SizeConfig.diagonal * 2.5,
+                color: Color(Styling.primaryColor),
+              ),
           suffix: suffix,
         ),
       ),

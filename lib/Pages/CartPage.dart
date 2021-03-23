@@ -460,14 +460,12 @@ class _CartPageState extends State<CartPage> {
                     ? I18n.of(context).ntable
                     : I18n.of(context).addr,
                 icon: restaurantOrRoomOrder == 0
-                    ? Icon(
-                        Icons.restaurant_menu,
-                        color: Color(Styling.primaryColor),
-                      )
-                    : Icon(
+                    ? 
+                        Icons.restaurant_menu
+                     
+                    : 
                         Icons.shopping_cart,
-                        color: Color(Styling.primaryColor),
-                      ),
+                     
               ),
               if (restaurantOrRoomOrder == 1)
                 ZTextField(
@@ -477,21 +475,18 @@ class _CartPageState extends State<CartPage> {
                       value.isEmpty ? I18n.of(context).requit : null,
                   keyboardType: TextInputType.phone,
                   label: I18n.of(context).fone,
-                  icon: Icon(
+                  icon: 
                     Icons.phone_android,
-                    color: Color(
-                      Styling.primaryColor,
-                    ),
-                  ),
+                 
+           
                 ),
               ZTextField(
                 onSaved: (newValue) => instruction = newValue,
                 label: I18n.of(context).instruction,
                 controller: _instructionController,
-                icon: Icon(
+                icon: 
                   Icons.info,
-                  color: Color(Styling.primaryColor),
-                ),
+               
                 keyboardType: TextInputType.text,
               ),
             ],

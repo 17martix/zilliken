@@ -62,3 +62,10 @@ operationSucceeded,Operation Succeeded,L'Opération a réussie
 pickImages,Pick An Image,Choisir Une Image
 cantSelect,You can't select any more,Vous ne pouvez plus sélectionner
 photoChanged,Profile Picture Changed. It may take some time to reflect in the app,Image de profil changée. La réflexion dans l'application peut prendre un certain temps
+yourphonenumber,Your Phone Number,Votre Numero de telephone
+requiredInput,*Required,*Requis
+signin,Sign In,S'identifier
+smscode,SMS Code,Code SMS
+confirm,Confirm,Confirmer
+yourname,Enter Your Name,Entrez Votre Nom
+signUp,Sign UP,Inscrivez-Vous
