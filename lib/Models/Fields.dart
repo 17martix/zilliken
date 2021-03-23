@@ -60,5 +60,8 @@ class Fields {
   static final String addressName = 'addressName';
   static final String geoPoint = 'geoPoint';
   static final String addresses = 'addresses';
+  static final String address = 'address';
+  static final String currentPoint = 'currentPoint';
   static final String typedAddress = 'typedAddress';
+  static final String deliveringOrderId = 'deliveringOrderId';
 }

@@ -3,7 +3,9 @@ import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:location/location.dart';
 import 'package:zilliken/Components/ZAppBar.dart';
 import 'package:zilliken/Components/ZCircularProgress.dart';
@@ -58,11 +60,14 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
   int _orderStatus = 1;
   int enabled = 1;
 
+  Order order;
+  GeoPoint _currentPoint;
+
   double CAMERA_ZOOM = 16;
   double CAMERA_TILT = 80;
   double CAMERA_BEARING = 30;
-  LatLng SOURCE_LOCATION = LatLng(42.747932, -71.167889);
-  LatLng DEST_LOCATION = LatLng(37.335685, -122.0605916);
+  LatLng SOURCE_LOCATION = LatLng(-3.3834389, 29.3616122);
+  //LatLng DEST_LOCATION = LatLng(37.335685, -122.0605916);
 
   Completer<GoogleMapController> _controller = Completer();
   Set<Marker> _markers = Set<Marker>();
@@ -70,7 +75,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
 // for my drawn routes on the map
   Set<Polyline> _polylines = Set<Polyline>();
   List<LatLng> polylineCoordinates = [];
-  PolylinePoints polylinePoints;
+  PolylinePoints polylinePoints = PolylinePoints();
 
 // for my custom marker pins
   BitmapDescriptor sourceIcon;
@@ -80,8 +85,10 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
 // as it moves
   LocationData currentLocation; // a reference to the destination location
   LocationData destinationLocation; // wrapper around the location API
-  Location location;
+  Location location = new Location();
   CameraPosition initialCameraPosition;
+
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -102,6 +109,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
         .listen((DocumentSnapshot documentSnapshot) {
       setState(() {
         _status = documentSnapshot.data()[Fields.status];
+        _currentPoint = documentSnapshot.data()[Fields.currentPoint];
       });
     });
 
@@ -115,22 +123,46 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
       });
     });
 
-    // create an instance of Location
-    location = new Location();
-    polylinePoints = PolylinePoints();
+    widget.db.getOrder(widget.orderId).then((value) {
+      setState(() {
+        order = value;
+      });
 
+      // create an instance of Location
+    });
+  }
+
+  void initLocation() {
     // subscribe to changes in the user's location
     // by "listening" to the location's onLocationChanged event
     location.changeSettings(accuracy: LocationAccuracy.high);
+
     location.onLocationChanged.listen((LocationData cLoc) {
       // cLoc contains the lat and long of the
       // current user's position in real time,
       // so we're holding on to it
       currentLocation = cLoc;
       updatePinOnMap();
+      GeoPoint currentPoint =
+          GeoPoint(currentLocation.latitude, currentLocation.longitude);
+      widget.db.updateLocation(widget.orderId, currentPoint);
     }); // set custom marker pins
     setSourceAndDestinationIcons(); // set the initial location
     setInitialLocation();
+  }
+
+  void initLocationFromServer() {
+    currentLocation = LocationData.fromMap({
+      "latitude": _currentPoint.latitude,
+      "longitude": _currentPoint.longitude,
+    });
+
+    updatePinOnMap();
+    setSourceAndDestinationIcons(); // set the initial location
+    destinationLocation = LocationData.fromMap({
+      "latitude": order.geoPoint.latitude,
+      "longitude": order.geoPoint.longitude,
+    });
   }
 
   void setInitialLocation() async {
@@ -140,8 +172,8 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
 
     // hard-coded destination for this example
     destinationLocation = LocationData.fromMap({
-      "latitude": DEST_LOCATION.latitude,
-      "longitude": DEST_LOCATION.longitude
+      "latitude": order.geoPoint.latitude,
+      "longitude": order.geoPoint.longitude,
     });
   }
 
@@ -243,6 +275,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
               userRole: widget.userRole,
             )
           : Scaffold(
+              key: _scaffoldKey,
               appBar: buildAppBar(
                   context, widget.auth, true, false, null, null, backFunction),
               body: body(),
@@ -292,29 +325,101 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
     }
   }
 
+  void assignOrder() async {
+    EasyLoading.show(status: I18n.of(context).loading);
+
+    bool isOnline = await hasConnection();
+    if (!isOnline) {
+      EasyLoading.dismiss();
+
+      _scaffoldKey.currentState.showSnackBar(
+        SnackBar(
+          content: Text(I18n.of(context).noInternet),
+        ),
+      );
+    } else {
+      try {
+        await widget.db.assignDelivery(widget.orderId, widget.userId);
+        setState(() {
+          order.deliveringOrderId = widget.userId;
+        });
+
+        EasyLoading.dismiss();
+      } on Exception catch (e) {
+        //print('Error: $e');
+        EasyLoading.dismiss();
+
+        _scaffoldKey.currentState.showSnackBar(
+          SnackBar(
+            content: Text(e.toString()),
+          ),
+        );
+      }
+    }
+  }
+
   Widget showMap() {
-    return Container(
-      width: double.infinity,
-      height: SizeConfig.diagonal * 50,
-      child: Stack(
-        children: [
-          GoogleMap(
-              myLocationEnabled: true,
-              compassEnabled: true,
-              tiltGesturesEnabled: false,
-              markers: _markers,
-              polylines: _polylines,
-              mapType: MapType.normal,
-              initialCameraPosition: initialCameraPosition,
-              onMapCreated: (GoogleMapController controller) {
-                _controller.complete(
-                    controller); // my map has completed being created;
-                // i'm ready to show the pins on the map
-                showPinsOnMap();
-              }),
-        ],
-      ),
-    );
+    if (order?.deliveringOrderId == null) {
+      if (widget.userRole != Fields.client) {
+        return ZRaisedButton(
+          onpressed: assignOrder,
+          textIcon: Row(
+            children: [
+              Icon(
+                FontAwesomeIcons.truckMoving,
+                size: SizeConfig.diagonal * 2.5,
+              ),
+              SizedBox(width: SizeConfig.diagonal * 1),
+              Text(
+                I18n.of(context).deliverOrder,
+                style: TextStyle(
+                  fontSize: SizeConfig.diagonal * 1.5,
+                  color: Color(Styling.primaryBackgroundColor),
+                ),
+              ),
+            ],
+          ),
+        );
+      } else
+        return Container();
+    } else {
+      if (order.deliveringOrderId == widget.userId) {
+        if (order != null) {
+          initLocation();
+        }
+      } else {
+        if (order != null) {
+          initLocationFromServer();
+        }
+      }
+
+      return order == null
+          ? Center(
+              child: ZCircularProgress(true),
+            )
+          : Container(
+              width: double.infinity,
+              height: SizeConfig.diagonal * 50,
+              child: Stack(
+                children: [
+                  GoogleMap(
+                      myLocationEnabled: true,
+                      compassEnabled: true,
+                      tiltGesturesEnabled: false,
+                      markers: _markers,
+                      polylines: _polylines,
+                      mapType: MapType.normal,
+                      initialCameraPosition: initialCameraPosition,
+                      onMapCreated: (GoogleMapController controller) {
+                        _controller.complete(
+                            controller); // my map has completed being created;
+                        // i'm ready to show the pins on the map
+                        showPinsOnMap();
+                      }),
+                ],
+              ),
+            );
+    }
   }
 
   void showPinsOnMap() {

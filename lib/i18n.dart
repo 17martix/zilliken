@@ -139,6 +139,10 @@ class I18n {
 
   String get delete => _getText("delete");
 
+  String get saveAddress => _getText("saveAddress");
+
+  String get deliverOrder => _getText("deliverOrder");
+
   static Map<String, String> _localizedValues;
 
   static Map<String, String> _enValues = {
@@ -209,6 +213,8 @@ class I18n {
     "instr": "Instructions",
     "selectLocation": "Select A Location",
     "delete": "Delete",
+    "saveAddress": "Save Address",
+    "deliverOrder": "Deliver This Order",
   };
 
   static Map<String, String> _frValues = {
@@ -279,6 +285,8 @@ class I18n {
     "instr": "Instructions",
     "selectLocation": "Sélectionnez un emplacement",
     "delete": "Supprimer",
+    "saveAddress": "Enregistrer L'adresse",
+    "deliverOrder": "Livrer cette commande",
   };
 
   static Map<String, Map<String, String>> _allValues = {

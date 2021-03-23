@@ -65,3 +65,5 @@ photoChanged,Profile Picture Changed. It may take some time to reflect in the ap
 instr,Instructions,Instructions
 selectLocation,Select A Location,Sélectionnez un emplacement
 delete,Delete,Supprimer
+saveAddress,Save Address,Enregistrer L'adresse
+deliverOrder,Deliver This Order,Livrer cette commande

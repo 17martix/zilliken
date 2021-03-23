@@ -28,6 +28,36 @@ class Database {
     });
   }
 
+  Future<GeoPoint> getSourceAddress() async {
+    GeoPoint address;
+    await databaseReference
+        .collection(Fields.configuration)
+        .doc(Fields.settings)
+        .get()
+        .then((snapshot) async {
+      if (snapshot.exists) {
+        address = snapshot.data()[Fields.address];
+      }
+    });
+
+    return address;
+  }
+
+  Future<GeoPoint> getDestinationAddress(String userId, String token) async {
+    GeoPoint geoPoint;
+    await databaseReference
+        .collection(Fields.users)
+        .doc(userId)
+        .get()
+        .then((snapshot) async {
+      if (snapshot.exists) {
+        geoPoint = snapshot.data()[Fields.address];
+      }
+    });
+
+    return geoPoint;
+  }
+
   Future<String> getUserRole(String userId, String token) async {
     String role = Fields.client;
     await databaseReference
@@ -94,6 +124,8 @@ class Database {
       Fields.total: order.total,
       Fields.geoPoint: order.geoPoint,
       Fields.addressName: order.addressName,
+      Fields.deliveringOrderId: null,
+      Fields.currentPoint: null,
     }).then((value) async {
       for (int i = 0; i < order.clientOrder.length; i++) {
         await databaseReference
@@ -121,19 +153,9 @@ class Database {
     var document = databaseReference.collection(Fields.order).doc(id);
     await document.get().then((snapshot) async {
       List<OrderItem> items = await getOrderItems(id);
-      order = Order(
-        id: document.id,
-        orderLocation: snapshot[Fields.orderLocation],
-        tableAdress: snapshot[Fields.tableAdress],
-        phoneNumber: snapshot[Fields.phoneNumber],
-        instructions: snapshot[Fields.instructions],
-        grandTotal: snapshot[Fields.grandTotal],
-        orderDate: snapshot[Fields.orderDate],
-        confirmedDate: snapshot[Fields.confirmedDate] ?? null,
-        preparationDate: snapshot[Fields.preparationDate] ?? null,
-        servedDate: snapshot[Fields.servedDate] ?? null,
-        clientOrder: items,
-      );
+      order = Order();
+      order.buildObject(snapshot);
+      order.clientOrder = items;
     });
 
     return order;
@@ -568,6 +590,20 @@ class Database {
     await document.delete();
   }
 
+  Future<void> updateLocation(String orderId, GeoPoint geoPoint) async {
+    var document = databaseReference.collection(Fields.order).doc(orderId);
+    await document.update({
+      Fields.currentPoint: geoPoint,
+    });
+  }
+
+  Future<void> assignDelivery(String orderId, String userId) async {
+    var document = databaseReference.collection(Fields.order).doc(orderId);
+    await document.update({
+      Fields.deliveringOrderId: userId,
+    });
+  }
+
   Future<void> addAddress(String userId, Address address) async {
     var document = databaseReference
         .collection(Fields.users)
@@ -575,7 +611,7 @@ class Database {
         .collection(Fields.addresses)
         .doc();
     address.id = document.id;
-    await document.set({
+    await document.update({
       Fields.id: address.id,
       Fields.geoPoint: address.geoPoint,
       Fields.addressName: address.addressName,
