@@ -5,8 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:location/location.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:zilliken/Components/ZAppBar.dart';
 import 'package:zilliken/Components/ZCircularProgress.dart';
 import 'package:zilliken/Components/ZRaisedButton.dart';
@@ -63,9 +62,14 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
   Order order;
   GeoPoint _currentPoint;
 
-  double CAMERA_ZOOM = 16;
+  /*double CAMERA_ZOOM = 16;
   double CAMERA_TILT = 80;
   double CAMERA_BEARING = 30;
+  LatLng SOURCE_LOCATION = LatLng(-3.3834389, 29.3616122);*/
+
+  /*double CAMERA_ZOOM = 16;
+  double CAMERA_TILT = 0.0;
+  double CAMERA_BEARING = 0.0;*/
   LatLng SOURCE_LOCATION = LatLng(-3.3834389, 29.3616122);
   //LatLng DEST_LOCATION = LatLng(37.335685, -122.0605916);
 
@@ -83,9 +87,15 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
 
 // the user's initial location and current location
 // as it moves
-  LocationData currentLocation; // a reference to the destination location
-  LocationData destinationLocation; // wrapper around the location API
-  Location location = new Location();
+  Position currentLocation = Position.fromMap({
+    "latitude": -3.3834389,
+    "longitude": 29.3616122,
+  }); // a reference to the destination location
+  Position destinationLocation = Position.fromMap({
+    "latitude": -3.3834389,
+    "longitude": 29.3616122,
+  }); // wrapper around the location API
+  Geolocator location = new Geolocator();
   CameraPosition initialCameraPosition;
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -110,6 +120,8 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
       setState(() {
         _status = documentSnapshot.data()[Fields.status];
         _currentPoint = documentSnapshot.data()[Fields.currentPoint];
+        /*order = Order();
+        order.buildObject(documentSnapshot);*/
       });
     });
 
@@ -124,20 +136,38 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
     });
 
     widget.db.getOrder(widget.orderId).then((value) {
-      setState(() {
-        order = value;
-      });
-
-      // create an instance of Location
+      order = value;
+      if (widget.userId == order.deliveringOrderId) {
+        initLocation();
+      } else {
+        initLocationFromServer();
+      }
     });
   }
 
   void initLocation() {
     // subscribe to changes in the user's location
     // by "listening" to the location's onLocationChanged event
-    location.changeSettings(accuracy: LocationAccuracy.high);
 
-    location.onLocationChanged.listen((LocationData cLoc) {
+    Geolocator.getPositionStream(
+            desiredAccuracy: LocationAccuracy.high,
+            distanceFilter: 1,
+            intervalDuration: Duration(minutes: 1))
+        .listen((Position position) {
+      currentLocation = position;
+      updatePinOnMap();
+      GeoPoint currentPoint =
+          GeoPoint(currentLocation.latitude, currentLocation.longitude);
+      //widget.db.updateLocation(widget.orderId, currentPoint);
+    });
+
+    setSourceAndDestinationIcons();
+    setInitialLocation();
+
+    /*location.changeSettings(
+        accuracy: LocationAccuracy.high, interval: 60000, distanceFilter: 1);*/
+
+    /*location.onLocationChanged.listen((LocationData cLoc) {
       // cLoc contains the lat and long of the
       // current user's position in real time,
       // so we're holding on to it
@@ -145,21 +175,21 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
       updatePinOnMap();
       GeoPoint currentPoint =
           GeoPoint(currentLocation.latitude, currentLocation.longitude);
-      widget.db.updateLocation(widget.orderId, currentPoint);
+      //widget.db.updateLocation(widget.orderId, currentPoint);
     }); // set custom marker pins
     setSourceAndDestinationIcons(); // set the initial location
-    setInitialLocation();
+    setInitialLocation();*/
   }
 
   void initLocationFromServer() {
-    currentLocation = LocationData.fromMap({
-      "latitude": _currentPoint.latitude,
-      "longitude": _currentPoint.longitude,
+    currentLocation = Position.fromMap({
+      "latitude": order.currentPoint.latitude,
+      "longitude": order.currentPoint.longitude,
     });
 
     updatePinOnMap();
     setSourceAndDestinationIcons(); // set the initial location
-    destinationLocation = LocationData.fromMap({
+    destinationLocation = Position.fromMap({
       "latitude": order.geoPoint.latitude,
       "longitude": order.geoPoint.longitude,
     });
@@ -168,10 +198,11 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
   void setInitialLocation() async {
     // set the initial location by pulling the user's
     // current location from the location's getLocation()
-    currentLocation = await location.getLocation();
+    currentLocation = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
 
     // hard-coded destination for this example
-    destinationLocation = LocationData.fromMap({
+    destinationLocation = Position.fromMap({
       "latitude": order.geoPoint.latitude,
       "longitude": order.geoPoint.longitude,
     });
@@ -191,15 +222,15 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
     // every time the location changes, so the camera
     // follows the pin as it moves with an animation
     CameraPosition cPosition = CameraPosition(
-      zoom: CAMERA_ZOOM,
+      /* zoom: CAMERA_ZOOM,
       tilt: CAMERA_TILT,
-      bearing: CAMERA_BEARING,
+      bearing: CAMERA_BEARING,*/
       target: LatLng(currentLocation.latitude, currentLocation.longitude),
     );
 
     final GoogleMapController controller = await _controller.future;
-    controller.animateCamera(CameraUpdate.newCameraPosition(
-        cPosition)); // do this inside the setState() so Flutter gets notified
+    controller.animateCamera(CameraUpdate.newCameraPosition(cPosition));
+    // do this inside the setState() so Flutter gets notified
     // that a widget update is due
     setState(() {
       // updated position
@@ -236,19 +267,6 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
-    initialCameraPosition = CameraPosition(
-        zoom: CAMERA_ZOOM,
-        tilt: CAMERA_TILT,
-        bearing: CAMERA_BEARING,
-        target: SOURCE_LOCATION);
-
-    if (currentLocation != null) {
-      initialCameraPosition = CameraPosition(
-          target: LatLng(currentLocation.latitude, currentLocation.longitude),
-          zoom: CAMERA_ZOOM,
-          tilt: CAMERA_TILT,
-          bearing: CAMERA_BEARING);
-    }
 
     return WillPopScope(
       onWillPop: () {
@@ -291,7 +309,16 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
     } else {
       return ListView(
         children: [
-          showMap(),
+          /*if (widget.userRole != Fields.client &&
+              order != null &&
+              order.orderLocation == 1 &&
+              _status > 2)
+            showMap(),
+          if (widget.userRole == Fields.client &&
+              order != null &&
+              order.orderLocation == 1)
+            showMap(),*/
+          map(),
           if (widget.userRole == Fields.client) progressionTimeLine(),
           if (widget.userRole == Fields.admin ||
               widget.userRole == Fields.developer ||
@@ -363,25 +390,16 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
       if (widget.userRole != Fields.client) {
         return ZRaisedButton(
           onpressed: assignOrder,
-          textIcon: Row(
-            children: [
-              Icon(
-                FontAwesomeIcons.truckMoving,
-                size: SizeConfig.diagonal * 2.5,
-              ),
-              SizedBox(width: SizeConfig.diagonal * 1),
-              Text(
-                I18n.of(context).deliverOrder,
-                style: TextStyle(
-                  fontSize: SizeConfig.diagonal * 1.5,
-                  color: Color(Styling.primaryBackgroundColor),
-                ),
-              ),
-            ],
+          textIcon: Text(
+            I18n.of(context).deliverOrder,
+            style: TextStyle(
+              fontSize: SizeConfig.diagonal * 1.5,
+              color: Color(Styling.primaryBackgroundColor),
+            ),
           ),
         );
       } else
-        return Container();
+        return map();
     } else {
       if (order.deliveringOrderId == widget.userId) {
         if (order != null) {
@@ -393,33 +411,47 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
         }
       }
 
-      return order == null
-          ? Center(
-              child: ZCircularProgress(true),
-            )
-          : Container(
-              width: double.infinity,
-              height: SizeConfig.diagonal * 50,
-              child: Stack(
-                children: [
-                  GoogleMap(
-                      myLocationEnabled: true,
-                      compassEnabled: true,
-                      tiltGesturesEnabled: false,
-                      markers: _markers,
-                      polylines: _polylines,
-                      mapType: MapType.normal,
-                      initialCameraPosition: initialCameraPosition,
-                      onMapCreated: (GoogleMapController controller) {
-                        _controller.complete(
-                            controller); // my map has completed being created;
-                        // i'm ready to show the pins on the map
-                        showPinsOnMap();
-                      }),
-                ],
-              ),
-            );
+      return map();
     }
+  }
+
+  Widget map() {
+    initialCameraPosition = CameraPosition(
+        /* zoom: CAMERA_ZOOM,
+        tilt: CAMERA_TILT,
+        bearing: CAMERA_BEARING,*/
+        target: SOURCE_LOCATION);
+
+    if (currentLocation != null) {
+      initialCameraPosition = CameraPosition(
+        target: LatLng(currentLocation.latitude, currentLocation.longitude),
+        /*zoom: CAMERA_ZOOM,
+          tilt: CAMERA_TILT,
+          bearing: CAMERA_BEARING*/
+      );
+    }
+
+    return Container(
+      width: double.infinity,
+      height: SizeConfig.diagonal * 50,
+      child: GoogleMap(
+          myLocationEnabled: false,
+          myLocationButtonEnabled: false,
+          zoomGesturesEnabled: true,
+          zoomControlsEnabled: true,
+          compassEnabled: false,
+          tiltGesturesEnabled: false,
+          markers: _markers,
+          polylines: _polylines,
+          mapType: MapType.normal,
+          initialCameraPosition: initialCameraPosition,
+          onMapCreated: (GoogleMapController controller) {
+            _controller
+                .complete(controller); // my map has completed being created;
+            // i'm ready to show the pins on the map
+            showPinsOnMap();
+          }),
+    );
   }
 
   void showPinsOnMap() {

@@ -47,7 +47,8 @@ dependencies:
   multi_image_picker: ^4.7.15
   flutter_easyloading: ^2.2.2
   google_maps_place_picker: ^1.0.1
-  location: ^3.2.4
+  #location: ^3.2.4
+  geolocator: ^6.2.1
   flutter_polyline_points: ^0.2.4
 
   flutter_localizations:

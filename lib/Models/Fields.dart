@@ -64,4 +64,5 @@ class Fields {
   static final String currentPoint = 'currentPoint';
   static final String typedAddress = 'typedAddress';
   static final String deliveringOrderId = 'deliveringOrderId';
+  static final String isDrink = 'isDrink';
 }

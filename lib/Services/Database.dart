@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -177,29 +178,58 @@ class Database {
   }
 
   Future<List<Address>> getAddressList(String userId) async {
-    List<Address> addressList;
+    List<Address> addressList = List();
     var collection = databaseReference
         .collection(Fields.users)
         .doc(userId)
         .collection(Fields.addresses);
-    await collection.get().then((snapshot) {
+
+    QuerySnapshot querySnapshot = await collection.get();
+
+    if (querySnapshot == null || querySnapshot.docs.length <= 0) {
+      log("error for id $userId");
+    }
+
+    log("length is ${querySnapshot.size}");
+
+    querySnapshot.docs.forEach((element) {
+      Address address = Address();
+      log("address is ${element.data()[Fields.addressName]}");
+      address.buildObject(element);
+      addressList.add(address);
+    });
+
+    /* await collection.get().then((snapshot) {
+      if (snapshot == null || snapshot.docs.length <= 0) {
+        log("error for id $userId");
+      }
       snapshot.docs.map((DocumentSnapshot document) {
         Address address = Address();
+        log("address is ${document.data()[Fields.addressName]}");
         address.buildObject(document);
         addressList.add(address);
       });
-    });
+    });*/
 
     return addressList;
   }
 
   Future<List<OrderItem>> getOrderItems(String orderId) async {
-    List<OrderItem> clientOrder;
+    List<OrderItem> clientOrder = List();
     var collection = databaseReference
         .collection(Fields.order)
         .doc(orderId)
         .collection(Fields.items);
-    await collection.get().then((snapshot) {
+
+    QuerySnapshot querySnapshot = await collection.get();
+
+    querySnapshot.docs.forEach((element) {
+      OrderItem orderItem = OrderItem();
+      orderItem.buildObject(element);
+      clientOrder.add(orderItem);
+    });
+
+    /*await collection.get().then((snapshot) {
       snapshot.docs.map((DocumentSnapshot document) {
         MenuItem menuItem = MenuItem(
           id: document.data()[Fields.id],
@@ -213,7 +243,7 @@ class Database {
         OrderItem orderItem = OrderItem(menuItem: menuItem, count: count);
         clientOrder.add(orderItem);
       });
-    });
+    });*/
 
     return clientOrder;
   }
@@ -416,6 +446,7 @@ class Database {
         Fields.global: list1[i].global,
         Fields.availability: list1[i].availability,
         Fields.imageName: list1[i].imageName,
+        Fields.isDrink: list1[i].isDrink,
         Fields.createdAt: FieldValue.serverTimestamp(),
       });
     }
@@ -433,6 +464,7 @@ class Database {
         Fields.global: list2[i].global,
         Fields.availability: list2[i].availability,
         Fields.imageName: list2[i].imageName,
+        Fields.isDrink: list2[i].isDrink,
         Fields.createdAt: FieldValue.serverTimestamp(),
       });
     }
@@ -611,7 +643,7 @@ class Database {
         .collection(Fields.addresses)
         .doc();
     address.id = document.id;
-    await document.update({
+    await document.set({
       Fields.id: address.id,
       Fields.geoPoint: address.geoPoint,
       Fields.addressName: address.addressName,

@@ -199,6 +199,7 @@ Future<List<MenuItem>> getMenuItemsFromFile(File file) async {
       rank: int.tryParse(parts[4]),
       global: int.tryParse(parts[5]),
       imageName: parts[6],
+      isDrink: int.tryParse(parts[7]),
     );
   }).toList();
 

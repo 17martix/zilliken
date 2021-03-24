@@ -202,9 +202,6 @@ class _CartPageState extends State<CartPage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             showOrder(),
-            if (restaurantOrRoomOrder == 1 &&
-                (addressList != null && addressList.length > 0))
-              showSavedAddresses(),
             showChoice(),
             if (restaurantOrRoomOrder == 1 &&
                 (addressList == null || addressList.length < 3) &&
@@ -619,6 +616,9 @@ class _CartPageState extends State<CartPage> {
             ],
           ),
         ),
+        if (restaurantOrRoomOrder == 1 &&
+            (addressList != null && addressList.length > 0))
+          showSavedAddresses(),
         Form(
           key: formKey,
           child: Column(
