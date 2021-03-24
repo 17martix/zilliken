@@ -16,6 +16,7 @@ class ZTextField extends StatelessWidget {
   final FormFieldValidator<String> validator;
   final int maxLines;
   final suffix;
+  final prefix;
   final outsidePrefix;
   final onFieldSubmitted;
 
@@ -33,6 +34,7 @@ class ZTextField extends StatelessWidget {
     this.suffix,
     this.outsidePrefix,
       this.onFieldSubmitted,
+      this.prefix,
   });
 
   @override
@@ -67,6 +69,7 @@ class ZTextField extends StatelessWidget {
                 color: Color(Styling.primaryColor),
               ),
           suffix: suffix,
+          prefix: prefix,
         ),
       ),
     );

@@ -123,7 +123,7 @@ class _LoginPageState extends State<LoginPage> {
                             borderRadius:
                                 BorderRadius.circular(SizeConfig.diagonal * 7)),
                         child: Padding(
-                          padding: EdgeInsets.all(SizeConfig.diagonal * 7),
+                          padding: EdgeInsets.all(SizeConfig.diagonal * 1),
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: <Widget>[
@@ -136,56 +136,60 @@ class _LoginPageState extends State<LoginPage> {
                                   fit: BoxFit.cover,
                                 )),
                               ),
+                              Container(
+                              margin: EdgeInsets.only(
+                                  bottom: SizeConfig.diagonal * 5),
+                              child: Text(
+                                I18n.of(context).createaccount.toUpperCase(),
+                                style: TextStyle(
+                                  color: Color(Styling.accentColor),
+                                  fontSize: SizeConfig.diagonal * 3,
+                                  fontStyle: FontStyle.normal,
+                                ),
+                              ),
+                            ),
                               Form(
                                 key: _phoneKey,
-                                child: Row(
-
-                                  children: [
-                                    ZTextField(
-                                      hint: I18n.of(context).yourphonenumber,
-                                      keyboardType: TextInputType.number,
-                                      inputFormatters: [
-                                        FilteringTextInputFormatter.digitsOnly
-                                      ],
-                                      onFieldSubmitted: (String value) =>
-                                          sendCode(),
-                                      onSaved: (newValue) => _phoneNumber,
-                                      validator: (value) => value.isEmpty
-                                          ? I18n.of(context).requiredInput
-                                          : null,
-                                      outsidePrefix: CountryListPick(
-                                        appBar: AppBar(
-                                          backgroundColor:
-                                              Color(Styling.accentColor),
-                                          title: Text(
-                                            I18n.of(context).number,
-                                            style: TextStyle(
-                                                fontSize:
-                                                    SizeConfig.diagonal * 1.0),
-                                          ),
-                                        ),
-                                        theme: CountryTheme(
-                                          isShowFlag: false,
-                                          isShowTitle: false,
-                                          isShowCode: true,
-                                          isDownIcon: true,
-                                          showEnglishName: false,
-                                        ),
-                                        initialSelection: _selectedAreaCode,
-                                        onChanged: (CountryCode code) {
-                                          _selectedAreaCode = code.dialCode;
-                                        },
+                                child: ZTextField(
+                                  prefix: Text(_selectedAreaCode),
+                                  hint: I18n.of(context).yourphonenumber,
+                                  keyboardType: TextInputType.number,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly
+                                  ],
+                                  onFieldSubmitted: (String value) =>
+                                      sendCode(),
+                                  onSaved: (newValue) => _phoneNumber,
+                                  validator: (value) => value.isEmpty
+                                      ? I18n.of(context).requiredInput
+                                      : null,
+                                  /*outsidePrefix: CountryListPick(
+                                    appBar: AppBar(
+                                      backgroundColor:
+                                          Color(Styling.accentColor),
+                                      title: Text(
+                                        I18n.of(context).number,
+                                        style: TextStyle(
+                                            fontSize:
+                                                SizeConfig.diagonal * 1.0),
                                       ),
                                     ),
-                                  ],
+                                    theme: CountryTheme(
+                                      isShowFlag: false,
+                                      isShowTitle: false,
+                                      isShowCode: true,
+                                      isDownIcon: true,
+                                      showEnglishName: false,
+                                    ),
+                                    initialSelection: _selectedAreaCode,
+                                    onChanged: (CountryCode code) {
+                                      _selectedAreaCode = code.dialCode;
+                                    },
+                                  ),*/
                                 ),
                               ),
                               ZRaisedButton(
-                                onpressed: () {
-                                  setState(() {
-                                    _pageState = 1;
-                                  });
-                                },
+                                onpressed: sendCode,
                                 textIcon: Text(
                                   I18n.of(context).signin,
                                   style: TextStyle(
@@ -212,7 +216,7 @@ class _LoginPageState extends State<LoginPage> {
                           borderRadius:
                               BorderRadius.circular(SizeConfig.diagonal * 7)),
                       child: Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: EdgeInsets.all(SizeConfig.diagonal * 1),
                         child: Column(
                           mainAxisSize: MainAxisSize.max,
                           children: <Widget>[
@@ -281,13 +285,8 @@ class _LoginPageState extends State<LoginPage> {
                                     color:
                                         Color(Styling.primaryBackgroundColor)),
                               ),
-                              onpressed: () {
-                                setState(() {
-                                  _pageState = 2;
-                                });
-                              },
-                              /*onpressed: () =>
-                                    confirmSMSCode(_pinPutController.text),*/
+                              onpressed: () =>
+                                  confirmSMSCode(_pinPutController.text),
                             ),
                           ],
                         ),
@@ -306,7 +305,7 @@ class _LoginPageState extends State<LoginPage> {
                             borderRadius:
                                 BorderRadius.circular(SizeConfig.diagonal * 7)),
                         child: Padding(
-                          padding: EdgeInsets.all(SizeConfig.diagonal * 7),
+                          padding: EdgeInsets.all(SizeConfig.diagonal * 1),
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: <Widget>[
@@ -319,6 +318,18 @@ class _LoginPageState extends State<LoginPage> {
                                   fit: BoxFit.cover,
                                 )),
                               ),
+                              Container(
+                              margin: EdgeInsets.only(
+                                  bottom: SizeConfig.diagonal * 5),
+                              child: Text(
+                                I18n.of(context).createprofile.toUpperCase(),
+                                style: TextStyle(
+                                  color: Color(Styling.accentColor),
+                                  fontSize: SizeConfig.diagonal * 3,
+                                  fontStyle: FontStyle.normal,
+                                ),
+                              ),
+                            ),
                               Form(
                                 key: _nameKey,
                                 child: ZTextField(
@@ -328,11 +339,7 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                               ),
                               ZRaisedButton(
-                                onpressed: () {
-                                  setState(() {
-                                    _pageState = 0;
-                                  });
-                                },
+                                onpressed: createAccount,
                                 textIcon: Text(
                                   I18n.of(context).signUp,
                                   style: TextStyle(
