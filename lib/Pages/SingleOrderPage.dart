@@ -20,6 +20,7 @@ import 'package:timelines/timelines.dart';
 
 import 'DashboardPage.dart';
 import 'DisabledPage.dart';
+import 'PrintPage.dart';
 
 class SingleOrderPage extends StatefulWidget {
   final Authentication auth;
@@ -133,10 +134,42 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
             )
           : Scaffold(
               appBar: buildAppBar(
-                  context, widget.auth, true, false, null, null, backFunction),
+                  context,
+                  widget.auth,
+                  true,
+                  false,
+                  null,
+                  null,
+                  backFunction,
+                  (widget.userRole == Fields.admin ||
+                          widget.userRole == Fields.developer ||
+                          widget.userRole == Fields.chef)
+                      ? printing
+                      : null),
               body: body(),
             ),
     );
+  }
+
+  void printing() {
+    List<String> myList = [];
+    for (int i = 0; i < 4; ++i) {
+      myList.add('Item nr $i');
+    }
+
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => PrintPage(
+            orderType: 'demo',
+            orderNumber: '123456',
+            customerName: 'John',
+            deliveryTime: 'asap',
+            instruction: 'Are you going to be able to print this one?',
+            items: myList,
+            auth: widget.auth,
+          ),
+        ));
   }
 
   Widget body() {

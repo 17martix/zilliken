@@ -154,7 +154,7 @@ class _CartPageState extends State<CartPage> {
                   backgroundColor: Colors.transparent,
                   key: _scaffoldKey,
                   appBar: buildAppBar(context, widget.auth, true, false, null,
-                      null, backFunction),
+                      null, backFunction, null),
                   body: Stack(
                     children: [
                       body(),
