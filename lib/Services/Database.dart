@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -5,6 +6,8 @@ import 'package:firebase_storage/firebase_storage.dart';
 
 import 'package:flutter/services.dart';
 import 'package:zilliken/Helpers/Utils.dart';
+import 'package:zilliken/Models/Call.dart';
+import 'package:zilliken/Models/Address.dart';
 import 'package:zilliken/Models/Category.dart';
 import 'package:zilliken/Models/Fields.dart';
 import 'package:zilliken/Models/MenuItem.dart';
@@ -25,6 +28,36 @@ class Database {
     await databaseReference.collection(Fields.users).doc(userId).update({
       Fields.token: token,
     });
+  }
+
+  Future<GeoPoint> getSourceAddress() async {
+    GeoPoint address;
+    await databaseReference
+        .collection(Fields.configuration)
+        .doc(Fields.settings)
+        .get()
+        .then((snapshot) async {
+      if (snapshot.exists) {
+        address = snapshot.data()[Fields.address];
+      }
+    });
+
+    return address;
+  }
+
+  Future<GeoPoint> getDestinationAddress(String userId, String token) async {
+    GeoPoint geoPoint;
+    await databaseReference
+        .collection(Fields.users)
+        .doc(userId)
+        .get()
+        .then((snapshot) async {
+      if (snapshot.exists) {
+        geoPoint = snapshot.data()[Fields.address];
+      }
+    });
+
+    return geoPoint;
   }
 
   Future<String> getUserRole(String userId, String token) async {
@@ -84,13 +117,17 @@ class Database {
       Fields.grandTotal: order.grandTotal,
       Fields.status: order.status,
       Fields.orderDate: FieldValue.serverTimestamp(),
-      /*Fields.confirmedDate: order.confirmedDate,
+      Fields.confirmedDate: order.confirmedDate,
       Fields.preparationDate: order.preparationDate,
-      Fields.servedDate: order.servedDate,*/
+      Fields.servedDate: order.servedDate,
       Fields.userId: order.userId,
       Fields.userRole: order.userRole,
       Fields.taxPercentage: order.taxPercentage,
       Fields.total: order.total,
+      Fields.geoPoint: order.geoPoint,
+      Fields.addressName: order.addressName,
+      Fields.deliveringOrderId: null,
+      Fields.currentPoint: null,
     }).then((value) async {
       for (int i = 0; i < order.clientOrder.length; i++) {
         await databaseReference
@@ -118,19 +155,9 @@ class Database {
     var document = databaseReference.collection(Fields.order).doc(id);
     await document.get().then((snapshot) async {
       List<OrderItem> items = await getOrderItems(id);
-      order = Order(
-        id: document.id,
-        orderLocation: snapshot[Fields.orderLocation],
-        tableAdress: snapshot[Fields.tableAdress],
-        phoneNumber: snapshot[Fields.phoneNumber],
-        instructions: snapshot[Fields.instructions],
-        grandTotal: snapshot[Fields.grandTotal],
-        orderDate: snapshot[Fields.orderDate],
-        confirmedDate: snapshot[Fields.confirmedDate] ?? null,
-        preparationDate: snapshot[Fields.preparationDate] ?? null,
-        servedDate: snapshot[Fields.servedDate] ?? null,
-        clientOrder: items,
-      );
+      order = Order();
+      order.buildObject(snapshot);
+      order.clientOrder = items;
     });
 
     return order;
@@ -151,13 +178,59 @@ class Database {
     });
   }
 
+  Future<List<Address>> getAddressList(String userId) async {
+    List<Address> addressList = List();
+    var collection = databaseReference
+        .collection(Fields.users)
+        .doc(userId)
+        .collection(Fields.addresses);
+
+    QuerySnapshot querySnapshot = await collection.get();
+
+    if (querySnapshot == null || querySnapshot.docs.length <= 0) {
+      log("error for id $userId");
+    }
+
+    log("length is ${querySnapshot.size}");
+
+    querySnapshot.docs.forEach((element) {
+      Address address = Address();
+      log("address is ${element.data()[Fields.addressName]}");
+      address.buildObject(element);
+      addressList.add(address);
+    });
+
+    /* await collection.get().then((snapshot) {
+      if (snapshot == null || snapshot.docs.length <= 0) {
+        log("error for id $userId");
+      }
+      snapshot.docs.map((DocumentSnapshot document) {
+        Address address = Address();
+        log("address is ${document.data()[Fields.addressName]}");
+        address.buildObject(document);
+        addressList.add(address);
+      });
+    });*/
+
+    return addressList;
+  }
+
   Future<List<OrderItem>> getOrderItems(String orderId) async {
-    List<OrderItem> clientOrder;
+    List<OrderItem> clientOrder = List();
     var collection = databaseReference
         .collection(Fields.order)
         .doc(orderId)
         .collection(Fields.items);
-    await collection.get().then((snapshot) {
+
+    QuerySnapshot querySnapshot = await collection.get();
+
+    querySnapshot.docs.forEach((element) {
+      OrderItem orderItem = OrderItem();
+      orderItem.buildObject(element);
+      clientOrder.add(orderItem);
+    });
+
+    /*await collection.get().then((snapshot) {
       snapshot.docs.map((DocumentSnapshot document) {
         MenuItem menuItem = MenuItem(
           id: document.data()[Fields.id],
@@ -171,7 +244,7 @@ class Database {
         OrderItem orderItem = OrderItem(menuItem: menuItem, count: count);
         clientOrder.add(orderItem);
       });
-    });
+    });*/
 
     return clientOrder;
   }
@@ -374,6 +447,7 @@ class Database {
         Fields.global: list1[i].global,
         Fields.availability: list1[i].availability,
         Fields.imageName: list1[i].imageName,
+        Fields.isDrink: list1[i].isDrink,
         Fields.createdAt: FieldValue.serverTimestamp(),
       });
     }
@@ -391,6 +465,7 @@ class Database {
         Fields.global: list2[i].global,
         Fields.availability: list2[i].availability,
         Fields.imageName: list2[i].imageName,
+        Fields.isDrink: list2[i].isDrink,
         Fields.createdAt: FieldValue.serverTimestamp(),
       });
     }
@@ -539,12 +614,74 @@ class Database {
     return result;
   }
 
+
   Future<void> updateDetails(MenuItem menu) async {
     DocumentReference details =
         FirebaseFirestore.instance.collection(Fields.menu).doc(menu.id);
     await details.update({
       Fields.name:menu.name,
       Fields.price:menu.price,
+
+  Future<void> updateCall(Call call) async {
+    DocumentReference doc =
+        FirebaseFirestore.instance.collection(Fields.calls).doc();
+    call.id = doc.id;
+    await doc.set({
+      Fields.id:call.id,
+      Fields.hasCalled: call.hasCalled,
+      Fields.createdAt:FieldValue.serverTimestamp(),
+      Fields.total:call.order.total,
+      Fields.taxPercentage:call.order.taxPercentage,
+      Fields.userRole:call.order.userRole,
+      Fields.userId:call.order.userId,
+      Fields.status:call.order.status,
+      Fields.servedDate:call.order.servedDate,
+      Fields.preparationDate:call.order.preparationDate,
+      Fields.confirmedDate:call.order.confirmedDate,
+      Fields.orderDate:call.order.orderDate,
+      Fields.grandTotal:call.order.grandTotal,
+      Fields.instructions:call.order.instructions,
+      Fields.phoneNumber:call.order.phoneNumber,
+      Fields.tableAdress:call.order.tableAdress,
+      Fields.orderLocation:call.order.orderLocation,
+      Fields.orderId:call.order.id,
+    }
+  Future<void> deleteAddress(String userId, String addressId) async {
+    var document = databaseReference
+        .collection(Fields.users)
+        .doc(userId)
+        .collection(Fields.addresses)
+        .doc(addressId);
+    await document.delete();
+  }
+
+  Future<void> updateLocation(String orderId, GeoPoint geoPoint) async {
+    var document = databaseReference.collection(Fields.order).doc(orderId);
+    await document.update({
+      Fields.currentPoint: geoPoint,
+    });
+  }
+
+  Future<void> assignDelivery(String orderId, String userId) async {
+    var document = databaseReference.collection(Fields.order).doc(orderId);
+    await document.update({
+      Fields.deliveringOrderId: userId,
+    });
+  }
+
+  Future<void> addAddress(String userId, Address address) async {
+    var document = databaseReference
+        .collection(Fields.users)
+        .doc(userId)
+        .collection(Fields.addresses)
+        .doc();
+    address.id = document.id;
+    await document.set({
+      Fields.id: address.id,
+      Fields.geoPoint: address.geoPoint,
+      Fields.addressName: address.addressName,
+      Fields.typedAddress: address.typedAddress,
+      Fields.phoneNumber: address.phoneNumber,
     });
   }
 }

@@ -134,6 +134,9 @@ class _DashboardPageState extends State<DashboardPage> {
                     //float(),
                   ],
                 ),
+                    googleSign, logout, null, null),
+               
+                body: body(),
                 /*bottomNavigationBar: BottomNavigationBar(
                   items: <BottomNavigationBarItem>[
                     BottomNavigationBarItem(
