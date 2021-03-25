@@ -61,6 +61,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
+    final node = FocusScope.of(context);
     switch (_pageState) {
       case 0:
         setState(() {
@@ -110,73 +111,80 @@ class _LoginPageState extends State<LoginPage> {
             child: SingleChildScrollView(
               child: Stack(
                 children: <Widget>[
-                  AnimatedContainer(
-                    curve: Curves.easeInBack,
-                    duration: Duration(milliseconds: 1000),
-                    transform: Matrix4.translationValues(_xOffset1, 0, 1),
-                    child: Center(
-                      child: Card(
-                        color: Color(Styling.primaryBackgroundColor)
-                            .withOpacity(0.9),
-                        shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(SizeConfig.diagonal * 7)),
-                        child: Padding(
-                          padding: EdgeInsets.all(SizeConfig.diagonal * 1),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              Container(
-                                width: SizeConfig.diagonal * 10,
-                                height: SizeConfig.diagonal * 10,
-                                decoration: BoxDecoration(
-                                    image: DecorationImage(
-                                  image: AssetImage('assets/logo.png'),
-                                  fit: BoxFit.cover,
-                                )),
-                              ),
-                              Container(
-                                margin: EdgeInsets.only(
-                                    bottom: SizeConfig.diagonal * 5),
-                                child: Text(
-                                  I18n.of(context).createaccount.toUpperCase(),
-                                  style: TextStyle(
-                                    color: Color(Styling.accentColor),
-                                    fontSize: SizeConfig.diagonal * 3,
-                                    fontStyle: FontStyle.normal,
+                  InkWell(
+                    onTap: () {
+                      FocusScope.of(context).requestFocus(new FocusNode());
+                    },
+                    child: AnimatedContainer(
+                      curve: Curves.easeInBack,
+                      duration: Duration(milliseconds: 1000),
+                      transform: Matrix4.translationValues(_xOffset1, 0, 1),
+                      child: Center(
+                        child: Card(
+                          color: Color(Styling.primaryBackgroundColor)
+                              .withOpacity(0.9),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                  SizeConfig.diagonal * 7)),
+                          child: Padding(
+                            padding: EdgeInsets.all(SizeConfig.diagonal * 1),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                Container(
+                                  width: SizeConfig.diagonal * 10,
+                                  height: SizeConfig.diagonal * 10,
+                                  decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                    image: AssetImage('assets/logo.png'),
+                                    fit: BoxFit.cover,
+                                  )),
+                                ),
+                                Container(
+                                  margin: EdgeInsets.only(
+                                      bottom: SizeConfig.diagonal * 6),
+                                  child: Text(
+                                    I18n.of(context)
+                                        .createaccount
+                                        .toUpperCase(),
+                                    style: TextStyle(
+                                      color: Color(Styling.accentColor),
+                                      fontSize: SizeConfig.diagonal * 2,
+                                      fontStyle: FontStyle.normal,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              Form(
-                                key: _phoneKey,
-                                child: ZTextField(
-                                  prefix: Text(_selectedAreaCode),
-                                  hint: I18n.of(context).yourphonenumber,
-                                  keyboardType: TextInputType.number,
-                                  inputFormatters: [
-                                    FilteringTextInputFormatter.digitsOnly
-                                  ],
-                                  onFieldSubmitted: (String value) =>
-                                      sendCode(),
-                                  onSaved: (newValue) =>
-                                      _phoneNumber = newValue,
-                                  validator: (value) => value.isEmpty
-                                      ? I18n.of(context).requiredInput
-                                      : null,
-                                ),
-                              ),
-                              ZRaisedButton(
-                                onpressed: sendCode,
-                                textIcon: Text(
-                                  I18n.of(context).signin,
-                                  style: TextStyle(
-                                    color:
-                                        Color(Styling.primaryBackgroundColor),
-                                    fontSize: SizeConfig.diagonal * 1.5,
+                                Form(
+                                  key: _phoneKey,
+                                  child: ZTextField(
+                                    outsidePrefix: Text(_selectedAreaCode),
+                                    hint: I18n.of(context).yourphonenumber,
+                                    keyboardType: TextInputType.number,
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter.digitsOnly
+                                    ],
+                                    onFieldSubmitted: (String value) =>
+                                        sendCode(),
+                                    onSaved: (newValue) =>
+                                        _phoneNumber = newValue,
+                                    validator: (value) => value.isEmpty
+                                        ? I18n.of(context).requiredInput
+                                        : null,
                                   ),
                                 ),
-                              ),
-                            ],
+                                ZRaisedButton(
+                                  onpressed: sendCode,
+                                  textIcon: Text(
+                                    I18n.of(context).signin,
+                                    style: TextStyle(
+                                      color:
+                                          Color(Styling.primaryBackgroundColor),
+                                      fontSize: SizeConfig.diagonal * 1.5,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -311,6 +319,7 @@ class _LoginPageState extends State<LoginPage> {
                                 key: _nameKey,
                                 child: ZTextField(
                                   hint: I18n.of(context).yourname,
+                                  onEditingComplete: () => node.nextFocus(),
                                   onSaved: (newValue) => _name = newValue,
                                   keyboardType: TextInputType.text,
                                 ),
@@ -410,13 +419,13 @@ class _LoginPageState extends State<LoginPage> {
           else
             currentUser = widget.user;
 
- String token = await widget.messaging.firebaseMessaging.getToken();
+          String token = await widget.messaging.firebaseMessaging.getToken();
           UserProfile userProfile = UserProfile(
             id: currentUser.uid,
             name: _name,
             role: Fields.client,
             phoneNumber: currentUser.phoneNumber,
-            token:token,
+            token: token,
           );
           await widget.db.createAccount(context, userProfile);
           EasyLoading.dismiss();
