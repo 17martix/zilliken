@@ -121,11 +121,17 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
         .snapshots()
         .listen((DocumentSnapshot documentSnapshot) {
       setState(() {
+        goingBack =
+            documentSnapshot.data()[Fields.status] < _status ? true : false;
+
         _status = documentSnapshot.data()[Fields.status];
 
         if (documentSnapshot.data()[Fields.orderLocation] == 1 &&
             _status != 4 &&
             widget.userId != order.deliveringOrderId) {
+          if (goingBack) {
+            backFunction();
+          }
           _currentPoint = documentSnapshot.data()[Fields.currentPoint];
           currentLocation = Position.fromMap({
             "latitude": _currentPoint.latitude,
@@ -370,12 +376,11 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
           if (order != null &&
               order.orderLocation == 1 &&
               _status != 4 &&
-              widget.userRole == Fields.client)
+              widget.userRole == Fields.client &&
+              goingBack == false)
             map(),
           if (widget.userRole == Fields.client) progressionTimeLine(),
-          if (widget.userRole == Fields.admin ||
-              widget.userRole == Fields.developer ||
-              widget.userRole == Fields.chef)
+          if (widget.userRole != Fields.client)
             statusUpdate(),
           orderItemStream(),
           informationStream(),
