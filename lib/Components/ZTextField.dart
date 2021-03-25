@@ -21,6 +21,7 @@ import '../Helpers/SizeConfig.dart';
   final focusNode;
   
   final onEditingComplete;
+  final autofocus;
 
   ZTextField({
     this.icon,
@@ -39,6 +40,7 @@ import '../Helpers/SizeConfig.dart';
     this.prefix,
     this.focusNode,
     this.onEditingComplete,
+    this.autofocus,
   });
 
   @override
@@ -47,9 +49,11 @@ import '../Helpers/SizeConfig.dart';
       child: TextFormField(
         onSaved: onSaved,
         maxLines: maxLines ?? 1,
+        minLines: 1,
         controller: controller,
         validator: validator,
-        autofocus: false,
+        autofocus: autofocus ?? false,
+        focusNode: focusNode,
         obscureText: obsecure,
         keyboardType: keyboardType,
         focusNode: focusNode,

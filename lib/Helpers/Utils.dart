@@ -199,6 +199,7 @@ Future<List<MenuItem>> getMenuItemsFromFile(File file) async {
       rank: int.tryParse(parts[4]),
       global: int.tryParse(parts[5]),
       imageName: parts[6],
+      isDrink: int.tryParse(parts[7]),
     );
   }).toList();
 
@@ -280,4 +281,15 @@ Future<bool> hasConnection() async {
     return false;
   }
   return false;
+}
+
+String getMapsKey() {
+  String key;
+  if (Platform.isAndroid) {
+    key = "AIzaSyCOCHr54YA02I6vq2vd5Wuf9a1qWSlFU70";
+  } else if (Platform.isIOS) {
+    key = "AIzaSyD3e3F8wOwsHFyPiBRK6pjzT6gxbDsp-oU";
+  }
+
+  return key;
 }

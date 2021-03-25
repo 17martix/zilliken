@@ -10,8 +10,12 @@ class Fields {
 
   static final String client = 'client';
   static final String chef = 'chef';
+  static final String server = 'server';
   static final String admin = 'admin';
   static final String developer = 'developer';
+
+  static final String chefCuisine = 'chefCuisine';
+  static final String chefBoissons = 'chefBoissons';
 
   static final String taxes = 'taxes';
   static final String percentage = 'percentage';
@@ -53,6 +57,23 @@ class Fields {
   static final String settings = 'settings';
   static final String enabled = 'enabled';
   static final String imageName = 'imageName';
+    static final String calls = 'calls';
+
+  /*static final String isDrink = 'isDrink';
+  static final String coldCount = 'coldCount';
+  static final String lukeWCount = 'lukeWCount';*/
+  static final String hasCalled = 'hasCalled';
 
   static final String token = 'token';
+  static final String lastSeenAt = 'lastSeenAt';
+
+  static final String orderId = 'orderId';
+  static final String addressName = 'addressName';
+  static final String geoPoint = 'geoPoint';
+  static final String addresses = 'addresses';
+  static final String address = 'address';
+  static final String currentPoint = 'currentPoint';
+  static final String typedAddress = 'typedAddress';
+  static final String deliveringOrderId = 'deliveringOrderId';
+  static final String isDrink = 'isDrink';
 }

@@ -155,7 +155,7 @@ class _OrdersPageState extends State<OrdersPage> {
                   Expanded(
                     flex: 1,
                     child: Text(
-                      '${widget.formatter.format(DateTime.fromMillisecondsSinceEpoch(order.orderDate))}',
+                      '${widget.formatter.format(order.orderDate.toDate())}',
                       textAlign: TextAlign.right,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(fontSize: SizeConfig.diagonal * 1.5),

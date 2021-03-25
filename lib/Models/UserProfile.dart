@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class UserProfile {
   String id;
   String role;
@@ -13,4 +15,5 @@ class UserProfile {
     this.name,
     this.token,
   });
+
 }

@@ -8,7 +8,10 @@ class OrderItem {
   MenuItem menuItem;
   int count;
 
-  OrderItem({this.count, this.menuItem});
+  OrderItem({
+    this.count,
+    this.menuItem,
+  });
 
   void buildObject(DocumentSnapshot document) {
     menuItem = MenuItem();

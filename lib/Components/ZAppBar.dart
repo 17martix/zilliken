@@ -5,7 +5,8 @@ import 'package:zilliken/Helpers/Styling.dart';
 import 'package:zilliken/Services/Authentication.dart';
 
 AppBar buildAppBar(context, Authentication auth, bool isBackAllowed,
-     logout, backFunction) {
+     logout, backFunction,print,) {
+
   return AppBar(
     backgroundColor: Colors.transparent,
     elevation: 0,
@@ -30,11 +31,17 @@ AppBar buildAppBar(context, Authentication auth, bool isBackAllowed,
           children: <TextSpan>[
             TextSpan(
               text: 'Z',
-              style: TextStyle(color: Color(Styling.primaryColor),fontSize: SizeConfig.diagonal*2,),
+              style: TextStyle(
+                color: Color(Styling.primaryColor),
+                fontSize: SizeConfig.diagonal * 2,
+              ),
             ),
             TextSpan(
               text: 'illiken',
-              style: TextStyle(color: Color(Styling.accentColor),fontSize: SizeConfig.diagonal*2,),
+              style: TextStyle(
+                color: Color(Styling.accentColor),
+                fontSize: SizeConfig.diagonal * 2,
+              ),
             ),
           ],
         ),
@@ -44,7 +51,9 @@ AppBar buildAppBar(context, Authentication auth, bool isBackAllowed,
       logout==null
           ? Text('')
           
-              : logoutButton(logout)
+              : logoutButton(logout),
+      
+      if (print != null) printButton(print),
     ],
   );
 }
@@ -57,5 +66,16 @@ Widget logoutButton(logout) {
       size: SizeConfig.diagonal * 2.5,
     ),
     onPressed: logout,
+  );
+}
+
+Widget printButton(print) {
+  return IconButton(
+    icon: Icon(
+      Icons.print,
+      color: Color(Styling.iconColor),
+      size: SizeConfig.diagonal * 2.5,
+    ),
+    onPressed: print,
   );
 }

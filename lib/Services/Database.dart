@@ -1,10 +1,13 @@
+import 'dart:developer';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:zilliken/Helpers/Utils.dart';
+import 'package:zilliken/Models/Call.dart';
+import 'package:zilliken/Models/Address.dart';
 import 'package:zilliken/Models/Category.dart';
 import 'package:zilliken/Models/Fields.dart';
 import 'package:zilliken/Models/Folders.dart';
@@ -29,8 +32,39 @@ class Database {
     });
   }
 
-  Future<String> getUserRole(String userId) async {
+  Future<GeoPoint> getSourceAddress() async {
+    GeoPoint address;
+    await databaseReference
+        .collection(Fields.configuration)
+        .doc(Fields.settings)
+        .get()
+        .then((snapshot) async {
+      if (snapshot.exists) {
+        address = snapshot.data()[Fields.address];
+      }
+    });
+
+    return address;
+  }
+
+  Future<GeoPoint> getDestinationAddress(String userId, String token) async {
+    GeoPoint geoPoint;
+    await databaseReference
+        .collection(Fields.users)
+        .doc(userId)
+        .get()
+        .then((snapshot) async {
+      if (snapshot.exists) {
+        geoPoint = snapshot.data()[Fields.address];
+      }
+    });
+
+    return geoPoint;
+  }
+
+    Future<String> getUserRole(String userId) async {
     String role = "";
+
     await databaseReference
         .collection(Fields.users)
         .doc(userId)
@@ -51,6 +85,7 @@ class Database {
       Fields.role: role,
       Fields.receiveNotifications: 1,
       Fields.token: token,
+      Fields.lastSeenAt: FieldValue.serverTimestamp(),
     });
 
     return role;
@@ -82,7 +117,7 @@ class Database {
       Fields.instructions: order.instructions,
       Fields.grandTotal: order.grandTotal,
       Fields.status: order.status,
-      Fields.orderDate: order.orderDate,
+      Fields.orderDate: FieldValue.serverTimestamp(),
       Fields.confirmedDate: order.confirmedDate,
       Fields.preparationDate: order.preparationDate,
       Fields.servedDate: order.servedDate,
@@ -90,6 +125,10 @@ class Database {
       Fields.userRole: order.userRole,
       Fields.taxPercentage: order.taxPercentage,
       Fields.total: order.total,
+      Fields.geoPoint: order.geoPoint,
+      Fields.addressName: order.addressName,
+      Fields.deliveringOrderId: null,
+      Fields.currentPoint: null,
     }).then((value) async {
       for (int i = 0; i < order.clientOrder.length; i++) {
         await databaseReference
@@ -117,16 +156,9 @@ class Database {
     var document = databaseReference.collection(Fields.order).doc(id);
     await document.get().then((snapshot) async {
       List<OrderItem> items = await getOrderItems(id);
-      order = Order(
-        id: document.id,
-        orderLocation: snapshot[Fields.orderLocation],
-        tableAdress: snapshot[Fields.tableAdress],
-        phoneNumber: snapshot[Fields.phoneNumber],
-        instructions: snapshot[Fields.instructions],
-        grandTotal: snapshot[Fields.grandTotal],
-        orderDate: snapshot[Fields.orderDate],
-        clientOrder: items,
-      );
+      order = Order();
+      order.buildObject(snapshot);
+      order.clientOrder = items;
     });
 
     return order;
@@ -175,15 +207,59 @@ Future<Result> createAccount(context, UserProfile userProfile) async {
     return result;
   }
 
+  Future<List<Address>> getAddressList(String userId) async {
+    List<Address> addressList = List();
+    var collection = databaseReference
+        .collection(Fields.users)
+        .doc(userId)
+        .collection(Fields.addresses);
 
+    QuerySnapshot querySnapshot = await collection.get();
+
+    if (querySnapshot == null || querySnapshot.docs.length <= 0) {
+      log("error for id $userId");
+    }
+
+    log("length is ${querySnapshot.size}");
+
+    querySnapshot.docs.forEach((element) {
+      Address address = Address();
+      log("address is ${element.data()[Fields.addressName]}");
+      address.buildObject(element);
+      addressList.add(address);
+    });
+
+    /* await collection.get().then((snapshot) {
+      if (snapshot == null || snapshot.docs.length <= 0) {
+        log("error for id $userId");
+      }
+      snapshot.docs.map((DocumentSnapshot document) {
+        Address address = Address();
+        log("address is ${document.data()[Fields.addressName]}");
+        address.buildObject(document);
+        addressList.add(address);
+      });
+    });*/
+
+    return addressList;
+  }
 
   Future<List<OrderItem>> getOrderItems(String orderId) async {
-    List<OrderItem> clientOrder;
+    List<OrderItem> clientOrder = List();
     var collection = databaseReference
         .collection(Fields.order)
         .doc(orderId)
         .collection(Fields.items);
-    await collection.get().then((snapshot) {
+
+    QuerySnapshot querySnapshot = await collection.get();
+
+    querySnapshot.docs.forEach((element) {
+      OrderItem orderItem = OrderItem();
+      orderItem.buildObject(element);
+      clientOrder.add(orderItem);
+    });
+
+    /*await collection.get().then((snapshot) {
       snapshot.docs.map((DocumentSnapshot document) {
         MenuItem menuItem = MenuItem(
           id: document.data()[Fields.id],
@@ -197,7 +273,7 @@ Future<Result> createAccount(context, UserProfile userProfile) async {
         OrderItem orderItem = OrderItem(menuItem: menuItem, count: count);
         clientOrder.add(orderItem);
       });
-    });
+    });*/
 
     return clientOrder;
   }
@@ -243,6 +319,7 @@ Future<Result> createAccount(context, UserProfile userProfile) async {
         name:snapshot[Fields.name],
          phoneNumber:snapshot[Fields.phoneNumber],
         
+        lastSeenAt: snapshot[Fields.lastSeenAt],
       );
     });
 
@@ -285,7 +362,7 @@ Future<Result> createAccount(context, UserProfile userProfile) async {
       Fields.category: menuItem.category,
       Fields.name: menuItem.name,
       Fields.price: menuItem.price,
-      Fields.createdAt: DateTime.now().millisecondsSinceEpoch.toInt(),
+      Fields.createdAt: FieldValue.serverTimestamp(),
       Fields.rank: rank,
       Fields.global: global,
     });
@@ -309,7 +386,7 @@ Future<Result> createAccount(context, UserProfile userProfile) async {
     var document = databaseReference.collection(Fields.category).doc();
     await document.set({
       Fields.name: category.name,
-      Fields.createdAt: DateTime.now().millisecondsSinceEpoch.toInt(),
+      Fields.createdAt: FieldValue.serverTimestamp(),
       Fields.rank: rank,
     });
   }
@@ -326,30 +403,112 @@ Future<Result> createAccount(context, UserProfile userProfile) async {
 
   Future<void> updateStatus(String id, int status, int value) async {
     var document = databaseReference.collection(Fields.order).doc(id);
-    int now = DateTime.now().millisecondsSinceEpoch.toInt();
     if (value == 1) {
-      await document
-          .update({Fields.status: Fields.pending, Fields.orderDate: now});
+      await document.update({
+        Fields.status: Fields.pending,
+        Fields.orderDate: FieldValue.serverTimestamp(),
+      });
     } else if (value == 2) {
       await document.update({
         Fields.status: Fields.confirmed,
-        Fields.confirmedDate: now,
+        Fields.confirmedDate: FieldValue.serverTimestamp(),
       });
     } else if (value == 3) {
-      await document.update(
-          {Fields.status: Fields.preparation, Fields.preparationDate: now});
+      await document.update({
+        Fields.status: Fields.preparation,
+        Fields.preparationDate: FieldValue.serverTimestamp(),
+      });
     } else if (value == 4) {
-      await document
-          .update({Fields.status: Fields.served, Fields.servedDate: now});
+      await document.update({
+        Fields.status: Fields.served,
+        Fields.servedDate: FieldValue.serverTimestamp(),
+      });
     }
   }
 
-  Future<void> loadData(File menu, File category) async {
+  Future<void> sendData(File menu, File category) async {
     List<MenuItem> list = await getMenuItemsFromFile(menu);
+    List<Category> catList = await getCategoryListFromFile(category);
+    WriteBatch catBatch = databaseReference.batch();
+
+    CollectionReference menuReference =
+        databaseReference.collection(Fields.menu);
+
+    await menuReference.get().then((snapshot) {
+      snapshot.docs.forEach((element) {
+        catBatch.delete(element.reference);
+      });
+    });
+
+    CollectionReference categoryReference =
+        databaseReference.collection(Fields.category);
+    await categoryReference.get().then((snapshot) {
+      snapshot.docs.forEach((element) {
+        catBatch.delete(element.reference);
+      });
+    });
+
+    for (int i = 0; i < catList.length; i++) {
+      DocumentReference catRef =
+          databaseReference.collection(Fields.category).doc();
+      catBatch.set(catRef, {
+        Fields.id: catRef.id,
+        Fields.name: catList[i].name,
+        Fields.rank: catList[i].rank,
+        Fields.imageName: catList[i].imageName,
+        Fields.createdAt: FieldValue.serverTimestamp(),
+      });
+    }
+    await catBatch.commit();
+
+    List<MenuItem> list1 = list.sublist(0, (list.length / 2).floor());
+    List<MenuItem> list2 = list.sublist((list.length / 2).floor());
+    WriteBatch batch1 = databaseReference.batch();
+    WriteBatch batch2 = databaseReference.batch();
+
+    for (int i = 0; i < list1.length; i++) {
+      DocumentReference documentReference =
+          databaseReference.collection(Fields.menu).doc();
+      batch1.set(documentReference, {
+        Fields.id: documentReference.id,
+        Fields.name: list1[i].name,
+        Fields.category: list1[i].category,
+        Fields.price: list1[i].price,
+        Fields.rank: list1[i].rank,
+        Fields.global: list1[i].global,
+        Fields.availability: list1[i].availability,
+        Fields.imageName: list1[i].imageName,
+        Fields.isDrink: list1[i].isDrink,
+        Fields.createdAt: FieldValue.serverTimestamp(),
+      });
+    }
+    await batch1.commit();
+
+    for (int i = 0; i < list2.length; i++) {
+      DocumentReference documentReference =
+          databaseReference.collection(Fields.menu).doc();
+      batch2.set(documentReference, {
+        Fields.id: documentReference.id,
+        Fields.name: list2[i].name,
+        Fields.category: list2[i].category,
+        Fields.price: list2[i].price,
+        Fields.rank: list2[i].rank,
+        Fields.global: list2[i].global,
+        Fields.availability: list2[i].availability,
+        Fields.imageName: list2[i].imageName,
+        Fields.isDrink: list2[i].isDrink,
+        Fields.createdAt: FieldValue.serverTimestamp(),
+      });
+    }
+    await batch2.commit();
+  }
+
+  Future<void> loadData(File menu, File category) async {
+    //List<MenuItem> list = await getMenuItemsFromFile(menu);
     List<Category> catList = await getCategoryListFromFile(category);
     WriteBatch batch = databaseReference.batch();
 
-    CollectionReference menuReference =
+    /* CollectionReference menuReference =
         databaseReference.collection(Fields.menu);
 
     await menuReference.get().then((snapshot) {
@@ -370,9 +529,9 @@ Future<Result> createAccount(context, UserProfile userProfile) async {
         Fields.global: list[i].global,
         Fields.availability: list[i].availability,
         Fields.imageName: list[i].imageName,
-        Fields.createdAt: DateTime.now().millisecondsSinceEpoch,
+        Fields.createdAt: FieldValue.serverTimestamp(),
       });
-    }
+    }*/
 
     CollectionReference categoryReference =
         databaseReference.collection(Fields.category);
@@ -390,7 +549,7 @@ Future<Result> createAccount(context, UserProfile userProfile) async {
         Fields.name: catList[i].name,
         Fields.rank: catList[i].rank,
         Fields.imageName: catList[i].imageName,
-        Fields.createdAt: DateTime.now().millisecondsSinceEpoch,
+        Fields.createdAt: FieldValue.serverTimestamp(),
       });
     }
 
@@ -456,12 +615,12 @@ Future<Result> createAccount(context, UserProfile userProfile) async {
     Result result =
         Result(isSuccess: false, message: I18n.of(context).operationFailed);
 
-   /* if (name == null || name == '' || name.isEmpty) {
+    /* if (name == null || name == '' || name.isEmpty) {
       name = "${DateTime.now().millisecondsSinceEpoch.toString()}.jpg";
     }*/
 
     try {
-       for (int i = 0; i < images.length; i++) {
+      for (int i = 0; i < images.length; i++) {
         double imageDesiredWidth = 500;
         double getAspectRatio(double originalSize, double desiredSize) =>
             desiredSize / originalSize;
@@ -484,5 +643,79 @@ Future<Result> createAccount(context, UserProfile userProfile) async {
           Result(isSuccess: false, message: I18n.of(context).operationFailed);
     }
     return result;
+  }
+
+  Future<void> updateDetails(MenuItem menu) async {
+    DocumentReference details =
+        FirebaseFirestore.instance.collection(Fields.menu).doc(menu.id);
+    await details.update({
+      Fields.name: menu.name,
+      Fields.price: menu.price,
+    });
+  }
+
+  Future<void> updateCall(Call call) async {
+    DocumentReference doc =
+        FirebaseFirestore.instance.collection(Fields.calls).doc();
+    call.id = doc.id;
+    await doc.set({
+      Fields.id: call.id,
+      Fields.hasCalled: call.hasCalled,
+      Fields.createdAt: FieldValue.serverTimestamp(),
+      Fields.total: call.order.total,
+      Fields.taxPercentage: call.order.taxPercentage,
+      Fields.userRole: call.order.userRole,
+      Fields.userId: call.order.userId,
+      Fields.status: call.order.status,
+      Fields.servedDate: call.order.servedDate,
+      Fields.preparationDate: call.order.preparationDate,
+      Fields.confirmedDate: call.order.confirmedDate,
+      Fields.orderDate: call.order.orderDate,
+      Fields.grandTotal: call.order.grandTotal,
+      Fields.instructions: call.order.instructions,
+      Fields.phoneNumber: call.order.phoneNumber,
+      Fields.tableAdress: call.order.tableAdress,
+      Fields.orderLocation: call.order.orderLocation,
+      Fields.orderId: call.order.id,
+    });
+  }
+
+  Future<void> deleteAddress(String userId, String addressId) async {
+    var document = databaseReference
+        .collection(Fields.users)
+        .doc(userId)
+        .collection(Fields.addresses)
+        .doc(addressId);
+    await document.delete();
+  }
+
+  Future<void> updateLocation(String orderId, GeoPoint geoPoint) async {
+    var document = databaseReference.collection(Fields.order).doc(orderId);
+    await document.update({
+      Fields.currentPoint: geoPoint,
+    });
+  }
+
+  Future<void> assignDelivery(String orderId, String userId) async {
+    var document = databaseReference.collection(Fields.order).doc(orderId);
+    await document.update({
+      Fields.deliveringOrderId: userId,
+    });
+  }
+
+  Future<void> addAddress(String userId, Address address) async {
+    var document = databaseReference
+        .collection(Fields.users)
+        .doc(userId)
+        .collection(Fields.addresses)
+        .doc();
+    address.id = document.id;
+    await document.set({
+      Fields.id: address.id,
+      Fields.geoPoint: address.geoPoint,
+      Fields.addressName: address.addressName,
+      Fields.typedAddress: address.typedAddress,
+      Fields.phoneNumber: address.phoneNumber,
+    });
   }
 }

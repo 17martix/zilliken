@@ -12,15 +12,19 @@ class Order {
   String phoneNumber;
   String instructions;
   var grandTotal;
-  int orderDate;
-  int confirmedDate;
-  int preparationDate;
-  int servedDate;
+  Timestamp orderDate;
+  Timestamp confirmedDate;
+  Timestamp preparationDate;
+  Timestamp servedDate;
   int status;
   String userId;
   String userRole;
   int taxPercentage;
   int total;
+  GeoPoint geoPoint;
+  GeoPoint currentPoint;
+  String addressName;
+  String deliveringOrderId;
 
   Order({
     this.id,
@@ -39,6 +43,10 @@ class Order {
     this.userRole,
     this.taxPercentage,
     this.total,
+    this.addressName,
+    this.geoPoint,
+    this.currentPoint,
+    this.deliveringOrderId,
   });
 
   void buildObject(DocumentSnapshot document) {
@@ -57,6 +65,10 @@ class Order {
     userRole = document.data()[Fields.userRole];
     taxPercentage = document.data()[Fields.taxPercentage];
     total = document.data()[Fields.total];
+    addressName = document.data()[Fields.addressName];
+    geoPoint = document.data()[Fields.geoPoint];
+    currentPoint = document.data()[Fields.currentPoint];
+    deliveringOrderId = document.data()[Fields.deliveringOrderId];
   }
 
   void buildObjectAsync(AsyncSnapshot<DocumentSnapshot> document) {
@@ -74,5 +86,9 @@ class Order {
     userRole = document.data[Fields.userRole];
     taxPercentage = document.data[Fields.taxPercentage];
     total = document.data[Fields.total];
+    addressName = document.data[Fields.addressName];
+    geoPoint = document.data[Fields.geoPoint];
+    currentPoint = document.data[Fields.currentPoint];
+    deliveringOrderId = document.data[Fields.deliveringOrderId];
   }
 }
