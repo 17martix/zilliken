@@ -614,38 +614,41 @@ class Database {
     return result;
   }
 
-
   Future<void> updateDetails(MenuItem menu) async {
     DocumentReference details =
         FirebaseFirestore.instance.collection(Fields.menu).doc(menu.id);
     await details.update({
-      Fields.name:menu.name,
-      Fields.price:menu.price,
+      Fields.name: menu.name,
+      Fields.price: menu.price,
+    });
+  }
 
   Future<void> updateCall(Call call) async {
     DocumentReference doc =
         FirebaseFirestore.instance.collection(Fields.calls).doc();
     call.id = doc.id;
     await doc.set({
-      Fields.id:call.id,
+      Fields.id: call.id,
       Fields.hasCalled: call.hasCalled,
-      Fields.createdAt:FieldValue.serverTimestamp(),
-      Fields.total:call.order.total,
-      Fields.taxPercentage:call.order.taxPercentage,
-      Fields.userRole:call.order.userRole,
-      Fields.userId:call.order.userId,
-      Fields.status:call.order.status,
-      Fields.servedDate:call.order.servedDate,
-      Fields.preparationDate:call.order.preparationDate,
-      Fields.confirmedDate:call.order.confirmedDate,
-      Fields.orderDate:call.order.orderDate,
-      Fields.grandTotal:call.order.grandTotal,
-      Fields.instructions:call.order.instructions,
-      Fields.phoneNumber:call.order.phoneNumber,
-      Fields.tableAdress:call.order.tableAdress,
-      Fields.orderLocation:call.order.orderLocation,
-      Fields.orderId:call.order.id,
-    }
+      Fields.createdAt: FieldValue.serverTimestamp(),
+      Fields.total: call.order.total,
+      Fields.taxPercentage: call.order.taxPercentage,
+      Fields.userRole: call.order.userRole,
+      Fields.userId: call.order.userId,
+      Fields.status: call.order.status,
+      Fields.servedDate: call.order.servedDate,
+      Fields.preparationDate: call.order.preparationDate,
+      Fields.confirmedDate: call.order.confirmedDate,
+      Fields.orderDate: call.order.orderDate,
+      Fields.grandTotal: call.order.grandTotal,
+      Fields.instructions: call.order.instructions,
+      Fields.phoneNumber: call.order.phoneNumber,
+      Fields.tableAdress: call.order.tableAdress,
+      Fields.orderLocation: call.order.orderLocation,
+      Fields.orderId: call.order.id,
+    });
+  }
+
   Future<void> deleteAddress(String userId, String addressId) async {
     var document = databaseReference
         .collection(Fields.users)

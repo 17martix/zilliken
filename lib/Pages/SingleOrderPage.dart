@@ -101,7 +101,6 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
   Geolocator location = new Geolocator();
   CameraPosition initialCameraPosition;
 
-  final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {

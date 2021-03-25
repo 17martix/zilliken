@@ -36,11 +36,7 @@ class CartPage extends StatefulWidget {
   final Database db;
   final Authentication auth;
   final Messaging messaging;
-  final kInitialPosition = LatLng(-33.8567844, 151.213108);
-  int coldCounter;
-  int lukeWCounter;
 
-  int tColdCount;
   final kInitialPosition = LatLng(-3.3834389, 29.3616122);
 
   CartPage({
@@ -50,9 +46,6 @@ class CartPage extends StatefulWidget {
     @required this.userId,
     @required this.userRole,
     @required this.messaging,
-    this.coldCounter,
-    this.lukeWCounter,
-    this.tColdCount,
   });
 
   @override

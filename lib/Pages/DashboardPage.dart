@@ -6,6 +6,7 @@ import 'package:zilliken/Components/ZRaisedButton.dart';
 import 'package:zilliken/Helpers/SizeConfig.dart';
 import 'package:zilliken/Helpers/Styling.dart';
 import 'package:zilliken/Helpers/Utils.dart';
+import 'package:zilliken/Models/Call.dart';
 import 'package:zilliken/Models/Fields.dart';
 import 'package:zilliken/Models/OrderItem.dart';
 import 'package:zilliken/Pages/MenuPage.dart';
@@ -47,7 +48,7 @@ class _DashboardPageState extends State<DashboardPage> {
   int enabled = 1;
   double _xOffset1 = 0;
   double _xOffset2 = 0;
-  CollectionReference calls = FirebaseFirestore.instance
+  var calls = FirebaseFirestore.instance
       .collection(Fields.calls)
       .orderBy(Fields.createdAt, descending: true)
       .limit(3);
@@ -83,7 +84,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
     calls.snapshots().listen((snapshot) {
       Call call = Call();
-      call.buildObject(snapshot.data.docs[0]);
+      call.buildObject(snapshot.docs[0]);
       if (call.hasCalled) {
         callDialog();
       }
@@ -127,15 +128,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 key: _scaffoldKey,
                 backgroundColor: Colors.transparent,
                 appBar: buildAppBar(context, widget.auth, false, true,
-                    googleSign, logout, null),
-                body: Stack(
-                  children: [
-                    body(),
-                    //float(),
-                  ],
-                ),
                     googleSign, logout, null, null),
-               
                 body: body(),
                 /*bottomNavigationBar: BottomNavigationBar(
                   items: <BottomNavigationBarItem>[
@@ -220,7 +213,7 @@ class _DashboardPageState extends State<DashboardPage> {
   }*/
 
   void callDialog() {
-     showGeneralDialog(
+    showGeneralDialog(
         context: context,
         barrierDismissible: false,
         transitionDuration: Duration(milliseconds: 300),

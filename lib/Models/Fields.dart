@@ -59,7 +59,6 @@ class Fields {
   static final String coldCount = 'coldCount';
   static final String lukeWCount = 'lukeWCount';*/
   static final String hasCalled = 'hasCalled';
-  static final String calls = 'calls';
 
   static final String token = 'token';
   static final String lastSeenAt = 'lastSeenAt';
