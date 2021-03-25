@@ -115,23 +115,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 backgroundColor: Colors.transparent,
                 appBar: buildAppBar(context, widget.auth, false, true,
                     googleSign, logout, null, null),
-                floatingActionButton: FloatingActionButton.extended(
-                  onPressed: () {
-                    // Add your onPressed code here!
-                  },
-                  label: Text(
-                    'call a waiter',
-                    style: TextStyle(
-                        color: Color(Styling.primaryBackgroundColor),
-                        fontSize: SizeConfig.diagonal * 1.5),
-                  ),
-                  icon: Icon(
-                    Icons.food_bank_rounded,
-                    size: SizeConfig.diagonal * 2.5,
-                    color: Color(Styling.primaryBackgroundColor),
-                  ),
-                  backgroundColor: Color(Styling.accentColor),
-                ),
+               
                 body: body(),
                 /*bottomNavigationBar: BottomNavigationBar(
                   items: <BottomNavigationBarItem>[

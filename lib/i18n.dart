@@ -137,6 +137,16 @@ class I18n {
 
   String get selectLocation => _getText("selectLocation");
 
+  String get oopsSomethingwentwrong => _getText("oopsSomethingwentwrong");
+
+  String get noDevices => _getText("noDevices");
+
+  String get pleaseEnablebluetooth => _getText("pleaseEnablebluetooth");
+
+  String get callThewaiter => _getText("callThewaiter");
+
+  String get messageSent => _getText("messageSent");
+
   static Map<String, String> _localizedValues;
 
   static Map<String, String> _enValues = {
@@ -206,6 +216,11 @@ class I18n {
         "Profile Picture Changed. It may take some time to reflect in the app",
     "instr": "Instructions",
     "selectLocation": "Select A Location",
+    "oopsSomethingwentwrong": "Oops something went wrong!",
+    "noDevices": "No devices",
+    "pleaseEnablebluetooth": "Please enable bluetooth to print",
+    "callThewaiter": "Call the waiter",
+    "messageSent": "Message sent",
   };
 
   static Map<String, String> _frValues = {
@@ -275,6 +290,11 @@ class I18n {
         "Image de profil changée. La réflexion dans l'application peut prendre un certain temps",
     "instr": "Instructions",
     "selectLocation": "Sélectionnez un emplacement",
+    "oopsSomethingwentwrong": "oups quelque chose s'est mal passée!",
+    "noDevices": "Aucun dispositif ",
+    "pleaseEnablebluetooth": "Veuillez activer bluetooth pour imprimer",
+    "callThewaiter": "Appeler le serveur",
+    "messageSent": "Message envoyé",
   };
 
   static Map<String, Map<String, String>> _allValues = {

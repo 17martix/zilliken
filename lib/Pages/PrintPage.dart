@@ -6,26 +6,29 @@ import 'dart:io' show Platform;
 import 'package:zilliken/Components/ZAppBar.dart';
 import 'package:zilliken/Services/Authentication.dart';
 
+import '../i18n.dart';
+
 class PrintPage extends StatefulWidget {
-  final String orderType;
-  final String orderNumber;
-  final String customerName;
-  final String deliveryTime;
   final Authentication auth;
-  final String instruction;
-
+  final String orderType;
   final List<String> items;
+  final String tableAddress;
+  final String phoneNumber;
+  final String orderDate;
+  final String tax;
+  final String total;
 
-  PrintPage(
-      {Key key,
-      @required this.orderNumber,
-      @required this.orderType,
-      @required this.instruction,
-      @required this.items,
-      @required this.customerName,
-      @required this.auth,
-      @required this.deliveryTime})
-      : super(key: key);
+  PrintPage({
+    Key key,
+    @required this.orderType,
+    @required this.items,
+    @required this.tableAddress,
+    @required this.phoneNumber,
+    @required this.orderDate,
+    @required this.tax,
+    @required this.total,
+    @required this.auth,
+  }) : super(key: key);
 
   @override
   _PrintPageState createState() => _PrintPageState();
@@ -62,7 +65,7 @@ class _PrintPageState extends State<PrintPage> {
                 )
               : Center(
                   child: Text(
-                    _devicesMsg ?? 'Ops something went wrong!',
+                    _devicesMsg ?? I18n.of(context).oopsSomethingwentwrong,
                     style: TextStyle(fontSize: 24),
                   ),
                 ),
@@ -81,10 +84,14 @@ class _PrintPageState extends State<PrintPage> {
   Future<Ticket> _ticket(PaperSize paper) async {
     final ticket = Ticket(paper);
     ticket.text(widget.orderType);
-    ticket.text(widget.orderNumber);
-    ticket.text(widget.customerName);
-    ticket.text(widget.deliveryTime);
-    ticket.text(widget.instruction);
+    ticket.text(widget.tableAddress);
+    ticket.text(widget.phoneNumber);
+    ticket.text(widget.orderDate);
+    for (int i = 0; i < widget.items.length; i++) {
+      ticket.text(widget.items[i]);
+    }
+    ticket.text(widget.tax);
+    ticket.text(widget.total);
 
     ticket.cut();
     return ticket;
@@ -100,7 +107,7 @@ class _PrintPageState extends State<PrintPage> {
 
       if (_devices.isEmpty)
         setState(() {
-          _devicesMsg = 'No devices';
+          _devicesMsg = I18n.of(context).noDevices;
         });
     });
   }
@@ -119,7 +126,7 @@ class _PrintPageState extends State<PrintPage> {
         } else if (val == 10) {
           print('off');
           setState(() {
-            _devicesMsg = 'Please enable bluetooth to print';
+            _devicesMsg = I18n.of(context).pleaseEnablebluetooth;
           });
         }
         print('state is $val');

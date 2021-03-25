@@ -5,6 +5,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 
 import 'package:flutter/services.dart';
 import 'package:zilliken/Helpers/Utils.dart';
+import 'package:zilliken/Models/Call.dart';
 import 'package:zilliken/Models/Category.dart';
 import 'package:zilliken/Models/Fields.dart';
 import 'package:zilliken/Models/MenuItem.dart';
@@ -537,5 +538,31 @@ class Database {
           Result(isSuccess: false, message: I18n.of(context).operationFailed);
     }
     return result;
+  }
+
+  Future<void> updateCall(Call call) async {
+    DocumentReference doc =
+        FirebaseFirestore.instance.collection(Fields.calls).doc();
+    call.id = doc.id;
+    await doc.set({
+      Fields.id:call.id,
+      Fields.hasCalled: call.hasCalled,
+      Fields.createdAt:FieldValue.serverTimestamp(),
+      Fields.total:call.order.total,
+      Fields.taxPercentage:call.order.taxPercentage,
+      Fields.userRole:call.order.userRole,
+      Fields.userId:call.order.userId,
+      Fields.status:call.order.status,
+      Fields.servedDate:call.order.servedDate,
+      Fields.preparationDate:call.order.preparationDate,
+      Fields.confirmedDate:call.order.confirmedDate,
+      Fields.orderDate:call.order.orderDate,
+      Fields.grandTotal:call.order.grandTotal,
+      Fields.instructions:call.order.instructions,
+      Fields.phoneNumber:call.order.phoneNumber,
+      Fields.tableAdress:call.order.tableAdress,
+      Fields.orderLocation:call.order.orderLocation,
+      Fields.orderId:call.order.id,
+    });
   }
 }
