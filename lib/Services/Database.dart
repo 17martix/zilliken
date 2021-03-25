@@ -128,7 +128,7 @@ class Database {
       Fields.geoPoint: order.geoPoint,
       Fields.addressName: order.addressName,
       Fields.deliveringOrderId: null,
-      Fields.currentPoint: null,
+      Fields.currentPoint: order.currentPoint,
     }).then((value) async {
       for (int i = 0; i < order.clientOrder.length; i++) {
         await databaseReference

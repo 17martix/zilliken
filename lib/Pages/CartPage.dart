@@ -890,6 +890,7 @@ class _CartPageState extends State<CartPage> {
               total: priceItemsTotalNumber(context, clientOrder),
               addressName: addressName,
               geoPoint: geoPoint,
+              currentPoint: GeoPoint(-3.3834389, 29.3616122),
             );
             await widget.db.placeOrder(order);
 
