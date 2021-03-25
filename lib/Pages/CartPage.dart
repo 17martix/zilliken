@@ -20,6 +20,7 @@ import 'package:zilliken/Models/Fields.dart';
 import 'package:zilliken/Models/MenuItem.dart';
 import 'package:zilliken/Models/Order.dart';
 import 'package:zilliken/Models/OrderItem.dart';
+import 'package:zilliken/Pages/MenuPage.dart';
 import 'package:zilliken/Pages/SingleOrderPage.dart';
 import 'package:zilliken/Services/Authentication.dart';
 import 'package:zilliken/Services/Database.dart';
@@ -35,6 +36,7 @@ class CartPage extends StatefulWidget {
   final Database db;
   final Authentication auth;
   final Messaging messaging;
+
   final kInitialPosition = LatLng(-3.3834389, 29.3616122);
 
   CartPage({
@@ -165,8 +167,9 @@ class _CartPageState extends State<CartPage> {
               : Scaffold(
                   backgroundColor: Colors.transparent,
                   key: _scaffoldKey,
-                  appBar: buildAppBar(context, widget.auth, true, false, null,
-                      null, backFunction),
+                  appBar: buildAppBar(context, widget.auth, true,
+                      null, backFunction,null),
+
                   body: Stack(
                     children: [
                       body(),
@@ -663,14 +666,12 @@ class _CartPageState extends State<CartPage> {
                     ? I18n.of(context).ntable
                     : I18n.of(context).addr,
                 icon: restaurantOrRoomOrder == 0
-                    ? Icon(
-                        Icons.restaurant_menu,
-                        color: Color(Styling.primaryColor),
-                      )
-                    : Icon(
+                    ? 
+                        Icons.restaurant_menu
+                     
+                    : 
                         Icons.shopping_cart,
-                        color: Color(Styling.primaryColor),
-                      ),
+                     
               ),
               if (restaurantOrRoomOrder == 1)
                 ZTextField(
@@ -680,12 +681,10 @@ class _CartPageState extends State<CartPage> {
                       value.isEmpty ? I18n.of(context).requit : null,
                   keyboardType: TextInputType.phone,
                   label: I18n.of(context).fone,
-                  icon: Icon(
+                  icon: 
                     Icons.phone_android,
-                    color: Color(
-                      Styling.primaryColor,
-                    ),
-                  ),
+                 
+           
                 ),
               ZTextField(
                 onSaved: (newValue) => instruction = newValue,
@@ -694,8 +693,7 @@ class _CartPageState extends State<CartPage> {
                 maxLines: 5,
                 icon: Icon(
                   Icons.info,
-                  color: Color(Styling.primaryColor),
-                ),
+               
                 keyboardType: TextInputType.text,
               ),
             ],

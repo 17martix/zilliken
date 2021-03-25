@@ -14,9 +14,12 @@ import 'package:zilliken/Components/ZRaisedButton.dart';
 import 'package:zilliken/Helpers/SizeConfig.dart';
 import 'package:zilliken/Helpers/Styling.dart';
 import 'package:zilliken/Helpers/Utils.dart';
+import 'package:zilliken/Models/Call.dart';
 import 'package:zilliken/Models/Fields.dart';
+import 'package:zilliken/Models/MenuItem.dart';
 import 'package:zilliken/Models/Order.dart';
 import 'package:zilliken/Models/OrderItem.dart';
+import 'package:zilliken/Models/UserProfile.dart';
 import 'package:zilliken/Services/Authentication.dart';
 import 'package:zilliken/Services/Database.dart';
 import 'package:zilliken/Services/Messaging.dart';
@@ -27,6 +30,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'DashboardPage.dart';
 import 'DisabledPage.dart';
+import 'PrintPage.dart';
 
 class SingleOrderPage extends StatefulWidget {
   final Authentication auth;
@@ -61,6 +65,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
   int _orderStatus = 1;
   int enabled = 1;
 
+  GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   Order order;
   GeoPoint _currentPoint;
 
@@ -68,6 +73,13 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
   //double CAMERA_TILT = 80;
   //double CAMERA_BEARING = 0;
   LatLng SOURCE_LOCATION = LatLng(-3.3834389, 29.3616122);
+  //MenuItem menu = MenuItem();
+  //UserProfile userProfile = UserProfile();
+
+  /*double CAMERA_ZOOM = 16;
+  double CAMERA_TILT = 80;
+  double CAMERA_BEARING = 30;
+  LatLng SOURCE_LOCATION = LatLng(-3.3834389, 29.3616122);*/
 
   /*double CAMERA_ZOOM = 16;
   double CAMERA_TILT = 0.0;
@@ -99,7 +111,6 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
   Geolocator location = new Geolocator();
   CameraPosition initialCameraPosition;
 
-  final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   bool goingBack = false;
 
@@ -337,10 +348,84 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
           : Scaffold(
               key: _scaffoldKey,
               appBar: buildAppBar(
-                  context, widget.auth, true, false, null, null, backFunction),
+
+                  context, widget.auth, true, null, backFunction,
+              (widget.userRole != Fields.client)
+                      ? printing
+                      : null)),
+
+                 
+              floatingActionButton: FloatingActionButton.extended(
+                onPressed: () async {
+                  EasyLoading.show(status: I18n.of(context).loading);
+                  bool isOnline = await hasConnection();
+                  if (!isOnline) {
+                    EasyLoading.dismiss();
+
+                    _scaffoldKey.currentState.showSnackBar(SnackBar(
+                      content: Text(I18n.of(context).noInternet),
+                    ));
+                  } else {
+                    try {
+                      Call call = Call(
+                        hasCalled: true,
+                        order: widget.clientOrder,
+                      );
+                      await widget.db.updateCall(call);
+                      EasyLoading.dismiss();
+
+                        _scaffoldKey.currentState.showSnackBar(SnackBar(
+                      content: Text(I18n.of(context).messageSent),
+                    ));
+
+                    } on Exception catch (e) {
+                      EasyLoading.dismiss();
+
+                      _scaffoldKey.currentState.showSnackBar(SnackBar(
+                        content: Text(e.toString()),
+                      ));
+                    }
+                  }
+                },
+                label: Text(
+                  I18n.of(context).callThewaiter,
+                  style: TextStyle(
+                      color: Color(Styling.primaryBackgroundColor),
+                      fontSize: SizeConfig.diagonal * 1.5),
+                ),
+                icon: Icon(
+                  Icons.food_bank_rounded,
+                  size: SizeConfig.diagonal * 2.5,
+                  color: Color(Styling.primaryBackgroundColor),
+                ),
+                backgroundColor: Color(Styling.accentColor),
+              ),
+
               body: body(),
             ),
     );
+  }
+
+  void printing() {
+    List<String> myList = [];
+    for (int i = 0; i < widget.clientOrder.clientOrder.length;i++) {
+      myList.add("${widget.clientOrder.clientOrder[i].menuItem.name} : ${widget.clientOrder.clientOrder[i].menuItem.price} ${I18n.of(context).fbu}");
+    }
+
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => PrintPage(
+            auth:widget.auth,
+            orderType: widget.clientOrder.orderLocation==0?I18n.of(context).restaurantOrder:I18n.of(context).livrdomicile, //restaurant order or delivery
+           tableAddress:widget.clientOrder.orderLocation==0?"${I18n.of(context).tableNumber} : ${widget.clientOrder.tableAdress}":"${I18n.of(context).addr} : ${widget.clientOrder.tableAdress}",
+           phoneNumber: widget.clientOrder.orderLocation==1?"${I18n.of(context).number} : ${widget.clientOrder.phoneNumber}":null,
+          orderDate : "${I18n.of(context).orderDate} : ${widget.formatter.format(widget.clientOrder.orderDate.toDate())}",
+            items: myList,
+            tax: "${widget.clientOrder.taxPercentage}",
+            total:"${widget.clientOrder.grandTotal}",
+          ),
+        ));
   }
 
   Widget body() {
@@ -1259,7 +1344,21 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
               children: snapshot.data.docs.map((DocumentSnapshot document) {
                 OrderItem orderItem = OrderItem();
                 orderItem.buildObject(document);
-                return billElement(orderItem);
+                if (widget.userRole == Fields.chefBoissons) {
+                  if (orderItem.menuItem.isDrink == 1) {
+                    return billElement(orderItem);
+                  } else {
+                    return Container();
+                  }
+                } else if (widget.userRole == Fields.chefCuisine) {
+                  if (orderItem.menuItem.isDrink == 0) {
+                    return billElement(orderItem);
+                  } else {
+                    return Container();
+                  }
+                } else {
+                  return billElement(orderItem);
+                }
               }).toList(),
             ),
           ],
@@ -1272,39 +1371,38 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
     return Column(
       children: [
         Padding(
-          padding: EdgeInsets.only(
-            left: SizeConfig.diagonal * 1.5,
-            right: SizeConfig.diagonal * 1.5,
-            bottom: SizeConfig.diagonal * 1.5,
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                flex: 3,
-                child: Text(
-                  '${orderItem.menuItem.name} x ${orderItem.count}',
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: Color(Styling.textColor),
+            padding: EdgeInsets.only(
+              left: SizeConfig.diagonal * 1.5,
+              right: SizeConfig.diagonal * 1.5,
+              bottom: SizeConfig.diagonal * 1.5,
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: Text(
+                    '${orderItem.menuItem.name} x ${orderItem.count}',
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: Color(Styling.textColor),
+                    ),
                   ),
                 ),
-              ),
-              SizedBox(width: SizeConfig.diagonal * 1),
-              Expanded(
-                flex: 1,
-                child: Text(
-                  '${formatNumber(orderItem.menuItem.price)} Fbu',
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.end,
-                  style: TextStyle(
-                    color: Color(Styling.textColor),
+                SizedBox(width: SizeConfig.diagonal * 1),
+                Expanded(
+                  flex: 1,
+                  child: Text(
+                    '${formatNumber(orderItem.menuItem.price)} Fbu',
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.end,
+                    style: TextStyle(
+                      color: Color(Styling.textColor),
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),
-        ),
+              ],
+            )),
       ],
     );
   }
