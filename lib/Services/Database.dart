@@ -10,6 +10,7 @@ import 'package:zilliken/Models/Call.dart';
 import 'package:zilliken/Models/Address.dart';
 import 'package:zilliken/Models/Category.dart';
 import 'package:zilliken/Models/Fields.dart';
+import 'package:zilliken/Models/Folders.dart';
 import 'package:zilliken/Models/MenuItem.dart';
 import 'package:zilliken/Models/Order.dart';
 import 'package:zilliken/Models/OrderItem.dart';
@@ -18,6 +19,7 @@ import 'package:zilliken/Models/UserProfile.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 
 import '../i18n.dart';
+
 
 class Database {
   final databaseReference = FirebaseFirestore.instance;
@@ -60,8 +62,9 @@ class Database {
     return geoPoint;
   }
 
-  Future<String> getUserRole(String userId, String token) async {
-    String role = Fields.client;
+    Future<String> getUserRole(String userId) async {
+    String role = "";
+
     await databaseReference
         .collection(Fields.users)
         .doc(userId)
@@ -69,8 +72,6 @@ class Database {
         .then((snapshot) async {
       if (snapshot.exists) {
         role = snapshot.data()[Fields.role].toString();
-      } else {
-        await createProfile(userId, token);
       }
     });
 
@@ -176,6 +177,34 @@ class Database {
       }
       await document.delete();
     });
+  }
+
+
+Future<Result> createAccount(context, UserProfile userProfile) async {
+    Result result =
+        Result(isSuccess: false, message: I18n.of(context).operationFailed);
+    DocumentReference newUserReference =
+        databaseReference.collection(Fields.users).doc(userProfile.id);
+    
+
+    await newUserReference
+        .set({
+          Fields.id: userProfile.id,
+          Fields.name: userProfile.name,
+          Fields.role: userProfile.role,
+          Fields.phoneNumber: userProfile.phoneNumber,
+          
+        
+         
+          Fields.createdAt: FieldValue.serverTimestamp(),
+         
+        })
+        .whenComplete(() => result = Result(
+            isSuccess: true, message: I18n.of(context).operationSucceeded))
+        .catchError((error) => result = Result(
+            isSuccess: false, message: I18n.of(context).operationFailed));
+
+    return result;
   }
 
   Future<List<Address>> getAddressList(String userId) async {
@@ -287,7 +316,9 @@ class Database {
       userProfile = UserProfile(
         id: id,
         role: role,
-        receiveNotifications: receiveNotifications,
+        name:snapshot[Fields.name],
+         phoneNumber:snapshot[Fields.phoneNumber],
+        
         lastSeenAt: snapshot[Fields.lastSeenAt],
       );
     });

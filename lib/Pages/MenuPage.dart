@@ -228,7 +228,7 @@ class _MenuPageState extends State<MenuPage> {
                         validator: (value) =>
                             value.isEmpty ? I18n.of(context).requit : null,
                         keyboardType: TextInputType.text,
-                        icon: Icon(Icons.restaurant_menu),
+                        icon: Icons.restaurant_menu,
                         obsecure: false,
                         hint: I18n.of(context).itemName,
                       ),
@@ -237,7 +237,7 @@ class _MenuPageState extends State<MenuPage> {
                         validator: (value) =>
                             value.isEmpty ? I18n.of(context).requit : null,
                         keyboardType: TextInputType.number,
-                        icon: Icon(Icons.monetization_on),
+                        icon: Icons.monetization_on,
                         obsecure: false,
                         hint: I18n.of(context).itemPrice,
                       ),
@@ -292,7 +292,7 @@ class _MenuPageState extends State<MenuPage> {
                         validator: (value) =>
                             value.isEmpty ? I18n.of(context).requit : null,
                         keyboardType: TextInputType.text,
-                        icon: Icon(Icons.category),
+                        icon: Icons.category,
                         obsecure: false,
                         hint: I18n.of(context).categoryName,
                       ),

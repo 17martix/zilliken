@@ -4,16 +4,9 @@ import 'package:zilliken/Helpers/SizeConfig.dart';
 import 'package:zilliken/Helpers/Styling.dart';
 import 'package:zilliken/Services/Authentication.dart';
 
-AppBar buildAppBar(
-  context,
-  Authentication auth,
-  bool isBackAllowed,
-  bool loginOptionAvailable,
-  googleSign,
-  logout,
-  backFunction,
-  print,
-) {
+AppBar buildAppBar(context, Authentication auth, bool isBackAllowed,
+     logout, backFunction,print,) {
+
   return AppBar(
     backgroundColor: Colors.transparent,
     elevation: 0,
@@ -55,24 +48,13 @@ AppBar buildAppBar(
       ),
     ),
     actions: [
-      !loginOptionAvailable
+      logout==null
           ? Text('')
-          : auth.getCurrentUser().isAnonymous
-              ? googleSignIN(googleSign)
+          
               : logoutButton(logout),
+      
       if (print != null) printButton(print),
     ],
-  );
-}
-
-Widget googleSignIN(googleSign) {
-  return IconButton(
-    icon: Icon(
-      Icons.login,
-      color: Color(Styling.iconColor),
-      size: SizeConfig.diagonal * 2.5,
-    ),
-    onPressed: googleSign,
   );
 }
 

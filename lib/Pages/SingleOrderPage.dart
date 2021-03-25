@@ -302,18 +302,13 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
           : Scaffold(
               key: _scaffoldKey,
               appBar: buildAppBar(
-                  context,
-                  widget.auth,
-                  true,
-                  false,
-                  null,
-                  null,
-                  backFunction,
-                  (widget.userRole == Fields.admin ||
-                          widget.userRole == Fields.developer ||
-                          widget.userRole == Fields.chef)
+
+                  context, widget.auth, true, null, backFunction,
+              (widget.userRole != Fields.client)
                       ? printing
-                      : null),
+                      : null)),
+
+                 
               floatingActionButton: FloatingActionButton.extended(
                 onPressed: () async {
                   EasyLoading.show(status: I18n.of(context).loading);
@@ -359,6 +354,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                 ),
                 backgroundColor: Color(Styling.accentColor),
               ),
+
               body: body(),
             ),
     );

@@ -11,6 +11,8 @@ import 'package:zilliken/Services/Database.dart';
 import 'package:zilliken/Services/Messaging.dart';
 import 'package:zilliken/i18n.dart';
 
+import 'LoginPage.dart';
+
 class SplashPage extends StatefulWidget {
   final Authentication auth;
   final Database db;
@@ -77,54 +79,47 @@ class _SplashPageState extends State<SplashPage> {
     );
   }
 
-  void isLoggedIn() async {
+  Future<void> isLoggedIn() async {
     widget.messaging.firebaseMessaging.requestPermission();
-    User user = widget.auth.getCurrentUser();
+    User user =  widget.auth.getCurrentUser();
     if (user?.uid == null) {
-      String id = await widget.auth.anonymousSignIn();
-      String token = await widget.messaging.firebaseMessaging.getToken();
-      String role = await widget.db.getUserRole(id, token);
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => DashboardPage(
-            auth: widget.auth,
-            db: widget.db,
-            userId: id,
-            userRole: role,
-            messaging: widget.messaging,
-          ),
-        ),
-      );
-    } else if (user.isAnonymous) {
-      String role = Fields.client;
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => DashboardPage(
-            auth: widget.auth,
-            db: widget.db,
-            userId: user.uid,
-            userRole: role,
-            messaging: widget.messaging,
-          ),
-        ),
+            builder: (context) => LoginPage(
+                  auth: widget.auth,
+                  db: widget.db,
+                  messaging: widget.messaging,
+                )),
       );
     } else {
-      String token = await widget.messaging.firebaseMessaging.getToken();
-      String role = await widget.db.getUserRole(user.uid, token);
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => DashboardPage(
-            auth: widget.auth,
-            db: widget.db,
-            userId: user.uid,
-            userRole: role,
-            messaging: widget.messaging,
+      String role = await widget.db.getUserRole(user.uid);
+      if (role == null || role == '') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => LoginPage(
+              auth: widget.auth,
+              db: widget.db,
+              user: user,
+              messaging: widget.messaging,
+            ),
           ),
-        ),
-      );
+        );
+      } else {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DashboardPage(
+              auth: widget.auth,
+              db: widget.db,
+              userId: user.uid,
+              userRole: role,
+              messaging: widget.messaging,
+            ),
+          ),
+        );
+      }
     }
   }
 }
