@@ -7,6 +7,7 @@ import 'package:zilliken/Helpers/Styling.dart';
 import 'package:zilliken/Helpers/Utils.dart';
 import 'package:zilliken/Models/Fields.dart';
 import 'package:zilliken/Models/OrderItem.dart';
+import 'package:zilliken/Pages/LoginPage.dart';
 import 'package:zilliken/Pages/MenuPage.dart';
 import 'package:zilliken/Pages/OrdersPage.dart';
 import 'package:zilliken/Services/Authentication.dart';
@@ -113,8 +114,8 @@ class _DashboardPageState extends State<DashboardPage> {
               child: Scaffold(
                 key: _scaffoldKey,
                 backgroundColor: Colors.transparent,
-                appBar: buildAppBar(context, widget.auth, false, true,
-                    googleSign, logout, null),
+                appBar: buildAppBar(context, widget.auth, false,
+                     logout, null),
                 body: body(),
                 /*bottomNavigationBar: BottomNavigationBar(
                   items: <BottomNavigationBarItem>[
@@ -304,7 +305,7 @@ class _DashboardPageState extends State<DashboardPage> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-            builder: (context) => SplashPage(
+            builder: (context) => LoginPage(
                   auth: widget.auth,
                   db: widget.db,
                   messaging: widget.messaging,

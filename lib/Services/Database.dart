@@ -29,7 +29,7 @@ class Database {
     });
   }
 
-  Future<String> getUserRole(String userId, String token) async {
+  Future<String> getUserRole(String userId) async {
     String role = "";
     await databaseReference
         .collection(Fields.users)

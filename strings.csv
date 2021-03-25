@@ -2,14 +2,14 @@ keys,en,fr
 appTitle,Zilliken,Zilliken
 menu,Menu,Menu
 orders,Orders,Commandes
-error,Something went wrong,erreur survenue
+error,Something went wrong,Erreur Survenue
 loading,Loading,Chargement
 taxCharge,Taxes & charges,Taxes et charges
 sprkling,sparkiling water,Eau petillante
 orderKind,What kind of order is this?,Quel genre de Commande est-ce?
 bil,Bill,Facture
 ordPlace,Place order,Passer la Commande
-instruction,Do you have instructions?,Avez-vous des instructions?
+instruction,Do you have instructions?,Avez-vous des Instructions?
 restaurantOrder,Restaurant Order,Commande de Restaurant
 total,Total,Total
 tableNumber,Table N.,N. table
@@ -18,7 +18,7 @@ orderDate,Date,Date
 item,Item,Article
 items,Items,Articles
 fbu,FBU,FBU
-roomNumber,Room Number,Numero de Chambre
+roomNumber,Room Number,Numéro de Chambre
 pendingOrder,Order Pending,Commande En Attente
 confirmedOrder,Order Confirmed,Commande Confirmée
 orderPreparation,Order Being Prepared,Commande En Préparation
@@ -28,13 +28,13 @@ moreItems,More Items,Articles De Plus
 order,Order,Commande
 orderInformation,Informations,Informations
 billDetails,Bill,Facture
-ntable,Table Number,Numero de table
-livrdomicile,Home delivery,Livraison a domicile
+ntable,Table Number,Numéro de Table
+livrdomicile,Home delivery,Livraison à Domicile
 gtotal,Grand Total,Grand total
 addr,Address,Adresse
-fone,Phone number,Numero de telephone
+fone,Phone number,Numéro de Téléphone
 requit,Required,Requis
-cancelOrder,Cancel Order,Annuler Commande
+cancelOrder,Cancel Order,Annuler la Commande
 orderDeleted,Order Deleted,Commande Annulé
 pending,Pending,En Attente
 confirmed,Confirmed,Confirmé
@@ -62,7 +62,7 @@ operationSucceeded,Operation Succeeded,L'Opération a réussie
 pickImages,Pick An Image,Choisir Une Image
 cantSelect,You can't select any more,Vous ne pouvez plus sélectionner
 photoChanged,Profile Picture Changed. It may take some time to reflect in the app,Image de profil changée. La réflexion dans l'application peut prendre un certain temps
-yourphonenumber,Your Phone Number,Votre Numero de telephone
+yourphonenumber,Your Phone Number,Votre Numéro de Téléphone
 requiredInput,*Required,*Requis
 signin,Sign In,S'identifier
 smscode,SMS Code,Code SMS

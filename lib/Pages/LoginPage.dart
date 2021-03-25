@@ -12,7 +12,7 @@ import 'package:zilliken/Services/Database.dart';
 import 'package:zilliken/Services/Messaging.dart';
 import 'package:zilliken/Helpers/Styling.dart';
 import 'package:zilliken/Helpers/SizeConfig.dart';
-import 'package:country_list_pick/country_list_pick.dart';
+
 import 'package:pinput/pin_put/pin_put.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -163,29 +163,6 @@ class _LoginPageState extends State<LoginPage> {
                                   validator: (value) => value.isEmpty
                                       ? I18n.of(context).requiredInput
                                       : null,
-                                  /*outsidePrefix: CountryListPick(
-                                    appBar: AppBar(
-                                      backgroundColor:
-                                          Color(Styling.accentColor),
-                                      title: Text(
-                                        I18n.of(context).number,
-                                        style: TextStyle(
-                                            fontSize:
-                                                SizeConfig.diagonal * 1.0),
-                                      ),
-                                    ),
-                                    theme: CountryTheme(
-                                      isShowFlag: false,
-                                      isShowTitle: false,
-                                      isShowCode: true,
-                                      isDownIcon: true,
-                                      showEnglishName: false,
-                                    ),
-                                    initialSelection: _selectedAreaCode,
-                                    onChanged: (CountryCode code) {
-                                      _selectedAreaCode = code.dialCode;
-                                    },
-                                  ),*/
                                 ),
                               ),
                               ZRaisedButton(
@@ -255,7 +232,7 @@ class _LoginPageState extends State<LoginPage> {
                                 controller: _pinPutController,
                                 submittedFieldDecoration: BoxDecoration(
                                   border: Border.all(),
-                                  color: Color(Styling.accentColor),
+                                  color: Color(Styling.primaryColor),
                                   borderRadius: BorderRadius.circular(6),
                                 ),
                                 selectedFieldDecoration: BoxDecoration(
@@ -270,7 +247,7 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                                 pinAnimationType: PinAnimationType.scale,
                                 textStyle: TextStyle(
-                                    color: Color(Styling.accentColor),
+                                    color: Color(Styling.primaryColor),
                                     fontSize: SizeConfig.diagonal * 3),
                               ),
                             ),
@@ -384,7 +361,8 @@ class _LoginPageState extends State<LoginPage> {
   void isProfileCreated(UserCredential userCredential) async {
     final User user = userCredential.user;
     String token = await widget.messaging.firebaseMessaging.getToken();
-    String role = await widget.db.getUserRole(user.uid, token);
+    await widget.db.setToken(user.uid, token);
+    String role = await widget.db.getUserRole(user.uid);
     if (role == null || role == "") {
       EasyLoading.dismiss();
       setState(() {
@@ -432,11 +410,13 @@ class _LoginPageState extends State<LoginPage> {
           else
             currentUser = widget.user;
 
+ String token = await widget.messaging.firebaseMessaging.getToken();
           UserProfile userProfile = UserProfile(
             id: currentUser.uid,
             name: _name,
             role: Fields.client,
             phoneNumber: currentUser.phoneNumber,
+            token:token,
           );
           await widget.db.createAccount(context, userProfile);
           EasyLoading.dismiss();

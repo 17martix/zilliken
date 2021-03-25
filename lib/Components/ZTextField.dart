@@ -1,4 +1,3 @@
-import 'package:country_list_pick/country_list_pick.dart';
 import 'package:flutter/material.dart';
 import 'package:zilliken/Helpers/Styling.dart';
 
@@ -33,8 +32,8 @@ class ZTextField extends StatelessWidget {
     this.maxLines,
     this.suffix,
     this.outsidePrefix,
-      this.onFieldSubmitted,
-      this.prefix,
+    this.onFieldSubmitted,
+    this.prefix,
   });
 
   @override
@@ -48,7 +47,7 @@ class ZTextField extends StatelessWidget {
         autofocus: false,
         obscureText: obsecure,
         keyboardType: keyboardType,
-          onFieldSubmitted: onFieldSubmitted ?? null,
+        onFieldSubmitted: onFieldSubmitted ?? null,
         inputFormatters: inputFormatters,
         style: TextStyle(
           fontSize: SizeConfig.diagonal * 1.5,

@@ -101,7 +101,7 @@ class Zilliken extends StatelessWidget {
       supportedLocales: I18nDelegate.supportedLocals,
       title: 'Zilliken',
       theme: buildTheme(),
-      home: LoginPage(
+      home: SplashPage(
         auth: Authentication(),
         db: Database(),
         messaging: messaging,

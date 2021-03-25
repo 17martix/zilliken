@@ -133,7 +133,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
             )
           : Scaffold(
               appBar: buildAppBar(
-                  context, widget.auth, true, false, null, null, backFunction),
+                  context, widget.auth, true, null, backFunction),
               body: body(),
             ),
     );
