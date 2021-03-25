@@ -13,8 +13,10 @@ import 'package:zilliken/Helpers/SizeConfig.dart';
 import 'package:zilliken/Helpers/Styling.dart';
 import 'package:zilliken/Helpers/Utils.dart';
 import 'package:zilliken/Models/Fields.dart';
+import 'package:zilliken/Models/MenuItem.dart';
 import 'package:zilliken/Models/Order.dart';
 import 'package:zilliken/Models/OrderItem.dart';
+import 'package:zilliken/Models/UserProfile.dart';
 import 'package:zilliken/Services/Authentication.dart';
 import 'package:zilliken/Services/Database.dart';
 import 'package:zilliken/Services/Messaging.dart';
@@ -61,6 +63,9 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
 
   Order order;
   GeoPoint _currentPoint;
+
+  MenuItem menu = MenuItem();
+  UserProfile userProfile = UserProfile();
 
   /*double CAMERA_ZOOM = 16;
   double CAMERA_TILT = 80;
@@ -1171,7 +1176,21 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
               children: snapshot.data.docs.map((DocumentSnapshot document) {
                 OrderItem orderItem = OrderItem();
                 orderItem.buildObject(document);
-                return billElement(orderItem);
+                if (widget.userRole == Fields.chefBoissons) {
+                  if (orderItem.menuItem.isDrink == 1) {
+                    return billElement(orderItem);
+                  } else {
+                    return Container();
+                  }
+                } else if (widget.userRole == Fields.chefCuisine) {
+                  if (orderItem.menuItem.isDrink == 0) {
+                    return billElement(orderItem);
+                  } else {
+                    return Container();
+                  }
+                } else {
+                  return billElement(orderItem);
+                }
               }).toList(),
             ),
           ],
@@ -1184,39 +1203,38 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
     return Column(
       children: [
         Padding(
-          padding: EdgeInsets.only(
-            left: SizeConfig.diagonal * 1.5,
-            right: SizeConfig.diagonal * 1.5,
-            bottom: SizeConfig.diagonal * 1.5,
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                flex: 3,
-                child: Text(
-                  '${orderItem.menuItem.name} x ${orderItem.count}',
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: Color(Styling.textColor),
+            padding: EdgeInsets.only(
+              left: SizeConfig.diagonal * 1.5,
+              right: SizeConfig.diagonal * 1.5,
+              bottom: SizeConfig.diagonal * 1.5,
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: Text(
+                    '${orderItem.menuItem.name} x ${orderItem.count}',
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: Color(Styling.textColor),
+                    ),
                   ),
                 ),
-              ),
-              SizedBox(width: SizeConfig.diagonal * 1),
-              Expanded(
-                flex: 1,
-                child: Text(
-                  '${formatNumber(orderItem.menuItem.price)} Fbu',
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.end,
-                  style: TextStyle(
-                    color: Color(Styling.textColor),
+                SizedBox(width: SizeConfig.diagonal * 1),
+                Expanded(
+                  flex: 1,
+                  child: Text(
+                    '${formatNumber(orderItem.menuItem.price)} Fbu',
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.end,
+                    style: TextStyle(
+                      color: Color(Styling.textColor),
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),
-        ),
+              ],
+            )),
       ],
     );
   }
