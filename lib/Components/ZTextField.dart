@@ -14,6 +14,8 @@ class ZTextField extends StatelessWidget {
   final FormFieldValidator<String> validator;
   final int maxLines;
   final suffix;
+  final focusNode;
+  final autofocus;
 
   ZTextField({
     this.icon,
@@ -27,6 +29,8 @@ class ZTextField extends StatelessWidget {
     this.controller,
     this.maxLines,
     this.suffix,
+    this.focusNode,
+    this.autofocus,
   });
 
   @override
@@ -38,7 +42,8 @@ class ZTextField extends StatelessWidget {
         minLines: 1,
         controller: controller,
         validator: validator,
-        autofocus: false,
+        autofocus: autofocus ?? false,
+        focusNode: focusNode,
         obscureText: obsecure,
         keyboardType: keyboardType,
         inputFormatters: inputFormatters,

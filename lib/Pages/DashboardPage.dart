@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:zilliken/Components/ZAppBar.dart';
+import 'package:zilliken/Components/ZRaisedButton.dart';
 import 'package:zilliken/Helpers/SizeConfig.dart';
 import 'package:zilliken/Helpers/Styling.dart';
 import 'package:zilliken/Helpers/Utils.dart';
@@ -46,6 +47,10 @@ class _DashboardPageState extends State<DashboardPage> {
   int enabled = 1;
   double _xOffset1 = 0;
   double _xOffset2 = 0;
+  CollectionReference calls = FirebaseFirestore.instance
+      .collection(Fields.calls)
+      .orderBy(Fields.createdAt, descending: true)
+      .limit(3);
 
   @override
   void initState() {
@@ -75,6 +80,14 @@ class _DashboardPageState extends State<DashboardPage> {
       widget.userRole,
       widget.messaging,
     );
+
+    calls.snapshots().listen((snapshot) {
+      Call call = Call();
+      call.buildObject(snapshot.data.docs[0]);
+      if (call.hasCalled) {
+        callDialog();
+      }
+    });
   }
 
   @override
@@ -114,6 +127,13 @@ class _DashboardPageState extends State<DashboardPage> {
                 key: _scaffoldKey,
                 backgroundColor: Colors.transparent,
                 appBar: buildAppBar(context, widget.auth, false, true,
+                    googleSign, logout, null),
+                body: Stack(
+                  children: [
+                    body(),
+                    //float(),
+                  ],
+                ),
                     googleSign, logout, null, null),
                
                 body: body(),
@@ -164,6 +184,72 @@ class _DashboardPageState extends State<DashboardPage> {
               ),
             ),
           );
+  }
+
+  /*Widget callsStream() {
+    return StreamBuilder<QuerySnapshot>(
+      stream: calls.snapshots(),
+      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        if (snapshot.data == null)
+          return Center(
+            child: Text(""),
+          );
+
+        Call call = Call();
+        call.buildObject(snapshot.data.docs[0]);
+        if(call.hasCalled){
+          return WidgetsBinding.instance.addPostFrameCallback((_){
+    showDialog(
+      context: context, 
+      ...
+    );
+  });
+        }     
+        
+      },
+    );
+  }
+
+  Widget float() {
+    return Align(
+      alignment: Alignment.bottomRight,
+      child: FloatingActionButton(onPressed: () {
+        call();
+      }),
+    );
+  }*/
+
+  void callDialog() {
+     showGeneralDialog(
+        context: context,
+        barrierDismissible: false,
+        transitionDuration: Duration(milliseconds: 300),
+        transitionBuilder: (context, a1, a2, widget) {
+          return Transform.scale(
+            scale: a1.value,
+            child: Dialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5),
+              ),
+              child: Container(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Text(I18n.of(context).called),
+                    ZRaisedButton(
+                      onpressed: () {},
+                      textIcon: Text(
+                        I18n.of(context).accept,
+                      ),
+                    )
+                  ],
+                ),
+                height: SizeConfig.diagonal * 45,
+              ),
+            ),
+          );
+        },
+        pageBuilder: (context, anim1, anim2) {});
   }
 
   /*void _onItemTapped(int index) {

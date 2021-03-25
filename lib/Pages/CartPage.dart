@@ -20,6 +20,7 @@ import 'package:zilliken/Models/Fields.dart';
 import 'package:zilliken/Models/MenuItem.dart';
 import 'package:zilliken/Models/Order.dart';
 import 'package:zilliken/Models/OrderItem.dart';
+import 'package:zilliken/Pages/MenuPage.dart';
 import 'package:zilliken/Pages/SingleOrderPage.dart';
 import 'package:zilliken/Services/Authentication.dart';
 import 'package:zilliken/Services/Database.dart';
@@ -35,6 +36,11 @@ class CartPage extends StatefulWidget {
   final Database db;
   final Authentication auth;
   final Messaging messaging;
+  final kInitialPosition = LatLng(-33.8567844, 151.213108);
+  int coldCounter;
+  int lukeWCounter;
+
+  int tColdCount;
   final kInitialPosition = LatLng(-3.3834389, 29.3616122);
 
   CartPage({
@@ -44,6 +50,9 @@ class CartPage extends StatefulWidget {
     @required this.userId,
     @required this.userRole,
     @required this.messaging,
+    this.coldCounter,
+    this.lukeWCounter,
+    this.tColdCount,
   });
 
   @override
