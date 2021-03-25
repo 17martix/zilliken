@@ -10,8 +10,12 @@ class Fields {
 
   static final String client = 'client';
   static final String chef = 'chef';
+  static final String server = 'server';
   static final String admin = 'admin';
   static final String developer = 'developer';
+
+  static final String chefCuisine = 'chefCuisine';
+  static final String chefBoissons = 'chefBoissons';
 
   static final String taxes = 'taxes';
   static final String percentage = 'percentage';
