@@ -180,7 +180,6 @@ class _CartPageState extends State<CartPage> {
       child: Column(
         children: [
           orderItems(),
-          itemTemp(),
           order(),
           bill(),
         ],
@@ -244,47 +243,6 @@ class _CartPageState extends State<CartPage> {
           },
         ),*/
       ],
-    );
-  }
-
-  Widget itemTemp() {
-    return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5),
-      ),
-      elevation: 2,
-      child: Padding(
-        padding: EdgeInsets.all(SizeConfig.diagonal * 1),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Padding(
-              padding: EdgeInsets.symmetric(
-                  vertical: SizeConfig.diagonal * 1,
-                  horizontal: SizeConfig.diagonal * 1),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(I18n.of(context).cold),
-                  Text('${widget.tColdCount}'),
-                ],
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(
-                  vertical: SizeConfig.diagonal * 1,
-                  horizontal: SizeConfig.diagonal * 1),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(I18n.of(context).lukeWarm),
-                  Text('${widget.lukeWCounter}'),
-                ],
-              ),
-            )
-          ],
-        ),
-      ),
     );
   }
 

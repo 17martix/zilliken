@@ -703,122 +703,7 @@ class _MenuPageState extends State<MenuPage> {
             child: InkWell(
               onTap: (widget.userRole == Fields.admin ||
                       widget.userRole == Fields.developer)
-                  ? () {
-                      setState(() {
-                        showGeneralDialog(
-                          context: context,
-                          barrierColor: Colors.black.withOpacity(0.5),
-                          transitionBuilder: (context, a1, a2, widget) {
-                            return Transform.scale(
-                              scale: a1.value,
-                              child: Opacity(
-                                opacity: a1.value,
-                                child: Dialog(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(
-                                      SizeConfig.diagonal * 1.5,
-                                    ),
-                                  ),
-                                  child: Container(
-                                    padding: EdgeInsets.only(
-                                        left: SizeConfig.diagonal * 0.9,
-                                        right: SizeConfig.diagonal * 0.9),
-                                    height: SizeConfig.diagonal * 28.5,
-                                    //color: Colors.amber,
-                                    child: SingleChildScrollView(
-                                      child: Form(
-                                        key: _formKey1,
-                                        autovalidateMode:
-                                            AutovalidateMode.disabled,
-                                        child: Column(
-                                          children: [
-                                            SizedBox(
-                                              height: SizeConfig.diagonal * 2.5,
-                                            ),
-                                            ZTextField(
-                                              hint: I18n.of(context).itemName,
-                                              onSaved: (value) =>
-                                                  newMenuItem.name = value,
-                                              validator: (value) =>
-                                                  value.isEmpty
-                                                      ? I18n.of(context).requit
-                                                      : null,
-                                              icon: Icon(Icons.restaurant),
-                                            ),
-                                            ZTextField(
-                                              hint: I18n.of(context).itemPrice,
-                                              onSaved: (value) => newMenuItem
-                                                  .price = int.parse(value),
-                                              validator: (value) =>
-                                                  value.isEmpty
-                                                      ? I18n.of(context).requit
-                                                      : null,
-                                              icon: Icon(Icons.restaurant),
-                                            ),
-                                            ZRaisedButton(
-                                              onpressed: () async {
-                                                final form =
-                                                    _formKey1.currentState;
-
-                                                if (form.validate()) {
-                                                  form.save();
-                                                  newMenuItem.id = menu.id;
-                                                  EasyLoading.show(
-                                                      status: I18n.of(context)
-                                                          .loading);
-                                                  bool isOnline =
-                                                      await hasConnection();
-                                                  if (!isOnline) {
-                                                    EasyLoading.dismiss();
-                                                    _scaffoldKey.currentState
-                                                        .showSnackBar(
-                                                      SnackBar(
-                                                        content: Text(
-                                                            I18n.of(context)
-                                                                .noInternet),
-                                                      ),
-                                                    );
-                                                  } else {
-                                                    try {
-                                                      await this
-                                                          .widget
-                                                          .db
-                                                          .updateDetails(
-                                                              newMenuItem);
-                                                      EasyLoading.dismiss();
-                                                      Navigator.of(context)
-                                                          .pop();
-                                                    } on Exception catch (e) {
-                                                      EasyLoading.dismiss();
-                                                      _scaffoldKey.currentState
-                                                          .showSnackBar(
-                                                              SnackBar(
-                                                        content:
-                                                            Text(e.toString()),
-                                                      ));
-                                                    }
-                                                  }
-                                                }
-                                              },
-                                              textIcon:
-                                                  Text(I18n.of(context).save),
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                          barrierDismissible: true,
-                          barrierLabel: '',
-                          transitionDuration: Duration(milliseconds: 300),
-                          pageBuilder: (context, animation1, animation2) {},
-                        );
-                      });
-                    }
+                  ? () {}
                   : () {},
               child: Container(
                 padding: EdgeInsets.all(SizeConfig.diagonal * 1),
@@ -883,13 +768,10 @@ class _MenuPageState extends State<MenuPage> {
                                           });
                                           //order.remove(orderItem);
                                         } else {
-                                          if (orderItem.count < value) {
-                                            showDialog(orderItem);
-                                          } else {}
-
                                           setState(() {
                                             orderItem.count = value;
-                                          }); //orderItem.count = value;
+                                          });
+                                          //orderItem.count = value;
                                         }
                                       },
                                     ),
@@ -900,15 +782,13 @@ class _MenuPageState extends State<MenuPage> {
                                       mainAxisAlignment: MainAxisAlignment.end,
                                       children: [
                                         InkWell(
-                                          onTap: () async {
-                                            OrderItem orderItem = OrderItem(
+                                          onTap: () {
+                                            setState(() {
+                                              clientOrder.add(OrderItem(
                                                 menuItem: menu,
                                                 count: 1,
-                                                lukeWCount: 0,
-                                                coldCount: 0);
-                                            if (menu.isDrink == 1) {
-                                              showDialog(orderItem);
-                                            }
+                                              ));
+                                            });
                                           },
                                           child: Container(
                                             decoration: BoxDecoration(
@@ -960,106 +840,6 @@ class _MenuPageState extends State<MenuPage> {
           ),
         ],
       ),
-    );
-  }
-
-  Future showDialog(OrderItem orderItem) {
-    return showGeneralDialog(
-      barrierColor: Colors.black.withOpacity(0.5),
-      context: context,
-      transitionBuilder: (context, a1, a2, widget) {
-        return Transform.scale(
-          scale: a1.value,
-          child: Opacity(
-            opacity: a1.value,
-            child: Dialog(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(
-                  SizeConfig.diagonal * 1.5,
-                ),
-              ),
-              child: Container(
-                height: SizeConfig.diagonal * 15,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Text(I18n.of(context).howLiked),
-                    Container(
-                      child: Padding(
-                        padding: EdgeInsets.only(
-                            left: SizeConfig.diagonal * 3,
-                            right: SizeConfig.diagonal * 3),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            FlatButton(
-                              onPressed: () {
-                                orderItem.lukeWCount = 1 + orderItem.coldCount;
-
-                                setState(() {
-                                  clientOrder.add(orderItem);
-                                });
-                                Navigator.of(context).pop();
-                              },
-                              child: Center(
-                                child: Text(I18n.of(context).cold),
-                              ),
-                              color: Color(Styling.accentColor),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(
-                                      SizeConfig.diagonal * 1.5),
-                                  bottomLeft: Radius.circular(
-                                      SizeConfig.diagonal * 1.5),
-                                ),
-                              ),
-                              height: SizeConfig.diagonal * 6,
-                              minWidth: SizeConfig.diagonal * 14,
-                            ),
-                            Container(
-                              height: SizeConfig.diagonal * 6,
-                              color: Colors.black,
-                              width: SizeConfig.diagonal * 0.1,
-                            ),
-                            FlatButton(
-                              onPressed: () {
-                                orderItem.lukeWCount = 1 + orderItem.lukeWCount;
-
-                                setState(() {
-                                  clientOrder.add(orderItem);
-                                });
-                                Navigator.of(context).pop();
-                              },
-                              child: Center(
-                                child: Text(I18n.of(context).lukeWarm),
-                              ),
-                              color: Color(Styling.accentColor),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.only(
-                                  topRight: Radius.circular(
-                                      SizeConfig.diagonal * 1.5),
-                                  bottomRight: Radius.circular(
-                                      SizeConfig.diagonal * 1.5),
-                                ),
-                              ),
-                              height: SizeConfig.diagonal * 6,
-                              minWidth: SizeConfig.diagonal * 14,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-      barrierDismissible: true,
-      barrierLabel: '',
-      transitionDuration: Duration(milliseconds: 300),
-      pageBuilder: (context, anim1, anim2) {},
     );
   }
 

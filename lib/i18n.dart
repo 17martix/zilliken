@@ -145,6 +145,10 @@ class I18n {
 
   String get howLiked => _getText("howLiked");
 
+  String get called => _getText("called");
+
+  String get accept => _getText("accept");
+
   static Map<String, String> _localizedValues;
 
   static Map<String, String> _enValues = {
@@ -218,6 +222,8 @@ class I18n {
     "cold": "Cold",
     "lukeWarm": "LukeWarm",
     "howLiked": "How do you like it",
+    "called": "You were called",
+    "accept": "Accept",
   };
 
   static Map<String, String> _frValues = {
@@ -291,6 +297,8 @@ class I18n {
     "cold": "Froid",
     "lukeWarm": "Tiède",
     "howLiked": "Comment le voulez vous",
+    "called": "Vous avez été appellé",
+    "accept": "Accepter",
   };
 
   static Map<String, Map<String, String>> _allValues = {
