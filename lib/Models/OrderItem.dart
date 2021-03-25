@@ -7,18 +7,30 @@ import 'MenuItem.dart';
 class OrderItem {
   MenuItem menuItem;
   int count;
+  int coldCount;
+  int lukeWCount;
 
-  OrderItem({this.count, this.menuItem});
+  OrderItem({
+    this.count,
+    this.menuItem,
+    this.coldCount,
+    this.lukeWCount,
+  });
 
   void buildObject(DocumentSnapshot document) {
     menuItem = MenuItem();
     count = document.data()[Fields.count];
+    coldCount = document.data()[Fields.coldCount];
+    lukeWCount = document.data()[Fields.lukeWCount];
+
     menuItem.buildObject(document);
   }
 
   void buildObjectAsync(AsyncSnapshot<DocumentSnapshot> document) {
     menuItem = MenuItem();
     count = document.data[Fields.count];
+    coldCount = document.data[Fields.coldCount];
+    lukeWCount = document.data[Fields.lukeWCount];
     menuItem.buildObjectAsync(document);
   }
 }

@@ -18,6 +18,7 @@ import 'package:zilliken/Models/Fields.dart';
 import 'package:zilliken/Models/MenuItem.dart';
 import 'package:zilliken/Models/Order.dart';
 import 'package:zilliken/Models/OrderItem.dart';
+import 'package:zilliken/Pages/MenuPage.dart';
 import 'package:zilliken/Pages/SingleOrderPage.dart';
 import 'package:zilliken/Services/Authentication.dart';
 import 'package:zilliken/Services/Database.dart';
@@ -34,6 +35,10 @@ class CartPage extends StatefulWidget {
   final Authentication auth;
   final Messaging messaging;
   final kInitialPosition = LatLng(-33.8567844, 151.213108);
+  int coldCounter;
+  int lukeWCounter;
+
+  int tColdCount;
 
   CartPage({
     @required this.auth,
@@ -42,6 +47,9 @@ class CartPage extends StatefulWidget {
     @required this.userId,
     @required this.userRole,
     @required this.messaging,
+    this.coldCounter,
+    this.lukeWCounter,
+    this.tColdCount,
   });
 
   @override
@@ -172,6 +180,7 @@ class _CartPageState extends State<CartPage> {
       child: Column(
         children: [
           orderItems(),
+          itemTemp(),
           order(),
           bill(),
         ],
@@ -235,6 +244,47 @@ class _CartPageState extends State<CartPage> {
           },
         ),*/
       ],
+    );
+  }
+
+  Widget itemTemp() {
+    return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5),
+      ),
+      elevation: 2,
+      child: Padding(
+        padding: EdgeInsets.all(SizeConfig.diagonal * 1),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(
+                  vertical: SizeConfig.diagonal * 1,
+                  horizontal: SizeConfig.diagonal * 1),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(I18n.of(context).cold),
+                  Text('${widget.tColdCount}'),
+                ],
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(
+                  vertical: SizeConfig.diagonal * 1,
+                  horizontal: SizeConfig.diagonal * 1),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(I18n.of(context).lukeWarm),
+                  Text('${widget.lukeWCounter}'),
+                ],
+              ),
+            )
+          ],
+        ),
+      ),
     );
   }
 

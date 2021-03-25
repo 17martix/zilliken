@@ -53,6 +53,9 @@ class Fields {
   static final String settings = 'settings';
   static final String enabled = 'enabled';
   static final String imageName = 'imageName';
+  static final String isDrink = 'isDrink';
+  static final String coldCount = 'coldCount';
+  static final String lukeWCount = 'lukeWCount';
 
   static final String token = 'token';
   static final String lastSeenAt = 'lastSeenAt';

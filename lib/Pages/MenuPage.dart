@@ -32,7 +32,6 @@ class MenuPage extends StatefulWidget {
   final String userRole;
   final List<OrderItem> clientOrder;
   final Messaging messaging;
-  final MenuItem menuItem = MenuItem();
 
   MenuPage({
     @required this.auth,
@@ -63,15 +62,10 @@ class _MenuPageState extends State<MenuPage> {
 
   bool _isCategoryLoaded = false;
   final _formKey = GlobalKey<FormState>();
+  final _formKey1 = GlobalKey<FormState>();
   final _catformKey = GlobalKey<FormState>();
   List<String> _catList = new List();
-
-  bool showEDialog = false;
-
-  double _offset;
-
-  TextEditingController _nameController = TextEditingController();
-  TextEditingController _priceController = TextEditingController();
+  MenuItem newMenuItem = MenuItem();
 
   @override
   void initState() {
@@ -150,57 +144,9 @@ class _MenuPageState extends State<MenuPage> {
             if (clientOrder.length > 0) showBill(),
           ],
         ),
-
-        //editDialog(),
       ],
     );
   }
-
-  /*Widget editDialog() {
-    if (showEDialog == false) {
-      _offset = SizeConfig.diagonal * 82;
-    } else if (showEDialog == true) {
-      _offset = SizeConfig.diagonal * 46.3;
-    }
-    return AnimatedContainer(
-      padding: EdgeInsets.only(
-          left: SizeConfig.diagonal * 1, right: SizeConfig.diagonal * 1),
-      width: double.infinity,
-      transform: Matrix4.translationValues(0, _offset, 1),
-      curve: Curves.bounceInOut,
-      duration: Duration(milliseconds: 800),
-      color: Colors.amberAccent,
-      height: SizeConfig.diagonal * 30.2,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          SizedBox(
-            height: SizeConfig.diagonal * 3,
-          ),
-          ZTextField(
-            icon: Icon(Icons.restaurant),
-            hint: I18n.of(context).itemName,
-            controller: _nameController,
-            //focusNode: Focus.of(context).hasFocus,
-          ),
-          ZTextField(
-            icon: Icon(Icons.restaurant),
-            hint: I18n.of(context).itemPrice,
-            controller: _priceController,
-          ),
-          ZRaisedButton(
-            onpressed: () async {
-              setState(() {
-                showEDialog = false;
-              });
-              await widget.db.updateDetails(widget.menuItem);
-            },
-            textIcon: Text(I18n.of(context).save),
-          ),
-        ],
-      ),
-    );
-  }*/
 
   Widget addItemCategory() {
     return Column(
@@ -755,81 +701,122 @@ class _MenuPageState extends State<MenuPage> {
           ),
           Expanded(
             child: InkWell(
-              onTap: widget.userRole == Fields.admin
+              onTap: (widget.userRole == Fields.admin ||
+                      widget.userRole == Fields.developer)
                   ? () {
                       setState(() {
-                        showDialog(
+                        showGeneralDialog(
                           context: context,
-                          builder: (context) {
-                            return Dialog(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(
-                                  SizeConfig.diagonal * 1.5,
-                                ),
-                              ),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(
-                                    SizeConfig.diagonal * 1.5,
+                          barrierColor: Colors.black.withOpacity(0.5),
+                          transitionBuilder: (context, a1, a2, widget) {
+                            return Transform.scale(
+                              scale: a1.value,
+                              child: Opacity(
+                                opacity: a1.value,
+                                child: Dialog(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(
+                                      SizeConfig.diagonal * 1.5,
+                                    ),
                                   ),
-                                ),
-                                padding: EdgeInsets.only(
-                                    left: SizeConfig.diagonal * 0.9,
-                                    right: SizeConfig.diagonal * 0.9),
-                                height: SizeConfig.diagonal * 28.5,
-                                //color: Colors.amber,
-                                child: Column(
-                                  children: [
-                                    SizedBox(
-                                      height: SizeConfig.diagonal * 2.5,
+                                  child: Container(
+                                    padding: EdgeInsets.only(
+                                        left: SizeConfig.diagonal * 0.9,
+                                        right: SizeConfig.diagonal * 0.9),
+                                    height: SizeConfig.diagonal * 28.5,
+                                    //color: Colors.amber,
+                                    child: SingleChildScrollView(
+                                      child: Form(
+                                        key: _formKey1,
+                                        autovalidateMode:
+                                            AutovalidateMode.disabled,
+                                        child: Column(
+                                          children: [
+                                            SizedBox(
+                                              height: SizeConfig.diagonal * 2.5,
+                                            ),
+                                            ZTextField(
+                                              hint: I18n.of(context).itemName,
+                                              onSaved: (value) =>
+                                                  newMenuItem.name = value,
+                                              validator: (value) =>
+                                                  value.isEmpty
+                                                      ? I18n.of(context).requit
+                                                      : null,
+                                              icon: Icon(Icons.restaurant),
+                                            ),
+                                            ZTextField(
+                                              hint: I18n.of(context).itemPrice,
+                                              onSaved: (value) => newMenuItem
+                                                  .price = int.parse(value),
+                                              validator: (value) =>
+                                                  value.isEmpty
+                                                      ? I18n.of(context).requit
+                                                      : null,
+                                              icon: Icon(Icons.restaurant),
+                                            ),
+                                            ZRaisedButton(
+                                              onpressed: () async {
+                                                final form =
+                                                    _formKey1.currentState;
+
+                                                if (form.validate()) {
+                                                  form.save();
+                                                  newMenuItem.id = menu.id;
+                                                  EasyLoading.show(
+                                                      status: I18n.of(context)
+                                                          .loading);
+                                                  bool isOnline =
+                                                      await hasConnection();
+                                                  if (!isOnline) {
+                                                    EasyLoading.dismiss();
+                                                    _scaffoldKey.currentState
+                                                        .showSnackBar(
+                                                      SnackBar(
+                                                        content: Text(
+                                                            I18n.of(context)
+                                                                .noInternet),
+                                                      ),
+                                                    );
+                                                  } else {
+                                                    try {
+                                                      await this
+                                                          .widget
+                                                          .db
+                                                          .updateDetails(
+                                                              newMenuItem);
+                                                      EasyLoading.dismiss();
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                    } on Exception catch (e) {
+                                                      EasyLoading.dismiss();
+                                                      _scaffoldKey.currentState
+                                                          .showSnackBar(
+                                                              SnackBar(
+                                                        content:
+                                                            Text(e.toString()),
+                                                      ));
+                                                    }
+                                                  }
+                                                }
+                                              },
+                                              textIcon:
+                                                  Text(I18n.of(context).save),
+                                            )
+                                          ],
+                                        ),
+                                      ),
                                     ),
-                                    ZTextField(
-                                      hint: I18n.of(context).itemName,
-                                      validator: (String value) {
-                                        if (value.isEmpty) {
-                                          return I18n.of(context).itemName;
-                                        }
-                                      },
-                                      icon: Icon(Icons.restaurant),
-                                      controller: _nameController,
-                                    ),
-                                    ZTextField(
-                                      hint: I18n.of(context).itemPrice,
-                                      validator: (String value) {
-                                        if (value.isEmpty) {
-                                          return I18n.of(context).itemPrice;
-                                        }
-                                      },
-                                      icon: Icon(Icons.restaurant),
-                                      controller: _priceController,
-                                    ),
-                                    ZRaisedButton(
-                                      onpressed: () async {
-                                        setState(() {
-                                          menu.name = _nameController.text;
-                                          menu.price =
-                                              int.parse(_priceController.text);
-                                        });
-                                        Navigator.of(context).pop();
-                                        try {
-                                          await widget.db.updateDetails(menu);
-                                        } catch (e) {
-                                          SnackBar(
-                                            content: Text(e),
-                                          );
-                                        }
-                                        _nameController.clear();
-                                        _priceController.clear();
-                                      },
-                                      textIcon: Text(I18n.of(context).save),
-                                    )
-                                  ],
+                                  ),
                                 ),
                               ),
                             );
                           },
+                          barrierDismissible: true,
+                          barrierLabel: '',
+                          transitionDuration: Duration(milliseconds: 300),
+                          pageBuilder: (context, animation1, animation2) {},
                         );
-                        //showEDialog = true;
                       });
                     }
                   : () {},
@@ -896,10 +883,13 @@ class _MenuPageState extends State<MenuPage> {
                                           });
                                           //order.remove(orderItem);
                                         } else {
+                                          if (orderItem.count < value) {
+                                            showDialog(orderItem);
+                                          } else {}
+
                                           setState(() {
                                             orderItem.count = value;
-                                          });
-                                          //orderItem.count = value;
+                                          }); //orderItem.count = value;
                                         }
                                       },
                                     ),
@@ -910,13 +900,15 @@ class _MenuPageState extends State<MenuPage> {
                                       mainAxisAlignment: MainAxisAlignment.end,
                                       children: [
                                         InkWell(
-                                          onTap: () {
-                                            setState(() {
-                                              clientOrder.add(OrderItem(
+                                          onTap: () async {
+                                            OrderItem orderItem = OrderItem(
                                                 menuItem: menu,
                                                 count: 1,
-                                              ));
-                                            });
+                                                lukeWCount: 0,
+                                                coldCount: 0);
+                                            if (menu.isDrink == 1) {
+                                              showDialog(orderItem);
+                                            }
                                           },
                                           child: Container(
                                             decoration: BoxDecoration(
@@ -968,6 +960,106 @@ class _MenuPageState extends State<MenuPage> {
           ),
         ],
       ),
+    );
+  }
+
+  Future showDialog(OrderItem orderItem) {
+    return showGeneralDialog(
+      barrierColor: Colors.black.withOpacity(0.5),
+      context: context,
+      transitionBuilder: (context, a1, a2, widget) {
+        return Transform.scale(
+          scale: a1.value,
+          child: Opacity(
+            opacity: a1.value,
+            child: Dialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(
+                  SizeConfig.diagonal * 1.5,
+                ),
+              ),
+              child: Container(
+                height: SizeConfig.diagonal * 15,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Text(I18n.of(context).howLiked),
+                    Container(
+                      child: Padding(
+                        padding: EdgeInsets.only(
+                            left: SizeConfig.diagonal * 3,
+                            right: SizeConfig.diagonal * 3),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            FlatButton(
+                              onPressed: () {
+                                orderItem.lukeWCount = 1 + orderItem.coldCount;
+
+                                setState(() {
+                                  clientOrder.add(orderItem);
+                                });
+                                Navigator.of(context).pop();
+                              },
+                              child: Center(
+                                child: Text(I18n.of(context).cold),
+                              ),
+                              color: Color(Styling.accentColor),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(
+                                      SizeConfig.diagonal * 1.5),
+                                  bottomLeft: Radius.circular(
+                                      SizeConfig.diagonal * 1.5),
+                                ),
+                              ),
+                              height: SizeConfig.diagonal * 6,
+                              minWidth: SizeConfig.diagonal * 14,
+                            ),
+                            Container(
+                              height: SizeConfig.diagonal * 6,
+                              color: Colors.black,
+                              width: SizeConfig.diagonal * 0.1,
+                            ),
+                            FlatButton(
+                              onPressed: () {
+                                orderItem.lukeWCount = 1 + orderItem.lukeWCount;
+
+                                setState(() {
+                                  clientOrder.add(orderItem);
+                                });
+                                Navigator.of(context).pop();
+                              },
+                              child: Center(
+                                child: Text(I18n.of(context).lukeWarm),
+                              ),
+                              color: Color(Styling.accentColor),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.only(
+                                  topRight: Radius.circular(
+                                      SizeConfig.diagonal * 1.5),
+                                  bottomRight: Radius.circular(
+                                      SizeConfig.diagonal * 1.5),
+                                ),
+                              ),
+                              height: SizeConfig.diagonal * 6,
+                              minWidth: SizeConfig.diagonal * 14,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+      barrierDismissible: true,
+      barrierLabel: '',
+      transitionDuration: Duration(milliseconds: 300),
+      pageBuilder: (context, anim1, anim2) {},
     );
   }
 
