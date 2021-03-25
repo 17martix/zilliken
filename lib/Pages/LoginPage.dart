@@ -49,7 +49,6 @@ class _LoginPageState extends State<LoginPage> {
   GlobalKey<FormState> _pinKey = GlobalKey<FormState>();
   GlobalKey<FormState> _phoneKey = GlobalKey<FormState>();
   GlobalKey<FormState> _nameKey = GlobalKey<FormState>();
-  GlobalKey<FormState> _accountKey = GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   String _verificationcode;
@@ -137,17 +136,17 @@ class _LoginPageState extends State<LoginPage> {
                                 )),
                               ),
                               Container(
-                              margin: EdgeInsets.only(
-                                  bottom: SizeConfig.diagonal * 5),
-                              child: Text(
-                                I18n.of(context).createaccount.toUpperCase(),
-                                style: TextStyle(
-                                  color: Color(Styling.accentColor),
-                                  fontSize: SizeConfig.diagonal * 3,
-                                  fontStyle: FontStyle.normal,
+                                margin: EdgeInsets.only(
+                                    bottom: SizeConfig.diagonal * 5),
+                                child: Text(
+                                  I18n.of(context).createaccount.toUpperCase(),
+                                  style: TextStyle(
+                                    color: Color(Styling.accentColor),
+                                    fontSize: SizeConfig.diagonal * 3,
+                                    fontStyle: FontStyle.normal,
+                                  ),
                                 ),
                               ),
-                            ),
                               Form(
                                 key: _phoneKey,
                                 child: ZTextField(
@@ -159,7 +158,8 @@ class _LoginPageState extends State<LoginPage> {
                                   ],
                                   onFieldSubmitted: (String value) =>
                                       sendCode(),
-                                  onSaved: (newValue) => _phoneNumber,
+                                  onSaved: (newValue) =>
+                                      _phoneNumber = newValue,
                                   validator: (value) => value.isEmpty
                                       ? I18n.of(context).requiredInput
                                       : null,
@@ -319,17 +319,17 @@ class _LoginPageState extends State<LoginPage> {
                                 )),
                               ),
                               Container(
-                              margin: EdgeInsets.only(
-                                  bottom: SizeConfig.diagonal * 5),
-                              child: Text(
-                                I18n.of(context).createprofile.toUpperCase(),
-                                style: TextStyle(
-                                  color: Color(Styling.accentColor),
-                                  fontSize: SizeConfig.diagonal * 3,
-                                  fontStyle: FontStyle.normal,
+                                margin: EdgeInsets.only(
+                                    bottom: SizeConfig.diagonal * 5),
+                                child: Text(
+                                  I18n.of(context).createprofile.toUpperCase(),
+                                  style: TextStyle(
+                                    color: Color(Styling.accentColor),
+                                    fontSize: SizeConfig.diagonal * 3,
+                                    fontStyle: FontStyle.normal,
+                                  ),
                                 ),
                               ),
-                            ),
                               Form(
                                 key: _nameKey,
                                 child: ZTextField(
@@ -388,7 +388,7 @@ class _LoginPageState extends State<LoginPage> {
     if (role == null || role == "") {
       EasyLoading.dismiss();
       setState(() {
-        _pageState = 3;
+        _pageState = 2;
         _firebaseUser = user;
       });
     } else {
@@ -463,7 +463,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   bool validate2() {
-    final form = _accountKey.currentState;
+    final form = _nameKey.currentState;
     if (form.validate()) {
       form.save();
       return true;
@@ -507,25 +507,24 @@ class _LoginPageState extends State<LoginPage> {
               if (!isAndroid) {
                 EasyLoading.dismiss();
                 setState(() {
-                  _pageState = 2;
+                  _pageState = 1;
                 });
-                bool isAndroid =
-                    Theme.of(context).platform == TargetPlatform.android;
-                if (isAndroid) {
-                  EasyLoading.dismiss();
-
-                  setState(() {
-                    _pageState = 2;
-                  });
-                }
               }
             },
+            timeout: Duration(seconds: 5),
             codeAutoRetrievalTimeout: (String verificationId) {
               setState(() {
                 _verificationcode = verificationId;
               });
+              bool isAndroid =
+                  Theme.of(context).platform == TargetPlatform.android;
+              if (isAndroid) {
+                EasyLoading.dismiss();
+                setState(() {
+                  _pageState = 1;
+                });
+              }
             },
-            timeout: Duration(seconds: 5),
           );
         } on Exception catch (e) {
           EasyLoading.dismiss();

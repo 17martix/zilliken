@@ -153,16 +153,7 @@ Future<Result> createAccount(context, UserProfile userProfile) async {
         Result(isSuccess: false, message: I18n.of(context).operationFailed);
     DocumentReference newUserReference =
         databaseReference.collection(Fields.users).doc(userProfile.id);
-    try {
-      ByteData byteData = await rootBundle.load('assets/anonymous.png');
-      List<int> imageData = byteData.buffer.asUint8List();
-      String name = "${userProfile.id}.jpg";
-      Reference ref = storage.ref("${Folders.accounts}/${name}");
-      TaskSnapshot uploadTask = await ref.putData(imageData);
-    } on FirebaseException catch (e) {
-      result =
-          Result(isSuccess: false, message: I18n.of(context).operationFailed);
-    }
+    
 
     await newUserReference
         .set({

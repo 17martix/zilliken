@@ -147,6 +147,10 @@ class I18n {
 
   String get signUp => _getText("signUp");
 
+  String get createprofile => _getText("createprofile");
+
+  String get createaccount => _getText("createaccount");
+
   static Map<String, String> _localizedValues;
 
   static Map<String, String> _enValues = {
@@ -221,6 +225,8 @@ class I18n {
     "confirm": "Confirm",
     "yourname": "Enter Your Name",
     "signUp": "Sign UP",
+    "createprofile": "Create Profile",
+    "createaccount": "Create Account",
   };
 
   static Map<String, String> _frValues = {
@@ -295,6 +301,8 @@ class I18n {
     "confirm": "Confirmer",
     "yourname": "Entrez Votre Nom",
     "signUp": "Inscrivez-Vous",
+    "createprofile": "créer un profil",
+    "createaccount": "créer un compte",
   };
 
   static Map<String, Map<String, String>> _allValues = {
