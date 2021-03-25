@@ -13,6 +13,7 @@ class MenuItem {
   int availability;
   Timestamp createdAt;
   String imageName;
+  int isDrink;
 
   MenuItem({
     this.category,
@@ -24,6 +25,7 @@ class MenuItem {
     this.availability,
     this.createdAt,
     this.imageName,
+    this.isDrink,
   });
 
   void buildObject(DocumentSnapshot document) {
@@ -36,6 +38,7 @@ class MenuItem {
     availability = document.data()[Fields.availability];
     createdAt = document.data()[Fields.createdAt];
     imageName = document.data()[Fields.imageName];
+    isDrink = document.data()[Fields.isDrink];
   }
 
   void buildObjectAsync(AsyncSnapshot<DocumentSnapshot> document) {
@@ -48,5 +51,6 @@ class MenuItem {
     availability = document.data[Fields.availability];
     createdAt = document.data[Fields.createdAt];
     imageName = document.data[Fields.imageName];
+    isDrink = document.data[Fields.isDrink];
   }
 }

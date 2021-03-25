@@ -68,7 +68,7 @@ class _MenuPageState extends State<MenuPage> {
   @override
   void initState() {
     super.initState();
-
+    log("mon id est ${widget.userId}");
     setState(() {
       commandesQuery(selectedCategory);
     });

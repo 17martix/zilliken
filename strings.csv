@@ -69,4 +69,6 @@ noDevices,No devices,Aucun dispositif
 pleaseEnablebluetooth,Please enable bluetooth to print,Veuillez activer bluetooth pour imprimer
 callThewaiter,Call the waiter,Appeler le serveur
 messageSent,Message sent,Message envoyé
-
+delete,Delete,Supprimer
+saveAddress,Save Address,Enregistrer L'adresse
+deliverOrder,Deliver This Order,Livrer cette commande
