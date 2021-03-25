@@ -12,6 +12,7 @@ import 'package:zilliken/Components/ZRaisedButton.dart';
 import 'package:zilliken/Helpers/SizeConfig.dart';
 import 'package:zilliken/Helpers/Styling.dart';
 import 'package:zilliken/Helpers/Utils.dart';
+import 'package:zilliken/Models/Call.dart';
 import 'package:zilliken/Models/Fields.dart';
 import 'package:zilliken/Models/Order.dart';
 import 'package:zilliken/Models/OrderItem.dart';
@@ -25,6 +26,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'DashboardPage.dart';
 import 'DisabledPage.dart';
+import 'PrintPage.dart';
 
 class SingleOrderPage extends StatefulWidget {
   final Authentication auth;
@@ -59,6 +61,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
   int _orderStatus = 1;
   int enabled = 1;
 
+  GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   Order order;
   GeoPoint _currentPoint;
 
@@ -295,10 +298,88 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
           : Scaffold(
               key: _scaffoldKey,
               appBar: buildAppBar(
-                  context, widget.auth, true, false, null, null, backFunction),
+                  context,
+                  widget.auth,
+                  true,
+                  false,
+                  null,
+                  null,
+                  backFunction,
+                  (widget.userRole == Fields.admin ||
+                          widget.userRole == Fields.developer ||
+                          widget.userRole == Fields.chef)
+                      ? printing
+                      : null),
+              floatingActionButton: FloatingActionButton.extended(
+                onPressed: () async {
+                  EasyLoading.show(status: I18n.of(context).loading);
+                  bool isOnline = await hasConnection();
+                  if (!isOnline) {
+                    EasyLoading.dismiss();
+
+                    _scaffoldKey.currentState.showSnackBar(SnackBar(
+                      content: Text(I18n.of(context).noInternet),
+                    ));
+                  } else {
+                    try {
+                      Call call = Call(
+                        hasCalled: true,
+                        order: widget.clientOrder,
+                      );
+                      await widget.db.updateCall(call);
+                      EasyLoading.dismiss();
+
+                        _scaffoldKey.currentState.showSnackBar(SnackBar(
+                      content: Text(I18n.of(context).messageSent),
+                    ));
+
+                    } on Exception catch (e) {
+                      EasyLoading.dismiss();
+
+                      _scaffoldKey.currentState.showSnackBar(SnackBar(
+                        content: Text(e.toString()),
+                      ));
+                    }
+                  }
+                },
+                label: Text(
+                  I18n.of(context).callThewaiter,
+                  style: TextStyle(
+                      color: Color(Styling.primaryBackgroundColor),
+                      fontSize: SizeConfig.diagonal * 1.5),
+                ),
+                icon: Icon(
+                  Icons.food_bank_rounded,
+                  size: SizeConfig.diagonal * 2.5,
+                  color: Color(Styling.primaryBackgroundColor),
+                ),
+                backgroundColor: Color(Styling.accentColor),
+              ),
               body: body(),
             ),
     );
+  }
+
+  void printing() {
+    List<String> myList = [];
+    for (int i = 0; i < widget.clientOrder.clientOrder.length;i++) {
+      myList.add("${widget.clientOrder.clientOrder[i].menuItem.name} : ${widget.clientOrder.clientOrder[i].menuItem.price} ${I18n.of(context).fbu}");
+    }
+
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => PrintPage(
+            auth:widget.auth,
+            orderType: widget.clientOrder.orderLocation==0?I18n.of(context).restaurantOrder:I18n.of(context).livrdomicile, //restaurant order or delivery
+           tableAddress:widget.clientOrder.orderLocation==0?"${I18n.of(context).tableNumber} : ${widget.clientOrder.tableAdress}":"${I18n.of(context).addr} : ${widget.clientOrder.tableAdress}",
+           phoneNumber: widget.clientOrder.orderLocation==1?"${I18n.of(context).number} : ${widget.clientOrder.phoneNumber}":null,
+          orderDate : "${I18n.of(context).orderDate} : ${widget.formatter.format(widget.clientOrder.orderDate.toDate())}",
+            items: myList,
+            tax: "${widget.clientOrder.taxPercentage}",
+            total:"${widget.clientOrder.grandTotal}",
+          ),
+        ));
   }
 
   Widget body() {

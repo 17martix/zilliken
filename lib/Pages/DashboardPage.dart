@@ -114,7 +114,8 @@ class _DashboardPageState extends State<DashboardPage> {
                 key: _scaffoldKey,
                 backgroundColor: Colors.transparent,
                 appBar: buildAppBar(context, widget.auth, false, true,
-                    googleSign, logout, null),
+                    googleSign, logout, null, null),
+               
                 body: body(),
                 /*bottomNavigationBar: BottomNavigationBar(
                   items: <BottomNavigationBarItem>[
@@ -177,11 +178,11 @@ class _DashboardPageState extends State<DashboardPage> {
         AnimatedContainer(
           child: MenuPage(
             auth: widget.auth,
-          db: widget.db,
-          userId: widget.userId,
-          userRole: widget.userRole,
-          clientOrder: widget.clientOrder,
-          messaging: widget.messaging,
+            db: widget.db,
+            userId: widget.userId,
+            userRole: widget.userRole,
+            clientOrder: widget.clientOrder,
+            messaging: widget.messaging,
           ),
           curve: Curves.easeInBack,
           duration: Duration(milliseconds: 800),
@@ -190,10 +191,10 @@ class _DashboardPageState extends State<DashboardPage> {
         AnimatedContainer(
           child: OrdersPage(
             auth: widget.auth,
-          db: widget.db,
-          userId: widget.userId,
-          userRole: widget.userRole,
-          messaging: widget.messaging,
+            db: widget.db,
+            userId: widget.userId,
+            userRole: widget.userRole,
+            messaging: widget.messaging,
           ),
           curve: Curves.easeInBack,
           duration: Duration(milliseconds: 800),
@@ -201,7 +202,7 @@ class _DashboardPageState extends State<DashboardPage> {
         )
       ],
     );
-   /* switch (_selectedIndex) {
+    /* switch (_selectedIndex) {
       case 0:
         return MenuPage(
           auth: widget.auth,

@@ -53,10 +53,14 @@ class Fields {
   static final String settings = 'settings';
   static final String enabled = 'enabled';
   static final String imageName = 'imageName';
+  static final String hasCalled = 'hasCalled';
+  static final String calls = 'calls';
+
 
   static final String token = 'token';
   static final String lastSeenAt = 'lastSeenAt';
 
+  static final String orderId = 'orderId';
   static final String addressName = 'addressName';
   static final String geoPoint = 'geoPoint';
   static final String addresses = 'addresses';
