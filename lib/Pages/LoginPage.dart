@@ -157,7 +157,7 @@ class _LoginPageState extends State<LoginPage> {
                                 Form(
                                   key: _phoneKey,
                                   child: ZTextField(
-                                    outsidePrefix: Text(_selectedAreaCode),
+                                    prefix: Text(_selectedAreaCode),
                                     hint: I18n.of(context).yourphonenumber,
                                     keyboardType: TextInputType.number,
                                     inputFormatters: [
@@ -240,7 +240,7 @@ class _LoginPageState extends State<LoginPage> {
                                 controller: _pinPutController,
                                 submittedFieldDecoration: BoxDecoration(
                                   border: Border.all(),
-                                  color: Color(Styling.primaryColor),
+                                  color: Color(Styling.iconColor),
                                   borderRadius: BorderRadius.circular(6),
                                 ),
                                 selectedFieldDecoration: BoxDecoration(
@@ -255,7 +255,7 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                                 pinAnimationType: PinAnimationType.scale,
                                 textStyle: TextStyle(
-                                    color: Color(Styling.primaryColor),
+                                    color: Color(Styling.primaryDarkColor),
                                     fontSize: SizeConfig.diagonal * 3),
                               ),
                             ),
