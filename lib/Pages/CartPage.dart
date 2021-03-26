@@ -857,8 +857,13 @@ class _CartPageState extends State<CartPage> {
     if (validate()) {
       if (restaurantOrRoomOrder == 1 &&
           (addressName == null || addressName == '')) {
-        selectLocation();
+       _scaffoldKey.currentState.showSnackBar(
+            SnackBar(
+              content: Text(I18n.of(context).enterLocation),
+            ),
+          );
       } else {
+        
         EasyLoading.show(status: I18n.of(context).loading);
 
         bool isOnline = await hasConnection();

@@ -369,8 +369,8 @@ class _LoginPageState extends State<LoginPage> {
 
   void isProfileCreated(UserCredential userCredential) async {
     final User user = userCredential.user;
-    String token = await widget.messaging.firebaseMessaging.getToken();
-    await widget.db.setToken(user.uid, token);
+    /*String token = await widget.messaging.firebaseMessaging.getToken();
+    await widget.db.setToken(user.uid, token);*/
     String role = await widget.db.getUserRole(user.uid);
     if (role == null || role == "") {
       EasyLoading.dismiss();
@@ -379,6 +379,8 @@ class _LoginPageState extends State<LoginPage> {
         _firebaseUser = user;
       });
     } else {
+      String token = await widget.messaging.firebaseMessaging.getToken();
+      await widget.db.setToken(user.uid, token);
       EasyLoading.dismiss();
       Navigator.pushReplacement(
         context,
