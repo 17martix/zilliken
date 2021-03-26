@@ -62,7 +62,7 @@ operationSucceeded,Operation Succeeded,L'Opération a réussie
 pickImages,Pick An Image,Choisir Une Image
 cantSelect,You can't select any more,Vous ne pouvez plus sélectionner
 photoChanged,Profile Picture Changed. It may take some time to reflect in the app,Image de profil changée. La réflexion dans l'application peut prendre un certain temps
-yourphonenumber,Your Phone Number,Votre Numéro de Téléphone
+yourphonenumber,Phone Number,Numéro de Téléphone
 requiredInput,*Required,*Requis
 signin,Sign In,S'identifier
 smscode,SMS Code,Code SMS
@@ -77,12 +77,12 @@ save,Save,Enregistrer
 cold,Cold,Froid
 lukeWarm,LukeWarm,Tiède
 howLiked,How do you like it,Comment le voulez vous
-called,You were called,Vous avez été appellé
-accept,Accept,Accepter
+called,requires your attention,nécessite votre attention
+accept,Go to,Aller à
 oopsSomethingwentwrong,Oops something went wrong!,oups quelque chose s'est mal passée!
 noDevices,No devices,Aucun dispositif 
 pleaseEnablebluetooth,Please enable bluetooth to print,Veuillez activer bluetooth pour imprimer
-callThewaiter,Call the waiter,Appeler le serveur
+callThewaiter,Call a waiter,Appeler un serveur
 messageSent,Message sent,Message envoyé
 delete,Delete,Supprimer
 saveAddress,Save Address,Enregistrer L'adresse

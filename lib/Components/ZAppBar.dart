@@ -4,9 +4,14 @@ import 'package:zilliken/Helpers/SizeConfig.dart';
 import 'package:zilliken/Helpers/Styling.dart';
 import 'package:zilliken/Services/Authentication.dart';
 
-AppBar buildAppBar(context, Authentication auth, bool isBackAllowed,
-     logout, backFunction,print,) {
-
+AppBar buildAppBar(
+  context,
+  Authentication auth,
+  bool isBackAllowed,
+  logout,
+  backFunction,
+  print,
+) {
   return AppBar(
     backgroundColor: Colors.transparent,
     elevation: 0,
@@ -48,11 +53,7 @@ AppBar buildAppBar(context, Authentication auth, bool isBackAllowed,
       ),
     ),
     actions: [
-      logout==null
-          ? Text('')
-          
-              : logoutButton(logout),
-      
+      logout == null ? Text('') : logoutButton(logout),
       if (print != null) printButton(print),
     ],
   );

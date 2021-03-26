@@ -7,6 +7,8 @@ class UserProfile {
   String token;
 
   String phoneNumber;
+  Timestamp lastSeenAt;
+  Timestamp createdAt;
 
   UserProfile({
     this.id,
@@ -14,6 +16,7 @@ class UserProfile {
     this.phoneNumber,
     this.name,
     this.token,
+    this.lastSeenAt,
+    this.createdAt,
   });
-
 }

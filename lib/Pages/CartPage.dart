@@ -20,7 +20,6 @@ import 'package:zilliken/Models/Fields.dart';
 import 'package:zilliken/Models/MenuItem.dart';
 import 'package:zilliken/Models/Order.dart';
 import 'package:zilliken/Models/OrderItem.dart';
-import 'package:zilliken/Pages/MenuPage.dart';
 import 'package:zilliken/Pages/SingleOrderPage.dart';
 import 'package:zilliken/Services/Authentication.dart';
 import 'package:zilliken/Services/Database.dart';
@@ -691,7 +690,7 @@ class _CartPageState extends State<CartPage> {
                 label: I18n.of(context).instruction,
                 controller: _instructionController,
                 maxLines: 5,
-                icon: Icon(
+                icon: 
                   Icons.info,
                
                 keyboardType: TextInputType.text,

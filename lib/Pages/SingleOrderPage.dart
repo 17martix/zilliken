@@ -7,6 +7,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:zilliken/Components/ZAppBar.dart';
 import 'package:zilliken/Components/ZCircularProgress.dart';
@@ -16,10 +17,8 @@ import 'package:zilliken/Helpers/Styling.dart';
 import 'package:zilliken/Helpers/Utils.dart';
 import 'package:zilliken/Models/Call.dart';
 import 'package:zilliken/Models/Fields.dart';
-import 'package:zilliken/Models/MenuItem.dart';
 import 'package:zilliken/Models/Order.dart';
 import 'package:zilliken/Models/OrderItem.dart';
-import 'package:zilliken/Models/UserProfile.dart';
 import 'package:zilliken/Services/Authentication.dart';
 import 'package:zilliken/Services/Database.dart';
 import 'package:zilliken/Services/Messaging.dart';
@@ -110,7 +109,6 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
   }); // wrapper around the location API
   Geolocator location = new Geolocator();
   CameraPosition initialCameraPosition;
-
 
   bool goingBack = false;
 
@@ -348,59 +346,61 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
           : Scaffold(
               key: _scaffoldKey,
               appBar: buildAppBar(
-
-                  context, widget.auth, true, null, backFunction,
-              (widget.userRole != Fields.client)
+                  context,
+                  widget.auth,
+                  true,
+                  null,
+                  backFunction,
+                  (widget.userRole != Fields.client && order != null)
                       ? printing
-                      : null)),
+                      : null),
+              floatingActionButton: (widget.userRole != Fields.client ||
+                      widget.clientOrder.orderLocation == 1)
+                  ? null
+                  : FloatingActionButton.extended(
+                      onPressed: () async {
+                        EasyLoading.show(status: I18n.of(context).loading);
+                        bool isOnline = await hasConnection();
+                        if (!isOnline) {
+                          EasyLoading.dismiss();
 
-                 
-              floatingActionButton: FloatingActionButton.extended(
-                onPressed: () async {
-                  EasyLoading.show(status: I18n.of(context).loading);
-                  bool isOnline = await hasConnection();
-                  if (!isOnline) {
-                    EasyLoading.dismiss();
+                          _scaffoldKey.currentState.showSnackBar(SnackBar(
+                            content: Text(I18n.of(context).noInternet),
+                          ));
+                        } else {
+                          try {
+                            Call call = Call(
+                              hasCalled: true,
+                              order: widget.clientOrder,
+                            );
+                            await widget.db.addCall(call);
+                            EasyLoading.dismiss();
 
-                    _scaffoldKey.currentState.showSnackBar(SnackBar(
-                      content: Text(I18n.of(context).noInternet),
-                    ));
-                  } else {
-                    try {
-                      Call call = Call(
-                        hasCalled: true,
-                        order: widget.clientOrder,
-                      );
-                      await widget.db.updateCall(call);
-                      EasyLoading.dismiss();
+                            _scaffoldKey.currentState.showSnackBar(SnackBar(
+                              content: Text(I18n.of(context).messageSent),
+                            ));
+                          } on Exception catch (e) {
+                            EasyLoading.dismiss();
 
-                        _scaffoldKey.currentState.showSnackBar(SnackBar(
-                      content: Text(I18n.of(context).messageSent),
-                    ));
-
-                    } on Exception catch (e) {
-                      EasyLoading.dismiss();
-
-                      _scaffoldKey.currentState.showSnackBar(SnackBar(
-                        content: Text(e.toString()),
-                      ));
-                    }
-                  }
-                },
-                label: Text(
-                  I18n.of(context).callThewaiter,
-                  style: TextStyle(
-                      color: Color(Styling.primaryBackgroundColor),
-                      fontSize: SizeConfig.diagonal * 1.5),
-                ),
-                icon: Icon(
-                  Icons.food_bank_rounded,
-                  size: SizeConfig.diagonal * 2.5,
-                  color: Color(Styling.primaryBackgroundColor),
-                ),
-                backgroundColor: Color(Styling.accentColor),
-              ),
-
+                            _scaffoldKey.currentState.showSnackBar(SnackBar(
+                              content: Text(e.toString()),
+                            ));
+                          }
+                        }
+                      },
+                      label: Text(
+                        I18n.of(context).callThewaiter,
+                        style: TextStyle(
+                            color: Color(Styling.primaryBackgroundColor),
+                            fontSize: SizeConfig.diagonal * 1.5),
+                      ),
+                      icon: Icon(
+                        FontAwesomeIcons.handPointUp,
+                        size: SizeConfig.diagonal * 2.5,
+                        color: Color(Styling.primaryBackgroundColor),
+                      ),
+                      backgroundColor: Color(Styling.accentColor),
+                    ),
               body: body(),
             ),
     );
@@ -408,22 +408,30 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
 
   void printing() {
     List<String> myList = [];
-    for (int i = 0; i < widget.clientOrder.clientOrder.length;i++) {
-      myList.add("${widget.clientOrder.clientOrder[i].menuItem.name} : ${widget.clientOrder.clientOrder[i].menuItem.price} ${I18n.of(context).fbu}");
+    for (int i = 0; i < widget.clientOrder.clientOrder.length; i++) {
+      myList.add(
+          "${order.clientOrder[i].menuItem.name} : ${order.clientOrder[i].menuItem.price} ${I18n.of(context).fbu}");
     }
 
     Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => PrintPage(
-            auth:widget.auth,
-            orderType: widget.clientOrder.orderLocation==0?I18n.of(context).restaurantOrder:I18n.of(context).livrdomicile, //restaurant order or delivery
-           tableAddress:widget.clientOrder.orderLocation==0?"${I18n.of(context).tableNumber} : ${widget.clientOrder.tableAdress}":"${I18n.of(context).addr} : ${widget.clientOrder.tableAdress}",
-           phoneNumber: widget.clientOrder.orderLocation==1?"${I18n.of(context).number} : ${widget.clientOrder.phoneNumber}":null,
-          orderDate : "${I18n.of(context).orderDate} : ${widget.formatter.format(widget.clientOrder.orderDate.toDate())}",
+            auth: widget.auth,
+            orderType: widget.clientOrder.orderLocation == 0
+                ? I18n.of(context).restaurantOrder
+                : I18n.of(context).livrdomicile, //restaurant order or delivery
+            tableAddress: widget.clientOrder.orderLocation == 0
+                ? "${I18n.of(context).tableNumber} : ${widget.clientOrder.tableAdress}"
+                : "${I18n.of(context).addr} : ${widget.clientOrder.tableAdress}",
+            phoneNumber: widget.clientOrder.orderLocation == 1
+                ? "${I18n.of(context).yourphonenumber} : ${widget.clientOrder.phoneNumber}"
+                : null,
+            orderDate:
+                "${I18n.of(context).orderDate} : ${widget.formatter.format(widget.clientOrder.orderDate.toDate())}",
             items: myList,
-            tax: "${widget.clientOrder.taxPercentage}",
-            total:"${widget.clientOrder.grandTotal}",
+            tax: "${I18n.of(context).taxCharge} : ${widget.clientOrder.taxPercentage}",
+            total: "${I18n.of(context).total} : ${widget.clientOrder.grandTotal}",
           ),
         ));
   }
@@ -465,8 +473,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
               goingBack == false)
             map(),
           if (widget.userRole == Fields.client) progressionTimeLine(),
-          if (widget.userRole != Fields.client)
-            statusUpdate(),
+          if (widget.userRole != Fields.client) statusUpdate(),
           orderItemStream(),
           informationStream(),
           Padding(

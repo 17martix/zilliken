@@ -10,7 +10,6 @@ import 'package:zilliken/Models/Call.dart';
 import 'package:zilliken/Models/Address.dart';
 import 'package:zilliken/Models/Category.dart';
 import 'package:zilliken/Models/Fields.dart';
-import 'package:zilliken/Models/Folders.dart';
 import 'package:zilliken/Models/MenuItem.dart';
 import 'package:zilliken/Models/Order.dart';
 import 'package:zilliken/Models/OrderItem.dart';
@@ -19,7 +18,6 @@ import 'package:zilliken/Models/UserProfile.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 
 import '../i18n.dart';
-
 
 class Database {
   final databaseReference = FirebaseFirestore.instance;
@@ -62,7 +60,7 @@ class Database {
     return geoPoint;
   }
 
-    Future<String> getUserRole(String userId) async {
+  Future<String> getUserRole(String userId) async {
     String role = "";
 
     await databaseReference
@@ -179,13 +177,11 @@ class Database {
     });
   }
 
-
-Future<Result> createAccount(context, UserProfile userProfile) async {
+  Future<Result> createAccount(context, UserProfile userProfile) async {
     Result result =
         Result(isSuccess: false, message: I18n.of(context).operationFailed);
     DocumentReference newUserReference =
         databaseReference.collection(Fields.users).doc(userProfile.id);
-    
 
     await newUserReference
         .set({
@@ -193,11 +189,8 @@ Future<Result> createAccount(context, UserProfile userProfile) async {
           Fields.name: userProfile.name,
           Fields.role: userProfile.role,
           Fields.phoneNumber: userProfile.phoneNumber,
-          
-        
-         
+          Fields.lastSeenAt: FieldValue.serverTimestamp(),
           Fields.createdAt: FieldValue.serverTimestamp(),
-         
         })
         .whenComplete(() => result = Result(
             isSuccess: true, message: I18n.of(context).operationSucceeded))
@@ -311,14 +304,13 @@ Future<Result> createAccount(context, UserProfile userProfile) async {
     var document = databaseReference.collection(Fields.users).doc(id);
     await document.get().then((snapshot) {
       String role = snapshot[Fields.role];
-      int receiveNotifications = snapshot[Fields.receiveNotifications];
 
       userProfile = UserProfile(
         id: id,
         role: role,
-        name:snapshot[Fields.name],
-         phoneNumber:snapshot[Fields.phoneNumber],
-        
+        name: snapshot[Fields.name],
+        phoneNumber: snapshot[Fields.phoneNumber],
+        createdAt: snapshot[Fields.createdAt],
         lastSeenAt: snapshot[Fields.lastSeenAt],
       );
     });
@@ -654,7 +646,7 @@ Future<Result> createAccount(context, UserProfile userProfile) async {
     });
   }
 
-  Future<void> updateCall(Call call) async {
+  Future<void> addCall(Call call) async {
     DocumentReference doc =
         FirebaseFirestore.instance.collection(Fields.calls).doc();
     call.id = doc.id;
@@ -677,6 +669,15 @@ Future<Result> createAccount(context, UserProfile userProfile) async {
       Fields.tableAdress: call.order.tableAdress,
       Fields.orderLocation: call.order.orderLocation,
       Fields.orderId: call.order.id,
+    });
+  }
+
+  Future<void> updateCall(Call call,bool hasCalled) async {
+    DocumentReference doc =
+        FirebaseFirestore.instance.collection(Fields.calls).doc(call.id);
+    await doc.update({
+      Fields.hasCalled: hasCalled,
+
     });
   }
 

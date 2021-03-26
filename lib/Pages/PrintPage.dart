@@ -48,7 +48,13 @@ class _PrintPageState extends State<PrintPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: buildAppBar(
-          context, widget.auth, true, false, null, null, backFunction, null),
+        context,
+        widget.auth,
+        true,
+        false,
+        backFunction,
+        null,
+      ),
       body: Stack(
         children: [
           _devices.isNotEmpty

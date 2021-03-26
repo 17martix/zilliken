@@ -741,9 +741,7 @@ class _MenuPageState extends State<MenuPage> {
                             ),
                           ),
                         ),
-                        widget.userRole == Fields.chef ||
-                                widget.userRole == Fields.admin ||
-                                widget.userRole == Fields.developer
+                        widget.userRole != Fields.client
                             ? Expanded(
                                 flex: 1,
                                 child: SwitchListTile(

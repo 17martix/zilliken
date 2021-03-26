@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:zilliken/Components/ZAppBar.dart';
 import 'package:zilliken/Components/ZRaisedButton.dart';
 import 'package:zilliken/Helpers/SizeConfig.dart';
@@ -54,6 +55,8 @@ class _DashboardPageState extends State<DashboardPage> {
       .orderBy(Fields.createdAt, descending: true)
       .limit(3);
 
+  BuildContext dialogContext;
+
   @override
   void initState() {
     super.initState();
@@ -83,13 +86,19 @@ class _DashboardPageState extends State<DashboardPage> {
       widget.messaging,
     );
 
-    calls.snapshots().listen((snapshot) {
-      Call call = Call();
-      call.buildObject(snapshot.docs[0]);
-      if (call.hasCalled) {
-        callDialog();
-      }
-    });
+    if (widget.userRole == Fields.chef ||
+        widget.userRole == Fields.chefBoissons ||
+        widget.userRole == Fields.chefCuisine) {
+      calls.snapshots().listen((snapshot) {
+        Call call = Call();
+        call.buildObject(snapshot.docs[0]);
+        if (call.hasCalled) {
+          callDialog(call);
+        }else{
+            Navigator.pop(dialogContext);
+        }
+      });
+    }
   }
 
   @override
@@ -128,8 +137,8 @@ class _DashboardPageState extends State<DashboardPage> {
               child: Scaffold(
                 key: _scaffoldKey,
                 backgroundColor: Colors.transparent,
-                appBar: buildAppBar(context, widget.auth, false,
-                     logout, null,null),
+                appBar: buildAppBar(
+                    context, widget.auth, false, logout, null, null),
                 body: body(),
                 /*bottomNavigationBar: BottomNavigationBar(
                   items: <BottomNavigationBarItem>[
@@ -213,12 +222,13 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }*/
 
-  void callDialog() {
+  void callDialog(Call call) {
     showGeneralDialog(
         context: context,
         barrierDismissible: false,
         transitionDuration: Duration(milliseconds: 300),
         transitionBuilder: (context, a1, a2, widget) {
+          dialogContext = context;
           return Transform.scale(
             scale: a1.value,
             child: Dialog(
@@ -229,11 +239,12 @@ class _DashboardPageState extends State<DashboardPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    Text(I18n.of(context).called),
+                    Text(
+                        "${I18n.of(context).tableNumber} ${call.order.tableAdress} ${I18n.of(context).called}"),
                     ZRaisedButton(
-                      onpressed: () {},
+                      onpressed: () => updateCall(call),
                       textIcon: Text(
-                        I18n.of(context).accept,
+                        "${I18n.of(context).accept} ${I18n.of(context).tableNumber} ${call.order.tableAdress}",
                       ),
                     )
                   ],
@@ -244,6 +255,30 @@ class _DashboardPageState extends State<DashboardPage> {
           );
         },
         pageBuilder: (context, anim1, anim2) {});
+  }
+
+  Future<void> updateCall(Call call) async {
+    EasyLoading.show(status: I18n.of(context).loading);
+    bool isOnline = await hasConnection();
+    if (!isOnline) {
+      EasyLoading.dismiss();
+
+      _scaffoldKey.currentState.showSnackBar(SnackBar(
+        content: Text(I18n.of(context).noInternet),
+      ));
+    } else {
+      try {
+        await widget.db.updateCall(call, false);
+        EasyLoading.dismiss();
+        Navigator.of(context).pop();
+      } on Exception catch (e) {
+        EasyLoading.dismiss();
+
+        _scaffoldKey.currentState.showSnackBar(SnackBar(
+          content: Text(e.toString()),
+        ));
+      }
+    }
   }
 
   /*void _onItemTapped(int index) {
