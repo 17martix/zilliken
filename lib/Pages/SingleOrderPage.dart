@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -407,12 +408,13 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
   }
 
   void printing() {
+    log("error 1");
     List<String> myList = [];
-    for (int i = 0; i < widget.clientOrder.clientOrder.length; i++) {
+    for (int i = 0; i < order.clientOrder.length; i++) {
       myList.add(
           "${order.clientOrder[i].menuItem.name} : ${order.clientOrder[i].menuItem.price} ${I18n.of(context).fbu}");
     }
-
+ log("error 2");
     Navigator.push(
         context,
         MaterialPageRoute(
@@ -430,8 +432,10 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
             orderDate:
                 "${I18n.of(context).orderDate} : ${widget.formatter.format(widget.clientOrder.orderDate.toDate())}",
             items: myList,
-            tax: "${I18n.of(context).taxCharge} : ${widget.clientOrder.taxPercentage}",
-            total: "${I18n.of(context).total} : ${widget.clientOrder.grandTotal}",
+            tax:
+                "${I18n.of(context).taxCharge} : ${widget.clientOrder.taxPercentage}",
+            total:
+                "${I18n.of(context).total} : ${widget.clientOrder.grandTotal}",
           ),
         ));
   }
