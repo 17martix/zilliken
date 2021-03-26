@@ -112,6 +112,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
   CameraPosition initialCameraPosition;
 
   bool goingBack = false;
+  List<OrderItem> items = new List();
 
   @override
   void initState() {
@@ -179,6 +180,12 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
           }
         });
       }
+    });
+
+    widget.db.getOrderItems(widget.orderId).then((value) {
+      setState(() {
+        items = value;
+      });
     });
   }
 
@@ -352,7 +359,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                   true,
                   null,
                   backFunction,
-                  (widget.userRole != Fields.client && order != null)
+                  (widget.userRole != Fields.client && items != null)
                       ? printing
                       : null),
               floatingActionButton: (widget.userRole != Fields.client ||
@@ -410,11 +417,11 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
   void printing() {
     log("error 1");
     List<String> myList = [];
-    for (int i = 0; i < order.clientOrder.length; i++) {
+    for (int i = 0; i < items.length; i++) {
       myList.add(
-          "${order.clientOrder[i].menuItem.name} : ${order.clientOrder[i].menuItem.price} ${I18n.of(context).fbu}");
+          "${items[i].menuItem.name} : ${items[i].menuItem.price} ${I18n.of(context).fbu}");
     }
- log("error 2");
+    log("error 2");
     Navigator.push(
         context,
         MaterialPageRoute(

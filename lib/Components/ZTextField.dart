@@ -148,8 +148,9 @@ class ZTextField extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.symmetric(
             horizontal: SizeConfig.diagonal * 0.8,
-            vertical: SizeConfig.diagonal * 0.8),
-        child: Row(mainAxisAlignment: MainAxisAlignment.center,
+            vertical: SizeConfig.diagonal * 0.1),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             if (outsidePrefix != null) outsidePrefix,
             SizedBox(
@@ -171,7 +172,6 @@ class ZTextField extends StatelessWidget {
                 autofocus: false,
                 obscureText: obsecure,
                 keyboardType: keyboardType,
-
                 inputFormatters: inputFormatters,
                 cursorColor: Color(Styling.iconColor),
                 style: TextStyle(

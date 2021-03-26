@@ -31,7 +31,6 @@ billDetails,Bill,Facture
 ntable,Table Number,Numéro de Table
 livrdomicile,Home delivery,Livraison à Domicile
 gtotal,Grand Total,Grand total
-addr,Address,Adresse
 fone,Phone number,Numéro de Téléphone
 requit,Required,Requis
 cancelOrder,Cancel Order,Annuler la Commande
@@ -88,3 +87,4 @@ delete,Delete,Supprimer
 saveAddress,Save Address,Enregistrer L'adresse
 deliverOrder,Deliver This Order,Livrer cette commande
 enterLocation,Select your delivery location,Sélectionnez votre lieu de livraison
+addr,Complete Address,Adresse Complète

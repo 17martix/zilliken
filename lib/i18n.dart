@@ -71,8 +71,6 @@ class I18n {
 
   String get gtotal => _getText("gtotal");
 
-  String get addr => _getText("addr");
-
   String get fone => _getText("fone");
 
   String get requit => _getText("requit");
@@ -185,6 +183,8 @@ class I18n {
 
   String get enterLocation => _getText("enterLocation");
 
+  String get addr => _getText("addr");
+
   static Map<String, String> _localizedValues;
 
   static Map<String, String> _enValues = {
@@ -220,7 +220,6 @@ class I18n {
     "ntable": "Table Number",
     "livrdomicile": "Home delivery",
     "gtotal": "Grand Total",
-    "addr": "Address",
     "fone": "Phone number",
     "requit": "Required",
     "cancelOrder": "Cancel Order",
@@ -278,6 +277,7 @@ class I18n {
     "saveAddress": "Save Address",
     "deliverOrder": "Deliver This Order",
     "enterLocation": "Select your delivery location",
+    "addr": "Complete Address",
   };
 
   static Map<String, String> _frValues = {
@@ -313,7 +313,6 @@ class I18n {
     "ntable": "Numéro de Table",
     "livrdomicile": "Livraison à Domicile",
     "gtotal": "Grand total",
-    "addr": "Adresse",
     "fone": "Numéro de Téléphone",
     "requit": "Requis",
     "cancelOrder": "Annuler la Commande",
@@ -371,6 +370,7 @@ class I18n {
     "saveAddress": "Enregistrer L'adresse",
     "deliverOrder": "Livrer cette commande",
     "enterLocation": "Sélectionnez votre lieu de livraison",
+    "addr": "Adresse Complète",
   };
 
   static Map<String, Map<String, String>> _allValues = {

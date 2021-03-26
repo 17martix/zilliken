@@ -351,6 +351,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void confirmSMSCode(String value) async {
+    FocusScope.of(context).requestFocus(new FocusNode());
     if (value.length == 6) {
       EasyLoading.show(status: I18n.of(context).loading);
       try {
@@ -406,6 +407,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void createAccount() async {
+    FocusScope.of(context).requestFocus(new FocusNode());
     if (validate2()) {
       EasyLoading.show(status: I18n.of(context).loading);
       bool isOnline = await hasConnection();
@@ -463,6 +465,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void sendCode() async {
+    FocusScope.of(context).requestFocus(new FocusNode());
     if (validate()) {
       EasyLoading.show(status: I18n.of(context).loading);
       bool isOnline = await hasConnection();

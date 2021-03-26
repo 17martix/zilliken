@@ -166,9 +166,8 @@ class _CartPageState extends State<CartPage> {
               : Scaffold(
                   backgroundColor: Colors.transparent,
                   key: _scaffoldKey,
-                  appBar: buildAppBar(context, widget.auth, true,
-                      null, backFunction,null),
-
+                  appBar: buildAppBar(
+                      context, widget.auth, true, null, backFunction, null),
                   body: Stack(
                     children: [
                       body(),
@@ -629,28 +628,34 @@ class _CartPageState extends State<CartPage> {
               if (restaurantOrRoomOrder == 1)
                 SizedBox(
                   width: double.infinity,
-                  child: TextButton(
-                    child: Row(children: [
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: SizeConfig.diagonal * 0.5),
-                        child: Icon(
-                          Icons.location_on,
-                          color: Color(Styling.primaryColor),
-                        ),
-                      ),
-                      Text(
-                        addressName == null
-                            ? I18n.of(context).selectLocation
-                            : addressName,
-                        textAlign: TextAlign.left,
-                        style: TextStyle(
-                          color: Color(Styling.accentColor),
-                          fontSize: SizeConfig.diagonal * 1.5,
-                        ),
-                      )
-                    ]),
-                    onPressed: selectLocation,
+                  child: ZRaisedButton(
+                    topPadding: SizeConfig.diagonal * 1,
+                    bottomPadding: SizeConfig.diagonal * 1,
+                    rightPadding: SizeConfig.diagonal * 1,
+                    leftPadding: SizeConfig.diagonal * 1,
+                    textIcon: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: SizeConfig.diagonal * 0.5),
+                            child: Icon(
+                              Icons.location_on,
+                              color: Color(Styling.primaryColor),
+                            ),
+                          ),
+                          Text(
+                            addressName == null
+                                ? I18n.of(context).selectLocation
+                                : addressName,
+                            textAlign: TextAlign.left,
+                            style: TextStyle(
+                              color: Color(Styling.primaryBackgroundColor),
+                              fontSize: SizeConfig.diagonal * 1.5,
+                            ),
+                          )
+                        ]),
+                    onpressed: selectLocation,
                   ),
                 ),
               ZTextField(
@@ -665,12 +670,8 @@ class _CartPageState extends State<CartPage> {
                     ? I18n.of(context).ntable
                     : I18n.of(context).addr,
                 icon: restaurantOrRoomOrder == 0
-                    ? 
-                        Icons.restaurant_menu
-                     
-                    : 
-                        Icons.shopping_cart,
-                     
+                    ? Icons.restaurant_menu
+                    : Icons.shopping_cart,
               ),
               if (restaurantOrRoomOrder == 1)
                 ZTextField(
@@ -680,19 +681,14 @@ class _CartPageState extends State<CartPage> {
                       value.isEmpty ? I18n.of(context).requit : null,
                   keyboardType: TextInputType.phone,
                   label: I18n.of(context).fone,
-                  icon: 
-                    Icons.phone_android,
-                 
-           
+                  icon: Icons.phone_android,
                 ),
               ZTextField(
                 onSaved: (newValue) => instruction = newValue,
                 label: I18n.of(context).instruction,
                 controller: _instructionController,
                 maxLines: 5,
-                icon: 
-                  Icons.info,
-               
+                icon: Icons.info,
                 keyboardType: TextInputType.text,
               ),
             ],
@@ -857,13 +853,12 @@ class _CartPageState extends State<CartPage> {
     if (validate()) {
       if (restaurantOrRoomOrder == 1 &&
           (addressName == null || addressName == '')) {
-       _scaffoldKey.currentState.showSnackBar(
-            SnackBar(
-              content: Text(I18n.of(context).enterLocation),
-            ),
-          );
+        _scaffoldKey.currentState.showSnackBar(
+          SnackBar(
+            content: Text(I18n.of(context).enterLocation),
+          ),
+        );
       } else {
-        
         EasyLoading.show(status: I18n.of(context).loading);
 
         bool isOnline = await hasConnection();
