@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zilliken/Components/ZAppBar.dart';
 import 'package:zilliken/Components/ZRaisedButton.dart';
 import 'package:zilliken/Helpers/SizeConfig.dart';
@@ -56,6 +57,7 @@ class _DashboardPageState extends State<DashboardPage> {
       .limit(3);
 
   BuildContext dialogContext;
+  bool isStarting = true;
 
   @override
   void initState() {
@@ -92,10 +94,12 @@ class _DashboardPageState extends State<DashboardPage> {
       calls.snapshots().listen((snapshot) {
         Call call = Call();
         call.buildObject(snapshot.docs[0]);
-        if (call.hasCalled) {
+        if (call.hasCalled && isStarting == false) {
           callDialog(call);
-        }else{
-            Navigator.pop(dialogContext);
+        } else if (isStarting == true) {
+          isStarting = false;
+        } else {
+          Navigator.pop(dialogContext);
         }
       });
     }
@@ -240,9 +244,20 @@ class _DashboardPageState extends State<DashboardPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Text(
-                        "${I18n.of(context).tableNumber} ${call.order.tableAdress} ${I18n.of(context).called}"),
+                      "${I18n.of(context).tableNumber} ${call.order.tableAdress} ${I18n.of(context).called}",
+                      style: TextStyle(
+                        fontSize: SizeConfig.diagonal * 2,
+                      ),
+                    ),
+                    Icon(
+                      Icons.warning,
+                      size: SizeConfig.diagonal * 15,
+                      color: Colors.red,
+                    ),
                     ZRaisedButton(
                       onpressed: () => updateCall(call),
+                      topPadding: 0.0,
+                      bottomPadding: 0.0,
                       textIcon: Text(
                         "${I18n.of(context).accept} ${I18n.of(context).tableNumber} ${call.order.tableAdress}",
                       ),
@@ -270,7 +285,7 @@ class _DashboardPageState extends State<DashboardPage> {
       try {
         await widget.db.updateCall(call, false);
         EasyLoading.dismiss();
-        Navigator.of(context).pop();
+        // Navigator.of(context).pop();
       } on Exception catch (e) {
         EasyLoading.dismiss();
 
@@ -375,44 +390,6 @@ class _DashboardPageState extends State<DashboardPage> {
           return child;
         });
   }*/
-
-  void googleSign() async {
-    String userId = "";
-    bool isOnline = await hasConnection();
-    if (!isOnline) {
-      _scaffoldKey.currentState.showSnackBar(
-        SnackBar(
-          content: Text(I18n.of(context).noInternet),
-        ),
-      );
-    } else {
-      try {
-        userId = await widget.auth.signInWithGoogle();
-        String token = await widget.messaging.firebaseMessaging.getToken();
-        await widget.db.setToken(userId, token);
-
-        if (userId.length > 0 && userId != null) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => SplashPage(
-                auth: widget.auth,
-                db: widget.db,
-                messaging: widget.messaging,
-              ),
-            ),
-          );
-        }
-      } on Exception catch (e) {
-        //print('Error: $e');
-        _scaffoldKey.currentState.showSnackBar(
-          SnackBar(
-            content: Text(e.toString()),
-          ),
-        );
-      }
-    }
-  }
 
   void logout() async {
     try {

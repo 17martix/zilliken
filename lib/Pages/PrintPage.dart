@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_basic/flutter_bluetooth_basic.dart';
 import 'package:esc_pos_bluetooth/esc_pos_bluetooth.dart';
@@ -46,12 +48,13 @@ class _PrintPageState extends State<PrintPage> {
 
   @override
   Widget build(BuildContext context) {
+    log("error 3");
     return Scaffold(
       appBar: buildAppBar(
         context,
         widget.auth,
         true,
-        false,
+        null,
         backFunction,
         null,
       ),

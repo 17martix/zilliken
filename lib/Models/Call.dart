@@ -13,21 +13,22 @@ class Call {
     this.id,
     this.hasCalled,
     this.order,
-    this.createdAt,    
+    this.createdAt,
   });
 
   void buildObject(DocumentSnapshot document) {
-    
+    order = Order();
     hasCalled = document.data()[Fields.hasCalled];
     createdAt = document.data()[Fields.createdAt];
-    id = document.data()[Fields.count];
-    order = document.data()[Fields.order];
+    id = document.id;
+    order.buildObject(document);
   }
 
   void buildObjectAsync(AsyncSnapshot<DocumentSnapshot> document) {
+    order = Order();
     hasCalled = document.data[Fields.hasCalled];
     createdAt = document.data[Fields.createdAt];
-    id = document.data[Fields.count];
-    order = document.data[Fields.order];
+    id = document.data.id;
+    order.buildObjectAsync(document);
   }
 }
