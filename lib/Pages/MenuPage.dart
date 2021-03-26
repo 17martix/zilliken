@@ -148,8 +148,6 @@ class _MenuPageState extends State<MenuPage> {
     );
   }
 
-  
-
   Widget addItemCategory() {
     return Column(
       children: [
@@ -616,7 +614,29 @@ class _MenuPageState extends State<MenuPage> {
             child: Text(""),
           );
 
-        return ListView.builder(
+        return AnimatedList(
+            initialItemCount: snapshot.data.docs.length,
+            itemBuilder: (context, index, animation) {
+              MenuItem menu = MenuItem();
+              menu.buildObject(snapshot.data.docs[index]);
+              return SlideTransition(
+                position: Tween<Offset>(
+                  begin: const Offset(-1, 0),
+                  end: Offset(0, 0),
+                ).animate(CurvedAnimation(
+                    parent: animation,
+                    curve: Curves.bounceIn,
+                    reverseCurve: Curves.bounceOut)),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    //if (menu.rank == 1) categoryRow(menu),
+                    item(menu),
+                  ],
+                ),
+              );
+            });
+        /*return ListView.builder(
           itemCount: snapshot.data.docs.length,
           itemBuilder: (context, index) {
             MenuItem menu = MenuItem();
@@ -629,7 +649,7 @@ class _MenuPageState extends State<MenuPage> {
               ],
             );
           },
-        );
+        );*/
 
         /* return ListView(
           shrinkWrap: true,
