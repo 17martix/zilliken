@@ -649,6 +649,7 @@ class _CartPageState extends State<CartPage> {
                                 ? I18n.of(context).selectLocation
                                 : addressName,
                             textAlign: TextAlign.left,
+                            overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               color: Color(Styling.primaryBackgroundColor),
                               fontSize: SizeConfig.diagonal * 1.5,

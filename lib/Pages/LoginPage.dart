@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:zilliken/Components/ZRaisedButton.dart';
@@ -496,8 +498,7 @@ class _LoginPageState extends State<LoginPage> {
                 _verificationcode = verificationId;
               });
 
-              bool isAndroid =
-                  Theme.of(context).platform == TargetPlatform.android;
+              bool isAndroid = Platform.isAndroid;
               if (!isAndroid) {
                 EasyLoading.dismiss();
                 setState(() {
@@ -510,8 +511,7 @@ class _LoginPageState extends State<LoginPage> {
               setState(() {
                 _verificationcode = verificationId;
               });
-              bool isAndroid =
-                  Theme.of(context).platform == TargetPlatform.android;
+              bool isAndroid = Platform.isAndroid;
               if (isAndroid) {
                 EasyLoading.dismiss();
                 setState(() {
