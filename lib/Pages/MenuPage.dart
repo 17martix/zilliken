@@ -725,7 +725,116 @@ class _MenuPageState extends State<MenuPage> {
             child: InkWell(
               onTap: (widget.userRole == Fields.admin ||
                       widget.userRole == Fields.developer)
-                  ? () {}
+                  ? () {
+                      showGeneralDialog(
+                        context: context,
+                        barrierColor: Colors.black.withOpacity(0.5),
+                        transitionBuilder: (context, a1, a2, widget) {
+                          return Transform.scale(
+                            scale: a1.value,
+                            child: Opacity(
+                              opacity: a1.value,
+                              child: Dialog(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(
+                                    SizeConfig.diagonal * 1.5,
+                                  ),
+                                ),
+                                child: Container(
+                                  padding: EdgeInsets.only(
+                                      left: SizeConfig.diagonal * 0.9,
+                                      right: SizeConfig.diagonal * 0.9),
+                                  height: SizeConfig.diagonal * 32,
+                                  //color: Colors.amber,
+                                  child: SingleChildScrollView(
+                                    child: Form(
+                                      key: _formKey1,
+                                      autovalidateMode:
+                                          AutovalidateMode.disabled,
+                                      child: Column(
+                                        children: [
+                                          SizedBox(
+                                            height: SizeConfig.diagonal * 2.5,
+                                          ),
+                                          ZTextField(
+                                            hint: I18n.of(context).itemName,
+                                            onSaved: (value) =>
+                                                newMenuItem.name = value,
+                                            validator: (value) => value.isEmpty
+                                                ? I18n.of(context).requit
+                                                : null,
+                                            icon: Icons.restaurant,
+                                          ),
+                                          ZTextField(
+                                            hint: I18n.of(context).itemPrice,
+                                            onSaved: (value) => newMenuItem
+                                                .price = int.parse(value),
+                                            validator: (value) => value.isEmpty
+                                                ? I18n.of(context).requit
+                                                : null,
+                                            icon: Icons.restaurant,
+                                          ),
+                                          ZRaisedButton(
+                                            onpressed: () async {
+                                              final form =
+                                                  _formKey1.currentState;
+
+                                              if (form.validate()) {
+                                                form.save();
+                                                newMenuItem.id = menu.id;
+                                                EasyLoading.show(
+                                                    status: I18n.of(context)
+                                                        .loading);
+                                                bool isOnline =
+                                                    await hasConnection();
+                                                if (!isOnline) {
+                                                  EasyLoading.dismiss();
+                                                  _scaffoldKey.currentState
+                                                      .showSnackBar(
+                                                    SnackBar(
+                                                      content: Text(
+                                                          I18n.of(context)
+                                                              .noInternet),
+                                                    ),
+                                                  );
+                                                } else {
+                                                  try {
+                                                    await this
+                                                        .widget
+                                                        .db
+                                                        .updateDetails(
+                                                            newMenuItem);
+                                                    EasyLoading.dismiss();
+                                                    Navigator.of(context).pop();
+                                                  } on Exception catch (e) {
+                                                    EasyLoading.dismiss();
+                                                    _scaffoldKey.currentState
+                                                        .showSnackBar(SnackBar(
+                                                      content:
+                                                          Text(e.toString()),
+                                                    ));
+                                                  }
+                                                }
+                                              }
+                                            },
+                                            textIcon:
+                                                Text(I18n.of(context).save),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                        barrierDismissible: true,
+                        barrierLabel: '',
+                        transitionDuration: Duration(milliseconds: 300),
+                        pageBuilder: (context, animation1, animation2) {},
+                      );
+                    }
                   : () {},
               child: Container(
                 padding: EdgeInsets.all(SizeConfig.diagonal * 1),
