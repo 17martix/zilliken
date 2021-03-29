@@ -60,7 +60,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
   var oneOrderDetails;
   var orderItems;
   bool isDataBeingDeleted = false;
-  int _status = Fields.confirmed;
+  int _status = Fields.pending;
 
   int _orderStatus = 1;
   int enabled = 1;
