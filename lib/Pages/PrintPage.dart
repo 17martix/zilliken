@@ -56,7 +56,7 @@ class _PrintPageState extends State<PrintPage> {
         true,
         null,
         backFunction,
-        null,
+        null,null,
       ),
       body: Stack(
         children: [

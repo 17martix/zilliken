@@ -8,8 +8,6 @@ class StockPage extends StatefulWidget {
 class _StockPageState extends State<StockPage> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      
-    );
+    return Container();
   }
 }
