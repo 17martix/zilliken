@@ -185,6 +185,12 @@ class I18n {
 
   String get addr => _getText("addr");
 
+  String get search => _getText("search");
+
+  String get name => _getText("name");
+
+  String get phone => _getText("phone");
+
   static Map<String, String> _localizedValues;
 
   static Map<String, String> _enValues = {
@@ -278,6 +284,9 @@ class I18n {
     "deliverOrder": "Deliver This Order",
     "enterLocation": "Select your delivery location",
     "addr": "Complete Address",
+    "search": "Search",
+    "name": "Name",
+    "phone": "Phone number",
   };
 
   static Map<String, String> _frValues = {
@@ -371,6 +380,9 @@ class I18n {
     "deliverOrder": "Livrer cette commande",
     "enterLocation": "Sélectionnez votre lieu de livraison",
     "addr": "Adresse Complète",
+    "search": "Rechercher",
+    "name": "Nom",
+    "phone": "Numéro de Téléphone",
   };
 
   static Map<String, Map<String, String>> _allValues = {
