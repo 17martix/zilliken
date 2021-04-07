@@ -361,7 +361,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                   backFunction,
                   (widget.userRole != Fields.client && items != null)
                       ? printing
-                      : null),
+                      : null,null,),
               floatingActionButton: (widget.userRole != Fields.client ||
                       widget.clientOrder.orderLocation == 1)
                   ? null

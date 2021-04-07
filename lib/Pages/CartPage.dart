@@ -167,7 +167,7 @@ class _CartPageState extends State<CartPage> {
                   backgroundColor: Colors.transparent,
                   key: _scaffoldKey,
                   appBar: buildAppBar(
-                      context, widget.auth, true, null, backFunction, null),
+                      context, widget.auth, true, null, backFunction, null,null,),
                   body: Stack(
                     children: [
                       body(),
@@ -397,14 +397,6 @@ class _CartPageState extends State<CartPage> {
             return item(orderItem.menuItem);
           }).toList(),
         ),
-
-        /* ListView.builder(
-          shrinkWrap: true,
-          itemCount: clientOrder.length,
-          itemBuilder: (context, position) {
-            return item(clientOrder[position].menuItem);
-          },
-        ),*/
       ],
     );
   }
@@ -418,7 +410,6 @@ class _CartPageState extends State<CartPage> {
         children: [
           Container(
             decoration: BoxDecoration(
-              // color: Colors.black.withOpacity(0.5),
               borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5),
               image: DecorationImage(
                 image: //AssetImage("assets/${menu.imageName}"),
@@ -442,7 +433,6 @@ class _CartPageState extends State<CartPage> {
                   Text(
                     menu.name,
                     textAlign: TextAlign.left,
-                    //overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       color: Color(Styling.textColor),
                       fontWeight: FontWeight.bold,

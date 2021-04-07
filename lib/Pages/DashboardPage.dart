@@ -11,6 +11,7 @@ import 'package:zilliken/Helpers/Utils.dart';
 import 'package:zilliken/Models/Call.dart';
 import 'package:zilliken/Models/Fields.dart';
 import 'package:zilliken/Models/OrderItem.dart';
+import 'package:zilliken/Pages/AdminPage.dart';
 import 'package:zilliken/Pages/LoginPage.dart';
 import 'package:zilliken/Pages/MenuPage.dart';
 import 'package:zilliken/Pages/OrdersPage.dart';
@@ -142,7 +143,14 @@ class _DashboardPageState extends State<DashboardPage> {
                 key: _scaffoldKey,
                 backgroundColor: Colors.transparent,
                 appBar: buildAppBar(
-                    context, widget.auth, false, logout, null, null),
+                  context,
+                  widget.auth,
+                  false,
+                  logout,
+                  null,
+                  null,
+                  admin,
+                ),
                 body: body(),
                 /*bottomNavigationBar: BottomNavigationBar(
                   items: <BottomNavigationBarItem>[
@@ -171,7 +179,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   height: 50,
                   //height: SizeConfig.diagonal * 6,
                   animationDuration: Duration(milliseconds: 800),
-                  //animationDuration: Duration(milliseconds: 0),
+
                   backgroundColor: Colors.transparent,
                   index: _selectedIndex,
                   items: <Widget>[
@@ -390,6 +398,20 @@ class _DashboardPageState extends State<DashboardPage> {
           return child;
         });
   }*/
+
+  void admin() {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+          builder: (context) => AdminPage(
+                auth: widget.auth,
+                db: widget.db,
+                messaging: widget.messaging,
+                userId: widget.userId,
+                userRole: widget.userRole,
+              )),
+    );
+  }
 
   void logout() async {
     try {

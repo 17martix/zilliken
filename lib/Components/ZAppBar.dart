@@ -11,6 +11,7 @@ AppBar buildAppBar(
   logout,
   backFunction,
   print,
+  admin,
 ) {
   return AppBar(
     backgroundColor: Colors.transparent,
@@ -55,6 +56,7 @@ AppBar buildAppBar(
     actions: [
       logout == null ? Text('') : logoutButton(logout),
       if (print != null) printButton(print),
+      if (print != null) adminButton(admin),
     ],
   );
 }
@@ -67,6 +69,17 @@ Widget logoutButton(logout) {
       size: SizeConfig.diagonal * 2.5,
     ),
     onPressed: logout,
+  );
+}
+
+Widget adminButton(admin) {
+  return IconButton(
+    icon: Icon(
+      Icons.dashboard,
+      color: Color(Styling.iconColor),
+      size: SizeConfig.diagonal * 2.5,
+    ),
+    onPressed: admin,
   );
 }
 
