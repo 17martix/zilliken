@@ -136,7 +136,8 @@ class _DashboardPageState extends State<DashboardPage> {
                 image: DecorationImage(
               image: AssetImage('assets/Zilliken.jpg'),
               fit: BoxFit.cover,
-            )),
+            )
+            ),
             child: Container(
               color: Color(Styling.primaryBackgroundColor).withOpacity(0.7),
               child: Scaffold(
