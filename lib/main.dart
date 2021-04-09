@@ -14,6 +14,7 @@ import 'Helpers/Styling.dart';
 import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
+import 'Pages/AdminPage.dart';
 import 'Pages/LoginPage.dart';
 import 'Services/Database.dart';
 import 'i18n.dart';
@@ -101,9 +102,11 @@ class Zilliken extends StatelessWidget {
       supportedLocales: I18nDelegate.supportedLocals,
       title: 'Zilliken',
       theme: buildTheme(),
-      home: SplashPage(
+      home: AdminPage(
         auth: Authentication(),
         db: Database(),
+        userId: null,
+        userRole: null,
         messaging: messaging,
       ),
       builder: EasyLoading.init(),

@@ -252,6 +252,7 @@ class Database {
       clientOrder.add(orderItem);
     });
 
+   
     /*await collection.get().then((snapshot) {
       snapshot.docs.map((DocumentSnapshot document) {
         MenuItem menuItem = MenuItem(
@@ -672,12 +673,11 @@ class Database {
     });
   }
 
-  Future<void> updateCall(Call call,bool hasCalled) async {
+  Future<void> updateCall(Call call, bool hasCalled) async {
     DocumentReference doc =
         FirebaseFirestore.instance.collection(Fields.calls).doc(call.id);
     await doc.update({
       Fields.hasCalled: hasCalled,
-
     });
   }
 
