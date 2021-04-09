@@ -66,12 +66,9 @@ class _AdminPageState extends State<AdminPage> {
     return Container(
       decoration: BoxDecoration(
           image: DecorationImage(
-              image: AssetImage('assets/Zilliken.jpg'),
-              fit: BoxFit.cover,
-            )
-
-      ),
-
+        image: AssetImage('assets/Zilliken.jpg'),
+        fit: BoxFit.cover,
+      )),
       child: Scaffold(
         appBar: buildAppBar(
           context,
@@ -110,25 +107,27 @@ class _AdminPageState extends State<AdminPage> {
     return Stack(
       children: [
         AnimatedContainer(
-          child: StatPage(),
+          child: StatPage(
+            auth: widget.auth,
+            db: widget.db,
+            userId: widget.userId,
+            userRole: widget.userRole,
+          ),
           duration: Duration(milliseconds: 800),
           curve: Curves.easeInBack,
           transform: Matrix4.translationValues(_xoffset1, 0, 1),
-         
         ),
         AnimatedContainer(
           child: StockPage(),
           duration: Duration(milliseconds: 800),
           curve: Curves.easeInBack,
           transform: Matrix4.translationValues(_xoffset2, 0, 1),
-          
         ),
         AnimatedContainer(
           child: UserPage(),
           duration: Duration(milliseconds: 800),
           curve: Curves.easeInBack,
           transform: Matrix4.translationValues(_xoffset3, 0, 1),
-         
         ),
       ],
     );
