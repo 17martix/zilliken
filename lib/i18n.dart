@@ -191,6 +191,10 @@ class I18n {
 
   String get phone => _getText("phone");
 
+  String get quantity => _getText("quantity");
+
+  String get used => _getText("used");
+
   static Map<String, String> _localizedValues;
 
   static Map<String, String> _enValues = {
@@ -287,6 +291,8 @@ class I18n {
     "search": "Search",
     "name": "Name",
     "phone": "Phone number",
+    "quantity": "Quantity",
+    "used": "Used",
   };
 
   static Map<String, String> _frValues = {
@@ -383,6 +389,8 @@ class I18n {
     "search": "Rechercher",
     "name": "Nom",
     "phone": "Numéro de Téléphone",
+    "quantity": "Quantité",
+    "used": "Utilisé",
   };
 
   static Map<String, Map<String, String>> _allValues = {
