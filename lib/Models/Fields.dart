@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class Fields {
   static final String users = "users";
   static final String configuration = "configuration";
@@ -57,7 +59,7 @@ class Fields {
   static final String settings = 'settings';
   static final String enabled = 'enabled';
   static final String imageName = 'imageName';
-    static final String calls = 'calls';
+  static final String calls = 'calls';
 
   /*static final String isDrink = 'isDrink';
   static final String coldCount = 'coldCount';
@@ -76,4 +78,6 @@ class Fields {
   static final String typedAddress = 'typedAddress';
   static final String deliveringOrderId = 'deliveringOrderId';
   static final String isDrink = 'isDrink';
+  static final String date = 'date';
+  static final String statistic = 'statistic';
 }

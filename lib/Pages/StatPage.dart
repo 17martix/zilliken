@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 
 import 'package:zilliken/Helpers/SizeConfig.dart';
 import 'package:zilliken/Helpers/Styling.dart';
+import 'package:zilliken/Models/Fields.dart';
 import 'package:zilliken/Models/MenuItem.dart';
+import 'package:zilliken/Models/Statistic.dart';
+import 'package:intl/intl.dart';
 import 'package:zilliken/Pages/MenuPage.dart';
 import 'package:zilliken/Services/Authentication.dart';
 import 'package:zilliken/Services/Database.dart';
@@ -12,9 +15,9 @@ import 'package:zilliken/Services/Messaging.dart';
 class StatPage extends StatefulWidget {
   final Authentication auth;
   final Database db;
-
   final String userId;
   final String userRole;
+  final DateFormat formatter = DateFormat('dd/MM/yy HH:mm');
 
   StatPage({
     @required this.auth,
@@ -29,38 +32,111 @@ class StatPage extends StatefulWidget {
 class _StatPageState extends State<StatPage> {
   ScrollController _scrollController = ScrollController();
   List<DocumentSnapshot> items = List();
+  CollectionReference statistic = FirebaseFirestore.instance.collection(Fields.statistic);
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
     return Scaffold(
-      body: body(),
+      backgroundColor: Colors.transparent,
+      body: statisticStream(),
     );
   }
 
-  Widget body() {
+  Widget body(Statistic statistic) {
     return Column(
       children: [
-        Row(mainAxisSize: MainAxisSize.min, children: [
-          Card(
-            elevation: 6.0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(SizeConfig.diagonal * 50),
+        Padding(
+          padding: EdgeInsets.all(SizeConfig.diagonal * 1),
+          child: Text(
+            "Title",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Color(Styling.accentColor),
             ),
-            child: Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Container(
-                width: SizeConfig.diagonal * 23,
-                height: SizeConfig.diagonal * 8,
-                child: ListTile(
-                    title: Text("le prix"),
-                    subtitle: Text(
-                      "la date",
-                    )),
-              ),
+          ),
+        ),
+        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+          Card(
+            elevation: 5.0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5),
+            ),
+            child: Column(
+              children: [
+                Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Le Prix: ",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.lightGreen,
+                          fontSize: SizeConfig.diagonal * 2,
+                        ),
+                      ),
+                      Text(
+                        "${statistic.total}",
+                        style: TextStyle(
+                          color: Color(Styling.iconColor),
+                          fontSize: SizeConfig.diagonal * 2,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.all(SizeConfig.diagonal * 1),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "La date: ",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.lightGreen,
+                          fontSize: SizeConfig.diagonal * 2,
+                        ),
+                      ),
+                      Text(
+                        "${widget.formatter.format(statistic.date.toDate())}",
+                        style: TextStyle(
+                          color: Color(Styling.iconColor),
+                          fontSize: SizeConfig.diagonal * 2,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           )
         ])
       ],
+    );
+  }
+
+  Widget statisticStream() {
+    return StreamBuilder<QuerySnapshot>(
+      stream: statistic.snapshots(),
+      // ignore: missing_return
+      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        return Container(height:SizeConfig.diagonal *20,
+          child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: snapshot.data.docs.length,
+              itemBuilder: (BuildContext context, index) {
+                Statistic stat = Statistic();
+                stat.buildObject(snapshot.data.docs[index]);
+                return Row(
+                  children: [
+                    body(stat),
+                  ],
+                );
+              }),
+        );
+      },
     );
   }
 
