@@ -102,11 +102,9 @@ class Zilliken extends StatelessWidget {
       supportedLocales: I18nDelegate.supportedLocals,
       title: 'Zilliken',
       theme: buildTheme(),
-      home: AdminPage(
+      home: SplashPage(
         auth: Authentication(),
         db: Database(),
-        userRole: toString(),
-        userId: toString(),
         messaging: messaging,
       ),
       builder: EasyLoading.init(),

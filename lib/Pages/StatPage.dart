@@ -32,7 +32,8 @@ class StatPage extends StatefulWidget {
 class _StatPageState extends State<StatPage> {
   ScrollController _scrollController = ScrollController();
   List<DocumentSnapshot> items = List();
-  CollectionReference statistic = FirebaseFirestore.instance.collection(Fields.statistic);
+  CollectionReference statistic =
+      FirebaseFirestore.instance.collection(Fields.statistic);
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
@@ -45,16 +46,6 @@ class _StatPageState extends State<StatPage> {
   Widget body(Statistic statistic) {
     return Column(
       children: [
-        Padding(
-          padding: EdgeInsets.all(SizeConfig.diagonal * 1),
-          child: Text(
-            "Title",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Color(Styling.accentColor),
-            ),
-          ),
-        ),
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           Card(
             elevation: 5.0,
@@ -69,17 +60,17 @@ class _StatPageState extends State<StatPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        "Le Prix: ",
+                        " Le Total encaissE le:  ",
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          color: Colors.lightGreen,
+                          color: Color(Styling.iconColor),
                           fontSize: SizeConfig.diagonal * 2,
                         ),
                       ),
                       Text(
-                        "${statistic.total}",
+                        "${widget.formatter.format(statistic.date.toDate())}",
                         style: TextStyle(
-                          color: Color(Styling.iconColor),
+                          color: Color(Styling.accentColor),
                           fontSize: SizeConfig.diagonal * 2,
                         ),
                       ),
@@ -91,19 +82,21 @@ class _StatPageState extends State<StatPage> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        "La date: ",
+                      /*Text(
+                        "est: ",
                         textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.lightGreen,
-                          fontSize: SizeConfig.diagonal * 2,
-                        ),
-                      ),
-                      Text(
-                        "${widget.formatter.format(statistic.date.toDate())}",
                         style: TextStyle(
                           color: Color(Styling.iconColor),
                           fontSize: SizeConfig.diagonal * 2,
+                        ),
+                      ),*/
+                      Text(
+                        "${statistic.total}",
+                        style: TextStyle(
+                          color: Colors.lightGreen,
+                          fontSize: SizeConfig.diagonal * 3.5,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: "Font1",
                         ),
                       ),
                     ],
@@ -118,25 +111,43 @@ class _StatPageState extends State<StatPage> {
   }
 
   Widget statisticStream() {
-    return StreamBuilder<QuerySnapshot>(
-      stream: statistic.snapshots(),
-      // ignore: missing_return
-      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        return Container(height:SizeConfig.diagonal *20,
-          child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: snapshot.data.docs.length,
-              itemBuilder: (BuildContext context, index) {
-                Statistic stat = Statistic();
-                stat.buildObject(snapshot.data.docs[index]);
-                return Row(
-                  children: [
-                    body(stat),
-                  ],
-                );
-              }),
-        );
-      },
+    return Column(
+      children: [
+        Padding(
+          padding: EdgeInsets.all(SizeConfig.diagonal * 1),
+          child: Text(
+            "Title",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Color(Styling.accentColor),
+              fontSize: SizeConfig.diagonal * 3.5,
+              fontStyle: FontStyle.italic,
+            ),
+          ),
+        ),
+        StreamBuilder<QuerySnapshot>(
+          stream: statistic.snapshots(),
+          // ignore: missing_return
+          builder:
+              (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+            return Container(
+              height: SizeConfig.diagonal * 20,
+              child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: snapshot.data.docs.length,
+                  itemBuilder: (BuildContext context, index) {
+                    Statistic stat = Statistic();
+                    stat.buildObject(snapshot.data.docs[index]);
+                    return Row(
+                      children: [
+                        body(stat),
+                      ],
+                    );
+                  }),
+            );
+          },
+        ),
+      ],
     );
   }
 

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
+
 import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -20,6 +21,8 @@ import 'package:zilliken/Models/Call.dart';
 import 'package:zilliken/Models/Fields.dart';
 import 'package:zilliken/Models/Order.dart';
 import 'package:zilliken/Models/OrderItem.dart';
+import 'package:zilliken/Models/Statistic.dart';
+import 'package:zilliken/Pages/StatPage.dart';
 import 'package:zilliken/Services/Authentication.dart';
 import 'package:zilliken/Services/Database.dart';
 import 'package:zilliken/Services/Messaging.dart';
@@ -113,6 +116,8 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
 
   bool goingBack = false;
   List<OrderItem> items = new List();
+
+  Statistic statistic;
 
   @override
   void initState() {
@@ -1195,7 +1200,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
       backFunction();
     }
 
-    widget.db.updateStatus(widget.orderId, _orderStatus, value);
+    widget.db.updateStatus(widget.orderId, _orderStatus, value,statistic);
   }
 
   Widget orderItemStream() {

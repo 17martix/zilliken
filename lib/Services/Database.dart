@@ -14,6 +14,7 @@ import 'package:zilliken/Models/MenuItem.dart';
 import 'package:zilliken/Models/Order.dart';
 import 'package:zilliken/Models/OrderItem.dart';
 import 'package:zilliken/Models/Result.dart';
+import 'package:zilliken/Models/Statistic.dart';
 import 'package:zilliken/Models/UserProfile.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 
@@ -393,8 +394,10 @@ class Database {
     await document.update({Fields.availability: isEnabled});
   }
 
-  Future<void> updateStatus(String id, int status, int value) async {
+  Future<void> updateStatus(
+      String id, int status, int value, Statistic statistic) async {
     var document = databaseReference.collection(Fields.order).doc(id);
+    var document1 = databaseReference.collection(Fields.statistic).doc(id);
     if (value == 1) {
       await document.update({
         Fields.status: Fields.pending,
@@ -414,6 +417,21 @@ class Database {
       await document.update({
         Fields.status: Fields.served,
         Fields.servedDate: FieldValue.serverTimestamp(),
+      });
+
+      document1.get().then((snapshot) async {
+        if (!snapshot.exists) {
+          await document1.set({
+            Fields.id: document1.id,
+            Fields.total: statistic.total,
+            Fields.date: Fields.servedDate,
+          });
+        } else {
+          await document1.update({
+            Fields.total: statistic.total,
+            Fields.date: Fields.servedDate,
+          });
+        }
       });
     }
   }
@@ -672,12 +690,11 @@ class Database {
     });
   }
 
-  Future<void> updateCall(Call call,bool hasCalled) async {
+  Future<void> updateCall(Call call, bool hasCalled) async {
     DocumentReference doc =
         FirebaseFirestore.instance.collection(Fields.calls).doc(call.id);
     await doc.update({
       Fields.hasCalled: hasCalled,
-
     });
   }
 
