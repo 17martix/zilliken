@@ -56,7 +56,7 @@ AppBar buildAppBar(
     actions: [
       logout == null ? Text('') : logoutButton(logout),
       if (print != null) printButton(print),
-      if (print != null) adminButton(admin),
+      if (admin != null) adminButton(admin),
     ],
   );
 }

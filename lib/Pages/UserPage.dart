@@ -3,9 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:zilliken/Components/ZTextField.dart';
 import 'package:zilliken/Helpers/SizeConfig.dart';
 import 'package:zilliken/Helpers/Styling.dart';
+import 'package:zilliken/Models/Fields.dart';
+import 'package:zilliken/Models/UserProfile.dart';
+import 'package:zilliken/Pages/SingleUserPage.dart';
 import 'package:zilliken/Services/Authentication.dart';
 import 'package:zilliken/Services/Database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 
 import '../i18n.dart';
 
@@ -13,7 +17,7 @@ class UserPage extends StatefulWidget {
   final Authentication auth;
   final Database db;
   final String userId;
-// final List<userCategory> userList;
+  final DateFormat formatter = DateFormat('dd/MM/yy hh:mm ');
   final String userRole;
 
   UserPage({
@@ -21,7 +25,6 @@ class UserPage extends StatefulWidget {
     @required this.db,
     @required this.userId,
     @required this.userRole,
-     // @required this.userList,
   });
 
   @override
@@ -29,23 +32,7 @@ class UserPage extends StatefulWidget {
 }
 
 class _UserPageState extends State<UserPage> {
- //List<userCategory> userList = new List();
-  var users = FirebaseFirestore.instance.collection('users');
-
-  /* @override
-  void initState() {
-    super.initState();
-
-    setState(() {});
-  }*/
-
-/*  @override
-  void userQuery(){
-    users = FirebaseFirestore.instance
-            .collection(Fields.name)
-            .where(Fields.availability, isEqualTo: 1)
-            .orderBy(Fields.global, descending: false); 
-  }*/
+  var users = FirebaseFirestore.instance.collection(Fields.users);
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +45,6 @@ class _UserPageState extends State<UserPage> {
   Widget body() {
     return Column(
       children: [
-        SizedBox(height: SizeConfig.diagonal * 3),
         Padding(
           padding: EdgeInsets.all(SizeConfig.diagonal * 1),
           child: ZTextField(
@@ -70,32 +56,62 @@ class _UserPageState extends State<UserPage> {
             ),
           ),
         ),
-        userCategory(),
+        Expanded(child: userListStream()),
       ],
     );
   }
 
-  Widget userCategory() {
+  Widget userListStream() {
     return StreamBuilder<QuerySnapshot>(
       stream: users.snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.data == null) return Center(child: Text(""));
 
-        return Container(
-          margin: EdgeInsets.symmetric(horizontal: SizeConfig.diagonal * 1),
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Column(
-              children: snapshot.data.docs.map((DocumentSnapshot document) {
-                return ListTile(
-                  title: Text(document.data()[I18n.of(context).name]),
-                  subtitle: Text(document.data()[I18n.of(context).phone]),
-                );
-              }).toList(),
-            ),
-          ),
+        return ListView(
+          shrinkWrap: true,
+          children: snapshot.data.docs.map((DocumentSnapshot document) {
+            UserProfile userProfile = UserProfile();
+            userProfile.buildObject(document);
+            return userList(userProfile);
+          }).toList(),
         );
       },
+    );
+  }
+
+  Widget userList(UserProfile userProfile) {
+    return Card(
+      child: ListTile(
+        title: Text(
+          '${I18n.of(context).name} ' " : " ' ${userProfile.name}',
+        ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              I18n.of(context).phone + " : " + userProfile.phoneNumber,
+            ),
+            Text(
+              '${I18n.of(context).last} '
+              " : "
+              '${widget.formatter.format(userProfile.lastSeenAt.toDate())}',
+            ),
+          ],
+        ),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => SingleUserPage(
+                db: widget.db,
+                auth: widget.auth,
+                userId: widget.userId,
+                userRole: widget.userRole,
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 }

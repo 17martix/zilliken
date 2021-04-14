@@ -191,6 +191,8 @@ class I18n {
 
   String get phone => _getText("phone");
 
+  String get last => _getText("last");
+
   static Map<String, String> _localizedValues;
 
   static Map<String, String> _enValues = {
@@ -286,7 +288,8 @@ class I18n {
     "addr": "Complete Address",
     "search": "Search",
     "name": "Name",
-    "phone": "Phone number",
+    "phone": "Phone",
+    "last": "Last seen at",
   };
 
   static Map<String, String> _frValues = {
@@ -382,7 +385,8 @@ class I18n {
     "addr": "Adresse Complète",
     "search": "Rechercher",
     "name": "Nom",
-    "phone": "Numéro de Téléphone",
+    "phone": "Tél",
+    "last": "Vu dernièrement à",
   };
 
   static Map<String, Map<String, String>> _allValues = {
