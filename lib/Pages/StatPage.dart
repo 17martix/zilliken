@@ -1,16 +1,20 @@
+//import 'dart:html';
+//import 'dart:developer';
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import 'package:zilliken/Helpers/SizeConfig.dart';
 import 'package:zilliken/Helpers/Styling.dart';
 import 'package:zilliken/Models/Fields.dart';
-import 'package:zilliken/Models/MenuItem.dart';
+//import 'package:zilliken/Models/MenuItem.dart';
 import 'package:zilliken/Models/Statistic.dart';
 import 'package:intl/intl.dart';
-import 'package:zilliken/Pages/MenuPage.dart';
+//import 'package:zilliken/Pages/MenuPage.dart';
 import 'package:zilliken/Services/Authentication.dart';
 import 'package:zilliken/Services/Database.dart';
-import 'package:zilliken/Services/Messaging.dart';
+//import 'package:zilliken/Services/Messaging.dart';
 
 class StatPage extends StatefulWidget {
   final Authentication auth;
@@ -34,12 +38,73 @@ class _StatPageState extends State<StatPage> {
   List<DocumentSnapshot> items = List();
   CollectionReference statistic =
       FirebaseFirestore.instance.collection(Fields.statistic);
+
+  bool isLoading = false;
+  bool hasMore = true;
+
+  QuerySnapshot statref;
+  DocumentSnapshot lastDocument;
+
+  int documentLimit = 3;
+
+  void initState() {
+    super.initState();
+    statQuery();
+    _scrollController.addListener(() {
+      double maxScroll = _scrollController.position.maxScrollExtent;
+      double currentScroll = _scrollController.position.pixels;
+      double delta = MediaQuery.of(context).size.width * 0.20;
+      if (maxScroll - currentScroll <= delta) {
+        statQuery();
+      }
+    });
+  }
+
+  void statQuery() async {
+    if (isLoading) {
+      return;
+    }
+    setState(() {
+      isLoading = true;
+    });
+
+    if (lastDocument == null) {
+      statref = await widget.db.databaseReference
+          .collection(Fields.statistic)
+          .limit(documentLimit)
+          .orderBy(Fields.date)
+          .get();
+    } else {
+      statref = await widget.db.databaseReference
+          .collection(Fields.statistic)
+          .limit(documentLimit)
+          .orderBy(Fields.date, descending: true)
+          .startAfterDocument(lastDocument)
+          .get();
+    }
+
+    if (statref.docs.length < documentLimit) {
+      hasMore = false;
+    }
+
+    if (statref.docs.length > 0)
+      lastDocument = statref.docs[statref.docs.length - 1];
+    setState(() {
+      for (int i = 0; i < statref.docs.length; i++) {
+        items.add(statref.docs[i]);
+      }
+      isLoading = false;
+
+      log('length is ${items.length}');
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: statisticStream(),
+      body: statList(), //statisticStream(),
     );
   }
 
@@ -110,7 +175,7 @@ class _StatPageState extends State<StatPage> {
     );
   }
 
-  Widget statisticStream() {
+  Widget statList() {
     return Column(
       children: [
         Padding(
@@ -125,7 +190,70 @@ class _StatPageState extends State<StatPage> {
             ),
           ),
         ),
-        StreamBuilder<QuerySnapshot>(
+        Expanded(
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            controller: _scrollController,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                items.length == 0
+                    ? Center(
+                        child: Text(""),
+                      )
+                    : Row(
+                        children: items.map((document) {
+                          Statistic statistic = Statistic();
+                          statistic.buildObject(document);
+                          return body(statistic);
+                        }).toList(),
+                      ),
+                /* ListView.builder(
+                        shrinkWrap: true,
+                        scrollDirection: Axis.horizontal,
+                        controller: _scrollController,
+                        itemCount: items.length,
+                        itemBuilder: (context, index) {
+                          Statistic statistic = Statistic();
+                          statistic.buildObject(items[index]);
+                          return Row(
+                            children: [
+                              body(statistic),
+                            ],
+                          );
+                        },
+                      ),*/
+                isLoading
+                    ? Container(
+                        width: SizeConfig.diagonal * 5,
+                        padding: EdgeInsets.all(SizeConfig.diagonal * 1),
+                        child: CircularProgressIndicator(),
+                      )
+                    : Container()
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  /* Widget statisticStream() {
+    return Column(
+      children: [
+        Padding(
+          padding: EdgeInsets.all(SizeConfig.diagonal * 1),
+          child: Text(
+            "Title",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Color(Styling.accentColor),
+              fontSize: SizeConfig.diagonal * 3.5,
+              fontStyle: FontStyle.italic,
+            ),
+          ),
+        ),
+        StreamBuilder<QuerySnapshot> (
           stream: statistic.snapshots(),
           // ignore: missing_return
           builder:
@@ -133,6 +261,7 @@ class _StatPageState extends State<StatPage> {
             return Container(
               height: SizeConfig.diagonal * 20,
               child: ListView.builder(
+                  controller: _scrollController,
                   scrollDirection: Axis.horizontal,
                   itemCount: snapshot.data.docs.length,
                   itemBuilder: (BuildContext context, index) {
@@ -149,7 +278,7 @@ class _StatPageState extends State<StatPage> {
         ),
       ],
     );
-  }
+  }*/
 
   /*Widget body() {
     return SingleChildScrollView(
