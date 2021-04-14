@@ -4,10 +4,13 @@ import 'package:zilliken/Helpers/SizeConfig.dart';
 import 'package:zilliken/Helpers/Styling.dart';
 import 'package:zilliken/Models/Fields.dart';
 import 'package:zilliken/Models/Stock.dart';
+import 'package:zilliken/Pages/ItemEditPage.dart';
+import 'package:zilliken/Pages/NewItemPage.dart';
 import 'package:zilliken/Services/Authentication.dart';
 import 'package:zilliken/Services/Database.dart';
 import 'package:zilliken/Services/Messaging.dart';
 import 'package:zilliken/i18n.dart';
+import 'package:intl/intl.dart';
 
 class StockPage extends StatefulWidget {
   final Authentication auth;
@@ -15,6 +18,7 @@ class StockPage extends StatefulWidget {
   final Messaging messaging;
   final String userId;
   final String userRole;
+  final DateFormat formatter = DateFormat();
 
   StockPage({
     this.auth,
@@ -31,6 +35,7 @@ class StockPage extends StatefulWidget {
 class _StockPageState extends State<StockPage> {
   CollectionReference item =
       FirebaseFirestore.instance.collection(Fields.stock);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,7 +46,20 @@ class _StockPageState extends State<StockPage> {
         child: IconButton(
           color: Color(Styling.textColor),
           icon: Icon(Icons.add),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => NewItemPage(
+                  db: widget.db,
+                  auth: widget.auth,
+                  userId: widget.userId,
+                  userRole: widget.userRole,
+                  messaging: widget.messaging,
+                ),
+              ),
+            );
+          },
         ),
       ),
     );
@@ -73,7 +91,57 @@ class _StockPageState extends State<StockPage> {
   }
 
   Widget itemTile(Stock stock) {
-    return Card(
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ItemEditPage(
+              db: widget.db,
+              auth: widget.auth,
+              userId: widget.userId,
+              userRole: widget.userRole,
+              messaging: widget.messaging,
+            ),
+          ),
+        );
+      },
+      child: Container(
+        height: SizeConfig.diagonal * 12,
+        child: Card(
+          margin: EdgeInsets.symmetric(
+              horizontal: SizeConfig.diagonal * 0.9,
+              vertical: SizeConfig.diagonal * 0.4),
+          elevation: 8,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5)),
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+                horizontal: SizeConfig.diagonal * 1.5,
+                vertical: SizeConfig.diagonal * 1),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Text(
+                  I18n.of(context).name + ' : ' + stock.name,
+                  textAlign: TextAlign.start,
+                ),
+                Text(I18n.of(context).quantity +
+                    ' : ' +
+                    '${stock.quantity}' +
+                    ' ' +
+                    stock.unit),
+                Text(I18n.of(context).used + ' : ' + '${stock.usedSince}'),
+                Text('${widget.formatter.format(stock.date.toDate())}')
+              ],
+            ),
+          ),
+        ),
+      ),
+    )
+
+        /*Card(
       margin: EdgeInsets.symmetric(
           horizontal: SizeConfig.diagonal * 0.9,
           vertical: SizeConfig.diagonal * 0.3),
@@ -90,11 +158,16 @@ class _StockPageState extends State<StockPage> {
         subtitle: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(I18n.of(context).quantity + ' : ' + '${stock.quantity}'),
+            Text(I18n.of(context).quantity +
+                ' : ' +
+                '${stock.quantity}' +
+                ' ' +
+                stock.unit),
             Text(I18n.of(context).used + ' : ' + '${stock.usedSince}'),
           ],
         ),
       ),
-    );
+    )*/
+        ;
   }
 }

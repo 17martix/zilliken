@@ -5,10 +5,11 @@ import 'package:zilliken/Models/Fields.dart';
 class Stock {
   String id;
   String name;
+  num quantity;
   String unit;
   num usedSince;
   num usedTotal;
-  num quantity;
+  Timestamp date;
 
   Stock({
     this.id,
@@ -17,23 +18,26 @@ class Stock {
     this.unit,
     this.usedSince,
     this.usedTotal,
+    this.date,
   });
 
   void buildObject(DocumentSnapshot document) {
     id = document.id;
     name = document.data()[Fields.name];
+    quantity = document.data()[Fields.quantity];
     unit = document.data()[Fields.unit];
     usedSince = document.data()[Fields.usedSince];
     usedTotal = document.data()[Fields.usedTotal];
-    quantity = document.data()[Fields.quantity];
+    date = document.data()[Fields.date];
   }
 
   void buildObjectAsync(AsyncSnapshot<DocumentSnapshot> document) {
     id = document.data.id;
     name = document.data[Fields.name];
+    quantity = document.data[Fields.quantity];
     unit = document.data[Fields.unit];
     usedSince = document.data[Fields.usedSince];
     usedTotal = document.data[Fields.usedTotal];
-    quantity = document.data[Fields.quantity];
+    date = document.data[Fields.date];
   }
 }

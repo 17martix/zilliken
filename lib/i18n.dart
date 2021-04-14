@@ -195,6 +195,12 @@ class I18n {
 
   String get used => _getText("used");
 
+  String get unit => _getText("unit");
+
+  String get itemDescription => _getText("itemDescription");
+
+  String get itemEditing => _getText("itemEditing");
+
   static Map<String, String> _localizedValues;
 
   static Map<String, String> _enValues = {
@@ -293,6 +299,9 @@ class I18n {
     "phone": "Phone number",
     "quantity": "Quantity",
     "used": "Used",
+    "unit": "Unit",
+    "itemDescription": "Enter Item Description",
+    "itemEditing": "Edit Item Details",
   };
 
   static Map<String, String> _frValues = {
@@ -391,6 +400,9 @@ class I18n {
     "phone": "Numéro de Téléphone",
     "quantity": "Quantité",
     "used": "Utilisé",
+    "unit": "Unité",
+    "itemDescription": "Entrer Déscription",
+    "itemEditing": "Modifier Détails",
   };
 
   static Map<String, Map<String, String>> _allValues = {

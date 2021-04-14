@@ -93,3 +93,6 @@ name,Name,Nom
 phone,Phone number,Numéro de Téléphone
 quantity,Quantity,Quantité
 used,Used,Utilisé
+unit,Unit,Unité
+itemDescription,Enter Item Description,Entrer Déscription
+itemEditing,Edit Item Details,Modifier Détails

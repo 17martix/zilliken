@@ -14,8 +14,10 @@ import 'package:zilliken/Models/MenuItem.dart';
 import 'package:zilliken/Models/Order.dart';
 import 'package:zilliken/Models/OrderItem.dart';
 import 'package:zilliken/Models/Result.dart';
+import 'package:zilliken/Models/Stock.dart';
 import 'package:zilliken/Models/UserProfile.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
+import 'package:zilliken/Pages/NewItemPage.dart';
 
 import '../i18n.dart';
 
@@ -672,12 +674,11 @@ class Database {
     });
   }
 
-  Future<void> updateCall(Call call,bool hasCalled) async {
+  Future<void> updateCall(Call call, bool hasCalled) async {
     DocumentReference doc =
         FirebaseFirestore.instance.collection(Fields.calls).doc(call.id);
     await doc.update({
       Fields.hasCalled: hasCalled,
-
     });
   }
 
@@ -718,5 +719,47 @@ class Database {
       Fields.typedAddress: address.typedAddress,
       Fields.phoneNumber: address.phoneNumber,
     });
+  }
+
+  Future<Result> addInventoryItem(context, Stock stock) async {
+    Result result =
+        Result(isSuccess: false, message: I18n.of(context).operationFailed);
+    DocumentReference inventory =
+        databaseReference.collection(Fields.stock).doc();
+
+    await inventory
+        .set({
+          Fields.id: inventory.id,
+          Fields.name: stock.name,
+          Fields.quantity: stock.quantity,
+          Fields.unit: stock.unit,
+          Fields.usedSince: stock.usedSince,
+          Fields.usedTotal: stock.usedTotal,
+          Fields.date: FieldValue.serverTimestamp(),
+        })
+        .whenComplete(() => result = Result(
+            isSuccess: true, message: I18n.of(context).operationSucceeded))
+        .catchError((error) => result = Result(
+            isSuccess: false, message: I18n.of(context).operationFailed));
+
+    return result;
+  }
+
+  Future<Result> editInventoryItem(context, Stock stock) async {
+    Result result =
+        Result(isSuccess: false, message: I18n.of(context).operationFailed);
+    DocumentReference inventory =
+        databaseReference.collection(Fields.stock).doc(stock.id);
+    await inventory
+        .update({
+          Fields.quantity: stock.quantity,
+          Fields.usedSince: 0,
+        })
+        .whenComplete(() => result = Result(
+            isSuccess: true, message: I18n.of(context).operationSucceeded))
+        .catchError((error) => result = Result(
+            isSuccess: false, message: I18n.of(context).operationFailed));
+
+    return result;
   }
 }

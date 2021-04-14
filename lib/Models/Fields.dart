@@ -81,4 +81,6 @@ class Fields {
   static final String usedSince = 'usedSince';
   static final String usedTotal = 'usedTotal';
   static final String stock = 'stock';
+    static final String date = 'date';
+
 }
