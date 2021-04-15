@@ -395,7 +395,7 @@ class Database {
   }
 
   Future<void> updateStatus(
-      String id, int status, int value, Statistic statistic) async {
+      String id, int status, int value, Statistic statistic,Order order) async {
     var document = databaseReference.collection(Fields.order).doc(id);
     var document1 = databaseReference.collection(Fields.statistic).doc(id);
     if (value == 1) {
@@ -423,15 +423,18 @@ class Database {
         if (!snapshot.exists) {
           await document1.set({
             Fields.id: document1.id,
-            Fields.total: statistic.total,
-            Fields.date: Fields.servedDate,
+            Fields.total: order.grandTotal,
+            Fields.date:order.servedDate,
           });
-        } else {
-          await document1.update({
-            Fields.total: statistic.total,
-            Fields.date: Fields.servedDate,
+        } else {if(statistic.date!=order.servedDate){
+              await document1.update({
+            
+            Fields.total: statistic.total+order.grandTotal,
+            Fields.date: order.servedDate,
           });
-        }
+            }
+          
+        } 
       });
     }
   }

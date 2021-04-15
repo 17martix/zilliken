@@ -4,7 +4,7 @@ import 'Fields.dart';
 
 class Statistic {
   String id;
-  int total;
+  num total;
   Timestamp date;
 
   Statistic({

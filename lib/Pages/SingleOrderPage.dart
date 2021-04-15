@@ -117,7 +117,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
   bool goingBack = false;
   List<OrderItem> items = new List();
 
-  Statistic statistic;
+  Statistic newStatistic=Statistic();
 
   @override
   void initState() {
@@ -1200,7 +1200,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
       backFunction();
     }
 
-    widget.db.updateStatus(widget.orderId, _orderStatus, value,statistic);
+    widget.db.updateStatus(widget.orderId, _orderStatus, value,newStatistic,order);
   }
 
   Widget orderItemStream() {

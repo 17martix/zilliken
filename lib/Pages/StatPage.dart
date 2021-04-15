@@ -22,6 +22,7 @@ class StatPage extends StatefulWidget {
   final String userId;
   final String userRole;
   final DateFormat formatter = DateFormat('dd/MM/yy HH:mm');
+  //final DateFormat formatter1 = DateFormat('dd/MM/yy');
 
   StatPage({
     @required this.auth,
@@ -45,10 +46,14 @@ class _StatPageState extends State<StatPage> {
   QuerySnapshot statref;
   DocumentSnapshot lastDocument;
 
-  int documentLimit = 3;
+  int documentLimit = 10;
+ // AnimationController animationController;
 
   void initState() {
     super.initState();
+      //animationController =
+            //AnimationController(duration: new Duration(seconds: 2),);
+        //animationController.repeat();
     statQuery();
     _scrollController.addListener(() {
       double maxScroll = _scrollController.position.maxScrollExtent;
@@ -108,7 +113,7 @@ class _StatPageState extends State<StatPage> {
     );
   }
 
-  Widget body(Statistic statistic) {
+  Widget itemCard(Statistic statistic) {
     return Column(
       children: [
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
@@ -194,6 +199,7 @@ class _StatPageState extends State<StatPage> {
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             controller: _scrollController,
+          
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -205,7 +211,7 @@ class _StatPageState extends State<StatPage> {
                         children: items.map((document) {
                           Statistic statistic = Statistic();
                           statistic.buildObject(document);
-                          return body(statistic);
+                          return itemCard(statistic);
                         }).toList(),
                       ),
                 /* ListView.builder(
@@ -225,9 +231,19 @@ class _StatPageState extends State<StatPage> {
                       ),*/
                 isLoading
                     ? Container(
-                        width: SizeConfig.diagonal * 5,
+                        width: SizeConfig.diagonal * 6,
                         padding: EdgeInsets.all(SizeConfig.diagonal * 1),
-                        child: CircularProgressIndicator(),
+                        child: CircularProgressIndicator(
+                         // valueColor: animationController
+                  //.drive(ColorTween(begin: Colors.blueAccent, end: Colors.red)),
+
+                          //valueColor:Animation<blue> valueColor ,
+                           
+                        semanticsLabel: 'Linear progress indicator',
+           
+                          backgroundColor: Color(Styling.primaryDarkColor),
+                          
+                        ),
                       )
                     : Container()
               ],
