@@ -1,9 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:zilliken/Helpers/SizeConfig.dart';
 import 'package:zilliken/Helpers/Styling.dart';
 import 'package:zilliken/Models/Fields.dart';
 import 'package:zilliken/Models/Stock.dart';
+import 'package:zilliken/Pages/LinkToMenu.dart';
 import 'package:zilliken/Pages/ItemEditPage.dart';
 import 'package:zilliken/Pages/NewItemPage.dart';
 import 'package:zilliken/Services/Authentication.dart';
@@ -91,21 +93,98 @@ class _StockPageState extends State<StockPage> {
   }
 
   Widget itemTile(Stock stock) {
-    return InkWell(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ItemEditPage(
-              db: widget.db,
-              auth: widget.auth,
-              userId: widget.userId,
-              userRole: widget.userRole,
-              messaging: widget.messaging,
+    return Slidable(
+      actionPane: SlidableDrawerActionPane(),
+      actions: [
+        SlideAction(
+          child: Container(
+            height: SizeConfig.diagonal * 12,
+            width: double.infinity,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.cancel,
+                  size: SizeConfig.diagonal * 2.5,
+                ),
+                Text('Cancel'),
+              ],
+            ),
+            decoration: BoxDecoration(
+              color: Colors.red,
+              borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5),
             ),
           ),
-        );
-      },
+        ),
+        SlideAction(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ItemEditPage(
+                  db: widget.db,
+                  auth: widget.auth,
+                  userId: widget.userId,
+                  userRole: widget.userRole,
+                  messaging: widget.messaging,
+                ),
+              ),
+            );
+          },
+          child: Container(
+            height: SizeConfig.diagonal * 12,
+            width: double.infinity,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.edit,
+                  size: SizeConfig.diagonal * 2.5,
+                ),
+                Text('Edit'),
+              ],
+            ),
+            decoration: BoxDecoration(
+              color: Colors.blue,
+              borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5),
+            ),
+          ),
+        ),
+        SlideAction(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => LinkToMenu(
+                  db: widget.db,
+                  auth: widget.auth,
+                  userId: widget.userId,
+                  userRole: widget.userRole,
+                  messaging: widget.messaging,
+                ),
+              ),
+            );
+          },
+          child: Container(
+            width: double.infinity,
+            height: SizeConfig.diagonal * 12,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.link,
+                  size: SizeConfig.diagonal * 2.5,
+                ),
+                Text('Link to Menu Item')
+              ],
+            ),
+            decoration: BoxDecoration(
+              color: Colors.grey,
+              borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5),
+            ),
+          ),
+        ),
+      ],
       child: Container(
         height: SizeConfig.diagonal * 12,
         child: Card(

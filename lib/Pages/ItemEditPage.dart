@@ -1,9 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:zilliken/Components/ZAppBar.dart';
 import 'package:zilliken/Components/ZRaisedButton.dart';
 import 'package:zilliken/Components/ZTextField.dart';
 import 'package:zilliken/Helpers/SizeConfig.dart';
 import 'package:zilliken/Helpers/Styling.dart';
+import 'package:zilliken/Models/Fields.dart';
 import 'package:zilliken/Models/MenuItem.dart';
 import 'package:zilliken/Models/Stock.dart';
 import 'package:zilliken/Services/Authentication.dart';
@@ -19,6 +21,7 @@ class ItemEditPage extends StatefulWidget {
   final String userId;
   final String userRole;
   final DateFormat formatter = DateFormat();
+  MenuItem newItem = MenuItem();
 
   ItemEditPage({
     this.auth,
@@ -32,6 +35,12 @@ class ItemEditPage extends StatefulWidget {
 }
 
 class _ItemEditPageState extends State<ItemEditPage> {
+  @override
+  void initState() {
+    super.initState();
+    //widget.db.getMenuItemName(id).then((value) {});
+  }
+
   void backFunction() {
     Navigator.of(context).pop();
   }
@@ -41,7 +50,16 @@ class _ItemEditPageState extends State<ItemEditPage> {
 
   Stock stock = Stock();
   MenuItem menuItem = MenuItem();
-  List<String> _itemList = new List();
+  List<String> unitList = [
+    'Kilogram(s)',
+    'Liter(s)',
+    'Box(es)',
+    'Bottle(s)',
+    'Item(s)',
+    'gram(s)'
+  ];
+
+  String selectedValue;
 
   @override
   Widget build(BuildContext context) {
@@ -87,20 +105,29 @@ class _ItemEditPageState extends State<ItemEditPage> {
                 height: SizeConfig.diagonal * 3,
               ),
               DropdownButton(
-                  value: menuItem.name,
-                  items:
-                      _itemList.map<DropdownMenuItem<String>>((String value) {
+                  hint: Text('Select the Unit'),
+                  value: selectedValue,
+                  items: unitList.map((String value) {
                     return DropdownMenuItem<String>(
                         value: value,
                         child: Text(
                           value,
                         ));
                   }).toList(),
-                  onChanged: (newValue) {
+                  onChanged: (String val) {
                     setState(() {
-                      menuItem.name = newValue;
+                      selectedValue = val;
                     });
                   }),
+              SizedBox(
+                height: SizeConfig.diagonal * 2,
+              ),
+              Container(
+                height: SizeConfig.diagonal * 5,
+                child: Center(
+                  child: Text('Choose any meal that requires this item'),
+                ),
+              ),
               SizedBox(
                 height: SizeConfig.diagonal * 2,
               ),
