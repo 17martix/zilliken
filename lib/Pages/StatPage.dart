@@ -47,13 +47,13 @@ class _StatPageState extends State<StatPage> {
   DocumentSnapshot lastDocument;
 
   int documentLimit = 10;
- // AnimationController animationController;
+  // AnimationController animationController;
 
   void initState() {
     super.initState();
-      //animationController =
-            //AnimationController(duration: new Duration(seconds: 2),);
-        //animationController.repeat();
+    //animationController =
+    //AnimationController(duration: new Duration(seconds: 2),);
+    //animationController.repeat();
     statQuery();
     _scrollController.addListener(() {
       double maxScroll = _scrollController.position.maxScrollExtent;
@@ -199,7 +199,6 @@ class _StatPageState extends State<StatPage> {
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             controller: _scrollController,
-          
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -231,18 +230,31 @@ class _StatPageState extends State<StatPage> {
                       ),*/
                 isLoading
                     ? Container(
-                        width: SizeConfig.diagonal * 6,
-                        padding: EdgeInsets.all(SizeConfig.diagonal * 1),
-                        child: CircularProgressIndicator(
-                         // valueColor: animationController
-                  //.drive(ColorTween(begin: Colors.blueAccent, end: Colors.red)),
+                        width: SizeConfig.diagonal * 8,
+                        height: SizeConfig.diagonal * 8,
+                        padding: EdgeInsets.all(SizeConfig.diagonal * 1.5),
+                       
+                        
+                        
+                        child: Card(
+                          elevation: 2,
+                          color: Colors.white.withOpacity(1),
+                          shape: RoundedRectangleBorder(
+                            
+                            borderRadius:
+                                BorderRadius.circular(SizeConfig.diagonal * 1),
+                                
+                          ),
+                          child: CircularProgressIndicator(
+                            // valueColor: animationController
+                            //.drive(ColorTween(begin: Colors.blueAccent, end: Colors.red)),
 
-                          //valueColor:Animation<blue> valueColor ,
-                           
-                        semanticsLabel: 'Linear progress indicator',
-           
-                          backgroundColor: Color(Styling.primaryDarkColor),
-                          
+                            //valueColor:Animation<blue> valueColor ,
+
+                            semanticsLabel: 'Linear progress indicator',
+
+                            backgroundColor: Color(Styling.primaryDarkColor),
+                          ),
                         ),
                       )
                     : Container()
