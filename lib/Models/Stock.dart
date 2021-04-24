@@ -10,6 +10,7 @@ class Stock {
   num usedSince;
   num usedTotal;
   Timestamp date;
+  bool linked;
 
   Stock({
     this.id,
@@ -19,6 +20,7 @@ class Stock {
     this.usedSince,
     this.usedTotal,
     this.date,
+    this.linked,
   });
 
   void buildObject(DocumentSnapshot document) {
@@ -29,6 +31,8 @@ class Stock {
     usedSince = document.data()[Fields.usedSince];
     usedTotal = document.data()[Fields.usedTotal];
     date = document.data()[Fields.date];
+        linked = document.data()[Fields.linked];
+
   }
 
   void buildObjectAsync(AsyncSnapshot<DocumentSnapshot> document) {
@@ -39,5 +43,7 @@ class Stock {
     usedSince = document.data[Fields.usedSince];
     usedTotal = document.data[Fields.usedTotal];
     date = document.data[Fields.date];
+        linked = document.data[Fields.linked];
+
   }
 }

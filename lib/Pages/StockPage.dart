@@ -6,7 +6,7 @@ import 'package:zilliken/Helpers/Styling.dart';
 import 'package:zilliken/Models/Fields.dart';
 import 'package:zilliken/Models/Stock.dart';
 import 'package:zilliken/Pages/LinkToMenu.dart';
-import 'package:zilliken/Pages/ItemEditPage.dart';
+import 'package:zilliken/Pages/ItemUpdatePage.dart';
 import 'package:zilliken/Pages/NewItemPage.dart';
 import 'package:zilliken/Services/Authentication.dart';
 import 'package:zilliken/Services/Database.dart';
@@ -121,12 +121,13 @@ class _StockPageState extends State<StockPage> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => ItemEditPage(
+                builder: (context) => ItemUpdatePage(
                   db: widget.db,
                   auth: widget.auth,
                   userId: widget.userId,
                   userRole: widget.userRole,
                   messaging: widget.messaging,
+                  stock: stock,
                 ),
               ),
             );
@@ -138,10 +139,10 @@ class _StockPageState extends State<StockPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(
-                  Icons.edit,
+                  Icons.update,
                   size: SizeConfig.diagonal * 2.5,
                 ),
-                Text('Edit'),
+                Text('Update'),
               ],
             ),
             decoration: BoxDecoration(
@@ -161,6 +162,7 @@ class _StockPageState extends State<StockPage> {
                   userId: widget.userId,
                   userRole: widget.userRole,
                   messaging: widget.messaging,
+                  stock:stock,
                 ),
               ),
             );
@@ -175,7 +177,7 @@ class _StockPageState extends State<StockPage> {
                   Icons.link,
                   size: SizeConfig.diagonal * 2.5,
                 ),
-                Text('Link to Menu Item')
+                Text('Link to Menu'),
               ],
             ),
             decoration: BoxDecoration(

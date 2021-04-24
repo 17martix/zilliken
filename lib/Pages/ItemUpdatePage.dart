@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:zilliken/Components/ZAppBar.dart';
 import 'package:zilliken/Components/ZRaisedButton.dart';
 import 'package:zilliken/Components/ZTextField.dart';
 import 'package:zilliken/Helpers/SizeConfig.dart';
 import 'package:zilliken/Helpers/Styling.dart';
+import 'package:zilliken/Helpers/Utils.dart';
 import 'package:zilliken/Models/Fields.dart';
 import 'package:zilliken/Models/MenuItem.dart';
 import 'package:zilliken/Models/Stock.dart';
@@ -14,57 +16,46 @@ import 'package:zilliken/Services/Messaging.dart';
 import 'package:intl/intl.dart';
 import 'package:zilliken/i18n.dart';
 
-class ItemEditPage extends StatefulWidget {
+class ItemUpdatePage extends StatefulWidget {
   final Authentication auth;
   final Database db;
   final Messaging messaging;
   final String userId;
   final String userRole;
   final DateFormat formatter = DateFormat();
-  MenuItem newItem = MenuItem();
+  final Stock stock;
 
-  ItemEditPage({
+  ItemUpdatePage({
     this.auth,
     this.db,
     this.messaging,
     this.userId,
     this.userRole,
+    this.stock,
   });
   @override
   _ItemEditPageState createState() => _ItemEditPageState();
 }
 
-class _ItemEditPageState extends State<ItemEditPage> {
-  @override
-  void initState() {
-    super.initState();
-    //widget.db.getMenuItemName(id).then((value) {});
-  }
+class _ItemEditPageState extends State<ItemUpdatePage> {
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   //widget.db.getMenuItemName(id).then((value) {});
+  // }
 
   void backFunction() {
     Navigator.of(context).pop();
   }
 
   var _formKey = GlobalKey<FormState>();
-  var _scaffoldKey = GlobalKey<ScaffoldState>();
-
-  Stock stock = Stock();
-  MenuItem menuItem = MenuItem();
-  List<String> unitList = [
-    'Kilogram(s)',
-    'Liter(s)',
-    'Box(es)',
-    'Bottle(s)',
-    'Item(s)',
-    'gram(s)'
-  ];
-
-  String selectedValue;
+  GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
     return Scaffold(
+      key: _scaffoldKey,
       appBar: buildAppBar(
           context, widget.auth, true, null, backFunction, null, null),
       body: body(),
@@ -88,51 +79,25 @@ class _ItemEditPageState extends State<ItemEditPage> {
               ),
               ZTextField(
                 outsidePrefix: Text(I18n.of(context).quantity + ' :'),
-                //onSaved: (value) => newStockValue.name = value,
+                onSaved: (value) => widget.stock.quantity = num.parse(value),
                 validator: (value) =>
                     value.isEmpty ? I18n.of(context).requit : null,
               ),
               SizedBox(
                 height: SizeConfig.diagonal * 3,
               ),
-              ZTextField(
-                outsidePrefix: Text(I18n.of(context).unit + ' :'),
-                //onSaved: (value) => newStockValue.quantity = num.parse(value),
-                validator: (value) =>
-                    value.isEmpty ? I18n.of(context).requit : null,
-              ),
-              SizedBox(
-                height: SizeConfig.diagonal * 3,
-              ),
-              DropdownButton(
-                  hint: Text('Select the Unit'),
-                  value: selectedValue,
-                  items: unitList.map((String value) {
-                    return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(
-                          value,
-                        ));
-                  }).toList(),
-                  onChanged: (String val) {
-                    setState(() {
-                      selectedValue = val;
-                    });
-                  }),
-              SizedBox(
-                height: SizeConfig.diagonal * 2,
-              ),
-              Container(
-                height: SizeConfig.diagonal * 5,
-                child: Center(
-                  child: Text('Choose any meal that requires this item'),
-                ),
-              ),
-              SizedBox(
-                height: SizeConfig.diagonal * 2,
-              ),
+              // ZTextField(
+              //   outsidePrefix: Text(I18n.of(context).unit + ' :'),
+              //   //onSaved: (value) => newStockValue.quantity = num.parse(value),
+              //   validator: (value) =>
+              //       value.isEmpty ? I18n.of(context).requit : null,
+              // ),
+              // SizedBox(
+              //   height: SizeConfig.diagonal * 3,
+              // ),
+
               ZRaisedButton(
-                onpressed: () {},
+                onpressed: itemUpdate,
                 textIcon: Text(
                   I18n.of(context).save,
                   style: TextStyle(color: Color(Styling.textColor)),
@@ -143,5 +108,48 @@ class _ItemEditPageState extends State<ItemEditPage> {
         ),
       ),
     );
+  }
+
+  void itemUpdate() async {
+    final form = _formKey.currentState;
+
+    if (form.validate()) {
+      form.save();
+      EasyLoading.show(status: I18n.of(context).loading);
+
+      bool isOnline = await hasConnection();
+      if (!isOnline) {
+        EasyLoading.dismiss();
+
+        _scaffoldKey.currentState.showSnackBar(
+          SnackBar(
+            content: Text(I18n.of(context).noInternet),
+          ),
+        );
+      } else {
+        try {
+          await widget.db.updateInventoryItem(context, widget.stock);
+
+          EasyLoading.dismiss();
+
+          setState(() {
+            _formKey.currentState.reset();
+          });
+        } on Exception catch (e) {
+          //print('Error: $e');
+
+          EasyLoading.dismiss();
+          setState(() {
+            _formKey.currentState.reset();
+          });
+
+          _scaffoldKey.currentState.showSnackBar(
+            SnackBar(
+              content: Text(e.toString()),
+            ),
+          );
+        }
+      }
+    }
   }
 }

@@ -44,8 +44,22 @@ class _NewItemPageState extends State<NewItemPage> {
   final _formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  NewItemPage newItemPage = NewItemPage();
   Stock newStockValue = Stock();
+  List<String> unitList = [
+    'Kilogram(s)',
+    'Liter(s)',
+    'Box(es)',
+    'Bottle(s)',
+    'Item(s)',
+    'gram(s)'
+  ];
+
+  String selectedValue;
+  String name;
+  String unit;
+  num quantity;
+  num usedSince;
+  num usedTotal;
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +89,7 @@ class _NewItemPageState extends State<NewItemPage> {
               ),
               ZTextField(
                 outsidePrefix: Text(I18n.of(context).name + ' :'),
-                onSaved: (value) => newStockValue.name = value,
+                onSaved: (value) => name = value,
                 validator: (value) =>
                     value.isEmpty ? I18n.of(context).requit : null,
               ),
@@ -84,19 +98,29 @@ class _NewItemPageState extends State<NewItemPage> {
               ),
               ZTextField(
                 outsidePrefix: Text(I18n.of(context).quantity + ' :'),
-                onSaved: (value) => newStockValue.quantity = num.parse(value),
+                onSaved: (value) => quantity = num.parse(value),
                 validator: (value) =>
                     value.isEmpty ? I18n.of(context).requit : null,
               ),
               SizedBox(
                 height: SizeConfig.diagonal * 3,
               ),
-              ZTextField(
-                outsidePrefix: Text(I18n.of(context).unit + ' :'),
-                onSaved: (value) => newStockValue.unit = value,
-                validator: (value) =>
-                    value.isEmpty ? I18n.of(context).requit : null,
-              ),
+              DropdownButton(
+                  hint: Text('Select the Unit'),
+                  value: selectedValue,
+                  items: unitList.map((String value) {
+                    return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(
+                          value,
+                        ));
+                  }).toList(),
+                  onChanged: (String val) {
+                    setState(() {
+                      selectedValue = val;
+                      unit = selectedValue;
+                    });
+                  }),
               SizedBox(
                 height: SizeConfig.diagonal * 2,
               ),
@@ -132,11 +156,14 @@ class _NewItemPageState extends State<NewItemPage> {
         );
       } else {
         try {
-          setState(() {
-            newStockValue.usedSince = 0;
-            newStockValue.usedTotal = 0;
-          });
-          await widget.db.addInventoryItem(context, newStockValue);
+          Stock newStock = Stock(
+              name: name,
+              quantity: quantity,
+              unit: unit,
+              usedSince: 0,
+              usedTotal: 0);
+          setState(() {});
+          await widget.db.addInventoryItem(context, newStock);
 
           EasyLoading.dismiss();
 

@@ -10,6 +10,7 @@ import 'package:zilliken/Models/Call.dart';
 import 'package:zilliken/Models/Address.dart';
 import 'package:zilliken/Models/Category.dart';
 import 'package:zilliken/Models/Fields.dart';
+import 'package:zilliken/Models/Linked.dart';
 import 'package:zilliken/Models/MenuItem.dart';
 import 'package:zilliken/Models/Order.dart';
 import 'package:zilliken/Models/OrderItem.dart';
@@ -745,21 +746,47 @@ class Database {
     return result;
   }
 
-  Future<Result> editInventoryItem(context, Stock stock) async {
+  Future<Result> updateInventoryItem(context, Stock stock) async {
     Result result =
         Result(isSuccess: false, message: I18n.of(context).operationFailed);
     DocumentReference inventory =
         databaseReference.collection(Fields.stock).doc(stock.id);
+
     await inventory
         .update({
           Fields.quantity: stock.quantity,
-          Fields.usedSince: 0,
         })
         .whenComplete(() => result = Result(
             isSuccess: true, message: I18n.of(context).operationSucceeded))
         .catchError((error) => result = Result(
             isSuccess: false, message: I18n.of(context).operationFailed));
-
     return result;
+  }
+
+  Future<void> linkSetter(Stock stock,MenuItem menuItem,Linked linked) async {
+    var linker = databaseReference
+        .collection(Fields.stock)
+        .doc(stock.id)
+        .collection(Fields.linked)
+        .doc();
+    await linker.set({
+      Fields.id:linker.id,
+      Fields.itemId:menuItem.id,
+      Fields.itemName:menuItem.name,
+      Fields.substQuantity:linked.substQuantity,
+    });
+  }
+
+  Future<void> linkUpdater(Stock stock,MenuItem menuItem,Linked linked) async {
+    var linker = databaseReference
+        .collection(Fields.stock)
+        .doc(stock.id)
+        .collection(Fields.linked)
+        .doc(linked.id);
+    await linker.update({
+      Fields.itemId:menuItem.id,
+      Fields.itemName:menuItem.name,
+      Fields.substQuantity:linked.substQuantity,
+    });
   }
 }
