@@ -395,7 +395,7 @@ class Database {
   }
 
   Future<void> updateStatus(
-      String id, int status, int value, Order order) async {
+      String id, int status, int value, Order order,num grandTotal) async {
     var document = databaseReference.collection(Fields.order).doc(id);
 
     if (value == 1) {
@@ -422,7 +422,7 @@ class Database {
       DateTime today = DateTime.now();
       Statistic newStatistic = Statistic(
         date: Timestamp.fromDate(DateTime(today.year, today.month, today.day)),
-        total: order.grandTotal,
+        total: grandTotal,
       );
 
       await databaseReference
@@ -430,51 +430,21 @@ class Database {
           .where(Fields.date, isEqualTo: newStatistic.date)
           .get()
           .then((value) async {
-        //update
         if (value != null && value.size > 0) {
-          await databaseReference.collection(Fields.statistic).doc().update({
+          await databaseReference.collection(Fields.statistic).doc(value.docs[0].id).update({
             Fields.total: FieldValue.increment(newStatistic.total),
           });
         } else {
-          // CollectionReference statref =
-          //     databaseReference.collection(Fields.statistic);
           DocumentReference statref =
               databaseReference.collection(Fields.statistic).doc();
 
-         await statref.set({
-            Fields.id:statref.id,
-            Fields.total:newStatistic.total,
-            Fields.date:newStatistic.date,
+          await statref.set({
+            Fields.id: statref.id,
+            Fields.total: newStatistic.total,
+            Fields.date: newStatistic.date,
           });
-
-          //databaseReference.collection(Fields.statistic).where(Fiels);
-
-          // .collection(Fields.statistic)
-          // .where(Fields.date, isEqualTo: newStatistic.date)
-          // .get();
-
-          //create
-
         }
       });
-
-      /* document1.get().then((snapshot) async {
-        if (snapshot.exists) {
-          await document1.set(
-            Fields.id: document1.id,
-            Fields.total: order.grandTotal,
-            Fields.date:order.servedDate,
-          });
-        } else {if(statistic.date!=order.servedDate){
-              await document1.update({
-            
-            Fields.total: statistic.total+order.grandTotal,
-            Fields.date: order.servedDate,
-          });
-            }
-          
-        } 
-      });*/
     }
   }
 

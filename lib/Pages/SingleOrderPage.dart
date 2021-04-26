@@ -21,7 +21,7 @@ import 'package:zilliken/Models/Call.dart';
 import 'package:zilliken/Models/Fields.dart';
 import 'package:zilliken/Models/Order.dart';
 import 'package:zilliken/Models/OrderItem.dart';
-import 'package:zilliken/Models/Statistic.dart';
+//import 'package:zilliken/Models/Statistic.dart';
 //import 'package:zilliken/Pages/StatPage.dart';
 import 'package:zilliken/Services/Authentication.dart';
 import 'package:zilliken/Services/Database.dart';
@@ -1202,8 +1202,8 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
     if (goingBack) {
       backFunction();
     }
-    widget.db
-        .updateStatus(widget.orderId, _orderStatus, value, order);
+    widget.db.updateStatus(
+        widget.orderId, _orderStatus, value, order, widget.clientOrder.grandTotal);
   }
 
   Widget orderItemStream() {
@@ -1624,7 +1624,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                   SizedBox(width: SizeConfig.diagonal * 1),
                   Expanded(
                     flex: 1,
-                    child: Text(
+                    child: Text(order.orderDate==null?'':
                       '${widget.formatter.format(order.orderDate.toDate())}',
                       overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.end,
