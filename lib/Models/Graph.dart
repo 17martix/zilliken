@@ -5,12 +5,12 @@ class Graph {
   final String year;
   final int subscribers;
   final double count;
-  //final charts.Color barColor;
+  final Color barColor;
 
   Graph({
-    @required this.year,
+    @required this.year, 
     @required this.subscribers,
     @required this.count,
-    //@required this.barColor,
+    @required this.barColor,
   });
 }

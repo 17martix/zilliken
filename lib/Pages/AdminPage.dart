@@ -30,7 +30,7 @@ class AdminPage extends StatefulWidget {
 }
 
 class _AdminPageState extends State<AdminPage> {
-   int _pageState = 0;
+  int _pageState = 0;
   double _xoffset1 = 0;
   double _xoffset2 = 0;
   double _xoffset3 = 0;

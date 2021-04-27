@@ -1,7 +1,7 @@
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fl_chart/fl_chart.dart' ;
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
 import 'package:zilliken/Helpers/SizeConfig.dart';
@@ -13,6 +13,7 @@ import 'package:intl/intl.dart';
 import 'package:zilliken/Services/Authentication.dart';
 import 'package:zilliken/Services/Database.dart';
 import 'package:zilliken/i18n.dart';
+import 'package:flutter/gestures.dart';
 
 class StatPage extends StatefulWidget {
   final Authentication auth;
@@ -21,7 +22,6 @@ class StatPage extends StatefulWidget {
   final String userRole;
   final DateFormat formatter = DateFormat('dd/MM/yy');
   final List<Graph> data;
-  
 
   StatPage({
     @required this.auth,
@@ -29,7 +29,6 @@ class StatPage extends StatefulWidget {
     @required this.userId,
     @required this.userRole,
     @required this.data,
-    
   });
   @override
   _StatPageState createState() => _StatPageState();
@@ -48,17 +47,37 @@ class _StatPageState extends State<StatPage> {
   QuerySnapshot statref;
   DocumentSnapshot lastDocument;
 
+  List<BarChartGroupData> rawBarGroups;
+  List<BarChartGroupData> showingBarGroups;
+  int touchedGroupIndex;
+
+  final Color leftBarColor = const Color(0xff53fdd7);
+  final Color rightBarColor = const Color(0xffff5182);
+  final double width = 7;
+
   int documentLimit = 10;
   // AnimationController animationController;
 
   void initState() {
     super.initState();
-    data = [
-      Graph(year: '2000', subscribers: null, count: 178),
-       Graph(year: '2001', subscribers: null, count: 178),
-        Graph(year: '2002', subscribers: null, count: 178),
-         Graph(year: '2003', subscribers: null, count: 178),
+    final barGroup1 = makeGroupData(0, 5, 12);
+    final barGroup2 = makeGroupData(1, 16, 12);
+    final barGroup3 = makeGroupData(2, 18, 5);
+    final items = [
+      barGroup1,
+      barGroup2,
+      barGroup3,
     ];
+    rawBarGroups = items;
+
+    showingBarGroups = rawBarGroups;
+
+    /*data = [
+      Graph(year: '2000', subscribers: null, count: 178),
+      Graph(year: '2001', subscribers: null, count: 178),
+      Graph(year: '2002', subscribers: null, count: 178),
+      Graph(year: '2003', subscribers: null, count: 178),
+    ];*/
     //animationController =
     //AnimationController(duration: new Duration(seconds: 2),);
     //animationController.repeat();
@@ -272,16 +291,210 @@ class _StatPageState extends State<StatPage> {
     );
   }
 
+  BarChartGroupData makeGroupData(int x, double y1, double y2) {
+    return BarChartGroupData(barsSpace: 4, x: x, barRods: [
+      BarChartRodData(
+        y: y1,
+        colors: [leftBarColor],
+        width: width,
+      ),
+      BarChartRodData(
+        y: y2,
+        colors: [rightBarColor],
+        width: width,
+      ),
+    ]);
+  }
+
   Widget graph() {
     return Column(
-      children:<Widget> [
-      
-        
-        BarChart(
-      
-          BarChartData(),
-          swapAnimationDuration: Duration(milliseconds: 150),
+      children: <Widget>[
+      Expanded(
+                  child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: BarChart(
+              BarChartData(
+                maxY: 20,
+                barTouchData: BarTouchData(
+                    touchTooltipData: BarTouchTooltipData(
+                      tooltipBgColor: Colors.grey,
+                      getTooltipItem: (_a, _b, _c, _d) => null,
+                    ),
+                    touchCallback: (response) {
+                      if (response.spot == null) {
+                        setState(() {
+                          touchedGroupIndex = -1;
+                          showingBarGroups = List.of(rawBarGroups);
+                        });
+                        return;
+                      }
+
+                      touchedGroupIndex = response.spot.touchedBarGroupIndex;
+
+                      setState(() {
+                        if (response.touchInput is PointerExitEvent ||
+                            response.touchInput is PointerUpEvent) {
+                          touchedGroupIndex = -1;
+                          showingBarGroups = List.of(rawBarGroups);
+                        } else {
+                          showingBarGroups = List.of(rawBarGroups);
+                          if (touchedGroupIndex != -1) {
+                            double sum = 0;
+                            for (BarChartRodData rod
+                                in showingBarGroups[touchedGroupIndex].barRods) {
+                              sum += rod.y;
+                            }
+                            final avg = sum /
+                                showingBarGroups[touchedGroupIndex].barRods.length;
+
+                            showingBarGroups[touchedGroupIndex] =
+                                showingBarGroups[touchedGroupIndex].copyWith(
+                              barRods: showingBarGroups[touchedGroupIndex]
+                                  .barRods
+                                  .map((rod) {
+                                return rod.copyWith(y: avg);
+                              }).toList(),
+                            );
+                          }
+                        }
+                      });
+                    }),
+                titlesData: FlTitlesData(
+                  show: true,
+                  bottomTitles: SideTitles(
+                    showTitles: true,
+                    getTextStyles: (value) => const TextStyle(
+                        color: Color(0xff7589a2),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14),
+                    margin: 20,
+                    getTitles: (double value) {
+                      switch (value.toInt()) {
+                        case 0:
+                          return 'Mn';
+                        case 1:
+                          return 'Te';
+                        case 2:
+                          return 'Wd';
+                        case 3:
+                          return 'Tu';
+                        case 4:
+                          return 'Fr';
+                        case 5:
+                          return 'St';
+                        case 6:
+                          return 'Sn';
+                        default:
+                          return '';
+                      }
+                    },
+                  ),
+                  leftTitles: SideTitles(
+                    showTitles: true,
+                    getTextStyles: (value) => const TextStyle(
+                        color: Color(0xff7589a2),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14),
+                    margin: 32,
+                    reservedSize: 14,
+                    getTitles: (value) {
+                      if (value == 0) {
+                        return '1K';
+                      } else if (value == 10) {
+                        return '5K';
+                      } else if (value == 19) {
+                        return '10K';
+                      } else {
+                        return '';
+                      }
+                    },
+                  ),
+                ),
+                borderData: FlBorderData(
+                  show: false,
+                ),
+                barGroups: showingBarGroups,
+              ),
+            ),
+          ),
         ),
+
+        /*BarChart(
+          BarChartData(
+              maxY: 20,
+              barTouchData: BarTouchData(
+                  touchTooltipData: BarTouchTooltipData(
+                    tooltipBgColor: Colors.grey,
+                    getTooltipItem: (_a, _b, _c, _d) => null,
+                  ),
+                  touchCallback: (response) {
+                    if (response.spot == null) {
+                      setState(() {
+                        touchedGroupIndex = -1;
+                        showingBarGroups = List.of(rawBarGroups);
+                      });
+                      return;
+                    }
+                    touchedGroupIndex = response.spot.touchedBarGroupIndex;
+                    setState(() {});
+                  }),
+              titlesData: FlTitlesData(
+                bottomTitles: SideTitles(
+                  showTitles: true,
+                  getTextStyles: (value) => const TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12),
+                  margin: 20,
+                  getTitles: (double value) {
+                    switch (value.toInt()) {
+                      case 0:
+                        return 'Mn';
+                      case 1:
+                        return 'Te';
+                      case 2:
+                        return 'Wd';
+                      case 3:
+                        return 'Tu';
+                      case 4:
+                        return 'Fr';
+                      case 5:
+                        return 'St';
+                      case 6:
+                        return 'Sn';
+                      default:
+                        return '';
+                    }
+                  },
+                ),
+              ),
+              leftTitles: SideTitles(
+                  showTitles: true,
+                  getTextStyles: (value) => const TextStyle(
+                      color: Colors.orange,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14),
+                  margin: 32,
+                  reservedSize: 14),
+              getTitles: (value) {
+                if (value == 0) {
+                  return '1K';
+                } else if (value == 10) {
+                  return '5K';
+                } else if (value == 19) {
+                  return '10K';
+                } else {
+                  return '';
+                }
+              }
+               borderData: FlBorderData(
+                        show: false,
+                      ),
+                      barGroups: showingBarGroups,
+              ),
+               
+          
+        ),*/
       ],
     );
   }
