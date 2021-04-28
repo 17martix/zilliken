@@ -122,7 +122,14 @@ class _AdminPageState extends State<AdminPage> {
           ),
         ),
         AnimatedContainer(
-          child: UserPage(),
+          child: UserPage(
+            db: widget.db,
+            auth: widget.auth,
+            userRole: widget.userRole,
+            userId: widget.userId,
+
+
+          ),
           duration: Duration(milliseconds: 800),
           curve: Curves.easeInBack,
           transform: Matrix4.translationValues(_xoffset3, 0, 1),

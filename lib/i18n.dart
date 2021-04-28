@@ -193,6 +193,12 @@ class I18n {
 
   String get last => _getText("last");
 
+  String get active => _getText("active");
+
+  String get date => _getText("date");
+
+  String get dailyTotal => _getText("dailyTotal");
+
   static Map<String, String> _localizedValues;
 
   static Map<String, String> _enValues = {
@@ -290,6 +296,9 @@ class I18n {
     "name": "Name",
     "phone": "Phone",
     "last": "Last seen at",
+    "active": "Activate",
+    "date": "Date",
+    "dailyTotal": " Daily Total",
   };
 
   static Map<String, String> _frValues = {
@@ -386,7 +395,10 @@ class I18n {
     "search": "Rechercher",
     "name": "Nom",
     "phone": "Tél",
-    "last": "Vu dernièrement à",
+    "last": "Vu à",
+    "active": "Activer",
+    "date": "Date",
+    "dailyTotal": " Le total journalier",
   };
 
   static Map<String, Map<String, String>> _allValues = {

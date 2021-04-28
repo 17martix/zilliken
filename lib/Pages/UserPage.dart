@@ -107,6 +107,7 @@ class _UserPageState extends State<UserPage> {
                 auth: widget.auth,
                 userId: widget.userId,
                 userRole: widget.userRole,
+                userData:userProfile,
               ),
             ),
           );
