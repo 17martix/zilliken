@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:zilliken/Components/ZAppBar.dart';
@@ -6,7 +8,7 @@ import 'package:zilliken/Components/ZTextField.dart';
 import 'package:zilliken/Helpers/SizeConfig.dart';
 import 'package:zilliken/Helpers/Styling.dart';
 import 'package:zilliken/Models/Fields.dart';
-import 'package:zilliken/Models/Linked.dart';
+import 'package:zilliken/Models/Condiments.dart';
 import 'package:zilliken/Models/MenuItem.dart';
 import 'package:zilliken/Models/Stock.dart';
 import 'package:zilliken/Services/Authentication.dart';
@@ -35,8 +37,25 @@ class LinkToMenu extends StatefulWidget {
 }
 
 class _ConnectToMenuState extends State<LinkToMenu> {
-  String linkId;
-  bool _isChecked;
+  List<MenuItem> itemList = [];
+
+  num quantity;
+  String name;
+  String id;
+
+  @override
+  void initState() {
+    super.initState();
+
+    waitForItems();
+  }
+
+  void waitForItems() {
+    widget.db.getMenuItems(widget.stock.id).then((value) {
+      itemList = value;
+    });
+  }
+
   void backFunction() {
     Navigator.of(context).pop();
   }
@@ -47,11 +66,11 @@ class _ConnectToMenuState extends State<LinkToMenu> {
     return Scaffold(
       appBar: buildAppBar(
           context, widget.auth, true, null, backFunction, null, null),
-      body: body(MenuItem(), Linked()),
+      body: body(),
     );
   }
 
-  Widget body(MenuItem menuItem, Linked linked) {
+  Widget body() {
     return Column(
       children: [
         Padding(
@@ -72,14 +91,12 @@ class _ConnectToMenuState extends State<LinkToMenu> {
         Expanded(
           child: Column(
             children: [
-              Expanded(child: menuItemStream()),
+              Expanded(
+                child: itemsList(),
+              ),
               ZRaisedButton(
                 onpressed: () async {
-                  if (linkId != null) {
-                    await widget.db.linkUpdater(widget.stock, menuItem, linked);
-                  } else {
-                    await widget.db.linkSetter(widget.stock, menuItem, linked);
-                  }
+                  //await widget.db.linkToMenu(menuItem, widget.stock);
                 },
                 textIcon: Text(I18n.of(context).save),
                 bottomPadding: SizeConfig.diagonal * 0.8,
@@ -92,34 +109,23 @@ class _ConnectToMenuState extends State<LinkToMenu> {
     );
   }
 
-  Widget menuItemStream() {
-    var menu = FirebaseFirestore.instance.collection(Fields.menu);
-
-    return StreamBuilder(
-        stream: menu.snapshots(),
-        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          if (snapshot.data == null)
-            return Center(
-              child: Text(''),
-            );
-
-          return ListView.builder(
-              shrinkWrap: true,
-              //physics: BouncingScrollPhysics(),
-              itemCount: snapshot.data.docs.length,
-              itemBuilder: (BuildContext context, index) {
-                MenuItem menuItem = MenuItem();
-                menuItem.buildObject(snapshot.data.docs[index]);
-                return itemTile(menuItem);
-              });
+  Widget itemsList() {
+    log("length is ${itemList.length}");
+    return ListView.builder(
+        shrinkWrap: true,
+        //physics: BouncingScrollPhysics(),
+        itemCount: itemList.length,
+        itemBuilder: (BuildContext context, index) {
+          return itemTile(itemList[index]);
         });
   }
 
   Widget itemTile(MenuItem menuItem) {
-    Linked linked = Linked();
     return Container(
       width: double.infinity,
-      height: SizeConfig.diagonal * 13,
+      height: menuItem.isChecked
+          ? SizeConfig.diagonal * 15
+          : SizeConfig.diagonal * 8,
       child: Card(
         elevation: 8,
         shape: RoundedRectangleBorder(
@@ -129,65 +135,34 @@ class _ConnectToMenuState extends State<LinkToMenu> {
             CheckboxListTile(
               activeColor: Color(Styling.accentColor),
               title: Text(menuItem.name),
-              value: true,
+              value: menuItem.isChecked,
               onChanged: (value) {
                 setState(() {
-                  value = value;
+                  menuItem.isChecked = value;
                 });
               },
             ),
             Padding(
               padding: EdgeInsets.only(right: SizeConfig.diagonal * 4),
-              child: ZTextField(
-                onSaved: (value) => value = '${linked.substQuantity}',
-                validator: (value) =>
-                    value.isEmpty ? I18n.of(context).requit : null,
-                outsidePrefix: Padding(
-                  padding: EdgeInsets.only(left: SizeConfig.diagonal * 0.5),
-                  child: Text('Qty needed :'),
-                ),
-                elevation: 1.3,
-                // outsideSuffix: Padding(
-                //   padding: EdgeInsets.only(right: SizeConfig.diagonal * 0.5),
-                //   child: InkWell(
-                //       onTap: () {},
-                //       child: Icon(
-                //         Icons.backspace,
-                //         size: SizeConfig.diagonal * 2.0,
-                //       )),
-                // ),
-              ),
+              child: menuItem.isChecked
+                  ? ZTextField(
+                      validator: (value) =>
+                          value.isEmpty ? I18n.of(context).requit : null,
+                      onSaved: (newValue) {
+                        quantity = num.parse(newValue);
+                      },
+                      outsidePrefix: Padding(
+                        padding:
+                            EdgeInsets.only(left: SizeConfig.diagonal * 0.5),
+                        child: Text('Qty needed :'),
+                      ),
+                      elevation: 1.3,
+                    )
+                  : null,
             )
           ],
         ),
       ),
     );
-  }
-
-  Widget linkedStream() {
-    var linkRef = FirebaseFirestore.instance
-        .collection(Fields.stock)
-        .doc(widget.stock.id)
-        .collection(Fields.linked);
-
-    return StreamBuilder(
-        stream: linkRef.snapshots(),
-        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          if (snapshot.data == null)
-            return Center(
-              child: Text(''),
-            );
-
-          return ListView.builder(
-              itemCount: snapshot.data.docs.length,
-              itemBuilder: (BuildContext context, index) {
-                Linked linked = Linked();
-                linked.buildObject(snapshot.data.docs[index]);
-
-                if (snapshot.data.docs.contains(linked.itemId)) {
-                  linked.itemId = linkId;
-                }
-              });
-        });
   }
 }

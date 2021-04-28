@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import 'Fields.dart';
+import 'Stock.dart';
 
 class MenuItem {
   String id;
@@ -14,6 +15,8 @@ class MenuItem {
   Timestamp createdAt;
   String imageName;
   int isDrink;
+  List<Stock> condiments;
+  bool isChecked;
 
   MenuItem({
     this.category,
@@ -26,6 +29,8 @@ class MenuItem {
     this.createdAt,
     this.imageName,
     this.isDrink,
+    this.condiments,
+    this.isChecked,
   });
 
   void buildObject(DocumentSnapshot document) {

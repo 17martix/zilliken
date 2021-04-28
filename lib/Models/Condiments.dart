@@ -1,8 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+
 import 'package:zilliken/Models/Fields.dart';
 
-class Linked {
+class Condiments {
   String id;
   String itemId;
   String itemName;
