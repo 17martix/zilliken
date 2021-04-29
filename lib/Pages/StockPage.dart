@@ -5,7 +5,7 @@ import 'package:zilliken/Helpers/SizeConfig.dart';
 import 'package:zilliken/Helpers/Styling.dart';
 import 'package:zilliken/Models/Fields.dart';
 import 'package:zilliken/Models/Stock.dart';
-import 'package:zilliken/Pages/LinkToMenu.dart';
+import 'package:zilliken/Pages/LinkToStockPage.dart';
 import 'package:zilliken/Pages/ItemUpdatePage.dart';
 import 'package:zilliken/Pages/NewItemPage.dart';
 import 'package:zilliken/Services/Authentication.dart';
@@ -162,7 +162,7 @@ class _StockPageState extends State<StockPage> {
                   userId: widget.userId,
                   userRole: widget.userRole,
                   messaging: widget.messaging,
-                  stock:stock,
+                  stock: stock,
                 ),
               ),
             );

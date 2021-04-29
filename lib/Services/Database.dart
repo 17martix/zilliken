@@ -10,7 +10,6 @@ import 'package:zilliken/Models/Call.dart';
 import 'package:zilliken/Models/Address.dart';
 import 'package:zilliken/Models/Category.dart';
 import 'package:zilliken/Models/Fields.dart';
-import 'package:zilliken/Models/Linked.dart';
 import 'package:zilliken/Models/MenuItem.dart';
 import 'package:zilliken/Models/Order.dart';
 import 'package:zilliken/Models/OrderItem.dart';
@@ -19,7 +18,6 @@ import 'package:zilliken/Models/Statistic.dart';
 import 'package:zilliken/Models/Stock.dart';
 import 'package:zilliken/Models/UserProfile.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
-import 'package:zilliken/Pages/NewItemPage.dart';
 
 import '../i18n.dart';
 
@@ -793,30 +791,60 @@ class Database {
     return result;
   }
 
-  Future<void> linkSetter(Stock stock,MenuItem menuItem,Linked linked) async {
-    var linker = databaseReference
-        .collection(Fields.stock)
-        .doc(stock.id)
-        .collection(Fields.linked)
-        .doc();
-    await linker.set({
-      Fields.id:linker.id,
-      Fields.itemId:menuItem.id,
-      Fields.itemName:menuItem.name,
-      Fields.substQuantity:linked.substQuantity,
+  Future<List<MenuItem>> getMenuItems(String stockId) async {
+    List<MenuItem> menuItemList = [];
+    var reference = databaseReference.collection(Fields.menu);
+
+    await reference.get().then((QuerySnapshot snapshot) {
+      if (snapshot != null && snapshot.docs.isNotEmpty) {
+        snapshot.docs.forEach((element) async {
+          MenuItem menuItem = MenuItem();
+          menuItem.buildObject(element);
+
+          Stock stock;
+          if (menuItem.condiments != null) {
+            stock = menuItem.condiments.firstWhere((condiment) {
+              return condiment.id == stockId;
+            }, orElse: () => null);
+
+            if (stock == null) {
+              menuItem.isChecked = false;
+            } else {
+              menuItem.isChecked = true;
+            }
+          } else {
+            menuItem.isChecked = false;
+          }
+
+          menuItemList.add(menuItem);
+        });
+      } else {
+        log('list empty');
+      }
     });
+
+    log('here');
+
+    menuItemList.forEach((element) {
+      log('menu name is ${element.name}');
+    });
+
+    return menuItemList;
   }
 
-  Future<void> linkUpdater(Stock stock,MenuItem menuItem,Linked linked) async {
-    var linker = databaseReference
-        .collection(Fields.stock)
-        .doc(stock.id)
-        .collection(Fields.linked)
-        .doc(linked.id);
-    await linker.update({
-      Fields.itemId:menuItem.id,
-      Fields.itemName:menuItem.name,
-      Fields.substQuantity:linked.substQuantity,
+  Future<void> linkToStock(List<String> menuIdList, Stock stock) async {
+    String text = stock.buildStringFromObject();
+
+    WriteBatch batch = databaseReference.batch();
+
+    menuIdList.forEach((id) {
+      DocumentReference documentReference =
+          databaseReference.collection(Fields.menu).doc(id);
+      batch.update(documentReference, {
+        Fields.condiments: text,
+      });
     });
+
+    await batch.commit();
   }
 }

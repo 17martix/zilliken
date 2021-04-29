@@ -31,8 +31,7 @@ class Stock {
     usedSince = document.data()[Fields.usedSince];
     usedTotal = document.data()[Fields.usedTotal];
     date = document.data()[Fields.date];
-        linked = document.data()[Fields.linked];
-
+    linked = document.data()[Fields.linked];
   }
 
   void buildObjectAsync(AsyncSnapshot<DocumentSnapshot> document) {
@@ -43,7 +42,19 @@ class Stock {
     usedSince = document.data[Fields.usedSince];
     usedTotal = document.data[Fields.usedTotal];
     date = document.data[Fields.date];
-        linked = document.data[Fields.linked];
+    linked = document.data[Fields.linked];
+  }
 
+  String buildStringFromObject() {
+    String text = "$id;$name;$quantity;$unit";
+    return text;
+  }
+
+  void buildObjectFromString(String text) {
+    List<String> list = text.split(';');
+    id = list[0];
+    name = list[1];
+    quantity = num.parse(list[2]);
+    unit = list[3];
   }
 }
