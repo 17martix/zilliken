@@ -10,13 +10,16 @@ import 'package:zilliken/Models/Call.dart';
 import 'package:zilliken/Models/Address.dart';
 import 'package:zilliken/Models/Category.dart';
 import 'package:zilliken/Models/Fields.dart';
+import 'package:zilliken/Models/Linked.dart';
 import 'package:zilliken/Models/MenuItem.dart';
 import 'package:zilliken/Models/Order.dart';
 import 'package:zilliken/Models/OrderItem.dart';
 import 'package:zilliken/Models/Result.dart';
 import 'package:zilliken/Models/Statistic.dart';
+import 'package:zilliken/Models/Stock.dart';
 import 'package:zilliken/Models/UserProfile.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
+import 'package:zilliken/Pages/NewItemPage.dart';
 
 import '../i18n.dart';
 
@@ -746,6 +749,74 @@ class Database {
       Fields.addressName: address.addressName,
       Fields.typedAddress: address.typedAddress,
       Fields.phoneNumber: address.phoneNumber,
+    });
+  }
+
+  Future<Result> addInventoryItem(context, Stock stock) async {
+    Result result =
+        Result(isSuccess: false, message: I18n.of(context).operationFailed);
+    DocumentReference inventory =
+        databaseReference.collection(Fields.stock).doc();
+
+    await inventory
+        .set({
+          Fields.id: inventory.id,
+          Fields.name: stock.name,
+          Fields.quantity: stock.quantity,
+          Fields.unit: stock.unit,
+          Fields.usedSince: stock.usedSince,
+          Fields.usedTotal: stock.usedTotal,
+          Fields.date: FieldValue.serverTimestamp(),
+        })
+        .whenComplete(() => result = Result(
+            isSuccess: true, message: I18n.of(context).operationSucceeded))
+        .catchError((error) => result = Result(
+            isSuccess: false, message: I18n.of(context).operationFailed));
+
+    return result;
+  }
+
+  Future<Result> updateInventoryItem(context, Stock stock) async {
+    Result result =
+        Result(isSuccess: false, message: I18n.of(context).operationFailed);
+    DocumentReference inventory =
+        databaseReference.collection(Fields.stock).doc(stock.id);
+
+    await inventory
+        .update({
+          Fields.quantity: stock.quantity,
+        })
+        .whenComplete(() => result = Result(
+            isSuccess: true, message: I18n.of(context).operationSucceeded))
+        .catchError((error) => result = Result(
+            isSuccess: false, message: I18n.of(context).operationFailed));
+    return result;
+  }
+
+  Future<void> linkSetter(Stock stock,MenuItem menuItem,Linked linked) async {
+    var linker = databaseReference
+        .collection(Fields.stock)
+        .doc(stock.id)
+        .collection(Fields.linked)
+        .doc();
+    await linker.set({
+      Fields.id:linker.id,
+      Fields.itemId:menuItem.id,
+      Fields.itemName:menuItem.name,
+      Fields.substQuantity:linked.substQuantity,
+    });
+  }
+
+  Future<void> linkUpdater(Stock stock,MenuItem menuItem,Linked linked) async {
+    var linker = databaseReference
+        .collection(Fields.stock)
+        .doc(stock.id)
+        .collection(Fields.linked)
+        .doc(linked.id);
+    await linker.update({
+      Fields.itemId:menuItem.id,
+      Fields.itemName:menuItem.name,
+      Fields.substQuantity:linked.substQuantity,
     });
   }
 }

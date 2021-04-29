@@ -119,7 +119,13 @@ class _AdminPageState extends State<AdminPage> {
           transform: Matrix4.translationValues(_xoffset1, 0, 1),
         ),
         AnimatedContainer(
-          child: StockPage(),
+          child: StockPage(
+            auth: widget.auth,
+            db: widget.db,
+            messaging: widget.messaging,
+            userId: widget.userId,
+            userRole: widget.userRole,
+          ),
           duration: Duration(milliseconds: 800),
           curve: Curves.easeInBack,
           transform: Matrix4.translationValues(_xoffset2, 0, 1),

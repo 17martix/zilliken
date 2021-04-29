@@ -78,6 +78,19 @@ class Fields {
   static final String typedAddress = 'typedAddress';
   static final String deliveringOrderId = 'deliveringOrderId';
   static final String isDrink = 'isDrink';
+
   static final String date = 'date';
   static final String statistic = 'statistic';
+
+  static final String quantity = 'quantity';
+  static final String unit = 'unit';
+  static final String usedSince = 'usedSince';
+  static final String usedTotal = 'usedTotal';
+  static final String stock = 'stock';
+  static final String date = 'date';
+
+  static final String itemId = 'itemId';
+  static final String itemName = 'itemName';
+  static final String substQuantity = 'substQuantity';
+  static final String linked = 'linked';
 }
