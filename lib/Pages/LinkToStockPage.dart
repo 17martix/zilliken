@@ -2,11 +2,13 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:zilliken/Components/ZAppBar.dart';
 import 'package:zilliken/Components/ZRaisedButton.dart';
 import 'package:zilliken/Components/ZTextField.dart';
 import 'package:zilliken/Helpers/SizeConfig.dart';
 import 'package:zilliken/Helpers/Styling.dart';
+import 'package:zilliken/Helpers/Utils.dart';
 import 'package:zilliken/Models/Fields.dart';
 import 'package:zilliken/Models/Condiments.dart';
 import 'package:zilliken/Models/MenuItem.dart';
@@ -38,10 +40,13 @@ class LinkToMenu extends StatefulWidget {
 
 class _ConnectToMenuState extends State<LinkToMenu> {
   List<MenuItem> itemList = [];
+  List<String> itemsToSend = [];
+
+  GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   num quantity;
-  String name;
-  String id;
+  // String name;
+  // String id;
 
   @override
   void initState() {
@@ -52,7 +57,10 @@ class _ConnectToMenuState extends State<LinkToMenu> {
 
   void waitForItems() {
     widget.db.getMenuItems(widget.stock.id).then((value) {
-      itemList = value;
+      setState(() {
+        itemList = value;
+      });
+      log("new length is ${itemList.length}");
     });
   }
 
@@ -96,7 +104,31 @@ class _ConnectToMenuState extends State<LinkToMenu> {
               ),
               ZRaisedButton(
                 onpressed: () async {
-                  //await widget.db.linkToMenu(menuItem, widget.stock);
+                  EasyLoading.show(status: I18n.of(context).loading);
+                  bool isOnline = await hasConnection();
+                  if (!isOnline) {
+                    EasyLoading.dismiss();
+
+                    _scaffoldKey.currentState.showSnackBar(SnackBar(
+                      content: Text(I18n.of(context).noInternet),
+                    ));
+                  } else {
+                    try {
+                      await widget.db.linkToStock(itemsToSend, widget.stock);
+
+                      EasyLoading.dismiss();
+
+                      _scaffoldKey.currentState.showSnackBar(SnackBar(
+                        content: Text(I18n.of(context).messageSent),
+                      ));
+                    } on Exception catch (e) {
+                      EasyLoading.dismiss();
+
+                      _scaffoldKey.currentState.showSnackBar(SnackBar(
+                        content: Text(e.toString()),
+                      ));
+                    }
+                  }
                 },
                 textIcon: Text(I18n.of(context).save),
                 bottomPadding: SizeConfig.diagonal * 0.8,
@@ -139,6 +171,15 @@ class _ConnectToMenuState extends State<LinkToMenu> {
               onChanged: (value) {
                 setState(() {
                   menuItem.isChecked = value;
+                  if (menuItem.isChecked) {
+                    if (!itemsToSend.contains(menuItem.id)) {
+                      itemsToSend.add(menuItem.id);
+                    }
+                  } else {
+                    if (itemsToSend.contains(menuItem.id)) {
+                      itemsToSend.remove(menuItem.id);
+                    }
+                  }
                 });
               },
             ),

@@ -34,6 +34,17 @@ class MenuItem {
   });
 
   void buildObject(DocumentSnapshot document) {
+    if (document.data()[Fields.condiments] != null) {
+      condiments = [];
+      List<String> textCondimentList =
+          List.from(document.data()[Fields.condiments]);
+      textCondimentList.forEach((element) {
+        Stock stock = Stock();
+        stock.buildObjectFromString(element);
+        condiments.add(stock);
+      });
+    }
+
     category = document.data()[Fields.category];
     id = document.id;
     name = document.data()[Fields.name];
@@ -47,6 +58,17 @@ class MenuItem {
   }
 
   void buildObjectAsync(AsyncSnapshot<DocumentSnapshot> document) {
+    if (document.data[Fields.condiments] != null) {
+      condiments = [];
+      List<String> textCondimentList =
+          List.from(document.data[Fields.condiments]);
+      textCondimentList.forEach((element) {
+        Stock stock = Stock();
+        stock.buildObjectFromString(element);
+        condiments.add(stock);
+      });
+    }
+
     category = document.data[Fields.category];
     id = document.data.id;
     name = document.data[Fields.name];

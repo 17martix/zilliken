@@ -770,30 +770,20 @@ class Database {
         snapshot.docs.forEach((element) async {
           MenuItem menuItem = MenuItem();
           menuItem.buildObject(element);
-          List<Stock> condiments = [];
-          await databaseReference
-              .collection(Fields.menu)
-              .doc(menuItem.id)
-              .collection(Fields.condiments)
-              .get()
-              .then((value) {
-            if (value != null && value.docs.isNotEmpty) {
-              snapshot.docs.forEach((element) {
-                Stock stock = Stock();
-                stock.buildObject(element);
-                condiments.add(stock);
-              });
-            }
-          });
-          menuItem.condiments = condiments;
-          Stock stock = menuItem.condiments.firstWhere((condiment) {
-            return condiment.id == stockId;
-          }, orElse: () => null);
 
-          if (stock == null) {
-            menuItem.isChecked = false;
+          Stock stock;
+          if (menuItem.condiments != null) {
+            stock = menuItem.condiments.firstWhere((condiment) {
+              return condiment.id == stockId;
+            }, orElse: () => null);
+
+            if (stock == null) {
+              menuItem.isChecked = false;
+            } else {
+              menuItem.isChecked = true;
+            }
           } else {
-            menuItem.isChecked = true;
+            menuItem.isChecked = false;
           }
 
           menuItemList.add(menuItem);
@@ -803,21 +793,28 @@ class Database {
       }
     });
 
+    log('here');
+
+    menuItemList.forEach((element) {
+      log('menu name is ${element.name}');
+    });
+
     return menuItemList;
   }
 
-  Future<void> linkToMenu(MenuItem menuItem, Stock stock) async {
-    var reference = databaseReference
-        .collection(Fields.menu)
-        .doc(menuItem.id)
-        .collection(Fields.condiments)
-        .doc();
+  Future<void> linkToStock(List<String> menuIdList, Stock stock) async {
+    String text = stock.buildStringFromObject();
 
-    await reference.set({
-      Fields.id: reference.id,
-      Fields.itemId: stock.id,
-      Fields.name: stock.name,
-      Fields.quantity: stock.quantity,
+    WriteBatch batch = databaseReference.batch();
+
+    menuIdList.forEach((id) {
+      DocumentReference documentReference =
+          databaseReference.collection(Fields.menu).doc(id);
+      batch.update(documentReference, {
+        Fields.condiments: text,
+      });
     });
+
+    await batch.commit();
   }
 }
