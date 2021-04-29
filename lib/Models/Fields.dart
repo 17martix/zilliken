@@ -78,6 +78,8 @@ class Fields {
   static final String typedAddress = 'typedAddress';
   static final String deliveringOrderId = 'deliveringOrderId';
   static final String isDrink = 'isDrink';
+  static final String date = 'date';
+  static final String statistic = 'statistic';
 
   static final String date = 'date';
   static final String statistic = 'statistic';

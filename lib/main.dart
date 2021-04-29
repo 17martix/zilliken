@@ -15,6 +15,7 @@ import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:zilliken/Pages/AdminPage.dart';
 
+import 'Pages/AdminPage.dart';
 import 'Pages/LoginPage.dart';
 import 'Services/Database.dart';
 import 'i18n.dart';

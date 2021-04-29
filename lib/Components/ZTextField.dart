@@ -110,7 +110,7 @@ class ZTextField extends StatelessWidget {
   final onEditingComplete;
   final onChanged;
   final prefix;
-  final decoration;
+  
 
   ZTextField({
     this.elevation,
@@ -137,7 +137,7 @@ class ZTextField extends StatelessWidget {
     this.onEditingComplete,
     this.onChanged,
     this.prefix,
-    this.decoration,
+    
   });
 
   @override

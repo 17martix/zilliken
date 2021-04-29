@@ -93,6 +93,11 @@ date,Date,Date
 dailytotal,DAILY TOTAL,LE TOTAL JOURNALIER
 search,Search,Rechercher
 name,Name,Nom
+phone,Phone,Tél
+last,Last seen at,Vu à
+active,Activate,Activer
+date,Date,Date
+dailyTotal, Daily Total, Le total journalier
 phone,Phone number,Numéro de Téléphone
 quantity,Quantity,Quantité
 used,Used,Utilisé
