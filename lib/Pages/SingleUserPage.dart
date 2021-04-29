@@ -1,8 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:path/path.dart';
 import 'package:zilliken/Components/ZAppBar.dart';
-import 'package:zilliken/Components/ZFlatButton.dart';
 import 'package:zilliken/Components/ZRaisedButton.dart';
 import 'package:zilliken/Helpers/SizeConfig.dart';
 import 'package:zilliken/Helpers/Styling.dart';
@@ -11,8 +9,9 @@ import 'package:zilliken/Models/StatisticUser.dart';
 import 'package:zilliken/Models/UserProfile.dart';
 import 'package:zilliken/Services/Authentication.dart';
 import 'package:zilliken/Services/Database.dart';
-import 'package:zilliken/i18n.dart';
 import 'package:intl/intl.dart';
+
+import '../i18n.dart';
 
 class SingleUserPage extends StatefulWidget {
   final Authentication auth;
@@ -34,8 +33,9 @@ class SingleUserPage extends StatefulWidget {
 }
 
 class _SingleUserPageState extends State<SingleUserPage> {
-  var oneUserDetails ;
-  var _scrollController;
+  var oneUserDetails;
+  List<DocumentSnapshot> items = List();
+  ScrollController _scrollController = ScrollController();
   var isLoading;
   var statistics;
 
@@ -46,7 +46,9 @@ class _SingleUserPageState extends State<SingleUserPage> {
         .collection(Fields.users)
         .doc(widget.userId)
         .collection(Fields.statistic);
-;
+
+    oneUserDetails =
+        FirebaseFirestore.instance.collection(Fields.users).doc(widget.userId);
   }
 
   @override
@@ -55,6 +57,7 @@ class _SingleUserPageState extends State<SingleUserPage> {
       appBar: buildAppBar(
         context,
         widget.auth,
+      
         true,
         null,
         null,
@@ -68,8 +71,9 @@ class _SingleUserPageState extends State<SingleUserPage> {
   Widget body() {
     return Column(children: [
       statList(),
+      itemCard(statistics),
+      userListStream(),
 
-      // userListStream(),
     ]);
   }
 
@@ -96,11 +100,10 @@ class _SingleUserPageState extends State<SingleUserPage> {
                             color: Colors.lightGreen,
                             fontSize: SizeConfig.diagonal * 3,
                             fontWeight: FontWeight.bold,
-                            fontFamily: "Font1",
                           ),
                         ),
                         Text(
-                          "fbu",
+                          '${I18n.of(context).fbu}',
                           style: TextStyle(
                             color: Color(Styling.iconColor),
                             fontSize: SizeConfig.diagonal * 2.5,
@@ -115,7 +118,7 @@ class _SingleUserPageState extends State<SingleUserPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          '{I18n.of(context).orderDate}',
+                          I18n.of(context).orderDate,
                           textAlign: TextAlign.center,
                           style: TextStyle(
                               color: Color(Styling.iconColor),
@@ -148,7 +151,7 @@ class _SingleUserPageState extends State<SingleUserPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              '{I18n.of(context).dailyTotal}',
+              '${I18n.of(context).dailyTotal}',
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: Color(Styling.accentColor),
@@ -166,28 +169,28 @@ class _SingleUserPageState extends State<SingleUserPage> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                statistics.length == 0
+                items.length == 0
                     ? Center(
                         child: Text(""),
                       )
                     : Row(
-                        children: statistics.map((document) {
+                        children: items.map((document) {
                           StatisticUser statisticUser = StatisticUser();
                           statisticUser.buildObject(document);
                           return itemCard(statisticUser);
                         }).toList(),
                       ),
-                /* ListView.builder(
+                /*  ListView.builder(
                             shrinkWrap: true,
                             scrollDirection: Axis.horizontal,
                             controller: _scrollController,
                             itemCount: items.length,
                             itemBuilder: (context, index) {
-                              Statistic statistic = Statistic();
-                              statistic.buildObject(items[index]);
+                              StatisticUser statisticUser = StatisticUser();
+                              statisticUser.buildObject(items[index]);
                               return Row(
                                 children: [
-                                  body(statistic),
+                                  body(statisticUser),
                                 ],
                               );
                             },
@@ -224,9 +227,8 @@ class _SingleUserPageState extends State<SingleUserPage> {
       ],
     );
   }
-}
 
-/* Widget userListStream() {
+  Widget userListStream() {
     return StreamBuilder<QuerySnapshot>(
         stream: oneUserDetails.snapshots(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -246,17 +248,16 @@ class _SingleUserPageState extends State<SingleUserPage> {
       child: Column(
         children: [
           Container(
-              child:
-                  Text('{I18n.of(context).name}' ":" '${userProfile.name}')),
+              child: Text('${I18n.of(context).name} : ${userProfile.name}')),
           Container(
-            child: Text(
-                '{I18n.of(context).phone}' ":" '${userProfile.phoneNumber}'),
+            child:
+                Text('${I18n.of(context).phone} : ${userProfile.phoneNumber}'),
           ),
           ZRaisedButton(
             textIcon: Text("activer"),
-         
           ),
         ],
       ),
     );
-  }*/
+  }
+}
