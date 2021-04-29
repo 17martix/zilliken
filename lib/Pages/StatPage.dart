@@ -163,69 +163,70 @@ class _StatPageState extends State<StatPage> {
   }
 
   Widget itemCard(Statistic statistic) {
-    return Column(
-      children: [
-        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Card(
-            color: Color(Styling.primaryBackgroundColor).withOpacity(0.88),
-            elevation: 5.0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5),
-            ),
-            child: Column(
-              children: [
-                Padding(
-                  padding: EdgeInsets.all(SizeConfig.diagonal * 1),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "${statistic.total}",
-                        style: TextStyle(
-                          color: Colors.lightGreen,
-                          fontSize: SizeConfig.diagonal * 3,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: "Font1",
-                        ),
+    return Container(
+      height: SizeConfig.diagonal * 10,
+      child: Card(
+        color: Colors.white.withOpacity(0.9),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Expanded(
+              child: Container(
+                padding: EdgeInsets.all(SizeConfig.diagonal * 0.2),
+                height: 3,
+                color: Color(Styling.iconColor).withOpacity(0.1),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "${statistic.total}",
+                      style: TextStyle(
+                        color: Color(Styling.accentColor),
+                        fontSize: SizeConfig.diagonal * 3,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: "Font1",
                       ),
-                      Text(
-                        " Fbu",
-                        style: TextStyle(
-                          color: Color(Styling.iconColor),
-                          fontSize: SizeConfig.diagonal * 2.5,
-                        ),
+                    ),
+                    Text(
+                      " Fbu",
+                      style: TextStyle(
+                        color: Color(Styling.iconColor),
+                        fontSize: SizeConfig.diagonal * 2.5,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-                Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        I18n.of(context).date,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Color(Styling.iconColor),
-                          fontSize: SizeConfig.diagonal * 2,
-                        ),
-                      ),
-                      Text(
-                        "  : ${widget.formatter.format(statistic.date.toDate())}",
-                        style: TextStyle(
-                          color: Color(Styling.accentColor),
-                          fontSize: SizeConfig.diagonal * 2,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+              ),
             ),
-          )
-        ])
-      ],
+            Expanded(
+              child: Container(
+                padding: EdgeInsets.all(SizeConfig.diagonal * 0.2),
+                color: Color(Styling.primaryBackgroundColor).withOpacity(0.3),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      I18n.of(context).date,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Color(Styling.iconColor),
+                        fontSize: SizeConfig.diagonal * 2,
+                      ),
+                    ),
+                    Text(
+                      "  : ${widget.formatter.format(statistic.date.toDate())}",
+                      style: TextStyle(
+                        color: Color(Styling.iconColor),
+                        fontSize: SizeConfig.diagonal * 2,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -233,6 +234,9 @@ class _StatPageState extends State<StatPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // SizedBox(
+        //   height: SizeConfig.diagonal * 5,
+        // ),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -240,9 +244,9 @@ class _StatPageState extends State<StatPage> {
               I18n.of(context).dailytotal,
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: Color(Styling.accentColor),
-                fontSize: SizeConfig.diagonal * 3.5,
+                color: Color(Styling.iconColor),
                 fontStyle: FontStyle.normal,
+                fontSize: SizeConfig.diagonal * 2.5,
               ),
             ),
           ],
@@ -288,7 +292,7 @@ class _StatPageState extends State<StatPage> {
                         height: SizeConfig.diagonal * 8,
                         padding: EdgeInsets.all(SizeConfig.diagonal * 1.5),
                         child: Card(
-                          elevation: 2,
+                          elevation: 0.0,
                           color: Colors.white.withOpacity(1),
                           shape: RoundedRectangleBorder(
                             borderRadius:
@@ -330,175 +334,176 @@ class _StatPageState extends State<StatPage> {
   }
 
   Widget graph() {
-    return AspectRatio(
-      aspectRatio: 1,
-      child: Card(
-        elevation: 5,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(SizeConfig.diagonal * 7),
-        ),
-        color: Color(Styling.primaryBackgroundColor).withOpacity(0.9),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisAlignment: MainAxisAlignment.start,
-            mainAxisSize: MainAxisSize.max,
-            children: <Widget>[
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  makeTransactionsIcon(),
-                  const SizedBox(
-                    width: 32,
-                  ),
-                  const Text(
-                    'Transactions',
-                    style: TextStyle(
-                        color: Color(Styling.iconColor), fontSize: 15),
-                  ),
-                  const SizedBox(
-                    width: 4,
-                  ),
-                  const Text(
-                    'state',
-                    style: TextStyle(
-                        color: Color(Styling.accentColor), fontSize: 12),
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: 4,
-              ),
-              Expanded(
-                flex: 1,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    controller: _scrollController,
-                    child: BarChart(
-                      BarChartData(
-                       // groupsSpace:6,
-                        maxY: 20,
-                        barTouchData: BarTouchData(
-                            touchTooltipData: BarTouchTooltipData(
-                              tooltipBgColor: Colors.grey,
-                              getTooltipItem: (_a, _b, _c, _d) => null,
-                            ),
-                            touchCallback: (response) {
-                              if (response.spot == null) {
+    return Container(
+      child: AspectRatio(
+        aspectRatio: 1.2,
+        child: Card(
+          elevation: 5,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(SizeConfig.diagonal * 2),
+          ),
+          color: Color(Styling.primaryBackgroundColor).withOpacity(0.9),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisSize: MainAxisSize.max,
+              children: <Widget>[
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    makeTransactionsIcon(),
+                    const SizedBox(
+                      width: 45,
+                    ),
+                    const Text(
+                      'Transactions',
+                      style: TextStyle(
+                          color: Color(Styling.iconColor), fontSize: 15),
+                    ),
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    const Text(
+                      'state',
+                      style: TextStyle(
+                          color: Color(Styling.accentColor), fontSize: 12),
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 4,
+                ),
+                Expanded(
+                  flex: 1,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      controller: _scrollController,
+                      child: BarChart(
+                        BarChartData(
+                          // groupsSpace:6,
+                          maxY: 25,
+                          barTouchData: BarTouchData(
+                              touchTooltipData: BarTouchTooltipData(
+                                tooltipBgColor: Colors.grey,
+                                getTooltipItem: (_a, _b, _c, _d) => null,
+                              ),
+                              touchCallback: (response) {
+                                if (response.spot == null) {
+                                  setState(() {
+                                    touchedGroupIndex = -1;
+                                    showingBarGroups = List.of(rawBarGroups);
+                                  });
+                                  return;
+                                }
+
+                                touchedGroupIndex =
+                                    response.spot.touchedBarGroupIndex;
+
                                 setState(() {
-                                  touchedGroupIndex = -1;
-                                  showingBarGroups = List.of(rawBarGroups);
-                                });
-                                return;
-                              }
-
-                              touchedGroupIndex =
-                                  response.spot.touchedBarGroupIndex;
-
-                              setState(() {
-                                if (response.touchInput is PointerExitEvent ||
-                                    response.touchInput is PointerUpEvent) {
-                                  touchedGroupIndex = -1;
-                                  showingBarGroups = List.of(rawBarGroups);
-                                } else {
-                                  showingBarGroups = List.of(rawBarGroups);
-                                  if (touchedGroupIndex != -1) {
-                                    double sum = 0;
-                                    for (BarChartRodData rod
-                                        in showingBarGroups[touchedGroupIndex]
-                                            .barRods) {
-                                      sum += rod.y;
-                                    }
-                                    final avg = sum /
-                                        showingBarGroups[touchedGroupIndex]
-                                            .barRods
-                                            .length;
-
-                                    showingBarGroups[touchedGroupIndex] =
-                                        showingBarGroups[touchedGroupIndex]
-                                            .copyWith(
-                                      barRods:
+                                  if (response.touchInput is PointerExitEvent ||
+                                      response.touchInput is PointerUpEvent) {
+                                    touchedGroupIndex = -1;
+                                    showingBarGroups = List.of(rawBarGroups);
+                                  } else {
+                                    showingBarGroups = List.of(rawBarGroups);
+                                    if (touchedGroupIndex != -1) {
+                                      double sum = 0;
+                                      for (BarChartRodData rod
+                                          in showingBarGroups[touchedGroupIndex]
+                                              .barRods) {
+                                        sum += rod.y;
+                                      }
+                                      final avg = sum /
                                           showingBarGroups[touchedGroupIndex]
                                               .barRods
-                                              .map((rod) {
-                                        return rod.copyWith(y: avg);
-                                      }).toList(),
-                                    );
-                                  }
-                                }
-                              });
-                            }),
-                        titlesData: FlTitlesData(
-                          show: true,
-                          bottomTitles: SideTitles(
-                            showTitles: true,
-                            getTextStyles: (value) => const TextStyle(
-                                color: Color(0xff7589a2),
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14),
-                            margin: 28,
-                            getTitles: (double value) {
-                              switch (value.toInt()) {
-                                case 0:
-                                  return 'Mn';
-                                case 1:
-                                  return 'Te';
-                                case 2:
-                                  return 'Wd';
-                                case 3:
-                                  return 'Tu';
-                                case 4:
-                                  return 'Fr';
-                                case 5:
-                                  return 'St';
-                                case 6:
-                                  return 'Sn';
+                                              .length;
 
-                                default:
+                                      showingBarGroups[touchedGroupIndex] =
+                                          showingBarGroups[touchedGroupIndex]
+                                              .copyWith(
+                                        barRods:
+                                            showingBarGroups[touchedGroupIndex]
+                                                .barRods
+                                                .map((rod) {
+                                          return rod.copyWith(y: avg);
+                                        }).toList(),
+                                      );
+                                    }
+                                  }
+                                });
+                              }),
+                          titlesData: FlTitlesData(
+                            show: true,
+                            bottomTitles: SideTitles(
+                              showTitles: true,
+                              getTextStyles: (value) => const TextStyle(
+                                  color: Color(Styling.iconColor),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 10),
+                              margin: 15,
+                              getTitles: (double value) {
+                                switch (value.toInt()) {
+                                  case 0:
+                                    return 'Mn';
+                                  case 1:
+                                    return 'Te';
+                                  case 2:
+                                    return 'Wd';
+                                  case 3:
+                                    return 'Tu';
+                                  case 4:
+                                    return 'Fr';
+                                  case 5:
+                                    return 'St';
+                                  case 6:
+                                    return 'Sn';
+
+                                  default:
+                                    return '';
+                                }
+                              },
+                            ),
+                            leftTitles: SideTitles(
+                              showTitles: true,
+                              getTextStyles: (value) => const TextStyle(
+                                  color: Color(Styling.iconColor),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14),
+                              margin: 20,
+                              reservedSize: 20,
+                              getTitles: (value) {
+                                if (value == 0) {
+                                  return '50K';
+                                } else if (value == 10) {
+                                  return '1M';
+                                } else if (value == 19) {
+                                  return '10M';
+                                } else if (value == 30) {
+                                  return '50M';
+                                } else {
                                   return '';
-                              }
-                            },
+                                }
+                              },
+                            ),
                           ),
-                          leftTitles: SideTitles(
-                            showTitles: true,
-                            getTextStyles: (value) => const TextStyle(
-                                color: Color(0xff7589a2),
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14),
-                            margin: 32,
-                            reservedSize: 14,
-                            getTitles: (value) {
-                              if (value == 0) {
-                                return '50K';
-                              } else if (value == 10) {
-                                return '1M';
-                              } else if (value == 19) {
-                                return '10M';
-                              } else if (value == 30) {
-                                return '50M';
-                              } else {
-                                return '';
-                              }
-                            },
+                          borderData: FlBorderData(
+                            show: false,
                           ),
+                          barGroups: showingBarGroups,
                         ),
-                        borderData: FlBorderData(
-                          show: false,
-                         
-                        ),
-                        barGroups: showingBarGroups,
+                        swapAnimationDuration: Duration(milliseconds: 150),
                       ),
-                      swapAnimationDuration: Duration(milliseconds: 150),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -506,8 +511,8 @@ class _StatPageState extends State<StatPage> {
   }
 
   Widget makeTransactionsIcon() {
-    const double width = 9;
-    const double space = 10;
+    const double width = 7;
+    const double space = 7;
     return Row(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -515,7 +520,7 @@ class _StatPageState extends State<StatPage> {
           Container(
             width: width,
             height: 10,
-            color: Colors.white.withOpacity(0.4),
+            color: Colors.white.withOpacity(0.9),
           ),
           const SizedBox(
             width: space,
@@ -523,7 +528,7 @@ class _StatPageState extends State<StatPage> {
           Container(
             width: width,
             height: 10,
-            color: Colors.white.withOpacity(0.4),
+            color: Colors.white.withOpacity(0.9),
           ),
           const SizedBox(
             width: space,
@@ -531,7 +536,7 @@ class _StatPageState extends State<StatPage> {
           Container(
             width: width,
             height: 10,
-            color: Colors.white.withOpacity(0.4),
+            color: Colors.white.withOpacity(0.9),
           ),
           const SizedBox(
             width: space,

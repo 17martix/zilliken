@@ -286,7 +286,7 @@ class I18n {
     "addr": "Complete Address",
     "totEncaisse": "Total cashed on",
     "date": "Date",
-    "dailytotal": "Daily Total",
+    "dailytotal": "DAILY TOTAL",
   };
 
   static Map<String, String> _frValues = {
@@ -382,7 +382,7 @@ class I18n {
     "addr": "Adresse Complète",
     "totEncaisse": "Le Total encaissé le",
     "date": "Date",
-    "dailytotal": "le Total journalier",
+    "dailytotal": "LE TOTAL JOURNALIER",
   };
 
   static Map<String, Map<String, String>> _allValues = {
