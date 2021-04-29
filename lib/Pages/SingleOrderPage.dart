@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
+
 import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -20,6 +21,8 @@ import 'package:zilliken/Models/Call.dart';
 import 'package:zilliken/Models/Fields.dart';
 import 'package:zilliken/Models/Order.dart';
 import 'package:zilliken/Models/OrderItem.dart';
+//import 'package:zilliken/Models/Statistic.dart';
+//import 'package:zilliken/Pages/StatPage.dart';
 import 'package:zilliken/Services/Authentication.dart';
 import 'package:zilliken/Services/Database.dart';
 import 'package:zilliken/Services/Messaging.dart';
@@ -64,6 +67,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
 
   int _orderStatus = 1;
   int enabled = 1;
+  int myvalue = 1111111;
 
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   Order order;
@@ -113,6 +117,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
 
   bool goingBack = false;
   List<OrderItem> items = new List();
+  var now = new DateTime.now();
 
   @override
   void initState() {
@@ -354,14 +359,16 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
           : Scaffold(
               key: _scaffoldKey,
               appBar: buildAppBar(
-                  context,
-                  widget.auth,
-                  true,
-                  null,
-                  backFunction,
-                  (widget.userRole != Fields.client && items != null)
-                      ? printing
-                      : null,null,),
+                context,
+                widget.auth,
+                true,
+                null,
+                backFunction,
+                (widget.userRole != Fields.client && items != null)
+                    ? printing
+                    : null,
+                null,
+              ),
               floatingActionButton: (widget.userRole != Fields.client ||
                       widget.clientOrder.orderLocation == 1)
                   ? null
@@ -1186,6 +1193,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
   }
 
   void handleStatusChange(int value) {
+    log('here');
     setState(() {
       goingBack = value < _orderStatus ? true : false;
       _orderStatus = value;
@@ -1194,8 +1202,8 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
     if (goingBack) {
       backFunction();
     }
-
-    widget.db.updateStatus(widget.orderId, _orderStatus, value);
+    widget.db.updateStatus(
+        widget.orderId, _orderStatus, value, order, widget.clientOrder.grandTotal);
   }
 
   Widget orderItemStream() {
@@ -1616,7 +1624,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                   SizedBox(width: SizeConfig.diagonal * 1),
                   Expanded(
                     flex: 1,
-                    child: Text(
+                    child: Text(order.orderDate==null?'':
                       '${widget.formatter.format(order.orderDate.toDate())}',
                       overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.end,

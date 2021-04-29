@@ -14,6 +14,8 @@ import 'package:zilliken/Models/MenuItem.dart';
 import 'package:zilliken/Models/Order.dart';
 import 'package:zilliken/Models/OrderItem.dart';
 import 'package:zilliken/Models/Result.dart';
+import 'package:zilliken/Models/Statistic.dart';
+import 'package:zilliken/Models/Stock.dart';
 import 'package:zilliken/Models/UserProfile.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 
@@ -279,6 +281,146 @@ class Database {
         snapshot.docs.forEach((element) {
           categories.add(element.data()[Fields.name]);
         });
+    });*/
+
+    return clientOrder;
+  }
+
+  Future<List<String>> getCategories() async {
+    List<String> categories = new List();
+    var collection = databaseReference.collection(Fields.category);
+    await collection.get().then((snapshot) async {
+      snapshot.docs.forEach((element) {
+        categories.add(element.data()[Fields.name]);
+      });
+    });
+
+    return categories;
+  }
+
+  Future<bool> profileExists(String userId) async {
+    await databaseReference
+        .collection(Fields.users)
+        .doc(userId)
+        .get()
+        .then((snapshot) async {
+      if (snapshot.exists) {
+        return true;
+      } else {
+        return false;
+      }
+    });
+
+    return false;
+  }
+
+  Future<UserProfile> getUserProfile(String id) async {
+    UserProfile userProfile;
+    var document = databaseReference.collection(Fields.users).doc(id);
+    await document.get().then((snapshot) {
+      String role = snapshot[Fields.role];
+
+      userProfile = UserProfile(
+        id: id,
+        role: role,
+        name: snapshot[Fields.name],
+        phoneNumber: snapshot[Fields.phoneNumber],
+        createdAt: snapshot[Fields.createdAt],
+        lastSeenAt: snapshot[Fields.lastSeenAt],
+      );
+    });
+
+    return userProfile;
+  }
+
+  Future<void> addItem(MenuItem menuItem) async {
+    int global;
+    int rank;
+    await databaseReference
+        .collection(Fields.menu)
+        .orderBy(Fields.createdAt, descending: true)
+        .limit(1)
+        .get()
+        .then((snapshot) async {
+      if (snapshot.docs.isEmpty) {
+        global = 1;
+      } else {
+        global = snapshot.docs[0].data()[Fields.global] + 1;
+      }
+    });
+
+    await databaseReference
+        .collection(Fields.menu)
+        .where(Fields.category, isEqualTo: menuItem.category)
+        .orderBy(Fields.createdAt, descending: true)
+        .limit(1)
+        .get()
+        .then((snapshot) async {
+      if (snapshot.docs.isEmpty) {
+        rank = 1;
+      } else {
+        rank = snapshot.docs[0].data()[Fields.rank] + 1;
+      }
+    });
+
+    var document = databaseReference.collection(Fields.menu).doc();
+    await document.set({
+      Fields.availability: 1,
+      Fields.category: menuItem.category,
+      Fields.name: menuItem.name,
+      Fields.price: menuItem.price,
+      Fields.createdAt: FieldValue.serverTimestamp(),
+      Fields.rank: rank,
+      Fields.global: global,
+    });
+  }
+
+  Future<void> addCategoy(Category category) async {
+    int rank;
+    await databaseReference
+        .collection(Fields.menu)
+        .orderBy(Fields.createdAt, descending: true)
+        .limit(1)
+        .get()
+        .then((snapshot) async {
+      if (snapshot.docs.isEmpty) {
+        rank = 1;
+      } else {
+        rank = snapshot.docs[0].data()[Fields.rank] + 1;
+      }
+    });
+
+    var document = databaseReference.collection(Fields.category).doc();
+    await document.set({
+      Fields.name: category.name,
+      Fields.createdAt: FieldValue.serverTimestamp(),
+      Fields.rank: rank,
+    });
+  }
+
+  Future<void> updateNotifications(String id, int isEnabled) async {
+    var document = databaseReference.collection(Fields.users).doc(id);
+    await document.update({Fields.receiveNotifications: isEnabled});
+  }
+
+  Future<void> updateAvailability(String id, int isEnabled) async {
+    var document = databaseReference.collection(Fields.menu).doc(id);
+    await document.update({Fields.availability: isEnabled});
+  }
+
+  Future<void> updateStatus(
+      String id, int status, int value, Order order,num grandTotal) async {
+    var document = databaseReference.collection(Fields.order).doc(id);
+
+    if (value == 1) {
+      await document.update({
+        Fields.status: Fields.pending,
+        Fields.orderDate: FieldValue.serverTimestamp(),
+      });
+    } else if (value == 2) {
+      await document.update({
+        Fields.status: Fields.confirmed,
+        Fields.confirmedDate: FieldValue.serverTimestamp(),
       });
   
       return categories;
@@ -317,6 +459,33 @@ class Database {
       });
   
       return userProfile;
+
+      DateTime today = DateTime.now();
+      Statistic newStatistic = Statistic(
+        date: Timestamp.fromDate(DateTime(today.year, today.month, today.day)),
+        total: grandTotal,
+      );
+
+      await databaseReference
+          .collection(Fields.statistic)
+          .where(Fields.date, isEqualTo: newStatistic.date)
+          .get()
+          .then((value) async {
+        if (value != null && value.size > 0) {
+          await databaseReference.collection(Fields.statistic).doc(value.docs[0].id).update({
+            Fields.total: FieldValue.increment(newStatistic.total),
+          });
+        } else {
+          DocumentReference statref =
+              databaseReference.collection(Fields.statistic).doc();
+
+          await statref.set({
+            Fields.id: statref.id,
+            Fields.total: newStatistic.total,
+            Fields.date: newStatistic.date,
+          });
+        }
+      });
     }
   
     Future<void> addItem(MenuItem menuItem) async {
@@ -719,7 +888,180 @@ class Database {
         Fields.phoneNumber: address.phoneNumber,
       });
     }
+
+    return result;
+  }
+
+  Future<void> updateDetails(MenuItem menu) async {
+    DocumentReference details =
+        FirebaseFirestore.instance.collection(Fields.menu).doc(menu.id);
+    await details.update({
+      Fields.name: menu.name,
+      Fields.price: menu.price,
+    });
+  }
+
+  Future<void> addCall(Call call) async {
+    DocumentReference doc =
+        FirebaseFirestore.instance.collection(Fields.calls).doc();
+    call.id = doc.id;
+    await doc.set({
+      Fields.id: call.id,
+      Fields.hasCalled: call.hasCalled,
+      Fields.createdAt: FieldValue.serverTimestamp(),
+      Fields.total: call.order.total,
+      Fields.taxPercentage: call.order.taxPercentage,
+      Fields.userRole: call.order.userRole,
+      Fields.userId: call.order.userId,
+      Fields.status: call.order.status,
+      Fields.servedDate: call.order.servedDate,
+      Fields.preparationDate: call.order.preparationDate,
+      Fields.confirmedDate: call.order.confirmedDate,
+      Fields.orderDate: call.order.orderDate,
+      Fields.grandTotal: call.order.grandTotal,
+      Fields.instructions: call.order.instructions,
+      Fields.phoneNumber: call.order.phoneNumber,
+      Fields.tableAdress: call.order.tableAdress,
+      Fields.orderLocation: call.order.orderLocation,
+      Fields.orderId: call.order.id,
+    });
+  }
+
+  Future<void> updateCall(Call call, bool hasCalled) async {
+    DocumentReference doc =
+        FirebaseFirestore.instance.collection(Fields.calls).doc(call.id);
+    await doc.update({
+      Fields.hasCalled: hasCalled,
+    });
+  }
+
+  Future<void> deleteAddress(String userId, String addressId) async {
+    var document = databaseReference
+        .collection(Fields.users)
+        .doc(userId)
+        .collection(Fields.addresses)
+        .doc(addressId);
+    await document.delete();
+  }
+
+  Future<void> updateLocation(String orderId, GeoPoint geoPoint) async {
+    var document = databaseReference.collection(Fields.order).doc(orderId);
+    await document.update({
+      Fields.currentPoint: geoPoint,
+    });
   }
   
+  Future<void> addAddress(String userId, Address address) async {
+    var document = databaseReference
+        .collection(Fields.users)
+        .doc(userId)
+        .collection(Fields.addresses)
+        .doc();
+    address.id = document.id;
+    await document.set({
+      Fields.id: address.id,
+      Fields.geoPoint: address.geoPoint,
+      Fields.addressName: address.addressName,
+      Fields.typedAddress: address.typedAddress,
+      Fields.phoneNumber: address.phoneNumber,
+    });
+  }
 
+  Future<Result> addInventoryItem(context, Stock stock) async {
+    Result result =
+        Result(isSuccess: false, message: I18n.of(context).operationFailed);
+    DocumentReference inventory =
+        databaseReference.collection(Fields.stock).doc();
 
+    await inventory
+        .set({
+          Fields.id: inventory.id,
+          Fields.name: stock.name,
+          Fields.quantity: stock.quantity,
+          Fields.unit: stock.unit,
+          Fields.usedSince: stock.usedSince,
+          Fields.usedTotal: stock.usedTotal,
+          Fields.date: FieldValue.serverTimestamp(),
+        })
+        .whenComplete(() => result = Result(
+            isSuccess: true, message: I18n.of(context).operationSucceeded))
+        .catchError((error) => result = Result(
+            isSuccess: false, message: I18n.of(context).operationFailed));
+
+    return result;
+  }
+
+  Future<Result> updateInventoryItem(context, Stock stock) async {
+    Result result =
+        Result(isSuccess: false, message: I18n.of(context).operationFailed);
+    DocumentReference inventory =
+        databaseReference.collection(Fields.stock).doc(stock.id);
+
+    await inventory
+        .update({
+          Fields.quantity: stock.quantity,
+        })
+        .whenComplete(() => result = Result(
+            isSuccess: true, message: I18n.of(context).operationSucceeded))
+        .catchError((error) => result = Result(
+            isSuccess: false, message: I18n.of(context).operationFailed));
+    return result;
+  }
+
+  Future<List<MenuItem>> getMenuItems(String stockId) async {
+    List<MenuItem> menuItemList = [];
+    var reference = databaseReference.collection(Fields.menu);
+
+    await reference.get().then((QuerySnapshot snapshot) {
+      if (snapshot != null && snapshot.docs.isNotEmpty) {
+        snapshot.docs.forEach((element) async {
+          MenuItem menuItem = MenuItem();
+          menuItem.buildObject(element);
+
+          Stock stock;
+          if (menuItem.condiments != null) {
+            stock = menuItem.condiments.firstWhere((condiment) {
+              return condiment.id == stockId;
+            }, orElse: () => null);
+
+            if (stock == null) {
+              menuItem.isChecked = false;
+            } else {
+              menuItem.isChecked = true;
+            }
+          } else {
+            menuItem.isChecked = false;
+          }
+
+          menuItemList.add(menuItem);
+        });
+      } else {
+        log('list empty');
+      }
+    });
+
+    log('here');
+
+    menuItemList.forEach((element) {
+      log('menu name is ${element.name}');
+    });
+
+    return menuItemList;
+  }
+
+  Future<void> linkToStock(List<String> menuIdList, Stock stock) async {
+    String text = stock.buildStringFromObject();
+
+    WriteBatch batch = databaseReference.batch();
+
+    menuIdList.forEach((id) {
+      DocumentReference documentReference =
+          databaseReference.collection(Fields.menu).doc(id);
+      batch.update(documentReference, {
+        Fields.condiments: text,
+      });
+    });
+
+    await batch.commit();
+  }
+}

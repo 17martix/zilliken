@@ -7,6 +7,7 @@ import 'package:zilliken/Services/Messaging.dart';
 import 'package:zilliken/Pages/StatPage.dart';
 import 'package:zilliken/Pages/StockPage.dart';
 import 'package:zilliken/Pages/UserPage.dart';
+import 'package:zilliken/Pages/AdminPage.dart';
 import 'package:zilliken/Services/Authentication.dart';
 
 class AdminPage extends StatefulWidget {
@@ -63,6 +64,11 @@ class _AdminPageState extends State<AdminPage> {
     }
 
     return Container(
+      decoration: BoxDecoration(
+          image: DecorationImage(
+        image: AssetImage('assets/Zilliken.jpg'),
+        fit: BoxFit.cover,
+      )),
       child: Scaffold(
         appBar: buildAppBar(
           context,
@@ -77,12 +83,15 @@ class _AdminPageState extends State<AdminPage> {
         backgroundColor: Colors.transparent,
         bottomNavigationBar: CurvedNavigationBar(
           animationCurve: Curves.easeInBack,
-          animationDuration: Duration(milliseconds: 500),
+          color: Colors.white.withOpacity(0.7),
+          height: 54,
+          backgroundColor: Colors.transparent,
+          animationDuration: Duration(milliseconds: 800),
           index: _pageState,
           items: <Widget>[
+            Icon(Icons.access_alarms),
             Icon(Icons.satellite),
-            Icon(Icons.satellite),
-            Icon(Icons.satellite),
+            Icon(Icons.supervised_user_circle),
           ],
           onTap: (index) {
             setState(() {
@@ -98,28 +107,28 @@ class _AdminPageState extends State<AdminPage> {
     return Stack(
       children: [
         AnimatedContainer(
-          child: StatPage(),
+          child: StatPage(
+            auth: widget.auth,
+            db: widget.db,
+            userId: widget.userId,
+            userRole: widget.userRole,
+            data: [],
+          ),
           duration: Duration(milliseconds: 800),
           curve: Curves.easeInBack,
           transform: Matrix4.translationValues(_xoffset1, 0, 1),
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage('assets/logo.png'),
-              fit: BoxFit.cover,
-            ),
-          ),
         ),
         AnimatedContainer(
-          child: StockPage(),
+          child: StockPage(
+            auth: widget.auth,
+            db: widget.db,
+            messaging: widget.messaging,
+            userId: widget.userId,
+            userRole: widget.userRole,
+          ),
           duration: Duration(milliseconds: 800),
           curve: Curves.easeInBack,
           transform: Matrix4.translationValues(_xoffset2, 0, 1),
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage('assets/logo.png'),
-              fit: BoxFit.cover,
-            ),
-          ),
         ),
         AnimatedContainer(
           child: UserPage(
@@ -133,12 +142,6 @@ class _AdminPageState extends State<AdminPage> {
           duration: Duration(milliseconds: 800),
           curve: Curves.easeInBack,
           transform: Matrix4.translationValues(_xoffset3, 0, 1),
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage('assets/logo.png'),
-              fit: BoxFit.cover,
-            ),
-          ),
         ),
       ],
     );

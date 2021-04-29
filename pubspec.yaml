@@ -52,6 +52,8 @@ dependencies:
   flutter_bluetooth_basic: ^ 0.1.5
   geolocator: ^6.2.1
   flutter_polyline_points: ^0.2.4
+  fl_chart: ^0.12.3
+  flutter_slidable: ^0.5.7
 
   flutter_localizations:
     sdk: flutter

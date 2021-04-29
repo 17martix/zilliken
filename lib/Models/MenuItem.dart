@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import 'Fields.dart';
+import 'Stock.dart';
 
 class MenuItem {
   String id;
@@ -14,6 +15,8 @@ class MenuItem {
   Timestamp createdAt;
   String imageName;
   int isDrink;
+  List<Stock> condiments;
+  bool isChecked;
 
   MenuItem({
     this.category,
@@ -26,9 +29,22 @@ class MenuItem {
     this.createdAt,
     this.imageName,
     this.isDrink,
+    this.condiments,
+    this.isChecked,
   });
 
   void buildObject(DocumentSnapshot document) {
+    if (document.data()[Fields.condiments] != null) {
+      condiments = [];
+      List<String> textCondimentList =
+          List.from(document.data()[Fields.condiments]);
+      textCondimentList.forEach((element) {
+        Stock stock = Stock();
+        stock.buildObjectFromString(element);
+        condiments.add(stock);
+      });
+    }
+
     category = document.data()[Fields.category];
     id = document.id;
     name = document.data()[Fields.name];
@@ -42,6 +58,17 @@ class MenuItem {
   }
 
   void buildObjectAsync(AsyncSnapshot<DocumentSnapshot> document) {
+    if (document.data[Fields.condiments] != null) {
+      condiments = [];
+      List<String> textCondimentList =
+          List.from(document.data[Fields.condiments]);
+      textCondimentList.forEach((element) {
+        Stock stock = Stock();
+        stock.buildObjectFromString(element);
+        condiments.add(stock);
+      });
+    }
+
     category = document.data[Fields.category];
     id = document.data.id;
     name = document.data[Fields.name];
