@@ -15,6 +15,7 @@ import 'package:zilliken/Models/MenuItem.dart';
 import 'package:zilliken/Models/Order.dart';
 import 'package:zilliken/Models/OrderItem.dart';
 import 'package:zilliken/Models/Result.dart';
+import 'package:zilliken/Models/Statistic.dart';
 import 'package:zilliken/Models/Stock.dart';
 import 'package:zilliken/Models/UserProfile.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
@@ -396,8 +397,10 @@ class Database {
     await document.update({Fields.availability: isEnabled});
   }
 
-  Future<void> updateStatus(String id, int status, int value) async {
+  Future<void> updateStatus(
+      String id, int status, int value, Order order,num grandTotal) async {
     var document = databaseReference.collection(Fields.order).doc(id);
+
     if (value == 1) {
       await document.update({
         Fields.status: Fields.pending,
@@ -417,6 +420,33 @@ class Database {
       await document.update({
         Fields.status: Fields.served,
         Fields.servedDate: FieldValue.serverTimestamp(),
+      });
+
+      DateTime today = DateTime.now();
+      Statistic newStatistic = Statistic(
+        date: Timestamp.fromDate(DateTime(today.year, today.month, today.day)),
+        total: grandTotal,
+      );
+
+      await databaseReference
+          .collection(Fields.statistic)
+          .where(Fields.date, isEqualTo: newStatistic.date)
+          .get()
+          .then((value) async {
+        if (value != null && value.size > 0) {
+          await databaseReference.collection(Fields.statistic).doc(value.docs[0].id).update({
+            Fields.total: FieldValue.increment(newStatistic.total),
+          });
+        } else {
+          DocumentReference statref =
+              databaseReference.collection(Fields.statistic).doc();
+
+          await statref.set({
+            Fields.id: statref.id,
+            Fields.total: newStatistic.total,
+            Fields.date: newStatistic.date,
+          });
+        }
       });
     }
   }

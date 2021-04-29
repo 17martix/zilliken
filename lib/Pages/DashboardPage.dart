@@ -401,7 +401,7 @@ class _DashboardPageState extends State<DashboardPage> {
   }*/
 
   void admin() {
-    Navigator.pushReplacement(
+    Navigator.push(
       context,
       MaterialPageRoute(
           builder: (context) => AdminPage(
