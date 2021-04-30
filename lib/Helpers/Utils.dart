@@ -86,9 +86,9 @@ String appliedTaxFromTotal(context, int total, int taxPercentage) {
   return "$taxPercentage% = ${formatNumber(roundedTax)} ${I18n.of(context).fbu}";
 }
 
-String orderCardTtle(context, Order order) {
+String? orderCardTtle(context, Order order) {
   int orderLength = order.clientOrder.length;
-  String text;
+  String? text;
   if (orderLength == 1) {
     text = "${order.clientOrder[0].menuItem.name}";
   } else if (orderLength == 2) {
@@ -102,8 +102,8 @@ String orderCardTtle(context, Order order) {
   return text;
 }
 
-String orderStatus(context, Order order) {
-  String text;
+String? orderStatus(context, Order order) {
+  String? text;
   if (order.status == Fields.pending) {
     text = "${I18n.of(context).pendingOrder}";
   } else if (order.status == Fields.confirmed) {
@@ -127,8 +127,8 @@ String itemTax(context, Order order) {
   return "${order.taxPercentage}% = $value ${I18n.of(context).fbu}";
 }
 
-String showRommTable(context, Order order) {
-  String text;
+String? showRommTable(context, Order order) {
+  String? text;
   if (order.orderLocation == 0)
     text = "${I18n.of(context).tableNumber} : ${order.tableAdress}";
   else if (order.orderLocation == 1)
@@ -145,7 +145,7 @@ String capitalize(String text) {
 }
 
 Future<List<MenuItem>> getMenuItems() async {
-  List<MenuItem> list = List();
+  List<MenuItem> list = [];
 
   /*await new HttpClient()
       .getUrl( Uri.parse('http://foo.bar/foo.txt'))
@@ -173,11 +173,11 @@ Future<List<MenuItem>> getMenuItems() async {
     final parts = line.split(',');
     return MenuItem(
       name: capitalize(parts[0]),
-      price: int.tryParse(parts[1]),
+      price: int.parse(parts[1]),
       category: capitalize(parts[2]),
-      availability: int.tryParse(parts[3]),
-      rank: int.tryParse(parts[4]),
-      global: int.tryParse(parts[5]),
+      availability: int.parse(parts[3]),
+      rank: int.parse(parts[4]),
+      global: int.parse(parts[5]),
       imageName: parts[6],
     );
   }).toList();
@@ -186,18 +186,18 @@ Future<List<MenuItem>> getMenuItems() async {
 }
 
 Future<List<MenuItem>> getMenuItemsFromFile(File file) async {
-  List<MenuItem> list = List();
+  List<MenuItem> list = [];
 
   list = file.readAsLinesSync().skip(1) // Skip the header row
       .map((line) {
     final parts = line.split(',');
     return MenuItem(
       name: capitalize(parts[0]),
-      price: int.tryParse(parts[1]),
+      price: int.parse(parts[1]),
       category: capitalize(parts[2]),
-      availability: int.tryParse(parts[3]),
-      rank: int.tryParse(parts[4]),
-      global: int.tryParse(parts[5]),
+      availability: int.parse(parts[3]),
+      rank: int.parse(parts[4]),
+      global: int.parse(parts[5]),
       imageName: parts[6],
       isDrink: int.tryParse(parts[7]),
     );
@@ -207,14 +207,14 @@ Future<List<MenuItem>> getMenuItemsFromFile(File file) async {
 }
 
 Future<List<Category>> getCategoryListFromFile(File file) async {
-  List<Category> list = List();
+  List<Category> list = [];
 
   list = file.readAsLinesSync().skip(1) // Skip the header row
       .map((line) {
     final parts = line.split(',');
     return Category(
       name: capitalize(parts[0]),
-      rank: int.tryParse(parts[1]),
+      rank: int.parse(parts[1]),
       imageName: parts[2],
     );
   }).toList();
@@ -223,7 +223,7 @@ Future<List<Category>> getCategoryListFromFile(File file) async {
 }
 
 Future<List<Category>> getCategoryList() async {
-  List<Category> list = List();
+  List<Category> list = [];
 
   /*await new HttpClient()
       .getUrl( Uri.parse('http://foo.bar/foo.txt'))
@@ -247,7 +247,7 @@ Future<List<Category>> getCategoryList() async {
     final parts = line.split(',');
     return Category(
       name: capitalize(parts[0]),
-      rank: int.tryParse(parts[1]),
+      rank: int.parse(parts[1]),
       imageName: parts[2],
     );
   }).toList();
@@ -255,7 +255,8 @@ Future<List<Category>> getCategoryList() async {
   return list;
 }
 
-String formatNumber(int number) {
+String formatNumber(num unformatedNumber) {
+  int number = unformatedNumber.toInt();
   String oldNumber = "$number";
   String newNumber = '';
   for (int i = oldNumber.length - 1; i >= 0; i--) {
@@ -283,8 +284,8 @@ Future<bool> hasConnection() async {
   return false;
 }
 
-String getMapsKey() {
-  String key;
+String? getMapsKey() {
+  String? key;
   if (Platform.isAndroid) {
     key = "AIzaSyCOCHr54YA02I6vq2vd5Wuf9a1qWSlFU70";
   } else if (Platform.isIOS) {

@@ -31,7 +31,7 @@ AppBar buildAppBar(
     title: Center(
       child: RichText(
         text: TextSpan(
-          style: Theme.of(context).textTheme.headline6.copyWith(
+          style: Theme.of(context).textTheme.headline6!.copyWith(
                 fontWeight: FontWeight.bold,
               ),
           children: <TextSpan>[

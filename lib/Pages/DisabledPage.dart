@@ -13,10 +13,10 @@ class DisabledPage extends StatefulWidget {
   final String userRole;
 
   DisabledPage({
-    this.auth,
-    this.db,
-    this.userId,
-    this.userRole,
+   required this.auth,
+   required this.db,
+   required this.userId,
+   required this.userRole,
   });
 
   @override

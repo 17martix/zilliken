@@ -1,8 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:zilliken/Components/ZTextField.dart';
 import 'package:zilliken/Helpers/SizeConfig.dart';
-import 'package:zilliken/Helpers/Styling.dart';
 import 'package:zilliken/Models/Fields.dart';
 import 'package:zilliken/Models/UserProfile.dart';
 import 'package:zilliken/Pages/SingleUserPage.dart';
@@ -21,10 +19,10 @@ class UserPage extends StatefulWidget {
   final String userRole;
 
   UserPage({
-    @required this.auth,
-    @required this.db,
-    @required this.userId,
-    @required this.userRole,
+    required this.auth,
+    required this.db,
+    required this.userId,
+    required this.userRole,
   });
 
   @override
@@ -69,9 +67,8 @@ class _UserPageState extends State<UserPage> {
 
         return ListView(
           shrinkWrap: true,
-          children: snapshot.data.docs.map((DocumentSnapshot document) {
-            UserProfile userProfile = UserProfile();
-            userProfile.buildObject(document);
+          children: snapshot.data!.docs.map((DocumentSnapshot document) {
+            UserProfile userProfile = UserProfile.buildObject(document);
             return userList(userProfile);
           }).toList(),
         );
@@ -94,7 +91,7 @@ class _UserPageState extends State<UserPage> {
             Text(
               '${I18n.of(context).last} '
               " : "
-              '${widget.formatter.format(userProfile.lastSeenAt.toDate())}',
+              '${widget.formatter.format(userProfile.lastSeenAt!.toDate())}',
             ),
           ],
         ),

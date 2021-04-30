@@ -23,11 +23,11 @@ class StockPage extends StatefulWidget {
   final DateFormat formatter = DateFormat();
 
   StockPage({
-    this.auth,
-    this.db,
-    this.messaging,
-    this.userId,
-    this.userRole,
+   required this.auth,
+   required this.db,
+   required this.messaging,
+   required this.userId,
+   required this.userRole,
   });
 
   @override
@@ -78,10 +78,9 @@ class _StockPageState extends State<StockPage> {
 
           return ListView.builder(
               physics: BouncingScrollPhysics(),
-              itemCount: snapshot.data.docs.length,
+              itemCount: snapshot.data!.docs.length,
               itemBuilder: (BuildContext context, index) {
-                Stock stock = Stock();
-                stock.buildObject(snapshot.data.docs[index]);
+                Stock stock = Stock.buildObject(snapshot.data!.docs[index]);
                 return Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -214,7 +213,7 @@ class _StockPageState extends State<StockPage> {
                     ' ' +
                     stock.unit),
                 Text(I18n.of(context).used + ' : ' + '${stock.usedSince}'),
-                Text('${widget.formatter.format(stock.date.toDate())}')
+                Text('${widget.formatter.format(stock.date!.toDate())}')
               ],
             ),
           ),

@@ -4,26 +4,26 @@ import 'package:flutter/cupertino.dart';
 import 'Fields.dart';
 
 class StatisticUser {
-  String id;
-  String total;
+  String? id;
+  late String total;
 
-  Timestamp date;
+  late Timestamp date;
 
   StatisticUser({
     this.id,
-    this.total,
-    this.date,
+    required this.total,
+    required this.date,
   });
 
-  void buildObject(DocumentSnapshot document) {
+  StatisticUser.buildObject(DocumentSnapshot document) {
     id = document.id;
-    total = document.data()[Fields.total];
-    date = document.data()[Fields.date];
+    total = document.data()![Fields.total];
+    date = document.data()![Fields.date];
   }
 
-  void buildObjectAsync(AsyncSnapshot<DocumentSnapshot> document) {
-    id = document.data.id;
-    total = document.data[Fields.total];
-    date = document.data[Fields.date];
+  StatisticUser.buildObjectAsync(AsyncSnapshot<DocumentSnapshot> document) {
+    id = document.data!.id;
+    total = document.data![Fields.total];
+    date = document.data![Fields.date];
   }
 }

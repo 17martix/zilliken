@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:zilliken/Components/ZAppBar.dart';
-import 'package:zilliken/Components/ZRaisedButton.dart';
+import 'package:zilliken/Components/ZElevatedButton.dart';
 import 'package:zilliken/Components/ZTextField.dart';
 import 'package:zilliken/Helpers/SizeConfig.dart';
 import 'package:zilliken/Helpers/Styling.dart';
@@ -21,11 +21,11 @@ class NewItemPage extends StatefulWidget {
   final String userRole;
 
   NewItemPage({
-    this.auth,
-    this.db,
-    this.messaging,
-    this.userId,
-    this.userRole,
+    required this.auth,
+    required this.db,
+    required this.messaging,
+    required this.userId,
+    required this.userRole,
   });
   @override
   _NewItemPageState createState() => _NewItemPageState();
@@ -44,7 +44,6 @@ class _NewItemPageState extends State<NewItemPage> {
   final _formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  Stock newStockValue = Stock();
   List<String> unitList = [
     'Kilogram(s)',
     'Liter(s)',
@@ -54,12 +53,12 @@ class _NewItemPageState extends State<NewItemPage> {
     'gram(s)'
   ];
 
-  String selectedValue;
-  String name;
-  String unit;
-  num quantity;
-  num usedSince;
-  num usedTotal;
+  String? selectedValue;
+  String? name;
+  String? unit;
+  num? quantity;
+  num? usedSince;
+  num? usedTotal;
 
   @override
   Widget build(BuildContext context) {
@@ -90,17 +89,22 @@ class _NewItemPageState extends State<NewItemPage> {
               ZTextField(
                 outsidePrefix: Text(I18n.of(context).name + ' :'),
                 onSaved: (value) => name = value,
-                validator: (value) =>
-                    value.isEmpty ? I18n.of(context).requit : null,
+                validator: (value) => value == null || value.isEmpty
+                    ? I18n.of(context).requit
+                    : null,
               ),
               SizedBox(
                 height: SizeConfig.diagonal * 3,
               ),
               ZTextField(
                 outsidePrefix: Text(I18n.of(context).quantity + ' :'),
-                onSaved: (value) => quantity = num.parse(value),
+                onSaved: (value) {
+                  if (value != null) {
+                    quantity = num.parse(value);
+                  }
+                },
                 validator: (value) =>
-                    value.isEmpty ? I18n.of(context).requit : null,
+                  value == null ||  value.isEmpty ? I18n.of(context).requit : null,
               ),
               SizedBox(
                 height: SizeConfig.diagonal * 3,
@@ -115,7 +119,7 @@ class _NewItemPageState extends State<NewItemPage> {
                           value,
                         ));
                   }).toList(),
-                  onChanged: (String val) {
+                  onChanged: (String? val) {
                     setState(() {
                       selectedValue = val;
                       unit = selectedValue;
@@ -124,9 +128,9 @@ class _NewItemPageState extends State<NewItemPage> {
               SizedBox(
                 height: SizeConfig.diagonal * 2,
               ),
-              ZRaisedButton(
+              ZElevatedButton(
                 onpressed: saveItem,
-                textIcon: Text(
+                child: Text(
                   I18n.of(context).save,
                   style: TextStyle(color: Color(Styling.textColor)),
                 ),
@@ -141,7 +145,7 @@ class _NewItemPageState extends State<NewItemPage> {
   void saveItem() async {
     final form = _formKey.currentState;
 
-    if (form.validate()) {
+    if (form!.validate()) {
       form.save();
       EasyLoading.show(status: I18n.of(context).loading);
 
@@ -149,7 +153,7 @@ class _NewItemPageState extends State<NewItemPage> {
       if (!isOnline) {
         EasyLoading.dismiss();
 
-        _scaffoldKey.currentState.showSnackBar(
+       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(I18n.of(context).noInternet),
           ),
@@ -157,9 +161,9 @@ class _NewItemPageState extends State<NewItemPage> {
       } else {
         try {
           Stock newStock = Stock(
-              name: name,
-              quantity: quantity,
-              unit: unit,
+              name: name!,
+              quantity: quantity!,
+              unit: unit!,
               usedSince: 0,
               usedTotal: 0);
           setState(() {});
@@ -168,17 +172,17 @@ class _NewItemPageState extends State<NewItemPage> {
           EasyLoading.dismiss();
 
           setState(() {
-            _formKey.currentState.reset();
+            _formKey.currentState!.reset();
           });
         } on Exception catch (e) {
           //print('Error: $e');
 
           EasyLoading.dismiss();
           setState(() {
-            _formKey.currentState.reset();
+            _formKey.currentState!.reset();
           });
 
-          _scaffoldKey.currentState.showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(e.toString()),
             ),

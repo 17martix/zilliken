@@ -18,7 +18,7 @@ class Messaging {
       FlutterLocalNotificationsPlugin();
 
   /// Create a [AndroidNotificationChannel] for heads up notifications
-  AndroidNotificationChannel channel;
+  AndroidNotificationChannel? channel;
 
   Messaging() {
     channel = AndroidNotificationChannel(
@@ -54,7 +54,7 @@ class Messaging {
     Messaging messaging,
   ) {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      RemoteNotification notification = message.notification;
+      RemoteNotification? notification = message.notification;
       //AndroidNotification android = message.notification?.android;
 
       var androidPlatformChannelSpecifics = new AndroidNotificationDetails(

@@ -5,23 +5,21 @@ import 'package:zilliken/Models/Fields.dart';
 import 'MenuItem.dart';
 
 class OrderItem {
-  MenuItem menuItem;
-  int count;
+  late MenuItem menuItem;
+  late int count;
 
   OrderItem({
-    this.count,
-    this.menuItem,
+    required this.count,
+    required this.menuItem,
   });
 
-  void buildObject(DocumentSnapshot document) {
-    menuItem = MenuItem();
-    count = document.data()[Fields.count];
-    menuItem.buildObject(document);
+  OrderItem.buildObject(DocumentSnapshot document) {
+    menuItem = MenuItem.buildObject(document);
+    count = document.data()![Fields.count];
   }
 
-  void buildObjectAsync(AsyncSnapshot<DocumentSnapshot> document) {
-    menuItem = MenuItem();
-    count = document.data[Fields.count];
-    menuItem.buildObjectAsync(document);
+  OrderItem.buildObjectAsync(AsyncSnapshot<DocumentSnapshot> document) {
+    menuItem = MenuItem.buildObjectAsync(document);
+    count = document.data![Fields.count];
   }
 }

@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:zilliken/Components/ZRaisedButton.dart';
+import 'package:zilliken/Components/ZElevatedButton.dart';
 import 'package:zilliken/Components/ZTextField.dart';
 import 'package:zilliken/Helpers/Utils.dart';
 import 'package:zilliken/Models/Fields.dart';
@@ -23,12 +23,12 @@ class LoginPage extends StatefulWidget {
   final Authentication auth;
   final Database db;
   final Messaging messaging;
-  final User user;
+  final User? user;
 
   LoginPage({
-    @required this.auth,
-    @required this.db,
-    @required this.messaging,
+    required this.auth,
+    required this.db,
+    required this.messaging,
     this.user,
   });
 
@@ -53,12 +53,12 @@ class _LoginPageState extends State<LoginPage> {
   GlobalKey<FormState> _nameKey = GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  String _verificationcode;
+  String? _verificationcode;
 
-  String _phoneNumber;
-  User _firebaseUser;
+  String? _phoneNumber;
+  User? _firebaseUser;
 
-  String _name;
+  String? _name;
 
   @override
   Widget build(BuildContext context) {
@@ -159,7 +159,7 @@ class _LoginPageState extends State<LoginPage> {
                                 Form(
                                   key: _phoneKey,
                                   child: ZTextField(
-                                    prefix: Text(_selectedAreaCode),
+                                    outsidePrefix: Text(_selectedAreaCode),
                                     hint: I18n.of(context).yourphonenumber,
                                     keyboardType: TextInputType.number,
                                     inputFormatters: [
@@ -169,14 +169,14 @@ class _LoginPageState extends State<LoginPage> {
                                         sendCode(),
                                     onSaved: (newValue) =>
                                         _phoneNumber = newValue,
-                                    validator: (value) => value.isEmpty
+                                    validator: (value) => value==null || value.isEmpty
                                         ? I18n.of(context).requiredInput
                                         : null,
                                   ),
                                 ),
-                                ZRaisedButton(
+                                ZElevatedButton(
                                   onpressed: sendCode,
-                                  textIcon: Text(
+                                  child: Text(
                                     I18n.of(context).signin,
                                     style: TextStyle(
                                       color:
@@ -264,9 +264,9 @@ class _LoginPageState extends State<LoginPage> {
                             SizedBox(
                               height: SizeConfig.diagonal * 1,
                             ),
-                            ZRaisedButton(
+                            ZElevatedButton(
                               color: Color(Styling.accentColor),
-                              textIcon: Text(
+                              child: Text(
                                 I18n.of(context).confirm,
                                 style: TextStyle(
                                     color:
@@ -326,9 +326,9 @@ class _LoginPageState extends State<LoginPage> {
                                   keyboardType: TextInputType.text,
                                 ),
                               ),
-                              ZRaisedButton(
+                              ZElevatedButton(
                                 onpressed: createAccount,
-                                textIcon: Text(
+                                child: Text(
                                   I18n.of(context).signUp,
                                   style: TextStyle(
                                     color:
@@ -358,23 +358,23 @@ class _LoginPageState extends State<LoginPage> {
       EasyLoading.show(status: I18n.of(context).loading);
       try {
         PhoneAuthCredential credential = PhoneAuthProvider.credential(
-            verificationId: _verificationcode, smsCode: value);
+            verificationId: _verificationcode!, smsCode: value);
         UserCredential user =
             await widget.auth.getAuth().signInWithCredential(credential);
         isProfileCreated(user);
       } on Exception catch (e) {
         EasyLoading.dismiss();
-        _scaffoldKey.currentState.showSnackBar(
+       ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(I18n.of(context).operationFailed)));
       }
     }
   }
 
   void isProfileCreated(UserCredential userCredential) async {
-    final User user = userCredential.user;
+    final User user = userCredential.user!;
     /*String token = await widget.messaging.firebaseMessaging.getToken();
     await widget.db.setToken(user.uid, token);*/
-    String role = await widget.db.getUserRole(user.uid);
+    String? role = await widget.db.getUserRole(user.uid);
     if (role == null || role == "") {
       EasyLoading.dismiss();
       setState(() {
@@ -382,7 +382,7 @@ class _LoginPageState extends State<LoginPage> {
         _firebaseUser = user;
       });
     } else {
-      String token = await widget.messaging.firebaseMessaging.getToken();
+      String? token = await widget.messaging.firebaseMessaging.getToken();
       await widget.db.setToken(user.uid, token);
       EasyLoading.dismiss();
       Navigator.pushReplacement(
@@ -401,7 +401,7 @@ class _LoginPageState extends State<LoginPage> {
 
   bool validate() {
     final form = _phoneKey.currentState;
-    if (form.validate()) {
+    if (form!.validate()) {
       form.save();
       return true;
     }
@@ -415,22 +415,21 @@ class _LoginPageState extends State<LoginPage> {
       bool isOnline = await hasConnection();
       if (!isOnline) {
         EasyLoading.dismiss();
-        _scaffoldKey.currentState
-            .showSnackBar(SnackBar(content: Text(I18n.of(context).noInternet)));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(I18n.of(context).noInternet)));
       } else {
         try {
           User currentUser;
           if (_firebaseUser != null)
-            currentUser = _firebaseUser;
+            currentUser = _firebaseUser!;
           else
-            currentUser = widget.user;
+            currentUser = widget.user!;
 
-          String token = await widget.messaging.firebaseMessaging.getToken();
+          String? token = await widget.messaging.firebaseMessaging.getToken();
           UserProfile userProfile = UserProfile(
             id: currentUser.uid,
-            name: _name,
+            name: _name!,
             role: Fields.client,
-            phoneNumber: currentUser.phoneNumber,
+            phoneNumber: currentUser.phoneNumber!,
             token: token,
           );
           await widget.db.createAccount(context, userProfile);
@@ -441,7 +440,7 @@ class _LoginPageState extends State<LoginPage> {
             MaterialPageRoute(
               builder: (context) => DashboardPage(
                 auth: widget.auth,
-                userId: userProfile.id,
+                userId: userProfile.id!,
                 userRole: userProfile.role,
                 db: widget.db,
                 messaging: widget.messaging,
@@ -450,8 +449,7 @@ class _LoginPageState extends State<LoginPage> {
           );
         } on Exception catch (e) {
           EasyLoading.dismiss();
-          _scaffoldKey.currentState.showSnackBar(
-              SnackBar(content: Text(I18n.of(context).operationFailed)));
+         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(I18n.of(context).operationFailed)));
         }
       }
     }
@@ -459,7 +457,7 @@ class _LoginPageState extends State<LoginPage> {
 
   bool validate2() {
     final form = _nameKey.currentState;
-    if (form.validate()) {
+    if (form!.validate()) {
       form.save();
       return true;
     }
@@ -473,11 +471,10 @@ class _LoginPageState extends State<LoginPage> {
       bool isOnline = await hasConnection();
       if (!isOnline) {
         EasyLoading.dismiss();
-        _scaffoldKey.currentState
-            .showSnackBar(SnackBar(content: Text(I18n.of(context).noInternet)));
+       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(I18n.of(context).noInternet)));
       } else {
         try {
-          String number = _selectedAreaCode + _phoneNumber;
+          String number = _selectedAreaCode + _phoneNumber!;
           await FirebaseAuth.instance.verifyPhoneNumber(
             phoneNumber: number,
             verificationCompleted: (PhoneAuthCredential credential) async {
@@ -487,13 +484,12 @@ class _LoginPageState extends State<LoginPage> {
             },
             verificationFailed: (FirebaseAuthException e) {
               EasyLoading.dismiss();
-              _scaffoldKey.currentState.showSnackBar(
-                SnackBar(
-                  content: Text(e.message),
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text(e.message!),
                 ),
               );
             },
-            codeSent: (String verificationId, int resendToken) {
+            codeSent: (String verificationId, int? resendToken) {
               setState(() {
                 _verificationcode = verificationId;
               });
@@ -522,8 +518,7 @@ class _LoginPageState extends State<LoginPage> {
           );
         } on Exception catch (e) {
           EasyLoading.dismiss();
-          _scaffoldKey.currentState.showSnackBar(
-              SnackBar(content: Text(I18n.of(context).operationFailed)));
+         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(I18n.of(context).operationFailed)));
         }
       }
     }

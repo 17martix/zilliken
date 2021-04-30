@@ -2,5 +2,8 @@ class Result {
   bool isSuccess;
   String message;
 
-  Result({this.isSuccess, this.message,});
+  Result({
+    required this.isSuccess,
+    required this.message,
+  });
 }

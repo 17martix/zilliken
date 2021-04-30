@@ -23,11 +23,11 @@ class OrdersPage extends StatefulWidget {
   final DateFormat formatter = DateFormat('dd/MM/yy HH:mm');
 
   OrdersPage({
-    @required this.auth,
-    @required this.db,
-    @required this.userId,
-    @required this.userRole,
-    @required this.messaging,
+    required this.auth,
+    required this.db,
+    required this.userId,
+    required this.userRole,
+    required this.messaging,
   });
 
   @override
@@ -69,13 +69,6 @@ class _OrdersPageState extends State<OrdersPage> {
   }
 
   Widget item(Order order) {
-    int grandTotal;
-    if (order.grandTotal is double) {
-      grandTotal = order.grandTotal.round();
-    } else {
-      grandTotal = order.grandTotal;
-    }
-
     return Padding(
       padding: EdgeInsets.only(
           left: SizeConfig.diagonal * 0.2, right: SizeConfig.diagonal * 0.2),
@@ -98,7 +91,7 @@ class _OrdersPageState extends State<OrdersPage> {
                     db: widget.db,
                     userId: widget.userId,
                     userRole: widget.userRole,
-                    orderId: order.id,
+                    orderId: order.id!,
                     clientOrder: order,
                     messaging: widget.messaging,
                   ),
@@ -128,7 +121,7 @@ class _OrdersPageState extends State<OrdersPage> {
                 Expanded(
                   flex: 1,
                   child: Text(
-                    '${I18n.of(context).total} : ${formatNumber(grandTotal)} ${I18n.of(context).fbu}',
+                    '${I18n.of(context).total} : ${formatNumber(order.grandTotal)} ${I18n.of(context).fbu}',
                     textAlign: TextAlign.right,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(fontSize: SizeConfig.diagonal * 1.5),
@@ -155,7 +148,7 @@ class _OrdersPageState extends State<OrdersPage> {
                   Expanded(
                     flex: 1,
                     child: Text(
-                      order.orderDate==null?"":'${widget.formatter.format(order.orderDate.toDate())}',
+                      order.orderDate==null?"":'${widget.formatter.format(order.orderDate!.toDate())}',
                       textAlign: TextAlign.right,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(fontSize: SizeConfig.diagonal * 1.5),
@@ -187,7 +180,7 @@ class _OrdersPageState extends State<OrdersPage> {
     return StreamBuilder<QuerySnapshot>(
       stream: commandes.snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        if (snapshot.data == null || snapshot.data.docs.length <= 0) {
+        if (snapshot.data == null || snapshot.data!.docs.length <= 0) {
           return Center(
             child: Text(
               I18n.of(context).orderPlaceholder,
@@ -202,9 +195,8 @@ class _OrdersPageState extends State<OrdersPage> {
         }
 
         return ListView(
-          children: snapshot.data.docs.map((DocumentSnapshot document) {
-            Order order = Order();
-            order.buildObject(document);
+          children: snapshot.data!.docs.map((DocumentSnapshot document) {
+            Order order = Order.buildObject(document);
 
             return item(order);
           }).toList(),

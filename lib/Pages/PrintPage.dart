@@ -1,11 +1,10 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_bluetooth_basic/flutter_bluetooth_basic.dart';
-import 'package:esc_pos_bluetooth/esc_pos_bluetooth.dart';
-import 'package:esc_pos_utils/esc_pos_utils.dart';
 import 'dart:io' show Platform;
 import 'package:zilliken/Components/ZAppBar.dart';
+import 'package:zilliken/Helpers/SizeConfig.dart';
+import 'package:zilliken/Helpers/Styling.dart';
 import 'package:zilliken/Services/Authentication.dart';
 
 import '../i18n.dart';
@@ -15,29 +14,54 @@ class PrintPage extends StatefulWidget {
   final String orderType;
   final List<String> items;
   final String tableAddress;
-  final String phoneNumber;
+  final String? phoneNumber;
   final String orderDate;
   final String tax;
   final String total;
 
   PrintPage({
-    Key key,
-    @required this.orderType,
-    @required this.items,
-    @required this.tableAddress,
-    @required this.phoneNumber,
-    @required this.orderDate,
-    @required this.tax,
-    @required this.total,
-    @required this.auth,
-  }) : super(key: key);
+    required this.orderType,
+    required this.items,
+    required this.tableAddress,
+    required this.phoneNumber,
+    required this.orderDate,
+    required this.tax,
+    required this.total,
+    required this.auth,
+  });
 
   @override
   _PrintPageState createState() => _PrintPageState();
 }
 
 class _PrintPageState extends State<PrintPage> {
-  PrinterBluetoothManager _printerManager = PrinterBluetoothManager();
+  @override
+  Widget build(BuildContext context) {
+    SizeConfig().init(context);
+    return Container(
+      decoration: BoxDecoration(
+          image: DecorationImage(
+        image: AssetImage('assets/Zilliken.jpg'),
+        fit: BoxFit.cover,
+      )),
+      child: Container(
+        color: Color(Styling.primaryBackgroundColor).withOpacity(0.7),
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          body: Center(
+            child: Text(
+              I18n.of(context).printingDisabled,
+              textAlign: TextAlign.center,
+              style: new TextStyle(
+                fontSize: SizeConfig.diagonal * 2,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+  /*PrinterBluetoothManager _printerManager = PrinterBluetoothManager();
   List<PrinterBluetooth> _devices = [];
   String _devicesMsg;
   BluetoothManager bluetoothManager = BluetoothManager.instance;
@@ -142,5 +166,5 @@ class _PrintPageState extends State<PrintPage> {
       });
     }
     super.initState();
-  }
+  }*/
 }

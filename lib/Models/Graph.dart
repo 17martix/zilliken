@@ -8,9 +8,9 @@ class Graph {
   final Color barColor;
 
   Graph({
-    @required this.year, 
-    @required this.subscribers,
-    @required this.count,
-    @required this.barColor,
+    required this.year, 
+    required this.subscribers,
+    required this.count,
+    required this.barColor,
   });
 }

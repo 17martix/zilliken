@@ -4,13 +4,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:zilliken/Components/ZAppBar.dart';
-import 'package:zilliken/Components/ZRaisedButton.dart';
+import 'package:zilliken/Components/ZElevatedButton.dart';
 import 'package:zilliken/Components/ZTextField.dart';
 import 'package:zilliken/Helpers/SizeConfig.dart';
 import 'package:zilliken/Helpers/Styling.dart';
 import 'package:zilliken/Helpers/Utils.dart';
 import 'package:zilliken/Models/Fields.dart';
-import 'package:zilliken/Models/Condiments.dart';
+import 'package:zilliken/Models/Condiment.dart';
 import 'package:zilliken/Models/MenuItem.dart';
 import 'package:zilliken/Models/Stock.dart';
 import 'package:zilliken/Services/Authentication.dart';
@@ -27,12 +27,12 @@ class LinkToMenu extends StatefulWidget {
   final Stock stock;
 
   LinkToMenu({
-    this.auth,
-    this.db,
-    this.messaging,
-    this.userId,
-    this.userRole,
-    this.stock,
+   required this.auth,
+   required this.db,
+   required this.messaging,
+   required this.userId,
+   required this.userRole,
+    required this.stock,
   });
   @override
   _ConnectToMenuState createState() => _ConnectToMenuState();
@@ -44,7 +44,7 @@ class _ConnectToMenuState extends State<LinkToMenu> {
 
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  num quantity;
+  num? quantity;
   // String name;
   // String id;
 
@@ -56,7 +56,7 @@ class _ConnectToMenuState extends State<LinkToMenu> {
   }
 
   void waitForItems() {
-    widget.db.getMenuItems(widget.stock.id).then((value) {
+    widget.db.getMenuItems(widget.stock.id!).then((value) {
       setState(() {
         itemList = value;
       });
@@ -102,14 +102,14 @@ class _ConnectToMenuState extends State<LinkToMenu> {
               Expanded(
                 child: itemsList(),
               ),
-              ZRaisedButton(
+              ZElevatedButton(
                 onpressed: () async {
                   EasyLoading.show(status: I18n.of(context).loading);
                   bool isOnline = await hasConnection();
                   if (!isOnline) {
                     EasyLoading.dismiss();
 
-                    _scaffoldKey.currentState.showSnackBar(SnackBar(
+                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                       content: Text(I18n.of(context).noInternet),
                     ));
                   } else {
@@ -118,19 +118,19 @@ class _ConnectToMenuState extends State<LinkToMenu> {
 
                       EasyLoading.dismiss();
 
-                      _scaffoldKey.currentState.showSnackBar(SnackBar(
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                         content: Text(I18n.of(context).messageSent),
                       ));
                     } on Exception catch (e) {
                       EasyLoading.dismiss();
 
-                      _scaffoldKey.currentState.showSnackBar(SnackBar(
+                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                         content: Text(e.toString()),
                       ));
                     }
                   }
                 },
-                textIcon: Text(I18n.of(context).save),
+                child: Text(I18n.of(context).save),
                 bottomPadding: SizeConfig.diagonal * 0.8,
                 topPadding: SizeConfig.diagonal * 0.8,
               ),
@@ -155,7 +155,7 @@ class _ConnectToMenuState extends State<LinkToMenu> {
   Widget itemTile(MenuItem menuItem) {
     return Container(
       width: double.infinity,
-      height: menuItem.isChecked
+      height: menuItem.isChecked!
           ? SizeConfig.diagonal * 15
           : SizeConfig.diagonal * 8,
       child: Card(
@@ -171,9 +171,9 @@ class _ConnectToMenuState extends State<LinkToMenu> {
               onChanged: (value) {
                 setState(() {
                   menuItem.isChecked = value;
-                  if (menuItem.isChecked) {
+                  if (menuItem.isChecked!) {
                     if (!itemsToSend.contains(menuItem.id)) {
-                      itemsToSend.add(menuItem.id);
+                      itemsToSend.add(menuItem.id!);
                     }
                   } else {
                     if (itemsToSend.contains(menuItem.id)) {
@@ -185,11 +185,12 @@ class _ConnectToMenuState extends State<LinkToMenu> {
             ),
             Padding(
               padding: EdgeInsets.only(right: SizeConfig.diagonal * 4),
-              child: menuItem.isChecked
+              child: menuItem.isChecked!
                   ? ZTextField(
                       validator: (value) =>
-                          value.isEmpty ? I18n.of(context).requit : null,
+                       value==null ||   value.isEmpty ? I18n.of(context).requit : null,
                       onSaved: (newValue) {
+                        if(newValue!=null)
                         quantity = num.parse(newValue);
                       },
                       outsidePrefix: Padding(

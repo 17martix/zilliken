@@ -8,7 +8,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:zilliken/Components/ZAppBar.dart';
 import 'package:zilliken/Components/ZCircularProgress.dart';
-import 'package:zilliken/Components/ZRaisedButton.dart';
+import 'package:zilliken/Components/ZElevatedButton.dart';
+import 'package:zilliken/Components/ZFlatButton.dart';
 import 'package:zilliken/Components/ZTextField.dart';
 import 'package:zilliken/FirebaseImage/firebase_image.dart';
 import 'package:zilliken/Helpers/NumericStepButton.dart';
@@ -39,12 +40,12 @@ class CartPage extends StatefulWidget {
   final kInitialPosition = LatLng(-3.3834389, 29.3616122);
 
   CartPage({
-    @required this.auth,
-    @required this.clientOrder,
-    @required this.db,
-    @required this.userId,
-    @required this.userRole,
-    @required this.messaging,
+    required this.auth,
+    required this.clientOrder,
+    required this.db,
+    required this.userId,
+    required this.userRole,
+    required this.messaging,
   });
 
   @override
@@ -57,11 +58,11 @@ class _CartPageState extends State<CartPage> {
   int tax = 0;
 
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  String tableAdress;
-  String phone;
-  String instruction;
-  List<OrderItem> clientOrder;
-  List<Address> addressList = List();
+  String? tableAdress;
+  String? phone;
+  String? instruction;
+  List<OrderItem>? clientOrder;
+  List<Address> addressList = [];
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   bool _isTaxLoaded = false;
@@ -70,8 +71,8 @@ class _CartPageState extends State<CartPage> {
   var _phoneController = TextEditingController();
   var _instructionController = TextEditingController();
 
-  String addressName;
-  GeoPoint geoPoint;
+  String? addressName;
+  GeoPoint? geoPoint;
 
   @override
   void initState() {
@@ -96,7 +97,7 @@ class _CartPageState extends State<CartPage> {
         .snapshots()
         .listen((DocumentSnapshot documentSnapshot) {
       setState(() {
-        enabled = documentSnapshot.data()[Fields.enabled];
+        enabled = documentSnapshot.data()![Fields.enabled];
       });
     });
 
@@ -106,7 +107,7 @@ class _CartPageState extends State<CartPage> {
         .snapshots()
         .listen((DocumentSnapshot documentSnapshot) {
       setState(() {
-        enabled = documentSnapshot.data()[Fields.enabled];
+        enabled = documentSnapshot.data()![Fields.enabled];
       });
     });
   }
@@ -132,8 +133,8 @@ class _CartPageState extends State<CartPage> {
   Widget build(BuildContext context) {
     SizeConfig().init(context);
     return WillPopScope(
-      onWillPop: () {
-        return Navigator.pushAndRemoveUntil(
+      onWillPop: () async {
+        Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
             builder: (context) => DashboardPage(
@@ -147,6 +148,7 @@ class _CartPageState extends State<CartPage> {
           ),
           (Route<dynamic> route) => false,
         );
+        return false;
       },
       child: Container(
         decoration: BoxDecoration(
@@ -167,7 +169,14 @@ class _CartPageState extends State<CartPage> {
                   backgroundColor: Colors.transparent,
                   key: _scaffoldKey,
                   appBar: buildAppBar(
-                      context, widget.auth, true, null, backFunction, null,null,),
+                    context,
+                    widget.auth,
+                    true,
+                    null,
+                    backFunction,
+                    null,
+                    null,
+                  ),
                   body: Stack(
                     children: [
                       body(),
@@ -242,21 +251,22 @@ class _CartPageState extends State<CartPage> {
         if (!isOnline) {
           EasyLoading.dismiss();
 
-          _scaffoldKey.currentState.showSnackBar(
+          ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(I18n.of(context).noInternet),
             ),
           );
         } else {
           try {
-            Address address = Address();
-            address.geoPoint = geoPoint;
-            address.addressName = addressName;
-            address.typedAddress = _choiceController.text;
-            address.phoneNumber = _phoneController.text;
+            Address address = Address(
+              geoPoint: geoPoint!,
+              addressName: addressName!,
+              typedAddress: _choiceController.text,
+              phoneNumber: _phoneController.text,
+            );
 
             await widget.db.addAddress(widget.userId, address);
-            if (addressList == null) addressList = List();
+
             setState(() {
               addressList.add(address);
             });
@@ -265,10 +275,10 @@ class _CartPageState extends State<CartPage> {
             //print('Error: $e');
             EasyLoading.dismiss();
             setState(() {
-              formKey.currentState.reset();
+              formKey.currentState!.reset();
             });
 
-            _scaffoldKey.currentState.showSnackBar(
+            ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(e.toString()),
               ),
@@ -293,8 +303,8 @@ class _CartPageState extends State<CartPage> {
   Widget addressItem(Address address) {
     return Padding(
       padding: EdgeInsets.only(right: SizeConfig.diagonal * 1),
-      child: FlatButton(
-        onPressed: () {
+      child: ZTextButton(
+        onpressed: () {
           setState(() {
             _choiceController.text = address.typedAddress;
             addressName = address.addressName;
@@ -330,7 +340,7 @@ class _CartPageState extends State<CartPage> {
                     if (!isOnline) {
                       EasyLoading.dismiss();
 
-                      _scaffoldKey.currentState.showSnackBar(
+                      ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(I18n.of(context).noInternet),
                         ),
@@ -338,7 +348,7 @@ class _CartPageState extends State<CartPage> {
                     } else {
                       try {
                         await widget.db
-                            .deleteAddress(widget.userId, address.id);
+                            .deleteAddress(widget.userId, address.id!);
                         setState(() {
                           addressList.removeWhere(
                               (element) => element.id == address.id);
@@ -348,10 +358,10 @@ class _CartPageState extends State<CartPage> {
                         //print('Error: $e');
                         EasyLoading.dismiss();
                         setState(() {
-                          formKey.currentState.reset();
+                          formKey.currentState!.reset();
                         });
 
-                        _scaffoldKey.currentState.showSnackBar(
+                        ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text(e.toString()),
                           ),
@@ -393,7 +403,7 @@ class _CartPageState extends State<CartPage> {
         ),
         Column(
           mainAxisSize: MainAxisSize.min,
-          children: clientOrder.map((orderItem) {
+          children: clientOrder!.map((orderItem) {
             return item(orderItem.menuItem);
           }).toList(),
         ),
@@ -455,19 +465,19 @@ class _CartPageState extends State<CartPage> {
                           ),
                         ),
                       ),
-                      isAlreadyOnTheOrder(clientOrder, menu.id)
+                      isAlreadyOnTheOrder(clientOrder!, menu.id!)
                           ? Expanded(
                               flex: 1,
                               child: NumericStepButton(
                                 counter:
-                                    findOrderItem(clientOrder, menu.id).count,
+                                    findOrderItem(clientOrder!, menu.id!).count,
                                 maxValue: 20,
                                 onChanged: (value) {
                                   OrderItem orderItem =
-                                      findOrderItem(clientOrder, menu.id);
+                                      findOrderItem(clientOrder!, menu.id!);
                                   if (value == 0) {
                                     setState(() {
-                                      clientOrder.remove(orderItem);
+                                      clientOrder!.remove(orderItem);
                                     });
                                     //order.remove(orderItem);
                                   } else {
@@ -487,7 +497,7 @@ class _CartPageState extends State<CartPage> {
                                   InkWell(
                                     onTap: () {
                                       setState(() {
-                                        clientOrder.add(OrderItem(
+                                        clientOrder!.add(OrderItem(
                                           menuItem: menu,
                                           count: 1,
                                         ));
@@ -564,14 +574,14 @@ class _CartPageState extends State<CartPage> {
     );
   }
 
-  void restaurantRoomChange(int value) {
+  void restaurantRoomChange(int? value) {
     setState(() {
-      restaurantOrRoomOrder = value;
+      restaurantOrRoomOrder = value!;
       FocusScope.of(context).unfocus();
       _choiceController.clear();
       _phoneController.clear();
       _instructionController.clear();
-      formKey.currentState.reset();
+      formKey.currentState!.reset();
     });
   }
 
@@ -618,12 +628,12 @@ class _CartPageState extends State<CartPage> {
               if (restaurantOrRoomOrder == 1)
                 SizedBox(
                   width: double.infinity,
-                  child: ZRaisedButton(
+                  child: ZElevatedButton(
                     topPadding: SizeConfig.diagonal * 1,
                     bottomPadding: SizeConfig.diagonal * 1,
                     rightPadding: SizeConfig.diagonal * 1,
                     leftPadding: SizeConfig.diagonal * 1,
-                    textIcon: Row(
+                    child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Padding(
@@ -635,9 +645,7 @@ class _CartPageState extends State<CartPage> {
                             ),
                           ),
                           Text(
-                            addressName == null
-                                ? I18n.of(context).selectLocation
-                                : addressName,
+                            addressName ?? I18n.of(context).selectLocation,
                             textAlign: TextAlign.left,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
@@ -652,8 +660,9 @@ class _CartPageState extends State<CartPage> {
               ZTextField(
                 controller: _choiceController,
                 onSaved: (newValue) => tableAdress = newValue,
-                validator: (value) =>
-                    value.isEmpty ? I18n.of(context).requit : null,
+                validator: (value) => value == null || value.isEmpty
+                    ? I18n.of(context).requit
+                    : null,
                 keyboardType: restaurantOrRoomOrder == 0
                     ? TextInputType.number
                     : TextInputType.text,
@@ -669,7 +678,7 @@ class _CartPageState extends State<CartPage> {
                   onSaved: (newValue) => phone = newValue,
                   controller: _phoneController,
                   validator: (value) =>
-                      value.isEmpty ? I18n.of(context).requit : null,
+                   value==null ||   value.isEmpty ? I18n.of(context).requit : null,
                   keyboardType: TextInputType.phone,
                   label: I18n.of(context).fone,
                   icon: Icons.phone_android,
@@ -694,13 +703,13 @@ class _CartPageState extends State<CartPage> {
       context,
       MaterialPageRoute(
         builder: (context) => PlacePicker(
-          apiKey: getMapsKey(), // Put YOUR OWN KEY here.
+          apiKey: getMapsKey()!, // Put YOUR OWN KEY here.
           onPlacePicked: (result) {
             setState(() {
               addressName = result.formattedAddress;
-              log("address is lat ${result.geometry.location.lat} lng ${result.geometry.location.lng}");
+              log("address is lat ${result.geometry!.location.lat} lng ${result.geometry!.location.lng}");
               geoPoint = GeoPoint(
-                  result.geometry.location.lat, result.geometry.location.lng);
+                  result.geometry!.location.lat, result.geometry!.location.lng);
             });
             Navigator.of(context).pop();
           },
@@ -756,7 +765,7 @@ class _CartPageState extends State<CartPage> {
                               ),
                             ),
                             Text(
-                              priceItemsTotal(context, clientOrder),
+                              priceItemsTotal(context, clientOrder!),
                               style: TextStyle(
                                 fontSize: SizeConfig.diagonal * 1.5,
                               ),
@@ -779,7 +788,7 @@ class _CartPageState extends State<CartPage> {
                               ),
                             ),
                             Text(
-                              appliedTax(context, clientOrder, tax),
+                              appliedTax(context, clientOrder!, tax),
                               style: TextStyle(
                                 fontSize: SizeConfig.diagonal * 1.5,
                               ),
@@ -801,7 +810,7 @@ class _CartPageState extends State<CartPage> {
                               ),
                             ),
                             Text(
-                              grandTotal(context, clientOrder, tax),
+                              grandTotal(context, clientOrder!, tax),
                               style: TextStyle(
                                 fontSize: SizeConfig.diagonal * 1.5,
                               ),
@@ -811,12 +820,12 @@ class _CartPageState extends State<CartPage> {
                       ),
                     ],
                   ),
-                  ZRaisedButton(
+                  ZElevatedButton(
                     onpressed: sendToFireBase,
                     color: Color(Styling.accentColor),
                     leftPadding: 0.0,
                     rightPadding: 0.0,
-                    textIcon: Text(
+                    child: Text(
                       I18n.of(context).ordPlace,
                       style: TextStyle(
                         color: Color(Styling.primaryBackgroundColor),
@@ -833,7 +842,7 @@ class _CartPageState extends State<CartPage> {
 
   bool validate() {
     final form = formKey.currentState;
-    if (form.validate()) {
+    if (form!.validate()) {
       form.save();
       return true;
     }
@@ -844,7 +853,7 @@ class _CartPageState extends State<CartPage> {
     if (validate()) {
       if (restaurantOrRoomOrder == 1 &&
           (addressName == null || addressName == '')) {
-        _scaffoldKey.currentState.showSnackBar(
+       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(I18n.of(context).enterLocation),
           ),
@@ -856,7 +865,7 @@ class _CartPageState extends State<CartPage> {
         if (!isOnline) {
           EasyLoading.dismiss();
 
-          _scaffoldKey.currentState.showSnackBar(
+       ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(I18n.of(context).noInternet),
             ),
@@ -864,12 +873,12 @@ class _CartPageState extends State<CartPage> {
         } else {
           try {
             Order order = Order(
-              clientOrder: clientOrder,
+              clientOrder: clientOrder!,
               orderLocation: restaurantOrRoomOrder,
-              tableAdress: tableAdress,
-              phoneNumber: phone,
-              instructions: instruction,
-              grandTotal: grandTotalNumber(context, clientOrder, tax),
+              tableAdress: tableAdress!,
+              phoneNumber: phone!,
+              instructions: instruction!,
+              grandTotal: grandTotalNumber(context, clientOrder!, tax),
               orderDate: null,
               confirmedDate: null,
               servedDate: null,
@@ -877,9 +886,9 @@ class _CartPageState extends State<CartPage> {
               userId: widget.userId,
               userRole: widget.userRole,
               taxPercentage: tax,
-              total: priceItemsTotalNumber(context, clientOrder),
-              addressName: addressName,
-              geoPoint: geoPoint,
+              total: priceItemsTotalNumber(context, clientOrder!),
+              addressName: addressName!,
+              geoPoint: geoPoint!,
               currentPoint: GeoPoint(-3.3834389, 29.3616122),
             );
             await widget.db.placeOrder(order);
@@ -894,7 +903,7 @@ class _CartPageState extends State<CartPage> {
                   db: widget.db,
                   userId: widget.userId,
                   userRole: widget.userRole,
-                  orderId: order.id,
+                  orderId: order.id!,
                   clientOrder: order,
                   messaging: widget.messaging,
                 ),
@@ -904,10 +913,10 @@ class _CartPageState extends State<CartPage> {
             //print('Error: $e');
             EasyLoading.dismiss();
             setState(() {
-              formKey.currentState.reset();
+              formKey.currentState!.reset();
             });
 
-            _scaffoldKey.currentState.showSnackBar(
+            ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(e.toString()),
               ),

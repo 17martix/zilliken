@@ -13,7 +13,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:zilliken/Components/ZAppBar.dart';
 import 'package:zilliken/Components/ZCircularProgress.dart';
-import 'package:zilliken/Components/ZRaisedButton.dart';
+import 'package:zilliken/Components/ZElevatedButton.dart';
 import 'package:zilliken/Helpers/SizeConfig.dart';
 import 'package:zilliken/Helpers/Styling.dart';
 import 'package:zilliken/Helpers/Utils.dart';
@@ -21,8 +21,6 @@ import 'package:zilliken/Models/Call.dart';
 import 'package:zilliken/Models/Fields.dart';
 import 'package:zilliken/Models/Order.dart';
 import 'package:zilliken/Models/OrderItem.dart';
-//import 'package:zilliken/Models/Statistic.dart';
-//import 'package:zilliken/Pages/StatPage.dart';
 import 'package:zilliken/Services/Authentication.dart';
 import 'package:zilliken/Services/Database.dart';
 import 'package:zilliken/Services/Messaging.dart';
@@ -46,13 +44,13 @@ class SingleOrderPage extends StatefulWidget {
   final DateFormat formatter = DateFormat('HH:mm');
 
   SingleOrderPage({
-    @required this.auth,
-    @required this.db,
-    @required this.userId,
-    @required this.userRole,
-    @required this.orderId,
-    @required this.clientOrder,
-    @required this.messaging,
+    required this.auth,
+    required this.db,
+    required this.userId,
+    required this.userRole,
+    required this.orderId,
+    required this.clientOrder,
+    required this.messaging,
   });
 
   @override
@@ -70,8 +68,8 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
   int myvalue = 1111111;
 
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  Order order;
-  GeoPoint _currentPoint;
+  Order? order;
+  GeoPoint? _currentPoint;
 
   double CAMERA_ZOOM = 14;
   //double CAMERA_TILT = 80;
@@ -99,8 +97,8 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
   PolylinePoints polylinePoints = PolylinePoints();
 
 // for my custom marker pins
-  BitmapDescriptor sourceIcon;
-  BitmapDescriptor destinationIcon;
+  BitmapDescriptor? sourceIcon;
+  BitmapDescriptor? destinationIcon;
 
 // the user's initial location and current location
 // as it moves
@@ -113,10 +111,10 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
     "longitude": 29.3616122,
   }); // wrapper around the location API
   Geolocator location = new Geolocator();
-  CameraPosition initialCameraPosition;
+  CameraPosition? initialCameraPosition;
 
   bool goingBack = false;
-  List<OrderItem> items = new List();
+  List<OrderItem> items = [];
   var now = new DateTime.now();
 
   @override
@@ -138,20 +136,20 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
         .listen((DocumentSnapshot documentSnapshot) {
       setState(() {
         goingBack =
-            documentSnapshot.data()[Fields.status] < _status ? true : false;
+            documentSnapshot.data()![Fields.status] < _status ? true : false;
 
-        _status = documentSnapshot.data()[Fields.status];
+        _status = documentSnapshot.data()![Fields.status];
 
-        if (documentSnapshot.data()[Fields.orderLocation] == 1 &&
+        if (documentSnapshot.data()![Fields.orderLocation] == 1 &&
             _status != 4 &&
-            widget.userId != order.deliveringOrderId) {
+            widget.userId != order!.deliveringOrderId) {
           if (goingBack) {
             backFunction();
           }
-          _currentPoint = documentSnapshot.data()[Fields.currentPoint];
+          _currentPoint = documentSnapshot.data()![Fields.currentPoint];
           currentLocation = Position.fromMap({
-            "latitude": _currentPoint.latitude,
-            "longitude": _currentPoint.longitude,
+            "latitude": _currentPoint!.latitude,
+            "longitude": _currentPoint!.longitude,
           });
 
           updatePinOnMap(currentLocation);
@@ -167,17 +165,17 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
         .snapshots()
         .listen((DocumentSnapshot documentSnapshot) {
       setState(() {
-        enabled = documentSnapshot.data()[Fields.enabled];
+        enabled = documentSnapshot.data()![Fields.enabled];
       });
     });
 
     widget.db.getOrder(widget.orderId).then((value) {
-      if (value.orderLocation == 1) {
+      if (value!.orderLocation == 1) {
         setState(() {
           order = value;
           _currentPoint = value.currentPoint;
           if (_status != 4) {
-            if (widget.userId == order.deliveringOrderId) {
+            if (widget.userId == order!.deliveringOrderId) {
               initLocation();
             } else {
               initLocationFromServer();
@@ -238,15 +236,15 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
 
   void initLocationFromServer() {
     currentLocation = Position.fromMap({
-      "latitude": _currentPoint.latitude,
-      "longitude": _currentPoint.longitude,
+      "latitude": _currentPoint!.latitude,
+      "longitude": _currentPoint!.longitude,
     });
 
     updatePinOnMap(currentLocation);
     setSourceAndDestinationIcons(); // set the initial location
     destinationLocation = Position.fromMap({
-      "latitude": order.geoPoint.latitude,
-      "longitude": order.geoPoint.longitude,
+      "latitude": order!.geoPoint.latitude,
+      "longitude": order!.geoPoint.longitude,
     });
   }
 
@@ -266,8 +264,8 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
 
     // hard-coded destination for this example
     destinationLocation = Position.fromMap({
-      "latitude": order.geoPoint.latitude,
-      "longitude": order.geoPoint.longitude,
+      "latitude": order!.geoPoint.latitude,
+      "longitude": order!.geoPoint.longitude,
     });
   }
 
@@ -305,7 +303,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
     _markers.add(Marker(
         markerId: MarkerId('sourcePin'),
         position: pinPosition, // updated position
-        icon: sourceIcon));
+        icon: sourceIcon!));
     //});
 
     setPolylines(position);
@@ -333,8 +331,8 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
     SizeConfig().init(context);
 
     return WillPopScope(
-      onWillPop: () {
-        return Navigator.pushAndRemoveUntil(
+      onWillPop: () async {
+        Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
             builder: (context) => DashboardPage(
@@ -348,6 +346,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
           ),
           (Route<dynamic> route) => false,
         );
+        return false;
       },
       child: enabled == 0
           ? DisabledPage(
@@ -379,7 +378,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                         if (!isOnline) {
                           EasyLoading.dismiss();
 
-                          _scaffoldKey.currentState.showSnackBar(SnackBar(
+                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                             content: Text(I18n.of(context).noInternet),
                           ));
                         } else {
@@ -391,13 +390,13 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                             await widget.db.addCall(call);
                             EasyLoading.dismiss();
 
-                            _scaffoldKey.currentState.showSnackBar(SnackBar(
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                               content: Text(I18n.of(context).messageSent),
                             ));
                           } on Exception catch (e) {
                             EasyLoading.dismiss();
 
-                            _scaffoldKey.currentState.showSnackBar(SnackBar(
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                               content: Text(e.toString()),
                             ));
                           }
@@ -444,7 +443,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                 ? "${I18n.of(context).yourphonenumber} : ${widget.clientOrder.phoneNumber}"
                 : null,
             orderDate:
-                "${I18n.of(context).orderDate} : ${widget.formatter.format(widget.clientOrder.orderDate.toDate())}",
+                "${I18n.of(context).orderDate} : ${widget.formatter.format(widget.clientOrder.orderDate!.toDate())}",
             items: myList,
             tax:
                 "${I18n.of(context).taxCharge} : ${widget.clientOrder.taxPercentage}",
@@ -472,20 +471,20 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
               order.orderLocation == 1)
             showMap(),*/
           if (order != null &&
-              order.orderLocation == 1 &&
+              order!.orderLocation == 1 &&
               _status != 4 &&
               widget.userRole != Fields.client &&
-              order.deliveringOrderId != null &&
+              order!.deliveringOrderId != null &&
               goingBack == false)
             map(),
           if (order != null &&
-              order.orderLocation == 1 &&
+              order!.orderLocation == 1 &&
               _status != 4 &&
               widget.userRole != Fields.client &&
-              order.deliveringOrderId == null)
+              order!.deliveringOrderId == null)
             showDeliverButton(),
           if (order != null &&
-              order.orderLocation == 1 &&
+              order!.orderLocation == 1 &&
               _status != 4 &&
               widget.userRole == Fields.client &&
               goingBack == false)
@@ -527,7 +526,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
     if (!isOnline) {
       EasyLoading.dismiss();
 
-      _scaffoldKey.currentState.showSnackBar(
+     ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(I18n.of(context).noInternet),
         ),
@@ -536,7 +535,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
       try {
         await widget.db.assignDelivery(widget.orderId, widget.userId);
         setState(() {
-          order.deliveringOrderId = widget.userId;
+          order!.deliveringOrderId = widget.userId;
           initLocation();
         });
 
@@ -545,7 +544,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
         //print('Error: $e');
         EasyLoading.dismiss();
 
-        _scaffoldKey.currentState.showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(e.toString()),
           ),
@@ -556,13 +555,13 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
 
   Widget showDeliverButton() {
     return Container(
-      child: ZRaisedButton(
+      child: ZElevatedButton(
         leftPadding: SizeConfig.diagonal * 1,
         rightPadding: SizeConfig.diagonal * 1,
         onpressed: assignOrder,
         topPadding: 0.0,
         bottomPadding: 0.0,
-        textIcon: Text(
+        child: Text(
           I18n.of(context).deliverOrder,
           style: TextStyle(color: Color(Styling.primaryBackgroundColor)),
         ),
@@ -572,12 +571,12 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
 
   Widget map() {
     Position p;
-    if (widget.userId == order.deliveringOrderId)
+    if (widget.userId == order!.deliveringOrderId)
       p = currentLocation;
     else {
       p = Position.fromMap({
-        "latitude": _currentPoint.latitude,
-        "longitude": _currentPoint.longitude,
+        "latitude": _currentPoint!.latitude,
+        "longitude": _currentPoint!.longitude,
       });
     }
 
@@ -613,7 +612,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
               markers: _markers,
               polylines: _polylines,
               mapType: MapType.normal,
-              initialCameraPosition: initialCameraPosition,
+              initialCameraPosition: initialCameraPosition!,
               gestureRecognizers: Set()
                 ..add(Factory<OneSequenceGestureRecognizer>(
                     () => new EagerGestureRecognizer()))
@@ -651,19 +650,19 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
     _markers.add(Marker(
         markerId: MarkerId('sourcePin'),
         position: pinPosition,
-        icon: sourceIcon)); // destination pin
+        icon: sourceIcon!)); // destination pin
     _markers.add(Marker(
         markerId: MarkerId('destPin'),
         position: destPosition,
         icon:
-            destinationIcon)); // set the route lines on the map from source to destination
+            destinationIcon!)); // set the route lines on the map from source to destination
     // for more info follow this tutorial
     setPolylines(p);
   }
 
   void setPolylines(Position p) async {
     PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-      getMapsKey(),
+      getMapsKey()!,
       PointLatLng(p.latitude, p.longitude),
       PointLatLng(destinationLocation.latitude, destinationLocation.longitude),
     );
@@ -702,8 +701,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                 child: Text(""),
               );
 
-            Order order = Order();
-            order.buildObjectAsync(snapshot);
+            Order order = Order.buildObjectAsync(snapshot);
 
             return Container(
               width: double.infinity,
@@ -789,7 +787,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                           Text(
                             order.orderDate == null
                                 ? ""
-                                : '${widget.formatter.format(order.orderDate.toDate())}',
+                                : '${widget.formatter.format(order.orderDate!.toDate())}',
                             style: TextStyle(
                               fontSize: SizeConfig.diagonal * 1.5,
                               color: order.status == 1
@@ -871,7 +869,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                           Text(
                             order.confirmedDate == null
                                 ? ""
-                                : '${widget.formatter.format(order.confirmedDate.toDate())}',
+                                : '${widget.formatter.format(order.confirmedDate!.toDate())}',
                             style: TextStyle(
                               fontSize: SizeConfig.diagonal * 1.5,
                               color: order.status == 2
@@ -965,7 +963,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                           Text(
                             order.preparationDate == null
                                 ? ""
-                                : '${widget.formatter.format(order.preparationDate.toDate())}',
+                                : '${widget.formatter.format(order.preparationDate!.toDate())}',
                             style: TextStyle(
                               fontSize: SizeConfig.diagonal * 1.5,
                               color: order.status == 3
@@ -1059,7 +1057,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                           Text(
                             order.servedDate == null
                                 ? ""
-                                : '${widget.formatter.format(order.servedDate.toDate())}',
+                                : '${widget.formatter.format(order.servedDate!.toDate())}',
                             style: TextStyle(
                               fontSize: SizeConfig.diagonal * 1.5,
                               color: order.status == 4
@@ -1192,18 +1190,18 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
     );
   }
 
-  void handleStatusChange(int value) {
+  void handleStatusChange(int? value) {
     log('here');
     setState(() {
-      goingBack = value < _orderStatus ? true : false;
+      goingBack = value! < _orderStatus ? true : false;
       _orderStatus = value;
     });
 
     if (goingBack) {
       backFunction();
     }
-    widget.db.updateStatus(
-        widget.orderId, _orderStatus, value, order, widget.clientOrder.grandTotal);
+    widget.db.updateStatus(widget.orderId, _orderStatus, value!, order!,
+        widget.clientOrder.grandTotal);
   }
 
   Widget orderItemStream() {
@@ -1273,9 +1271,8 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                 ),
                 Column(
                   mainAxisSize: MainAxisSize.min,
-                  children: snapshot.data.docs.map((DocumentSnapshot document) {
-                    OrderItem orderItem = OrderItem();
-                    orderItem.buildObject(document);
+                  children: snapshot.data!.docs.map((DocumentSnapshot document) {
+                    OrderItem orderItem = OrderItem.buildObject(document);
                     return orderElement(orderItem);
                   }).toList(),
                 ),
@@ -1367,9 +1364,8 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
             ),
             Column(
               mainAxisSize: MainAxisSize.min,
-              children: snapshot.data.docs.map((DocumentSnapshot document) {
-                OrderItem orderItem = OrderItem();
-                orderItem.buildObject(document);
+              children: snapshot.data!.docs.map((DocumentSnapshot document) {
+                OrderItem orderItem = OrderItem.buildObject(document);
                 if (widget.userRole == Fields.chefBoissons) {
                   if (orderItem.menuItem.isDrink == 1) {
                     return billElement(orderItem);
@@ -1443,8 +1439,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
             child: Text(""),
           );
 
-        Order order = Order();
-        order.buildObjectAsync(snapshot);
+        Order order = Order.buildObjectAsync(snapshot);
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -1456,13 +1451,6 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
   }
 
   Widget billElement2(Order order) {
-    int grandTotal;
-    if (order.grandTotal is double) {
-      grandTotal = order.grandTotal.round();
-    } else {
-      grandTotal = order.grandTotal;
-    }
-
     return Column(
       children: [
         Padding(
@@ -1523,7 +1511,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
               Expanded(
                 flex: 1,
                 child: Text(
-                  '${formatNumber(grandTotal)} Fbu',
+                  '${formatNumber(order.grandTotal)} Fbu',
                   overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.end,
                   style: TextStyle(
@@ -1548,8 +1536,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
             child: Text(""),
           );
 
-        Order order = Order();
-        order.buildObjectAsync(snapshot);
+        Order order = Order.buildObjectAsync(snapshot);
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -1624,8 +1611,10 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                   SizedBox(width: SizeConfig.diagonal * 1),
                   Expanded(
                     flex: 1,
-                    child: Text(order.orderDate==null?'':
-                      '${widget.formatter.format(order.orderDate.toDate())}',
+                    child: Text(
+                      order.orderDate == null
+                          ? ''
+                          : '${widget.formatter.format(order.orderDate!.toDate())}',
                       overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.end,
                       style: TextStyle(
@@ -1733,7 +1722,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
   }
 
   Widget cancelOrder() {
-    return ZRaisedButton(
+    return ZElevatedButton(
       leftPadding: SizeConfig.diagonal * 1,
       rightPadding: SizeConfig.diagonal * 1,
       onpressed: () async {
@@ -1743,7 +1732,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
         await widget.db.cancelOrder(widget.orderId);
         backFunction();
       },
-      textIcon: Text(
+      child: Text(
         I18n.of(context).cancelOrder,
         style: TextStyle(color: Color(Styling.primaryBackgroundColor)),
       ),

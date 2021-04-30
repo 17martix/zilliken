@@ -18,11 +18,11 @@ class AdminPage extends StatefulWidget {
   final String userRole;
 
   AdminPage({
-    @required this.auth,
-    @required this.db,
-    @required this.userId,
-    @required this.userRole,
-    @required this.messaging,
+    required this.auth,
+    required this.db,
+    required this.userId,
+    required this.userRole,
+    required this.messaging,
   });
 
   @override

@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:zilliken/Components/ZAppBar.dart';
-import 'package:zilliken/Components/ZRaisedButton.dart';
+import 'package:zilliken/Components/ZElevatedButton.dart';
 import 'package:zilliken/Components/ZTextField.dart';
 import 'package:zilliken/Helpers/SizeConfig.dart';
 import 'package:zilliken/Helpers/Styling.dart';
@@ -26,12 +26,12 @@ class ItemUpdatePage extends StatefulWidget {
   final Stock stock;
 
   ItemUpdatePage({
-    this.auth,
-    this.db,
-    this.messaging,
-    this.userId,
-    this.userRole,
-    this.stock,
+  required  this.auth,
+   required this.db,
+   required this.messaging,
+   required this.userId,
+  required  this.userRole,
+   required this.stock,
   });
   @override
   _ItemEditPageState createState() => _ItemEditPageState();
@@ -77,12 +77,12 @@ class _ItemEditPageState extends State<ItemUpdatePage> {
                   child: Text(I18n.of(context).itemEditing),
                 ),
               ),
-              ZTextField(
+             /* ZTextField(
                 outsidePrefix: Text(I18n.of(context).quantity + ' :'),
                 onSaved: (value) => widget.stock.quantity = num.parse(value),
                 validator: (value) =>
-                    value.isEmpty ? I18n.of(context).requit : null,
-              ),
+                  ( value==null || value.isEmpty) ? I18n.of(context).requit : null,
+              ),*/
               SizedBox(
                 height: SizeConfig.diagonal * 3,
               ),
@@ -96,9 +96,9 @@ class _ItemEditPageState extends State<ItemUpdatePage> {
               //   height: SizeConfig.diagonal * 3,
               // ),
 
-              ZRaisedButton(
+              ZElevatedButton(
                 onpressed: itemUpdate,
-                textIcon: Text(
+                child: Text(
                   I18n.of(context).save,
                   style: TextStyle(color: Color(Styling.textColor)),
                 ),
@@ -113,7 +113,7 @@ class _ItemEditPageState extends State<ItemUpdatePage> {
   void itemUpdate() async {
     final form = _formKey.currentState;
 
-    if (form.validate()) {
+    if (form!.validate()) {
       form.save();
       EasyLoading.show(status: I18n.of(context).loading);
 
@@ -121,7 +121,7 @@ class _ItemEditPageState extends State<ItemUpdatePage> {
       if (!isOnline) {
         EasyLoading.dismiss();
 
-        _scaffoldKey.currentState.showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(I18n.of(context).noInternet),
           ),
@@ -133,15 +133,15 @@ class _ItemEditPageState extends State<ItemUpdatePage> {
           EasyLoading.dismiss();
 
           setState(() {
-            _formKey.currentState.reset();
+            _formKey.currentState!.reset();
           });
         } on Exception catch (e) {
           EasyLoading.dismiss();
           setState(() {
-            _formKey.currentState.reset();
+            _formKey.currentState!.reset();
           });
 
-          _scaffoldKey.currentState.showSnackBar(
+         ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(e.toString()),
             ),

@@ -4,42 +4,42 @@ import 'package:flutter/cupertino.dart';
 import 'Fields.dart';
 
 class UserProfile {
-  String id;
-  String role;
-  String name;
-  String token;
+  String? id;
+  late String role;
+  late String name;
+  late String? token;
 
-  String phoneNumber;
-  Timestamp lastSeenAt;
-  Timestamp createdAt;
+  late String phoneNumber;
+  late Timestamp? lastSeenAt;
+  late Timestamp? createdAt;
 
   UserProfile({
-    this.id,
-    this.role,
-    this.phoneNumber,
-    this.name,
-    this.token,
-    this.lastSeenAt,
-    this.createdAt,
+    required this.id,
+    required this.role,
+    required this.phoneNumber,
+    required this.name,
+     this.token,
+     this.lastSeenAt,
+     this.createdAt,
   });
 
-  void buildObject(DocumentSnapshot document) {
+  UserProfile.buildObject(DocumentSnapshot document) {
     id = document.id;
-    role = document.data()[Fields.role];
-    phoneNumber = document.data()[Fields.phoneNumber];
-    name = document.data()[Fields.name];
-    token = document.data()[Fields.token];
-    lastSeenAt = document.data()[Fields.lastSeenAt];
-    createdAt = document.data()[Fields.createdAt];
+    role = document.data()![Fields.role];
+    phoneNumber = document.data()![Fields.phoneNumber];
+    name = document.data()![Fields.name];
+    token = document.data()?[Fields.token];
+    lastSeenAt = document.data()![Fields.lastSeenAt];
+    createdAt = document.data()![Fields.createdAt];
   }
 
-  void buildObjectAsync(AsyncSnapshot<DocumentSnapshot> document) {
-    id = document.data.id;
-    role = document.data[Fields.role];
-    phoneNumber = document.data[Fields.phoneNumber];
-    name = document.data[Fields.name];
-    token = document.data[Fields.token];
-    lastSeenAt = document.data[Fields.lastSeenAt];
-    createdAt = document.data[Fields.createdAt];
+  UserProfile.buildObjectAsync(AsyncSnapshot<DocumentSnapshot> document) {
+    id = document.data?.id;
+    role = document.data![Fields.role];
+    phoneNumber = document.data![Fields.phoneNumber];
+    name = document.data![Fields.name];
+    token = document.data?[Fields.token];
+    lastSeenAt = document.data![Fields.lastSeenAt];
+    createdAt = document.data![Fields.createdAt];
   }
 }

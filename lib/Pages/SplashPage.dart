@@ -18,9 +18,9 @@ class SplashPage extends StatefulWidget {
   final Messaging messaging;
 
   SplashPage({
-    @required this.auth,
-    @required this.db,
-    @required this.messaging,
+    required this.auth,
+    required this.db,
+    required this.messaging,
   });
 
   @override
@@ -80,7 +80,7 @@ class _SplashPageState extends State<SplashPage> {
 
   Future<void> isLoggedIn() async {
     widget.messaging.firebaseMessaging.requestPermission();
-    User user =  widget.auth.getCurrentUser();
+    User? user =  widget.auth.getCurrentUser();
     if (user?.uid == null) {
       Navigator.pushReplacement(
         context,
@@ -92,7 +92,7 @@ class _SplashPageState extends State<SplashPage> {
                 )),
       );
     } else {
-      String role = await widget.db.getUserRole(user.uid);
+      String? role = await widget.db.getUserRole(user!.uid);
       if (role == null || role == '') {
         Navigator.pushReplacement(
           context,

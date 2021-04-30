@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zilliken/Components/ZAppBar.dart';
-import 'package:zilliken/Components/ZRaisedButton.dart';
+import 'package:zilliken/Components/ZElevatedButton.dart';
 import 'package:zilliken/Helpers/SizeConfig.dart';
 import 'package:zilliken/Helpers/Styling.dart';
 import 'package:zilliken/Helpers/Utils.dart';
@@ -29,16 +29,16 @@ class DashboardPage extends StatefulWidget {
   final String userId;
   final String userRole;
   final Messaging messaging;
-  final List<OrderItem> clientOrder;
-  final int index;
+  final List<OrderItem>? clientOrder;
+  final int? index;
 
   DashboardPage({
-    @required this.auth,
-    @required this.userId,
-    @required this.userRole,
-    @required this.db,
+    required this.auth,
+    required this.userId,
+    required this.userRole,
+    required this.db,
     this.clientOrder,
-    @required this.messaging,
+    required this.messaging,
     this.index,
   });
 
@@ -57,7 +57,7 @@ class _DashboardPageState extends State<DashboardPage> {
       .orderBy(Fields.createdAt, descending: true)
       .limit(3);
 
-  BuildContext dialogContext;
+  BuildContext? dialogContext;
   bool isStarting = true;
 
   @override
@@ -66,7 +66,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
     if (widget.index != null) {
       setState(() {
-        _selectedIndex = widget.index;
+        _selectedIndex = widget.index!;
       });
     }
 
@@ -76,7 +76,7 @@ class _DashboardPageState extends State<DashboardPage> {
         .snapshots()
         .listen((DocumentSnapshot documentSnapshot) {
       setState(() {
-        enabled = documentSnapshot.data()[Fields.enabled];
+        enabled = documentSnapshot.data()![Fields.enabled];
       });
     });
 
@@ -93,14 +93,13 @@ class _DashboardPageState extends State<DashboardPage> {
         widget.userRole == Fields.chefBoissons ||
         widget.userRole == Fields.chefCuisine) {
       calls.snapshots().listen((snapshot) {
-        Call call = Call();
-        call.buildObject(snapshot.docs[0]);
+        Call call = Call.buildObject(snapshot.docs[0]);
         if (call.hasCalled && isStarting == false) {
           callDialog(call);
         } else if (isStarting == true) {
           isStarting = false;
         } else {
-          Navigator.pop(dialogContext);
+          Navigator.pop(dialogContext!);
         }
       });
     }
@@ -136,8 +135,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 image: DecorationImage(
               image: AssetImage('assets/Zilliken.jpg'),
               fit: BoxFit.cover,
-            )
-            ),
+            )),
             child: Container(
               color: Color(Styling.primaryBackgroundColor).withOpacity(0.7),
               child: Scaffold(
@@ -237,48 +235,52 @@ class _DashboardPageState extends State<DashboardPage> {
 
   void callDialog(Call call) {
     showGeneralDialog(
-        context: context,
-        barrierDismissible: false,
-        transitionDuration: Duration(milliseconds: 300),
-        transitionBuilder: (context, a1, a2, widget) {
-          dialogContext = context;
-          return Transform.scale(
-            scale: a1.value,
-            child: Dialog(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5),
-              ),
-              child: Container(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Text(
-                      "${I18n.of(context).tableNumber} ${call.order.tableAdress} ${I18n.of(context).called}",
-                      style: TextStyle(
-                        fontSize: SizeConfig.diagonal * 2,
-                      ),
-                    ),
-                    Icon(
-                      Icons.warning,
-                      size: SizeConfig.diagonal * 15,
-                      color: Colors.red,
-                    ),
-                    ZRaisedButton(
-                      onpressed: () => updateCall(call),
-                      topPadding: 0.0,
-                      bottomPadding: 0.0,
-                      textIcon: Text(
-                        "${I18n.of(context).accept} ${I18n.of(context).tableNumber} ${call.order.tableAdress}",
-                      ),
-                    )
-                  ],
-                ),
-                height: SizeConfig.diagonal * 45,
-              ),
+      context: context,
+      barrierDismissible: false,
+      transitionDuration: Duration(milliseconds: 300),
+      transitionBuilder: (context, a1, a2, widget) {
+        dialogContext = context;
+        return Transform.scale(
+          scale: a1.value,
+          child: Dialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5),
             ),
-          );
-        },
-        pageBuilder: (context, anim1, anim2) {});
+            child: Container(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Text(
+                    "${I18n.of(context).tableNumber} ${call.order.tableAdress} ${I18n.of(context).called}",
+                    style: TextStyle(
+                      fontSize: SizeConfig.diagonal * 2,
+                    ),
+                  ),
+                  Icon(
+                    Icons.warning,
+                    size: SizeConfig.diagonal * 15,
+                    color: Colors.red,
+                  ),
+                  ZElevatedButton(
+                    onpressed: () => updateCall(call),
+                    topPadding: 0.0,
+                    bottomPadding: 0.0,
+                    child: Text(
+                      "${I18n.of(context).accept} ${I18n.of(context).tableNumber} ${call.order.tableAdress}",
+                    ),
+                  )
+                ],
+              ),
+              height: SizeConfig.diagonal * 45,
+            ),
+          ),
+        );
+      },
+      pageBuilder: (BuildContext context, Animation<double> animation,
+          Animation<double> secondaryAnimation) {
+        return Container();
+      },
+    );
   }
 
   Future<void> updateCall(Call call) async {
@@ -287,7 +289,7 @@ class _DashboardPageState extends State<DashboardPage> {
     if (!isOnline) {
       EasyLoading.dismiss();
 
-      _scaffoldKey.currentState.showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(I18n.of(context).noInternet),
       ));
     } else {
@@ -298,7 +300,7 @@ class _DashboardPageState extends State<DashboardPage> {
       } on Exception catch (e) {
         EasyLoading.dismiss();
 
-        _scaffoldKey.currentState.showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(e.toString()),
         ));
       }
@@ -320,7 +322,7 @@ class _DashboardPageState extends State<DashboardPage> {
             db: widget.db,
             userId: widget.userId,
             userRole: widget.userRole,
-            clientOrder: widget.clientOrder,
+            clientOrder: widget.clientOrder!,
             messaging: widget.messaging,
           ),
           curve: Curves.easeInBack,
@@ -428,7 +430,7 @@ class _DashboardPageState extends State<DashboardPage> {
       );
     } on Exception catch (e) {
       print('Error: $e');
-      _scaffoldKey.currentState.showSnackBar(
+     ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(e.toString()),
         ),

@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:zilliken/Components/ZRaisedButton.dart';
+import 'package:zilliken/Components/ZElevatedButton.dart';
 import 'package:zilliken/Components/ZTextField.dart';
 import 'package:zilliken/FirebaseImage/firebase_image.dart';
 import 'package:zilliken/Helpers/NumericStepButton.dart';
@@ -34,12 +34,12 @@ class MenuPage extends StatefulWidget {
   final Messaging messaging;
 
   MenuPage({
-    @required this.auth,
-    @required this.db,
-    @required this.userId,
-    @required this.userRole,
-    @required this.clientOrder,
-    @required this.messaging,
+    required this.auth,
+    required this.db,
+    required this.userId,
+    required this.userRole,
+    required this.clientOrder,
+    required this.messaging,
   });
 
   @override
@@ -52,20 +52,28 @@ class _MenuPageState extends State<MenuPage> {
       .collection(Fields.category)
       .orderBy(Fields.rank, descending: false);
   String selectedCategory = Fields.boissonsChaudes;
-  List<OrderItem> clientOrder = List<OrderItem>();
+  List<OrderItem> clientOrder = [];
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   int _itemorCategory = 0;
-  MenuItem _menuItem = MenuItem();
-  Category _cat = Category();
+  //MenuItem? _menuItem;
+  //Category? _cat;
 
   bool _isCategoryLoaded = false;
   final _formKey = GlobalKey<FormState>();
   final _formKey1 = GlobalKey<FormState>();
   final _catformKey = GlobalKey<FormState>();
-  List<String> _catList = new List();
-  MenuItem newMenuItem = MenuItem();
+  List<String> _catList = [];
+  MenuItem? newMenuItem;
+
+  String? category;
+  String? name;
+  int? price;
+  String? _catName;
+  String? newName;
+  int? newPrice;
+  String? newId;
 
   @override
   void initState() {
@@ -82,7 +90,7 @@ class _MenuPageState extends State<MenuPage> {
 
     widget.db.getCategories().then((value) {
       _catList.addAll(value);
-      _menuItem.category = _catList[0];
+      category = _catList[0];
       _isCategoryLoaded = true;
     });
 
@@ -122,7 +130,6 @@ class _MenuPageState extends State<MenuPage> {
     SizeConfig().init(context);
     //_yOffset = SizeConfig.diagonal * 100;
     return Scaffold(
-      resizeToAvoidBottomPadding: true,
       backgroundColor: Colors.transparent,
       key: _scaffoldKey,
       body: body(),
@@ -154,8 +161,8 @@ class _MenuPageState extends State<MenuPage> {
         //chooseCategoryOrItems(),
         if (widget.userRole == Fields.developer ||
             widget.userRole == Fields.admin)
-          ZRaisedButton(
-            textIcon: Text(
+          ZElevatedButton(
+            child: Text(
               I18n.of(context).loadData,
               style: TextStyle(
                 fontSize: SizeConfig.diagonal * 1.5,
@@ -222,18 +229,24 @@ class _MenuPageState extends State<MenuPage> {
                   child: Column(
                     children: [
                       ZTextField(
-                        onSaved: (value) => _menuItem.name = value,
-                        validator: (value) =>
-                            value.isEmpty ? I18n.of(context).requit : null,
+                        onSaved: (value) => name = value,
+                        validator: (value) => value == null || value.isEmpty
+                            ? I18n.of(context).requit
+                            : null,
                         keyboardType: TextInputType.text,
                         icon: Icons.restaurant_menu,
                         obsecure: false,
                         hint: I18n.of(context).itemName,
                       ),
                       ZTextField(
-                        onSaved: (value) => _menuItem.price = int.parse(value),
-                        validator: (value) =>
-                            value.isEmpty ? I18n.of(context).requit : null,
+                        onSaved: (value) {
+                          if (value != null) {
+                            price = int.parse(value);
+                          }
+                        },
+                        validator: (value) => value == null || value.isEmpty
+                            ? I18n.of(context).requit
+                            : null,
                         keyboardType: TextInputType.number,
                         icon: Icons.monetization_on,
                         obsecure: false,
@@ -241,7 +254,7 @@ class _MenuPageState extends State<MenuPage> {
                       ),
                       if (_isCategoryLoaded)
                         DropdownButton<String>(
-                          value: _menuItem.category,
+                          value: category,
                           icon: Icon(Icons.arrow_drop_down),
                           iconSize: 24,
                           elevation: 16,
@@ -249,9 +262,9 @@ class _MenuPageState extends State<MenuPage> {
                             color: Color(Styling.accentColor),
                             fontSize: SizeConfig.diagonal * 1.5,
                           ),
-                          onChanged: (String newValue) {
+                          onChanged: (String? newValue) {
                             setState(() {
-                              _menuItem.category = newValue;
+                              category = newValue;
                             });
                           },
                           items: _catList
@@ -267,8 +280,8 @@ class _MenuPageState extends State<MenuPage> {
                             );
                           }).toList(),
                         ),
-                      ZRaisedButton(
-                        textIcon: Text(
+                      ZElevatedButton(
+                        child: Text(
                           I18n.of(context).addItem,
                           style: TextStyle(
                             fontSize: SizeConfig.diagonal * 1.5,
@@ -286,16 +299,17 @@ class _MenuPageState extends State<MenuPage> {
                   child: Column(
                     children: [
                       ZTextField(
-                        onSaved: (value) => _cat.name = value,
-                        validator: (value) =>
-                            value.isEmpty ? I18n.of(context).requit : null,
+                        onSaved: (value) => _catName = value,
+                        validator: (value) => value == null || value.isEmpty
+                            ? I18n.of(context).requit
+                            : null,
                         keyboardType: TextInputType.text,
                         icon: Icons.category,
                         obsecure: false,
                         hint: I18n.of(context).categoryName,
                       ),
-                      ZRaisedButton(
-                        textIcon: Text(
+                      ZElevatedButton(
+                        child: Text(
                           I18n.of(context).addItem,
                           style: TextStyle(
                             fontSize: SizeConfig.diagonal * 2,
@@ -367,7 +381,7 @@ class _MenuPageState extends State<MenuPage> {
 
   bool validateAndSaveCategory() {
     final form = _catformKey.currentState;
-    if (form.validate()) {
+    if (form!.validate()) {
       form.save();
       return true;
     }
@@ -375,7 +389,7 @@ class _MenuPageState extends State<MenuPage> {
   }
 
   void loadData() async {
-    FilePickerResult result = await FilePicker.platform.pickFiles(
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
       allowMultiple: true,
       type: FileType.custom,
       allowedExtensions: ['.csv'],
@@ -388,20 +402,20 @@ class _MenuPageState extends State<MenuPage> {
       if (!isOnline) {
         EasyLoading.dismiss();
 
-        _scaffoldKey.currentState.showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(I18n.of(context).noInternet),
           ),
         );
       } else {
         try {
-          List<File> files = result.paths.map((path) => File(path)).toList();
-          File menu;
-          File category;
+          List<File> files = result.paths.map((path) => File(path!)).toList();
+          File? menu;
+          File? category;
 
           for (int i = 0; i < files.length; i++) {
             PlatformFile platformFile = result.files[i];
-            log(platformFile.name);
+            log(platformFile.name!);
             if (platformFile.name == 'menu.csv') {
               menu = files[i];
             }
@@ -414,7 +428,7 @@ class _MenuPageState extends State<MenuPage> {
           if (menu == null || category == null) {
             EasyLoading.dismiss();
 
-            _scaffoldKey.currentState.showSnackBar(
+            ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text("menu or category null"),
               ),
@@ -427,7 +441,7 @@ class _MenuPageState extends State<MenuPage> {
           //print('Error: $e');
           EasyLoading.dismiss();
 
-          _scaffoldKey.currentState.showSnackBar(
+          ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(e.toString()),
             ),
@@ -484,20 +498,22 @@ class _MenuPageState extends State<MenuPage> {
       if (!isOnline) {
         EasyLoading.dismiss();
 
-        _scaffoldKey.currentState.showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(I18n.of(context).noInternet),
           ),
         );
       } else {
         try {
-          await widget.db.addCategoy(_cat);
+          await widget.db.addCategoy(Category(
+            name: _catName!,
+          ));
 
           _catList.clear();
           widget.db.getCategories().then((value) {
             setState(() {
               _catList.addAll(value);
-              _menuItem.category = _catList[0];
+              category = _catList[0];
               _isCategoryLoaded = true;
             });
           });
@@ -505,16 +521,16 @@ class _MenuPageState extends State<MenuPage> {
           EasyLoading.dismiss();
 
           setState(() {
-            _catformKey.currentState.reset();
+            _catformKey.currentState!.reset();
           });
         } on Exception catch (e) {
           //print('Error: $e');
           EasyLoading.dismiss();
           setState(() {
-            _catformKey.currentState.reset();
+            _catformKey.currentState!.reset();
           });
 
-          _scaffoldKey.currentState.showSnackBar(
+          ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(e.toString()),
             ),
@@ -526,7 +542,7 @@ class _MenuPageState extends State<MenuPage> {
 
   bool validateAndSaveItem() {
     final form = _formKey.currentState;
-    if (form.validate()) {
+    if (form!.validate()) {
       form.save();
       return true;
     }
@@ -541,29 +557,34 @@ class _MenuPageState extends State<MenuPage> {
       if (!isOnline) {
         EasyLoading.dismiss();
 
-        _scaffoldKey.currentState.showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(I18n.of(context).noInternet),
           ),
         );
       } else {
         try {
-          await widget.db.addItem(_menuItem);
+          MenuItem menuItem = MenuItem(
+            category: category,
+            name: name!,
+            price: price!,
+          );
+          await widget.db.addItem(menuItem);
 
           EasyLoading.dismiss();
 
           setState(() {
-            _formKey.currentState.reset();
+            _formKey.currentState!.reset();
           });
         } on Exception catch (e) {
           //print('Error: $e');
 
           EasyLoading.dismiss();
           setState(() {
-            _formKey.currentState.reset();
+            _formKey.currentState!.reset();
           });
 
-          _scaffoldKey.currentState.showSnackBar(
+          ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(e.toString()),
             ),
@@ -573,9 +594,9 @@ class _MenuPageState extends State<MenuPage> {
     }
   }
 
-  void _handleValueChange(int value) {
+  void _handleValueChange(int? value) {
     setState(() {
-      _itemorCategory = value;
+      _itemorCategory = value!;
     });
   }
 
@@ -593,9 +614,8 @@ class _MenuPageState extends State<MenuPage> {
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
-              children: snapshot.data.docs.map((DocumentSnapshot document) {
-                Category category = Category();
-                category.buildObject(document);
+              children: snapshot.data!.docs.map((DocumentSnapshot document) {
+                Category category = Category.buildObject(document);
                 return categoryItem(category);
               }).toList(),
             ),
@@ -637,10 +657,9 @@ class _MenuPageState extends State<MenuPage> {
               );
             });*/
         return ListView.builder(
-          itemCount: snapshot.data.docs.length,
+          itemCount: snapshot.data!.docs.length,
           itemBuilder: (context, index) {
-            MenuItem menu = MenuItem();
-            menu.buildObject(snapshot.data.docs[index]);
+            MenuItem menu = MenuItem.buildObject(snapshot.data!.docs[index]);
             return Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -675,7 +694,7 @@ class _MenuPageState extends State<MenuPage> {
       child: Column(
         children: [
           Text(
-            menu.category,
+            menu.category!,
             style: TextStyle(
               color: Color(Styling.primaryColor),
               fontWeight: FontWeight.bold,
@@ -703,7 +722,7 @@ class _MenuPageState extends State<MenuPage> {
           InkWell(
             onLongPress: (widget.userRole == Fields.developer ||
                     widget.userRole == Fields.admin)
-                ? () => changeImage(menu.imageName)
+                ? () => changeImage(menu.imageName!)
                 : () {},
             child: Container(
               decoration: BoxDecoration(
@@ -758,30 +777,38 @@ class _MenuPageState extends State<MenuPage> {
                                           ),
                                           ZTextField(
                                             hint: I18n.of(context).itemName,
-                                            onSaved: (value) =>
-                                                newMenuItem.name = value,
-                                            validator: (value) => value.isEmpty
-                                                ? I18n.of(context).requit
-                                                : null,
+                                            onSaved: (value) {
+                                              if (value != null) {
+                                                newName = value;
+                                              }
+                                            },
+                                            validator: (value) =>
+                                                value == null || value.isEmpty
+                                                    ? I18n.of(context).requit
+                                                    : null,
                                             icon: Icons.restaurant,
                                           ),
                                           ZTextField(
                                             hint: I18n.of(context).itemPrice,
-                                            onSaved: (value) => newMenuItem
-                                                .price = int.parse(value),
-                                            validator: (value) => value.isEmpty
-                                                ? I18n.of(context).requit
-                                                : null,
+                                            onSaved: (value) {
+                                              if (value != null) {
+                                                newPrice = int.parse(value);
+                                              }
+                                            },
+                                            validator: (value) =>
+                                                value == null || value.isEmpty
+                                                    ? I18n.of(context).requit
+                                                    : null,
                                             icon: Icons.restaurant,
                                           ),
-                                          ZRaisedButton(
+                                          ZElevatedButton(
                                             onpressed: () async {
                                               final form =
                                                   _formKey1.currentState;
 
-                                              if (form.validate()) {
+                                              if (form!.validate()) {
                                                 form.save();
-                                                newMenuItem.id = menu.id;
+                                                newId = menu.id;
                                                 EasyLoading.show(
                                                     status: I18n.of(context)
                                                         .loading);
@@ -789,7 +816,7 @@ class _MenuPageState extends State<MenuPage> {
                                                     await hasConnection();
                                                 if (!isOnline) {
                                                   EasyLoading.dismiss();
-                                                  _scaffoldKey.currentState
+                                                  ScaffoldMessenger.of(context)
                                                       .showSnackBar(
                                                     SnackBar(
                                                       content: Text(
@@ -799,16 +826,21 @@ class _MenuPageState extends State<MenuPage> {
                                                   );
                                                 } else {
                                                   try {
+                                                    MenuItem menuItem =
+                                                        MenuItem(
+                                                            name: newName!,
+                                                            price: newPrice!);
                                                     await this
                                                         .widget
                                                         .db
                                                         .updateDetails(
-                                                            newMenuItem);
+                                                            menuItem);
                                                     EasyLoading.dismiss();
                                                     Navigator.of(context).pop();
                                                   } on Exception catch (e) {
                                                     EasyLoading.dismiss();
-                                                    _scaffoldKey.currentState
+                                                    ScaffoldMessenger.of(
+                                                            context)
                                                         .showSnackBar(SnackBar(
                                                       content:
                                                           Text(e.toString()),
@@ -817,8 +849,7 @@ class _MenuPageState extends State<MenuPage> {
                                                 }
                                               }
                                             },
-                                            textIcon:
-                                                Text(I18n.of(context).save),
+                                            child: Text(I18n.of(context).save),
                                           )
                                         ],
                                       ),
@@ -832,7 +863,9 @@ class _MenuPageState extends State<MenuPage> {
                         barrierDismissible: true,
                         barrierLabel: '',
                         transitionDuration: Duration(milliseconds: 300),
-                        pageBuilder: (context, animation1, animation2) {},
+                        pageBuilder: (context, animation1, animation2) {
+                          return Container();
+                        },
                       );
                     }
                   : () {},
@@ -880,17 +913,17 @@ class _MenuPageState extends State<MenuPage> {
                                       itemAvailability(isEnabled, menu),
                                 ),
                               )
-                            : isAlreadyOnTheOrder(clientOrder, menu.id)
+                            : isAlreadyOnTheOrder(clientOrder, menu.id!)
                                 ? Expanded(
                                     flex: 1,
                                     child: NumericStepButton(
                                       counter:
-                                          findOrderItem(clientOrder, menu.id)
+                                          findOrderItem(clientOrder, menu.id!)
                                               .count,
                                       maxValue: 20,
                                       onChanged: (value) {
-                                        OrderItem orderItem =
-                                            findOrderItem(clientOrder, menu.id);
+                                        OrderItem orderItem = findOrderItem(
+                                            clientOrder, menu.id!);
                                         if (value == 0) {
                                           setState(() {
                                             clientOrder.remove(orderItem);
@@ -976,7 +1009,7 @@ class _MenuPageState extends State<MenuPage> {
     return InkWell(
       onLongPress: (widget.userRole == Fields.developer ||
               widget.userRole == Fields.admin)
-          ? () => changeImage(category.imageName)
+          ? () => changeImage(category.imageName!)
           : () {},
       onTap: () {
         setState(() {
@@ -1035,10 +1068,10 @@ class _MenuPageState extends State<MenuPage> {
       value = 0;
 
     try {
-      await widget.db.updateAvailability(menuItem.id, value);
+      await widget.db.updateAvailability(menuItem.id!, value);
     } on Exception catch (e) {
       print('Error: $e');
-      _scaffoldKey.currentState.showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(e.toString()),
         ),
@@ -1047,13 +1080,13 @@ class _MenuPageState extends State<MenuPage> {
   }
 
   void changeImage(String name) async {
-    List<Asset> images;
+    List<Asset>? images;
 
     setState(() {
-      images = List<Asset>();
+      images = [];
     });
 
-    List<Asset> resultList;
+    List<Asset>? resultList;
     String error;
 
     try {
@@ -1084,22 +1117,22 @@ class _MenuPageState extends State<MenuPage> {
       images = resultList;
     });
 
-    if (images != null && images.length > 0) {
+    if (images != null && images!.length > 0) {
       EasyLoading.show(status: I18n.of(context).loading);
       bool isOnline = await hasConnection();
       if (!isOnline) {
         EasyLoading.dismiss();
-        _scaffoldKey.currentState
+        ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text(I18n.of(context).noInternet)));
       } else {
         try {
-          await widget.db.updateImage(context, images, name);
+          await widget.db.updateImage(context, images!, name);
           EasyLoading.dismiss();
-          _scaffoldKey.currentState.showSnackBar(
+          ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(I18n.of(context).photoChanged)));
         } on Exception catch (e) {
           EasyLoading.dismiss();
-          _scaffoldKey.currentState.showSnackBar(
+          ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(e.toString()),
             ),

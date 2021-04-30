@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -18,6 +19,7 @@ import 'package:zilliken/Models/Statistic.dart';
 import 'package:zilliken/Models/Stock.dart';
 import 'package:zilliken/Models/UserProfile.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
+import 'package:collection/collection.dart';
 
 import '../i18n.dart';
 
@@ -26,44 +28,44 @@ class Database {
   final FirebaseStorage storage = FirebaseStorage.instance;
   final String firebaseBucket = "gs://zilliken-914b2.appspot.com";
 
-  Future<void> setToken(String userId, String token) async {
+  Future<void> setToken(String userId, String? token) async {
     await databaseReference.collection(Fields.users).doc(userId).update({
       Fields.token: token,
     });
   }
 
-  Future<GeoPoint> getSourceAddress() async {
-    GeoPoint address;
+  Future<GeoPoint?> getSourceAddress() async {
+    GeoPoint? address;
     await databaseReference
         .collection(Fields.configuration)
         .doc(Fields.settings)
         .get()
         .then((snapshot) async {
       if (snapshot.exists) {
-        address = snapshot.data()[Fields.address];
+        address = snapshot.data()![Fields.address];
       }
     });
 
     return address;
   }
 
-  Future<GeoPoint> getDestinationAddress(String userId, String token) async {
-    GeoPoint geoPoint;
+  Future<GeoPoint?> getDestinationAddress(String userId, String token) async {
+    GeoPoint? geoPoint;
     await databaseReference
         .collection(Fields.users)
         .doc(userId)
         .get()
         .then((snapshot) async {
       if (snapshot.exists) {
-        geoPoint = snapshot.data()[Fields.address];
+        geoPoint = snapshot.data()![Fields.address];
       }
     });
 
     return geoPoint;
   }
 
-  Future<String> getUserRole(String userId) async {
-    String role = "";
+  Future<String?> getUserRole(String userId) async {
+    String? role;
 
     await databaseReference
         .collection(Fields.users)
@@ -71,7 +73,7 @@ class Database {
         .get()
         .then((snapshot) async {
       if (snapshot.exists) {
-        role = snapshot.data()[Fields.role].toString();
+        role = snapshot.data()![Fields.role].toString();
       }
     });
 
@@ -99,7 +101,7 @@ class Database {
         .get()
         .then((DocumentSnapshot documentSnapshot) {
       if (documentSnapshot.exists) {
-        taxPercentage = documentSnapshot.data()[Fields.percentage];
+        taxPercentage = documentSnapshot.data()![Fields.percentage];
       }
     });
     return taxPercentage;
@@ -151,14 +153,13 @@ class Database {
     return document.id;
   }
 
-  Future<Order> getOrder(String id) async {
-    Order order;
+  Future<Order?> getOrder(String id) async {
+    Order? order;
     var document = databaseReference.collection(Fields.order).doc(id);
     await document.get().then((snapshot) async {
       List<OrderItem> items = await getOrderItems(id);
-      order = Order();
-      order.buildObject(snapshot);
-      order.clientOrder = items;
+      order = Order.buildObject(snapshot);
+      order?.clientOrder = items;
     });
 
     return order;
@@ -203,7 +204,7 @@ class Database {
   }
 
   Future<List<Address>> getAddressList(String userId) async {
-    List<Address> addressList = List();
+    List<Address> addressList = [];
     var collection = databaseReference
         .collection(Fields.users)
         .doc(userId)
@@ -211,16 +212,8 @@ class Database {
 
     QuerySnapshot querySnapshot = await collection.get();
 
-    if (querySnapshot == null || querySnapshot.docs.length <= 0) {
-      log("error for id $userId");
-    }
-
-    log("length is ${querySnapshot.size}");
-
     querySnapshot.docs.forEach((element) {
-      Address address = Address();
-      log("address is ${element.data()[Fields.addressName]}");
-      address.buildObject(element);
+      Address address = Address.buildObject(element);
       addressList.add(address);
     });
 
@@ -241,7 +234,7 @@ class Database {
 
   
     Future<List<OrderItem>> getOrderItems(String orderId) async {
-      List<OrderItem> clientOrder = List();
+      List<OrderItem> clientOrder = [];
       var collection = databaseReference
           .collection(Fields.order)
           .doc(orderId)
@@ -250,8 +243,7 @@ class Database {
       QuerySnapshot querySnapshot = await collection.get();
   
       querySnapshot.docs.forEach((element) {
-        OrderItem orderItem = OrderItem();
-        orderItem.buildObject(element);
+        OrderItem orderItem = OrderItem.buildObject(element);
         clientOrder.add(orderItem);
       });
   
@@ -273,21 +265,9 @@ class Database {
   
       return clientOrder;
     }
-  
-    Future<List<String>> getCategories() async {
-      List<String> categories = new List();
-      var collection = databaseReference.collection(Fields.category);
-      await collection.get().then((snapshot) async {
-        snapshot.docs.forEach((element) {
-          categories.add(element.data()[Fields.name]);
-        });
-    });*/
-
-    return clientOrder;
-  }
 
   Future<List<String>> getCategories() async {
-    List<String> categories = new List();
+    List<String> categories = [];
     var collection = databaseReference.collection(Fields.category);
     await collection.get().then((snapshot) async {
       snapshot.docs.forEach((element) {
@@ -314,8 +294,8 @@ class Database {
     return false;
   }
 
-  Future<UserProfile> getUserProfile(String id) async {
-    UserProfile userProfile;
+  Future<UserProfile?> getUserProfile(String id) async {
+    UserProfile? userProfile;
     var document = databaseReference.collection(Fields.users).doc(id);
     await document.get().then((snapshot) {
       String role = snapshot[Fields.role];
@@ -327,6 +307,7 @@ class Database {
         phoneNumber: snapshot[Fields.phoneNumber],
         createdAt: snapshot[Fields.createdAt],
         lastSeenAt: snapshot[Fields.lastSeenAt],
+        token: snapshot[Fields.token],
       );
     });
 
@@ -334,8 +315,8 @@ class Database {
   }
 
   Future<void> addItem(MenuItem menuItem) async {
-    int global;
-    int rank;
+    int? global;
+    int? rank;
     await databaseReference
         .collection(Fields.menu)
         .orderBy(Fields.createdAt, descending: true)
@@ -376,7 +357,7 @@ class Database {
   }
 
   Future<void> addCategoy(Category category) async {
-    int rank;
+    int? rank;
     await databaseReference
         .collection(Fields.menu)
         .orderBy(Fields.createdAt, descending: true)
@@ -422,43 +403,16 @@ class Database {
         Fields.status: Fields.confirmed,
         Fields.confirmedDate: FieldValue.serverTimestamp(),
       });
-  
-      return categories;
-    }
-  
-    Future<bool> profileExists(String userId) async {
-      await databaseReference
-          .collection(Fields.users)
-          .doc(userId)
-          .get()
-          .then((snapshot) async {
-        if (snapshot.exists) {
-          return true;
-        } else {
-          return false;
-        }
+    } else if (value == 3) {
+      await document.update({
+        Fields.status: Fields.preparation,
+        Fields.preparationDate: FieldValue.serverTimestamp(),
       });
-  
-      return false;
-    }
-  
-    Future<UserProfile> getUserProfile(String id) async {
-      UserProfile userProfile;
-      var document = databaseReference.collection(Fields.users).doc(id);
-      await document.get().then((snapshot) {
-        String role = snapshot[Fields.role];
-  
-        userProfile = UserProfile(
-          id: id,
-          role: role,
-          name: snapshot[Fields.name],
-          phoneNumber: snapshot[Fields.phoneNumber],
-          createdAt: snapshot[Fields.createdAt],
-          lastSeenAt: snapshot[Fields.lastSeenAt],
-        );
+    } else if (value == 4) {
+      await document.update({
+        Fields.status: Fields.served,
+        Fields.servedDate: FieldValue.serverTimestamp(),
       });
-  
-      return userProfile;
 
       DateTime today = DateTime.now();
       Statistic newStatistic = Statistic(
@@ -487,106 +441,7 @@ class Database {
         }
       });
     }
-  
-    Future<void> addItem(MenuItem menuItem) async {
-      int global;
-      int rank;
-      await databaseReference
-          .collection(Fields.menu)
-          .orderBy(Fields.createdAt, descending: true)
-          .limit(1)
-          .get()
-          .then((snapshot) async {
-        if (snapshot.docs.isEmpty) {
-          global = 1;
-        } else {
-          global = snapshot.docs[0].data()[Fields.global] + 1;
-        }
-      });
-  
-      await databaseReference
-          .collection(Fields.menu)
-          .where(Fields.category, isEqualTo: menuItem.category)
-          .orderBy(Fields.createdAt, descending: true)
-          .limit(1)
-          .get()
-          .then((snapshot) async {
-        if (snapshot.docs.isEmpty) {
-          rank = 1;
-        } else {
-          rank = snapshot.docs[0].data()[Fields.rank] + 1;
-        }
-      });
-  
-      var document = databaseReference.collection(Fields.menu).doc();
-      await document.set({
-        Fields.availability: 1,
-        Fields.category: menuItem.category,
-        Fields.name: menuItem.name,
-        Fields.price: menuItem.price,
-        Fields.createdAt: FieldValue.serverTimestamp(),
-        Fields.rank: rank,
-        Fields.global: global,
-      });
-    }
-  
-    Future<void> addCategoy(Category category) async {
-      int rank;
-      await databaseReference
-          .collection(Fields.menu)
-          .orderBy(Fields.createdAt, descending: true)
-          .limit(1)
-          .get()
-          .then((snapshot) async {
-        if (snapshot.docs.isEmpty) {
-          rank = 1;
-        } else {
-          rank = snapshot.docs[0].data()[Fields.rank] + 1;
-        }
-      });
-  
-      var document = databaseReference.collection(Fields.category).doc();
-      await document.set({
-        Fields.name: category.name,
-        Fields.createdAt: FieldValue.serverTimestamp(),
-        Fields.rank: rank,
-      });
-    }
-  
-    Future<void> updateNotifications(String id, int isEnabled) async {
-      var document = databaseReference.collection(Fields.users).doc(id);
-      await document.update({Fields.receiveNotifications: isEnabled});
-    }
-  
-    Future<void> updateAvailability(String id, int isEnabled) async {
-      var document = databaseReference.collection(Fields.menu).doc(id);
-      await document.update({Fields.availability: isEnabled});
-    }
-  
-    Future<void> updateStatus(String id, int status, int value) async {
-      var document = databaseReference.collection(Fields.order).doc(id);
-      if (value == 1) {
-        await document.update({
-          Fields.status: Fields.pending,
-          Fields.orderDate: FieldValue.serverTimestamp(),
-        });
-      } else if (value == 2) {
-        await document.update({
-          Fields.status: Fields.confirmed,
-          Fields.confirmedDate: FieldValue.serverTimestamp(),
-        });
-      } else if (value == 3) {
-        await document.update({
-          Fields.status: Fields.preparation,
-          Fields.preparationDate: FieldValue.serverTimestamp(),
-        });
-      } else if (value == 4) {
-        await document.update({
-          Fields.status: Fields.served,
-          Fields.servedDate: FieldValue.serverTimestamp(),
-        });
-      }
-    }
+  }
   
     Future<void> sendData(File menu, File category) async {
       List<MenuItem> list = await getMenuItemsFromFile(menu);
@@ -787,14 +642,14 @@ class Database {
           double getAspectRatio(double originalSize, double desiredSize) =>
               desiredSize / originalSize;
           final aspectRatio = getAspectRatio(
-              images[i].originalWidth.toDouble(), imageDesiredWidth);
+              images[i].originalWidth!.toDouble(), imageDesiredWidth);
           ByteData byteData = await images[i].getThumbByteData(
-              (images[i].originalWidth * aspectRatio).round(),
-              (images[i].originalHeight * aspectRatio).round(),
+              (images[i].originalWidth! * aspectRatio).round(),
+              (images[i].originalHeight! * aspectRatio).round(),
               quality: 60);
   
           // ByteData byteData = await images[i].getByteData();
-          List<int> imageData = byteData.buffer.asUint8List();
+          Uint8List imageData = byteData.buffer.asUint8List();
           Reference ref = storage.ref("images/$name");
           TaskSnapshot uploadTask = await ref.putData(imageData);
   
@@ -889,84 +744,6 @@ class Database {
       });
     }
 
-    return result;
-  }
-
-  Future<void> updateDetails(MenuItem menu) async {
-    DocumentReference details =
-        FirebaseFirestore.instance.collection(Fields.menu).doc(menu.id);
-    await details.update({
-      Fields.name: menu.name,
-      Fields.price: menu.price,
-    });
-  }
-
-  Future<void> addCall(Call call) async {
-    DocumentReference doc =
-        FirebaseFirestore.instance.collection(Fields.calls).doc();
-    call.id = doc.id;
-    await doc.set({
-      Fields.id: call.id,
-      Fields.hasCalled: call.hasCalled,
-      Fields.createdAt: FieldValue.serverTimestamp(),
-      Fields.total: call.order.total,
-      Fields.taxPercentage: call.order.taxPercentage,
-      Fields.userRole: call.order.userRole,
-      Fields.userId: call.order.userId,
-      Fields.status: call.order.status,
-      Fields.servedDate: call.order.servedDate,
-      Fields.preparationDate: call.order.preparationDate,
-      Fields.confirmedDate: call.order.confirmedDate,
-      Fields.orderDate: call.order.orderDate,
-      Fields.grandTotal: call.order.grandTotal,
-      Fields.instructions: call.order.instructions,
-      Fields.phoneNumber: call.order.phoneNumber,
-      Fields.tableAdress: call.order.tableAdress,
-      Fields.orderLocation: call.order.orderLocation,
-      Fields.orderId: call.order.id,
-    });
-  }
-
-  Future<void> updateCall(Call call, bool hasCalled) async {
-    DocumentReference doc =
-        FirebaseFirestore.instance.collection(Fields.calls).doc(call.id);
-    await doc.update({
-      Fields.hasCalled: hasCalled,
-    });
-  }
-
-  Future<void> deleteAddress(String userId, String addressId) async {
-    var document = databaseReference
-        .collection(Fields.users)
-        .doc(userId)
-        .collection(Fields.addresses)
-        .doc(addressId);
-    await document.delete();
-  }
-
-  Future<void> updateLocation(String orderId, GeoPoint geoPoint) async {
-    var document = databaseReference.collection(Fields.order).doc(orderId);
-    await document.update({
-      Fields.currentPoint: geoPoint,
-    });
-  }
-  
-  Future<void> addAddress(String userId, Address address) async {
-    var document = databaseReference
-        .collection(Fields.users)
-        .doc(userId)
-        .collection(Fields.addresses)
-        .doc();
-    address.id = document.id;
-    await document.set({
-      Fields.id: address.id,
-      Fields.geoPoint: address.geoPoint,
-      Fields.addressName: address.addressName,
-      Fields.typedAddress: address.typedAddress,
-      Fields.phoneNumber: address.phoneNumber,
-    });
-  }
-
   Future<Result> addInventoryItem(context, Stock stock) async {
     Result result =
         Result(isSuccess: false, message: I18n.of(context).operationFailed);
@@ -1015,14 +792,13 @@ class Database {
     await reference.get().then((QuerySnapshot snapshot) {
       if (snapshot != null && snapshot.docs.isNotEmpty) {
         snapshot.docs.forEach((element) async {
-          MenuItem menuItem = MenuItem();
-          menuItem.buildObject(element);
+          MenuItem menuItem = MenuItem.buildObject(element);
 
-          Stock stock;
+          Stock? stock;
           if (menuItem.condiments != null) {
-            stock = menuItem.condiments.firstWhere((condiment) {
+            stock = menuItem.condiments!.firstWhereOrNull((condiment) {
               return condiment.id == stockId;
-            }, orElse: () => null);
+            });
 
             if (stock == null) {
               menuItem.isChecked = false;

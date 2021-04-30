@@ -1,6 +1,9 @@
 class Cart {
-  int totalPrice;
-  int totalCount;
+ late int totalPrice;
+ late int totalCount;
 
-  Cart({this.totalCount, this.totalPrice});
+  Cart({
+   required this.totalCount,
+   required this.totalPrice,
+  });
 }

@@ -1,101 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:zilliken/Helpers/Styling.dart';
 
 import '../Helpers/SizeConfig.dart';
-
-/*class ZTextField extends StatelessWidget {
-  final FormFieldSetter<String> onSaved;
-  final IconData icon;
-  final String hint;
-  final bool obsecure;
-  final String label;
-  final keyboardType;
-  final inputFormatters;
-  final TextEditingController controller;
-  final FormFieldValidator<String> validator;
-  final int maxLines;
-  final suffix;
-  final prefix;
-  final outsidePrefix;
-  final onFieldSubmitted;
-  final focusNode;
-  
-  final onEditingComplete;
-  final autofocus;
-
-  ZTextField({
-    this.icon,
-    this.hint,
-    this.obsecure = false,
-    this.validator,
-    this.onSaved,
-    this.label,
-    this.inputFormatters,
-    this.keyboardType,
-    this.controller,
-    this.maxLines,
-    this.suffix,
-    this.outsidePrefix,
-    this.onFieldSubmitted,
-    this.prefix,
-    this.focusNode,
-    this.onEditingComplete,
-    this.autofocus,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: TextFormField(
-        onSaved: onSaved,
-        maxLines: maxLines ?? 1,
-        minLines: 1,
-        controller: controller,
-        validator: validator,
-        autofocus: autofocus ?? false,
-        focusNode: focusNode,
-        obscureText: obsecure,
-        keyboardType: keyboardType,
-        focusNode: focusNode,
-        onFieldSubmitted: onFieldSubmitted ?? null,
-        inputFormatters: inputFormatters,
-        style: TextStyle(
-          fontSize: SizeConfig.diagonal * 1.5,
-        ),
-        decoration: InputDecoration(
-          hintStyle: TextStyle(
-            fontSize: SizeConfig.diagonal * 1.5,
-          ),
-          hintText: hint,
-          labelText: label,
-          labelStyle: TextStyle(
-            fontSize: SizeConfig.diagonal * 1.5,
-          ),
-          prefixIcon: icon ??
-              Icon(
-                icon,
-                size: SizeConfig.diagonal * 2.5,
-                color: Color(Styling.primaryColor),
-              ),
-          suffix: suffix,
-          prefix: prefix,
-        ),
-      ),
-    );
-  }
-}*/
+import '../Helpers/Styling.dart';
 
 class ZTextField extends StatelessWidget {
-  final FormFieldSetter<String> onSaved;
-  final IconData icon;
-  final String hint;
+  final FormFieldSetter<String>? onSaved;
+  final IconData? icon;
+  final String? hint;
   final bool obsecure;
-  final String label;
+  final String? label;
   final keyboardType;
   final inputFormatters;
-  final TextEditingController controller;
-  final FormFieldValidator<String> validator;
-  final int maxLines;
+  final TextEditingController? controller;
+  final FormFieldValidator<String>? validator;
+  final int? maxLines;
   final suffix;
   final height;
   final enabled;
@@ -108,9 +26,9 @@ class ZTextField extends StatelessWidget {
   final textInputAction;
   final onFieldSubmitted;
   final onEditingComplete;
+  final autofocus;
   final onChanged;
-  final prefix;
-  
+  final textAlign;
 
   ZTextField({
     this.elevation,
@@ -135,9 +53,9 @@ class ZTextField extends StatelessWidget {
     this.textInputAction,
     this.onFieldSubmitted,
     this.onEditingComplete,
+    this.autofocus,
     this.onChanged,
-    this.prefix,
-    
+    this.textAlign,
   });
 
   @override
@@ -145,14 +63,14 @@ class ZTextField extends StatelessWidget {
     return Card(
       elevation: elevation ?? 8,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(25),
       ),
       child: Container(
         padding: EdgeInsets.symmetric(
-            horizontal: SizeConfig.diagonal * 0.8,
-            vertical: SizeConfig.diagonal * 0.1),
+            horizontal: SizeConfig.diagonal * 0.5,
+            vertical: SizeConfig.diagonal * 0.5),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             if (outsidePrefix != null) outsidePrefix,
             SizedBox(
@@ -160,6 +78,7 @@ class ZTextField extends StatelessWidget {
             ),
             Expanded(
               child: TextFormField(
+                textAlign: textAlign ?? TextAlign.start,
                 enabled: enabled ?? true,
                 textInputAction: textInputAction ?? TextInputAction.next,
                 maxLines: maxLines ?? 1,
@@ -171,30 +90,30 @@ class ZTextField extends StatelessWidget {
                 focusNode: focusNode,
                 minLines: 1,
                 validator: validator,
-                autofocus: false,
+                autofocus: autofocus ?? false,
                 obscureText: obsecure,
                 keyboardType: keyboardType,
                 inputFormatters: inputFormatters,
-                cursorColor: Color(Styling.iconColor),
+                cursorColor: Color(Styling.primaryColor),
                 style: TextStyle(
                   fontSize: fontSize ?? SizeConfig.diagonal * 1.5,
-                  color: Color(Styling.iconColor),
+                  color: Color(Styling.textColor),
                   height: SizeConfig.diagonal * 0.2,
                   letterSpacing: letterSpacing ?? null,
                 ),
                 decoration: InputDecoration(
-                  hintText: hint,
+                  hintText: hint ?? null,
                   isDense: true,
                   hintStyle: TextStyle(
                     fontSize: SizeConfig.diagonal * 1.5,
-                    color: Color(Styling.iconColor),
-                    letterSpacing: null,
+                    color: Color(Styling.textColor),
+                    letterSpacing: 0,
                   ),
                   labelText: label,
                   labelStyle: TextStyle(
                     fontSize: SizeConfig.diagonal * 1.5,
-                    color: Color(Styling.iconColor),
-                    letterSpacing: null,
+                    color: Color(Styling.textColor),
+                    letterSpacing: 0,
                   ),
                   border: InputBorder.none,
                   prefixIcon: icon == null
@@ -204,7 +123,6 @@ class ZTextField extends StatelessWidget {
                           size: SizeConfig.diagonal * 2.5,
                         ),
                   suffix: suffix,
-                  prefix: prefix,
                 ),
               ),
             ),

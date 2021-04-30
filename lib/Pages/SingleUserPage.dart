@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:zilliken/Components/ZAppBar.dart';
-import 'package:zilliken/Components/ZRaisedButton.dart';
+import 'package:zilliken/Components/ZElevatedButton.dart';
 import 'package:zilliken/Helpers/SizeConfig.dart';
 import 'package:zilliken/Helpers/Styling.dart';
 import 'package:zilliken/Models/Fields.dart';
@@ -22,11 +22,11 @@ class SingleUserPage extends StatefulWidget {
   final UserProfile userData;
 
   SingleUserPage({
-    @required this.auth,
-    @required this.db,
-    @required this.userId,
-    @required this.userRole,
-    @required this.userData,
+    required this.auth,
+    required this.db,
+    required this.userId,
+    required this.userRole,
+    required this.userData,
   });
   @override
   _SingleUserPageState createState() => _SingleUserPageState();
@@ -34,7 +34,7 @@ class SingleUserPage extends StatefulWidget {
 
 class _SingleUserPageState extends State<SingleUserPage> {
   var oneUserDetails;
-  List<DocumentSnapshot> items = List();
+  List<DocumentSnapshot> items = [];
   ScrollController _scrollController = ScrollController();
   var isLoading;
   var statistics;
@@ -175,8 +175,7 @@ class _SingleUserPageState extends State<SingleUserPage> {
                       )
                     : Row(
                         children: items.map((document) {
-                          StatisticUser statisticUser = StatisticUser();
-                          statisticUser.buildObject(document);
+                          StatisticUser statisticUser = StatisticUser.buildObject(document);
                           return itemCard(statisticUser);
                         }).toList(),
                       ),
@@ -234,9 +233,8 @@ class _SingleUserPageState extends State<SingleUserPage> {
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.data == null) return Center(child: Text(""));
           return ListView(
-            children: snapshot.data.docs.map((DocumentSnapshot document) {
-              UserProfile userProfile = UserProfile();
-              userProfile.buildObject(document);
+            children: snapshot.data!.docs.map((DocumentSnapshot document) {
+              UserProfile userProfile = UserProfile.buildObject(document);
               return userList(userProfile);
             }).toList(),
           );
@@ -253,9 +251,9 @@ class _SingleUserPageState extends State<SingleUserPage> {
             child:
                 Text('${I18n.of(context).phone} : ${userProfile.phoneNumber}'),
           ),
-          ZRaisedButton(
-            textIcon: Text("activer"),
-          ),
+          /*ElevatedButton(
+            child: Text("activer"),
+          ),*/
         ],
       ),
     );

@@ -3,46 +3,42 @@ import 'package:flutter/cupertino.dart';
 import 'package:zilliken/Models/Fields.dart';
 
 class Stock {
-  String id;
-  String name;
-  num quantity;
-  String unit;
-  num usedSince;
-  num usedTotal;
-  Timestamp date;
-  bool linked;
+  String? id;
+  late String name;
+  late num quantity;
+  late String unit;
+  late num usedSince;
+  late num usedTotal;
+  late Timestamp? date;
 
   Stock({
     this.id,
-    this.name,
-    this.quantity,
-    this.unit,
-    this.usedSince,
-    this.usedTotal,
-    this.date,
-    this.linked,
+    required this.name,
+    required this.quantity,
+    required this.unit,
+    required this.usedSince,
+    required this.usedTotal,
+     this.date,
   });
 
-  void buildObject(DocumentSnapshot document) {
+  Stock.buildObject(DocumentSnapshot document) {
     id = document.id;
-    name = document.data()[Fields.name];
-    quantity = document.data()[Fields.quantity];
-    unit = document.data()[Fields.unit];
-    usedSince = document.data()[Fields.usedSince];
-    usedTotal = document.data()[Fields.usedTotal];
-    date = document.data()[Fields.date];
-    linked = document.data()[Fields.linked];
+    name = document.data()![Fields.name];
+    quantity = document.data()![Fields.quantity];
+    unit = document.data()![Fields.unit];
+    usedSince = document.data()![Fields.usedSince];
+    usedTotal = document.data()![Fields.usedTotal];
+    date = document.data()![Fields.date];
   }
 
-  void buildObjectAsync(AsyncSnapshot<DocumentSnapshot> document) {
-    id = document.data.id;
-    name = document.data[Fields.name];
-    quantity = document.data[Fields.quantity];
-    unit = document.data[Fields.unit];
-    usedSince = document.data[Fields.usedSince];
-    usedTotal = document.data[Fields.usedTotal];
-    date = document.data[Fields.date];
-    linked = document.data[Fields.linked];
+  Stock.buildObjectAsync(AsyncSnapshot<DocumentSnapshot> document) {
+    id = document.data?.id;
+    name = document.data![Fields.name];
+    quantity = document.data![Fields.quantity];
+    unit = document.data![Fields.unit];
+    usedSince = document.data![Fields.usedSince];
+    usedTotal = document.data![Fields.usedTotal];
+    date = document.data![Fields.date];
   }
 
   String buildStringFromObject() {
@@ -50,7 +46,7 @@ class Stock {
     return text;
   }
 
-  void buildObjectFromString(String text) {
+  Stock.buildObjectFromString(String text) {
     List<String> list = text.split(';');
     id = list[0];
     name = list[1];

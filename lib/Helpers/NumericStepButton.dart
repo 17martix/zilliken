@@ -10,13 +10,12 @@ class NumericStepButton extends StatefulWidget {
 
   final ValueChanged<int> onChanged;
 
-  NumericStepButton(
-      {Key key,
-      this.minValue = 0,
-      this.maxValue = 10,
-      this.onChanged,
-      this.counter})
-      : super(key: key);
+  NumericStepButton({
+    this.minValue = 0,
+    this.maxValue = 10,
+    required this.onChanged,
+    required this.counter,
+  });
 
   @override
   State<NumericStepButton> createState() {

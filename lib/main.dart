@@ -13,10 +13,6 @@ import 'package:zilliken/Services/Database.dart';
 import 'Helpers/Styling.dart';
 import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:zilliken/Pages/AdminPage.dart';
-
-import 'Pages/AdminPage.dart';
-import 'Pages/LoginPage.dart';
 import 'Services/Database.dart';
 import 'i18n.dart';
 import 'Services/Messaging.dart';
@@ -52,7 +48,7 @@ Future<void> main() async {
   await messaging.flutterLocalNotificationsPlugin
       .resolvePlatformSpecificImplementation<
           AndroidFlutterLocalNotificationsPlugin>()
-      ?.createNotificationChannel(messaging.channel);
+      ?.createNotificationChannel(messaging.channel!);
 
   /// Update the iOS foreground notification presentation options to allow
   /// heads up notifications.
@@ -85,10 +81,10 @@ void initLoadingScreen() {
 
 class Zilliken extends StatelessWidget {
   // This widget is the root of your application.
-  final Messaging messaging;
+   final Messaging messaging;
 
   Zilliken({
-    this.messaging,
+   required this.messaging,
   });
 
   @override

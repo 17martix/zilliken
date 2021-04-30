@@ -7,13 +7,14 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:zilliken/Services/Messaging.dart';
 
 import 'package:zilliken/main.dart';
 
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(Zilliken());
+    await tester.pumpWidget(Zilliken(messaging: Messaging(),));
 
     // Verify that our counter starts at 0.
     expect(find.text('0'), findsOneWidget);

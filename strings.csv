@@ -96,11 +96,10 @@ name,Name,Nom
 phone,Phone,Tél
 last,Last seen at,Vu à
 active,Activate,Activer
-date,Date,Date
 dailyTotal, Daily Total, Le total journalier
-phone,Phone number,Numéro de Téléphone
 quantity,Quantity,Quantité
 used,Used,Utilisé
 unit,Unit,Unité
 itemDescription,Enter Item Description,Entrer Déscription
 itemEditing,Edit Item Details,Modifier Détails
+printingDisabled,Printing Disabled,Impression désactivée

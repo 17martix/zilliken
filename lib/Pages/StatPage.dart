@@ -24,32 +24,32 @@ class StatPage extends StatefulWidget {
   final List<Graph> data;
 
   StatPage({
-    @required this.auth,
-    @required this.db,
-    @required this.userId,
-    @required this.userRole,
-    @required this.data,
+    required this.auth,
+    required this.db,
+    required this.userId,
+    required this.userRole,
+    required this.data,
   });
   @override
   _StatPageState createState() => _StatPageState();
 }
 
 class _StatPageState extends State<StatPage> {
-  List<Graph> data;
+  List<Graph>? data;
   ScrollController _scrollController = ScrollController();
-  List<DocumentSnapshot> items = List();
+  List<DocumentSnapshot> items = [];
   CollectionReference statistic =
       FirebaseFirestore.instance.collection(Fields.statistic);
 
   bool isLoading = false;
   bool hasMore = true;
 
-  QuerySnapshot statref;
-  DocumentSnapshot lastDocument;
+  QuerySnapshot? statref;
+  DocumentSnapshot? lastDocument;
 
-  List<BarChartGroupData> rawBarGroups;
-  List<BarChartGroupData> showingBarGroups;
-  int touchedGroupIndex;
+  List<BarChartGroupData> rawBarGroups=[];
+  List<BarChartGroupData> showingBarGroups=[];
+  int? touchedGroupIndex;
 
   final Color rightBarColor = Color(Styling.accentColor);
   final double width = 7;
@@ -133,19 +133,19 @@ class _StatPageState extends State<StatPage> {
           .collection(Fields.statistic)
           .limit(documentLimit)
           .orderBy(Fields.date, descending: true)
-          .startAfterDocument(lastDocument)
+          .startAfterDocument(lastDocument!)
           .get();
     }
 
-    if (statref.docs.length < documentLimit) {
+    if (statref!.docs.length < documentLimit) {
       hasMore = false;
     }
 
-    if (statref.docs.length > 0)
-      lastDocument = statref.docs[statref.docs.length - 1];
+    if (statref!.docs.length > 0)
+      lastDocument = statref!.docs[statref!.docs.length - 1];
     setState(() {
-      for (int i = 0; i < statref.docs.length; i++) {
-        items.add(statref.docs[i]);
+      for (int i = 0; i < statref!.docs.length; i++) {
+        items.add(statref!.docs[i]);
       }
       isLoading = false;
 
@@ -265,8 +265,7 @@ class _StatPageState extends State<StatPage> {
                       )
                     : Row(
                         children: items.map((document) {
-                          Statistic statistic = Statistic();
-                          statistic.buildObject(document);
+                          Statistic statistic = Statistic.buildObject(document);
                           return itemCard(statistic);
                           //return graph();
                         }).toList(),
@@ -403,7 +402,7 @@ class _StatPageState extends State<StatPage> {
                                 }
 
                                 touchedGroupIndex =
-                                    response.spot.touchedBarGroupIndex;
+                                    response.spot!.touchedBarGroupIndex;
 
                                 setState(() {
                                   if (response.touchInput is PointerExitEvent ||
@@ -415,20 +414,20 @@ class _StatPageState extends State<StatPage> {
                                     if (touchedGroupIndex != -1) {
                                       double sum = 0;
                                       for (BarChartRodData rod
-                                          in showingBarGroups[touchedGroupIndex]
+                                          in showingBarGroups[touchedGroupIndex!]
                                               .barRods) {
                                         sum += rod.y;
                                       }
                                       final avg = sum /
-                                          showingBarGroups[touchedGroupIndex]
+                                          showingBarGroups[touchedGroupIndex!]
                                               .barRods
                                               .length;
 
-                                      showingBarGroups[touchedGroupIndex] =
-                                          showingBarGroups[touchedGroupIndex]
+                                      showingBarGroups[touchedGroupIndex!] =
+                                          showingBarGroups[touchedGroupIndex!]
                                               .copyWith(
                                         barRods:
-                                            showingBarGroups[touchedGroupIndex]
+                                            showingBarGroups[touchedGroupIndex!]
                                                 .barRods
                                                 .map((rod) {
                                           return rod.copyWith(y: avg);

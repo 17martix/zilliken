@@ -5,15 +5,14 @@ import 'package:flutter/material.dart';
 class CategoryItem extends StatelessWidget {
   final String title;
   final bool isActive;
-  final Function press;
+  final press;
 
   const CategoryItem({
-    Key key,
-    @required this.context,
-    this.title,
+    required this.context,
+   required this.title,
     this.isActive = false,
     this.press,
-  }) : super(key: key);
+  });
 
   final BuildContext context;
 

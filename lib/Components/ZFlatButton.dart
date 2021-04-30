@@ -2,15 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:zilliken/Helpers/SizeConfig.dart';
 import 'package:zilliken/Helpers/Styling.dart';
 
-class ZFlatButton extends StatelessWidget {
+import 'ZText.dart';
+
+class ZTextButton extends StatelessWidget {
   final onpressed;
-  final String text;
   final bottomVerticalSpace;
   final color;
+  final child;
 
-  ZFlatButton({
+  ZTextButton({
     this.onpressed,
-    this.text,
+    required this.child,
     this.bottomVerticalSpace,
     this.color,
   });
@@ -20,15 +22,8 @@ class ZFlatButton extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.fromLTRB(
           0.0, 0, 0.0, bottomVerticalSpace ?? SizeConfig.diagonal * 2),
-      child: FlatButton(
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5)),
-          child: Text(text,
-              style: TextStyle(
-                fontSize: SizeConfig.diagonal * 4,
-                fontWeight: FontWeight.w300,
-                color: color != null ? color : Color(Styling.accentColor),
-              )),
+      child: TextButton(
+          child: child,
           onPressed: onpressed),
     );
   }

@@ -3,20 +3,19 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'Fields.dart';
 
 class Statistic {
-  String id;
-  num total;
-  Timestamp date;
+  String? id;
+  late num total;
+  late Timestamp date;
 
   Statistic({
     this.id,
-    this.total,
-    this.date,
+    required this.total,
+    required this.date,
   });
 
-  void buildObject(DocumentSnapshot document) {
+  Statistic.buildObject(DocumentSnapshot document) {
     id = document.id;
-    total = document.data()[Fields.total];
-    date = document.data()[Fields.date];
-
+    total = document.data()![Fields.total];
+    date = document.data()![Fields.date];
   }
 }

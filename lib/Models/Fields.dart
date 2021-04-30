@@ -61,9 +61,6 @@ class Fields {
   static final String imageName = 'imageName';
   static final String calls = 'calls';
 
-  /*static final String isDrink = 'isDrink';
-  static final String coldCount = 'coldCount';
-  static final String lukeWCount = 'lukeWCount';*/
   static final String hasCalled = 'hasCalled';
 
   static final String token = 'token';
@@ -81,15 +78,11 @@ class Fields {
   static final String date = 'date';
   static final String statistic = 'statistic';
 
-  static final String date = 'date';
-  static final String statistic = 'statistic';
-
   static final String quantity = 'quantity';
   static final String unit = 'unit';
   static final String usedSince = 'usedSince';
   static final String usedTotal = 'usedTotal';
   static final String stock = 'stock';
-  static final String date = 'date';
 
   static final String itemId = 'itemId';
   static final String itemName = 'itemName';
