@@ -678,8 +678,9 @@ class _CartPageState extends State<CartPage> {
                 ZTextField(
                   onSaved: (newValue) => phone = newValue,
                   controller: _phoneController,
-                  validator: (value) =>
-                   value==null ||   value.isEmpty ? I18n.of(context).requit : null,
+                  validator: (value) => value == null || value.isEmpty
+                      ? I18n.of(context).requit
+                      : null,
                   keyboardType: TextInputType.phone,
                   label: I18n.of(context).fone,
                   icon: Icons.phone_android,
@@ -854,7 +855,7 @@ class _CartPageState extends State<CartPage> {
     if (validate()) {
       if (restaurantOrRoomOrder == 1 &&
           (addressName == null || addressName == '')) {
-       ScaffoldMessenger.of(context).showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content:  ZText(content:I18n.of(context).enterLocation),
           ),
@@ -866,7 +867,7 @@ class _CartPageState extends State<CartPage> {
         if (!isOnline) {
           EasyLoading.dismiss();
 
-       ScaffoldMessenger.of(context).showSnackBar(
+          ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content:  ZText(content:I18n.of(context).noInternet),
             ),
@@ -877,8 +878,8 @@ class _CartPageState extends State<CartPage> {
               clientOrder: clientOrder!,
               orderLocation: restaurantOrRoomOrder,
               tableAdress: tableAdress!,
-              phoneNumber: phone!,
-              instructions: instruction!,
+              phoneNumber: phone,
+              instructions: instruction,
               grandTotal: grandTotalNumber(context, clientOrder!, tax),
               orderDate: null,
               confirmedDate: null,
@@ -888,8 +889,8 @@ class _CartPageState extends State<CartPage> {
               userRole: widget.userRole,
               taxPercentage: tax,
               total: priceItemsTotalNumber(context, clientOrder!),
-              addressName: addressName!,
-              geoPoint: geoPoint!,
+              addressName: addressName,
+              geoPoint: geoPoint,
               currentPoint: GeoPoint(-3.3834389, 29.3616122),
             );
             await widget.db.placeOrder(order);

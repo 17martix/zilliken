@@ -36,7 +36,7 @@ class OrdersPage extends StatefulWidget {
 }
 
 class _OrdersPageState extends State<OrdersPage> {
-  var commandes;
+  late Query commandes;
 
   @override
   void initState() {
