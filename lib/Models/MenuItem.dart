@@ -19,18 +19,18 @@ class MenuItem {
   late bool? isChecked;
 
   MenuItem({
-     this.category,
-     this.id,
+    this.category,
+    this.id,
     required this.name,
     required this.price,
-     this.rank,
-     this.global,
-     this.availability,
-     this.createdAt,
-     this.imageName,
-     this.isDrink,
-     this.condiments,
-     this.isChecked,
+    this.rank,
+    this.global,
+    this.availability,
+    this.createdAt,
+    this.imageName,
+    this.isDrink,
+    this.condiments,
+    this.isChecked,
   });
 
   MenuItem.buildObject(DocumentSnapshot document) {

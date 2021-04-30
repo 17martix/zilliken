@@ -300,7 +300,7 @@ class _DashboardPageState extends State<DashboardPage> {
       } on Exception catch (e) {
         EasyLoading.dismiss();
 
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(e.toString()),
         ));
       }
@@ -322,7 +322,7 @@ class _DashboardPageState extends State<DashboardPage> {
             db: widget.db,
             userId: widget.userId,
             userRole: widget.userRole,
-            clientOrder: widget.clientOrder!,
+            clientOrder: widget.clientOrder,
             messaging: widget.messaging,
           ),
           curve: Curves.easeInBack,
@@ -430,7 +430,7 @@ class _DashboardPageState extends State<DashboardPage> {
       );
     } on Exception catch (e) {
       print('Error: $e');
-     ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(e.toString()),
         ),

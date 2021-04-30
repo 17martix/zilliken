@@ -30,7 +30,7 @@ class MenuPage extends StatefulWidget {
   final Database db;
   final String userId;
   final String userRole;
-  final List<OrderItem> clientOrder;
+  final List<OrderItem>? clientOrder;
   final Messaging messaging;
 
   MenuPage({
@@ -38,7 +38,7 @@ class MenuPage extends StatefulWidget {
     required this.db,
     required this.userId,
     required this.userRole,
-    required this.clientOrder,
+    this.clientOrder,
     required this.messaging,
   });
 
@@ -47,7 +47,7 @@ class MenuPage extends StatefulWidget {
 }
 
 class _MenuPageState extends State<MenuPage> {
-  var commandes;
+  late Query commandes;
   var categories = FirebaseFirestore.instance
       .collection(Fields.category)
       .orderBy(Fields.rank, descending: false);
@@ -83,9 +83,9 @@ class _MenuPageState extends State<MenuPage> {
       commandesQuery(selectedCategory);
     });
 
-    if (widget.clientOrder != null && widget.clientOrder.length > 0)
+    if (widget.clientOrder != null && widget.clientOrder!.length > 0)
       setState(() {
-        clientOrder = widget.clientOrder;
+        clientOrder = widget.clientOrder!;
       });
 
     widget.db.getCategories().then((value) {

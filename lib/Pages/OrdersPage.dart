@@ -35,7 +35,7 @@ class OrdersPage extends StatefulWidget {
 }
 
 class _OrdersPageState extends State<OrdersPage> {
-  var commandes;
+  late Query commandes;
 
   @override
   void initState() {
@@ -148,7 +148,9 @@ class _OrdersPageState extends State<OrdersPage> {
                   Expanded(
                     flex: 1,
                     child: Text(
-                      order.orderDate==null?"":'${widget.formatter.format(order.orderDate!.toDate())}',
+                      order.orderDate == null
+                          ? ""
+                          : '${widget.formatter.format(order.orderDate!.toDate())}',
                       textAlign: TextAlign.right,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(fontSize: SizeConfig.diagonal * 1.5),

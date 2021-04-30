@@ -243,8 +243,8 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
     updatePinOnMap(currentLocation);
     setSourceAndDestinationIcons(); // set the initial location
     destinationLocation = Position.fromMap({
-      "latitude": order!.geoPoint.latitude,
-      "longitude": order!.geoPoint.longitude,
+      "latitude": order!.geoPoint!.latitude,
+      "longitude": order!.geoPoint!.longitude,
     });
   }
 
@@ -264,8 +264,8 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
 
     // hard-coded destination for this example
     destinationLocation = Position.fromMap({
-      "latitude": order!.geoPoint.latitude,
-      "longitude": order!.geoPoint.longitude,
+      "latitude": order!.geoPoint!.latitude,
+      "longitude": order!.geoPoint!.longitude,
     });
   }
 
@@ -378,7 +378,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                         if (!isOnline) {
                           EasyLoading.dismiss();
 
-                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                             content: Text(I18n.of(context).noInternet),
                           ));
                         } else {
@@ -526,7 +526,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
     if (!isOnline) {
       EasyLoading.dismiss();
 
-     ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(I18n.of(context).noInternet),
         ),
@@ -544,7 +544,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
         //print('Error: $e');
         EasyLoading.dismiss();
 
-      ScaffoldMessenger.of(context).showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(e.toString()),
           ),
@@ -1271,7 +1271,8 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                 ),
                 Column(
                   mainAxisSize: MainAxisSize.min,
-                  children: snapshot.data!.docs.map((DocumentSnapshot document) {
+                  children:
+                      snapshot.data!.docs.map((DocumentSnapshot document) {
                     OrderItem orderItem = OrderItem.buildObject(document);
                     return orderElement(orderItem);
                   }).toList(),
@@ -1691,7 +1692,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                     Expanded(
                       flex: 1,
                       child: Text(
-                        order.instructions,
+                        order.instructions!,
                         overflow: TextOverflow.visible,
                         textAlign: TextAlign.end,
                         style: TextStyle(
