@@ -13,6 +13,8 @@ import 'package:zilliken/Services/Database.dart';
 import 'package:zilliken/Services/Messaging.dart';
 import 'package:zilliken/i18n.dart';
 
+import '../Components/ZText.dart';
+
 class NewItemPage extends StatefulWidget {
   final Authentication auth;
   final Database db;
@@ -83,11 +85,11 @@ class _NewItemPageState extends State<NewItemPage> {
               Container(
                 height: SizeConfig.diagonal * 15,
                 child: Center(
-                  child: Text(I18n.of(context).itemDescription),
+                  child:  ZText(content:I18n.of(context).itemDescription),
                 ),
               ),
               ZTextField(
-                outsidePrefix: Text(I18n.of(context).name + ' :'),
+                outsidePrefix:  ZText(content:I18n.of(context).name + ' :'),
                 onSaved: (value) => name = value,
                 validator: (value) => value == null || value.isEmpty
                     ? I18n.of(context).requit
@@ -97,7 +99,7 @@ class _NewItemPageState extends State<NewItemPage> {
                 height: SizeConfig.diagonal * 3,
               ),
               ZTextField(
-                outsidePrefix: Text(I18n.of(context).quantity + ' :'),
+                outsidePrefix:  ZText(content:I18n.of(context).quantity + ' :'),
                 onSaved: (value) {
                   if (value != null) {
                     quantity = num.parse(value);
@@ -110,12 +112,12 @@ class _NewItemPageState extends State<NewItemPage> {
                 height: SizeConfig.diagonal * 3,
               ),
               DropdownButton(
-                  hint: Text('Select the Unit'),
+                  hint:  ZText(content:'Select the Unit'),
                   value: selectedValue,
                   items: unitList.map((String value) {
                     return DropdownMenuItem<String>(
                         value: value,
-                        child: Text(
+                        child:  ZText(content:
                           value,
                         ));
                   }).toList(),
@@ -130,9 +132,9 @@ class _NewItemPageState extends State<NewItemPage> {
               ),
               ZElevatedButton(
                 onpressed: saveItem,
-                child: Text(
+                child:  ZText(content:
                   I18n.of(context).save,
-                  style: TextStyle(color: Color(Styling.textColor)),
+                 color: Color(Styling.textColor)
                 ),
               ),
             ],
@@ -155,7 +157,7 @@ class _NewItemPageState extends State<NewItemPage> {
 
        ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(I18n.of(context).noInternet),
+            content:  ZText(content:I18n.of(context).noInternet),
           ),
         );
       } else {
@@ -184,7 +186,7 @@ class _NewItemPageState extends State<NewItemPage> {
 
         ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(e.toString()),
+              content:  ZText(content:e.toString()),
             ),
           );
         }

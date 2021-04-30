@@ -9,6 +9,7 @@ import 'package:zilliken/Services/Database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
+import '../Components/ZText.dart';
 import '../i18n.dart';
 
 class UserPage extends StatefulWidget {
@@ -63,7 +64,7 @@ class _UserPageState extends State<UserPage> {
     return StreamBuilder<QuerySnapshot>(
       stream: users.snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        if (snapshot.data == null) return Center(child: Text(""));
+        if (snapshot.data == null) return Center(child: ZText(content:""));
 
         return ListView(
           shrinkWrap: true,
@@ -79,16 +80,16 @@ class _UserPageState extends State<UserPage> {
   Widget userList(UserProfile userProfile) {
     return Card(
       child: ListTile(
-        title: Text(
+        title: ZText(content:
           '${I18n.of(context).name} ' " : " ' ${userProfile.name}',
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            ZText(content:
               I18n.of(context).phone + " : " + userProfile.phoneNumber,
             ),
-            Text(
+            ZText(content:
               '${I18n.of(context).last} '
               " : "
               '${widget.formatter.format(userProfile.lastSeenAt!.toDate())}',

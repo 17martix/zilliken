@@ -4,6 +4,8 @@ import 'package:zilliken/Helpers/SizeConfig.dart';
 import 'package:zilliken/Helpers/Styling.dart';
 import 'package:zilliken/Services/Authentication.dart';
 
+import 'ZText.dart';
+
 AppBar buildAppBar(
   context,
   Authentication auth,
@@ -54,7 +56,7 @@ AppBar buildAppBar(
       ),
     ),
     actions: [
-      logout == null ? Text('') : logoutButton(logout),
+      logout == null ?  ZText(content:'') : logoutButton(logout),
       if (print != null) printButton(print),
       if (admin != null) adminButton(admin),
     ],

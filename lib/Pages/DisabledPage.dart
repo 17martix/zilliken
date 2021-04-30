@@ -4,6 +4,7 @@ import 'package:zilliken/Helpers/Styling.dart';
 import 'package:zilliken/Services/Authentication.dart';
 import 'package:zilliken/Services/Database.dart';
 
+import '../Components/ZText.dart';
 import '../i18n.dart';
 
 class DisabledPage extends StatefulWidget {
@@ -38,13 +39,13 @@ class _DisabledPageState extends State<DisabledPage> {
         child: Scaffold(
           backgroundColor: Colors.transparent,
           body: Center(
-            child: Text(
+            child:  ZText(content:
               I18n.of(context).accountDisabled,
               textAlign: TextAlign.center,
-              style: new TextStyle(
+             
                 fontSize: SizeConfig.diagonal * 2,
               ),
-            ),
+          
           ),
         ),
       ),

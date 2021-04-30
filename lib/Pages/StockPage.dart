@@ -14,6 +14,8 @@ import 'package:zilliken/Services/Messaging.dart';
 import 'package:zilliken/i18n.dart';
 import 'package:intl/intl.dart';
 
+import '../Components/ZText.dart';
+
 class StockPage extends StatefulWidget {
   final Authentication auth;
   final Database db;
@@ -73,7 +75,7 @@ class _StockPageState extends State<StockPage> {
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.data == null)
             return Center(
-              child: Text(''),
+              child: ZText(content:''),
             );
 
           return ListView.builder(
@@ -106,7 +108,7 @@ class _StockPageState extends State<StockPage> {
                   Icons.cancel,
                   size: SizeConfig.diagonal * 2.5,
                 ),
-                Text('Cancel'),
+                ZText(content:'Cancel'),
               ],
             ),
             decoration: BoxDecoration(
@@ -141,7 +143,7 @@ class _StockPageState extends State<StockPage> {
                   Icons.update,
                   size: SizeConfig.diagonal * 2.5,
                 ),
-                Text('Update'),
+                ZText(content:'Update'),
               ],
             ),
             decoration: BoxDecoration(
@@ -176,7 +178,7 @@ class _StockPageState extends State<StockPage> {
                   Icons.link,
                   size: SizeConfig.diagonal * 2.5,
                 ),
-                Text('Link to Menu'),
+                ZText(content:'Link to Menu'),
               ],
             ),
             decoration: BoxDecoration(
@@ -203,17 +205,17 @@ class _StockPageState extends State<StockPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Text(
+                ZText(content:
                   I18n.of(context).name + ' : ' + stock.name,
                   textAlign: TextAlign.start,
                 ),
-                Text(I18n.of(context).quantity +
+             ZText(content:I18n.of(context).quantity +
                     ' : ' +
                     '${stock.quantity}' +
                     ' ' +
                     stock.unit),
-                Text(I18n.of(context).used + ' : ' + '${stock.usedSince}'),
-                Text('${widget.formatter.format(stock.date!.toDate())}')
+                ZText(content:I18n.of(context).used + ' : ' + '${stock.usedSince}'),
+                ZText(content:'${widget.formatter.format(stock.date!.toDate())}')
               ],
             ),
           ),

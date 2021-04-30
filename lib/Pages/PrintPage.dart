@@ -7,6 +7,7 @@ import 'package:zilliken/Helpers/SizeConfig.dart';
 import 'package:zilliken/Helpers/Styling.dart';
 import 'package:zilliken/Services/Authentication.dart';
 
+import '../Components/ZText.dart';
 import '../i18n.dart';
 
 class PrintPage extends StatefulWidget {
@@ -49,12 +50,12 @@ class _PrintPageState extends State<PrintPage> {
         child: Scaffold(
           backgroundColor: Colors.transparent,
           body: Center(
-            child: Text(
+            child:  ZText(content:
               I18n.of(context).printingDisabled,
               textAlign: TextAlign.center,
-              style: new TextStyle(
+              
                 fontSize: SizeConfig.diagonal * 2,
-              ),
+             
             ),
           ),
         ),
