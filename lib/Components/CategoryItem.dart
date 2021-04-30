@@ -2,6 +2,8 @@ import 'package:zilliken/Helpers/SizeConfig.dart';
 import 'package:zilliken/Helpers/Styling.dart';
 import 'package:flutter/material.dart';
 
+import 'ZText.dart';
+
 class CategoryItem extends StatelessWidget {
   final String title;
   final bool isActive;
@@ -9,7 +11,7 @@ class CategoryItem extends StatelessWidget {
 
   const CategoryItem({
     required this.context,
-   required this.title,
+    required this.title,
     this.isActive = false,
     this.press,
   });
@@ -28,18 +30,14 @@ class CategoryItem extends StatelessWidget {
         ),
         child: Column(
           children: [
-            Text(
-              title,
-              style: isActive
-                  ? TextStyle(
-                      color: Color(Styling.textColor),
-                      fontSize: SizeConfig.diagonal * 3,
-                      fontWeight: FontWeight.bold,
-                    )
-                  : TextStyle(
-                      color: Color(Styling.textColor).withOpacity(0.30),
-                      fontSize: SizeConfig.diagonal * 3,
-                    ),
+            ZText(
+              content: title,
+              color: isActive
+                  ? Color(Styling.textColor)
+                  : Color(Styling.textColor).withOpacity(0.30),
+              fontSize:
+                  isActive ? SizeConfig.diagonal * 3 : SizeConfig.diagonal * 3,
+              fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
             ),
             if (isActive)
               Container(

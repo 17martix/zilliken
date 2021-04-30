@@ -1,6 +1,7 @@
 import 'package:zilliken/Helpers/SizeConfig.dart';
 import 'package:flutter/material.dart';
 
+import '../Components/ZText.dart';
 import 'Styling.dart';
 
 class NumericStepButton extends StatefulWidget {
@@ -57,14 +58,14 @@ class _NumericStepButtonState extends State<NumericStepButton> {
               SizedBox(
                 width: SizeConfig.diagonal * 1.1,
               ),
-              Text(
+              ZText(content:
                 "${widget.counter}",
                 textAlign: TextAlign.center,
-                style: TextStyle(
+               
                   color: Colors.white,
                   fontSize: SizeConfig.diagonal * 1.5,
                 ),
-              ),
+              
               SizedBox(
                 width: SizeConfig.diagonal * 1.1,
               ),

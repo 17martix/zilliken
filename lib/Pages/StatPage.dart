@@ -15,6 +15,8 @@ import 'package:zilliken/Services/Database.dart';
 import 'package:zilliken/i18n.dart';
 import 'package:flutter/gestures.dart';
 
+import '../Components/ZText.dart';
+
 class StatPage extends StatefulWidget {
   final Authentication auth;
   final Database db;
@@ -47,8 +49,8 @@ class _StatPageState extends State<StatPage> {
   QuerySnapshot? statref;
   DocumentSnapshot? lastDocument;
 
-  List<BarChartGroupData> rawBarGroups=[];
-  List<BarChartGroupData> showingBarGroups=[];
+  List<BarChartGroupData> rawBarGroups = [];
+  List<BarChartGroupData> showingBarGroups = [];
   int? touchedGroupIndex;
 
   final Color rightBarColor = Color(Styling.accentColor);
@@ -178,21 +180,19 @@ class _StatPageState extends State<StatPage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
+                    ZText(content:
                       "${statistic.total}",
-                      style: TextStyle(
+                    
                         color: Color(Styling.accentColor),
                         fontSize: SizeConfig.diagonal * 3,
                         fontWeight: FontWeight.bold,
-                        fontFamily: "Font1",
-                      ),
+                        
+                     
                     ),
-                    Text(
-                      " Fbu",
-                      style: TextStyle(
-                        color: Color(Styling.iconColor),
-                        fontSize: SizeConfig.diagonal * 2.5,
-                      ),
+                    ZText(
+                      content: " Fbu",
+                      color: Color(Styling.iconColor),
+                      fontSize: SizeConfig.diagonal * 2.5,
                     ),
                   ],
                 ),
@@ -205,20 +205,20 @@ class _StatPageState extends State<StatPage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
+                   ZText(content:
                       I18n.of(context).date,
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                     
                         color: Color(Styling.iconColor),
                         fontSize: SizeConfig.diagonal * 2,
-                      ),
+                      
                     ),
-                    Text(
+                   ZText(content:
                       "  : ${widget.formatter.format(statistic.date.toDate())}",
-                      style: TextStyle(
+                     
                         color: Color(Styling.iconColor),
                         fontSize: SizeConfig.diagonal * 2,
-                      ),
+                      
                     ),
                   ],
                 ),
@@ -240,14 +240,14 @@ class _StatPageState extends State<StatPage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
+            ZText(content:
               I18n.of(context).dailytotal,
               textAlign: TextAlign.center,
-              style: TextStyle(
+              
                 color: Color(Styling.iconColor),
                 fontStyle: FontStyle.normal,
                 fontSize: SizeConfig.diagonal * 2.5,
-              ),
+              
             ),
           ],
         ),
@@ -261,7 +261,7 @@ class _StatPageState extends State<StatPage> {
               children: [
                 items.length == 0
                     ? Center(
-                        child: Text(""),
+                        child: ZText(content:""),
                       )
                     : Row(
                         children: items.map((document) {
@@ -358,19 +358,19 @@ class _StatPageState extends State<StatPage> {
                     const SizedBox(
                       width: 45,
                     ),
-                    const Text(
+                    ZText(content:
                       'Transactions',
-                      style: TextStyle(
+                    
                           color: Color(Styling.iconColor), fontSize: 15),
-                    ),
+                  
                     const SizedBox(
                       width: 5,
                     ),
-                    const Text(
+                    ZText(content:
                       'state',
-                      style: TextStyle(
+                      
                           color: Color(Styling.accentColor), fontSize: 12),
-                    ),
+                    
                   ],
                 ),
                 const SizedBox(
@@ -414,7 +414,8 @@ class _StatPageState extends State<StatPage> {
                                     if (touchedGroupIndex != -1) {
                                       double sum = 0;
                                       for (BarChartRodData rod
-                                          in showingBarGroups[touchedGroupIndex!]
+                                          in showingBarGroups[
+                                                  touchedGroupIndex!]
                                               .barRods) {
                                         sum += rod.y;
                                       }

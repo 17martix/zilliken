@@ -16,6 +16,8 @@ import 'package:zilliken/Services/Messaging.dart';
 import 'package:intl/intl.dart';
 import 'package:zilliken/i18n.dart';
 
+import '../Components/ZText.dart';
+
 class ItemUpdatePage extends StatefulWidget {
   final Authentication auth;
   final Database db;
@@ -74,7 +76,7 @@ class _ItemEditPageState extends State<ItemUpdatePage> {
               Container(
                 height: SizeConfig.diagonal * 15,
                 child: Center(
-                  child: Text(I18n.of(context).itemEditing),
+                  child:  ZText(content:I18n.of(context).itemEditing),
                 ),
               ),
              /* ZTextField(
@@ -98,11 +100,11 @@ class _ItemEditPageState extends State<ItemUpdatePage> {
 
               ZElevatedButton(
                 onpressed: itemUpdate,
-                child: Text(
+                child:  ZText(content:
                   I18n.of(context).save,
-                  style: TextStyle(color: Color(Styling.textColor)),
+                 color: Color(Styling.textColor)),
                 ),
-              ),
+              
             ],
           ),
         ),
@@ -123,7 +125,7 @@ class _ItemEditPageState extends State<ItemUpdatePage> {
 
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(I18n.of(context).noInternet),
+            content: ZText(content:I18n.of(context).noInternet),
           ),
         );
       } else {
@@ -143,7 +145,7 @@ class _ItemEditPageState extends State<ItemUpdatePage> {
 
          ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(e.toString()),
+              content:  ZText(content:e.toString()),
             ),
           );
         }

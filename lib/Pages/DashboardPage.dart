@@ -20,6 +20,7 @@ import 'package:zilliken/Services/Database.dart';
 import 'package:zilliken/Services/Messaging.dart';
 import 'package:zilliken/i18n.dart';
 
+import '../Components/ZText.dart';
 import 'DisabledPage.dart';
 import 'SplashPage.dart';
 
@@ -250,12 +251,12 @@ class _DashboardPageState extends State<DashboardPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Text(
+                   ZText(content:
                     "${I18n.of(context).tableNumber} ${call.order.tableAdress} ${I18n.of(context).called}",
-                    style: TextStyle(
+                   
                       fontSize: SizeConfig.diagonal * 2,
                     ),
-                  ),
+                  
                   Icon(
                     Icons.warning,
                     size: SizeConfig.diagonal * 15,
@@ -265,7 +266,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     onpressed: () => updateCall(call),
                     topPadding: 0.0,
                     bottomPadding: 0.0,
-                    child: Text(
+                    child:  ZText(content:
                       "${I18n.of(context).accept} ${I18n.of(context).tableNumber} ${call.order.tableAdress}",
                     ),
                   )
@@ -290,7 +291,7 @@ class _DashboardPageState extends State<DashboardPage> {
       EasyLoading.dismiss();
 
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(I18n.of(context).noInternet),
+        content:  ZText(content:I18n.of(context).noInternet),
       ));
     } else {
       try {
@@ -301,7 +302,7 @@ class _DashboardPageState extends State<DashboardPage> {
         EasyLoading.dismiss();
 
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(e.toString()),
+          content:  ZText(content:e.toString()),
         ));
       }
     }
@@ -432,7 +433,7 @@ class _DashboardPageState extends State<DashboardPage> {
       print('Error: $e');
      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(e.toString()),
+          content:  ZText(content:e.toString()),
         ),
       );
     }

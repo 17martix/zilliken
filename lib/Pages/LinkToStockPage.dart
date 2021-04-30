@@ -18,6 +18,8 @@ import 'package:zilliken/Services/Database.dart';
 import 'package:zilliken/Services/Messaging.dart';
 import 'package:zilliken/i18n.dart';
 
+import '../Components/ZText.dart';
+
 class LinkToMenu extends StatefulWidget {
   final Authentication auth;
   final Database db;
@@ -93,7 +95,7 @@ class _ConnectToMenuState extends State<LinkToMenu> {
         Container(
           height: SizeConfig.diagonal * 5,
           child: Center(
-            child: Text('Choose any meal that requires this item'),
+            child:  ZText(content:'Choose any meal that requires this item'),
           ),
         ),
         Expanded(
@@ -110,7 +112,7 @@ class _ConnectToMenuState extends State<LinkToMenu> {
                     EasyLoading.dismiss();
 
                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: Text(I18n.of(context).noInternet),
+                      content:  ZText(content:I18n.of(context).noInternet),
                     ));
                   } else {
                     try {
@@ -119,18 +121,18 @@ class _ConnectToMenuState extends State<LinkToMenu> {
                       EasyLoading.dismiss();
 
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content: Text(I18n.of(context).messageSent),
+                        content:  ZText(content:I18n.of(context).messageSent),
                       ));
                     } on Exception catch (e) {
                       EasyLoading.dismiss();
 
                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content: Text(e.toString()),
+                        content:  ZText(content:e.toString()),
                       ));
                     }
                   }
                 },
-                child: Text(I18n.of(context).save),
+                child:  ZText(content:I18n.of(context).save),
                 bottomPadding: SizeConfig.diagonal * 0.8,
                 topPadding: SizeConfig.diagonal * 0.8,
               ),
@@ -166,7 +168,7 @@ class _ConnectToMenuState extends State<LinkToMenu> {
           children: [
             CheckboxListTile(
               activeColor: Color(Styling.accentColor),
-              title: Text(menuItem.name),
+              title:  ZText(content:menuItem.name),
               value: menuItem.isChecked,
               onChanged: (value) {
                 setState(() {
@@ -196,7 +198,7 @@ class _ConnectToMenuState extends State<LinkToMenu> {
                       outsidePrefix: Padding(
                         padding:
                             EdgeInsets.only(left: SizeConfig.diagonal * 0.5),
-                        child: Text('Qty needed :'),
+                        child:  ZText(content:'Qty needed :'),
                       ),
                       elevation: 1.3,
                     )

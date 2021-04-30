@@ -11,6 +11,7 @@ import 'package:zilliken/Services/Authentication.dart';
 import 'package:zilliken/Services/Database.dart';
 import 'package:intl/intl.dart';
 
+import '../Components/ZText.dart';
 import '../i18n.dart';
 
 class SingleUserPage extends StatefulWidget {
@@ -94,20 +95,20 @@ class _SingleUserPageState extends State<SingleUserPage> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
+                       ZText(content:
                           '${statisticUser.total}',
-                          style: TextStyle(
+                         
                             color: Colors.lightGreen,
                             fontSize: SizeConfig.diagonal * 3,
                             fontWeight: FontWeight.bold,
-                          ),
+                         
                         ),
-                        Text(
+                        ZText(content:
                           '${I18n.of(context).fbu}',
-                          style: TextStyle(
+                          
                             color: Color(Styling.iconColor),
                             fontSize: SizeConfig.diagonal * 2.5,
-                          ),
+                          
                         ),
                       ],
                     ),
@@ -117,20 +118,20 @@ class _SingleUserPageState extends State<SingleUserPage> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
+                        ZText(content:
                           I18n.of(context).orderDate,
                           textAlign: TextAlign.center,
-                          style: TextStyle(
+                         
                               color: Color(Styling.iconColor),
                               fontSize: SizeConfig.diagonal * 2),
-                        ),
-                        Text(
+                       
+                         ZText(content:
                           " : "
                           '${widget.formatter.format(statisticUser.date.toDate())}',
-                          style: TextStyle(
+                          
                               color: Color(Styling.accentColor),
                               fontSize: SizeConfig.diagonal * 2),
-                        ),
+                   
                       ],
                     ),
                   ),
@@ -150,14 +151,14 @@ class _SingleUserPageState extends State<SingleUserPage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
+             ZText(content:
               '${I18n.of(context).dailyTotal}',
               textAlign: TextAlign.center,
-              style: TextStyle(
+             
                 color: Color(Styling.accentColor),
                 fontSize: SizeConfig.diagonal * 3.5,
                 fontStyle: FontStyle.normal,
-              ),
+             
             ),
           ],
         ),
@@ -171,7 +172,7 @@ class _SingleUserPageState extends State<SingleUserPage> {
               children: [
                 items.length == 0
                     ? Center(
-                        child: Text(""),
+                        child:  ZText(content:""),
                       )
                     : Row(
                         children: items.map((document) {
@@ -231,7 +232,7 @@ class _SingleUserPageState extends State<SingleUserPage> {
     return StreamBuilder<QuerySnapshot>(
         stream: oneUserDetails.snapshots(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          if (snapshot.data == null) return Center(child: Text(""));
+          if (snapshot.data == null) return Center(child:  ZText(content:""));
           return ListView(
             children: snapshot.data!.docs.map((DocumentSnapshot document) {
               UserProfile userProfile = UserProfile.buildObject(document);
@@ -246,10 +247,10 @@ class _SingleUserPageState extends State<SingleUserPage> {
       child: Column(
         children: [
           Container(
-              child: Text('${I18n.of(context).name} : ${userProfile.name}')),
+              child:  ZText(content:'${I18n.of(context).name} : ${userProfile.name}')),
           Container(
             child:
-                Text('${I18n.of(context).phone} : ${userProfile.phoneNumber}'),
+                ZText(content:'${I18n.of(context).phone} : ${userProfile.phoneNumber}'),
           ),
           /*ElevatedButton(
             child: Text("activer"),

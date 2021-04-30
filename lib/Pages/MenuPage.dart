@@ -23,6 +23,7 @@ import 'package:multi_image_picker/multi_image_picker.dart';
 
 import 'package:zilliken/i18n.dart';
 
+import '../Components/ZText.dart';
 import 'CartPage.dart';
 
 class MenuPage extends StatefulWidget {
@@ -162,12 +163,12 @@ class _MenuPageState extends State<MenuPage> {
         if (widget.userRole == Fields.developer ||
             widget.userRole == Fields.admin)
           ZElevatedButton(
-            child: Text(
+            child:  ZText(content:
               I18n.of(context).loadData,
-              style: TextStyle(
+              
                 fontSize: SizeConfig.diagonal * 1.5,
                 color: Color(Styling.primaryBackgroundColor),
-              ),
+             
             ),
             bottomPadding: SizeConfig.diagonal * 1,
             topPadding: SizeConfig.diagonal * 1,
@@ -183,13 +184,13 @@ class _MenuPageState extends State<MenuPage> {
       child: new Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          new Text(
+           ZText(content:
             I18n.of(context).addWhat,
-            style: new TextStyle(
+           
               fontWeight: FontWeight.bold,
               fontSize: SizeConfig.diagonal * 1.5,
             ),
-          ),
+          
           Padding(
             padding: EdgeInsets.symmetric(
                 horizontal: SizeConfig.diagonal * 1,
@@ -204,21 +205,21 @@ class _MenuPageState extends State<MenuPage> {
                 groupValue: _itemorCategory,
                 onChanged: _handleValueChange,
               ),
-              new Text(
+               ZText(content:
                 I18n.of(context).item,
-                style: new TextStyle(fontSize: SizeConfig.diagonal * 1.5),
-              ),
+               fontSize: SizeConfig.diagonal * 1.5),
+              
               new Radio(
                 value: 1,
                 groupValue: _itemorCategory,
                 onChanged: _handleValueChange,
               ),
-              new Text(
+               ZText(content:
                 I18n.of(context).category,
-                style: new TextStyle(
+                
                   fontSize: SizeConfig.diagonal * 1.5,
                 ),
-              ),
+             
             ],
           ),
           new Divider(height: 2.0, color: Colors.black),
@@ -271,22 +272,22 @@ class _MenuPageState extends State<MenuPage> {
                               .map<DropdownMenuItem<String>>((String value) {
                             return DropdownMenuItem<String>(
                               value: value,
-                              child: Text(
+                              child:  ZText(content:
                                 value,
-                                style: TextStyle(
+                                
                                   fontSize: SizeConfig.diagonal * 1.5,
-                                ),
+                              
                               ),
                             );
                           }).toList(),
                         ),
                       ZElevatedButton(
-                        child: Text(
+                        child: ZText(content:
                           I18n.of(context).addItem,
-                          style: TextStyle(
+                         
                             fontSize: SizeConfig.diagonal * 1.5,
                             color: Color(Styling.primaryBackgroundColor),
-                          ),
+                          
                         ),
                         bottomPadding: SizeConfig.diagonal * 1,
                         onpressed: saveItem,
@@ -309,13 +310,13 @@ class _MenuPageState extends State<MenuPage> {
                         hint: I18n.of(context).categoryName,
                       ),
                       ZElevatedButton(
-                        child: Text(
+                        child:  ZText(content:
                           I18n.of(context).addItem,
-                          style: TextStyle(
+                        
                             fontSize: SizeConfig.diagonal * 2,
                             color: Color(Styling.primaryBackgroundColor),
                           ),
-                        ),
+                       
                         bottomPadding: SizeConfig.diagonal * 1,
                         onpressed: saveCategory,
                       ),
@@ -352,28 +353,28 @@ class _MenuPageState extends State<MenuPage> {
             color: Color(Styling.accentColor),
             elevation: 16,
             child: ListTile(
-              title: Text(
+              title:  ZText(content:
                 numberItems(context, clientOrder),
-                style: TextStyle(
+               
                   color: Color(Styling.primaryBackgroundColor),
                   fontSize: SizeConfig.diagonal * 1.5,
-                ),
+                
               ),
-              subtitle: Text(
+              subtitle:  ZText(content:
                 priceItems(context, clientOrder),
-                style: TextStyle(
+                
                   color: Color(Styling.primaryBackgroundColor),
                   fontWeight: FontWeight.bold,
                   fontSize: SizeConfig.diagonal * 1.5,
-                ),
+               
               ),
-              trailing: Text(
+              trailing:  ZText(content:
                 I18n.of(context).vOrder,
-                style: TextStyle(
+              
                   color: Color(Styling.primaryBackgroundColor),
                   fontSize: SizeConfig.diagonal * 1.5,
                 ),
-              ),
+              
             ),
           ),
         ));
@@ -404,7 +405,7 @@ class _MenuPageState extends State<MenuPage> {
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(I18n.of(context).noInternet),
+            content:  ZText(content:I18n.of(context).noInternet),
           ),
         );
       } else {
@@ -430,7 +431,7 @@ class _MenuPageState extends State<MenuPage> {
 
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text("menu or category null"),
+                content:  ZText(content:"menu or category null"),
               ),
             );
           } else {
@@ -443,7 +444,7 @@ class _MenuPageState extends State<MenuPage> {
 
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(e.toString()),
+              content:  ZText(content:e.toString()),
             ),
           );
         }
@@ -500,7 +501,7 @@ class _MenuPageState extends State<MenuPage> {
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(I18n.of(context).noInternet),
+            content:  ZText(content:I18n.of(context).noInternet),
           ),
         );
       } else {
@@ -532,7 +533,7 @@ class _MenuPageState extends State<MenuPage> {
 
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(e.toString()),
+              content:  ZText(content:e.toString()),
             ),
           );
         }
@@ -559,7 +560,7 @@ class _MenuPageState extends State<MenuPage> {
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(I18n.of(context).noInternet),
+            content:  ZText(content:I18n.of(context).noInternet),
           ),
         );
       } else {
@@ -586,7 +587,7 @@ class _MenuPageState extends State<MenuPage> {
 
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(e.toString()),
+              content:  ZText(content:e.toString()),
             ),
           );
         }
@@ -606,7 +607,7 @@ class _MenuPageState extends State<MenuPage> {
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.data == null)
           return Center(
-            child: Text(""),
+            child:  ZText(content:""),
           );
 
         return Container(
@@ -631,7 +632,7 @@ class _MenuPageState extends State<MenuPage> {
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.data == null)
           return Center(
-            child: Text(""),
+            child:  ZText(content:""),
           );
 
         /*return AnimatedList(
@@ -693,13 +694,13 @@ class _MenuPageState extends State<MenuPage> {
       margin: EdgeInsets.only(top: SizeConfig.diagonal * 3),
       child: Column(
         children: [
-          Text(
+           ZText(content:
             menu.category!,
-            style: TextStyle(
+           
               color: Color(Styling.primaryColor),
               fontWeight: FontWeight.bold,
               fontSize: SizeConfig.diagonal * 1.8,
-            ),
+         
           ),
           Padding(
             padding: EdgeInsets.symmetric(
@@ -819,7 +820,7 @@ class _MenuPageState extends State<MenuPage> {
                                                   ScaffoldMessenger.of(context)
                                                       .showSnackBar(
                                                     SnackBar(
-                                                      content: Text(
+                                                      content:  ZText(content:
                                                           I18n.of(context)
                                                               .noInternet),
                                                     ),
@@ -843,13 +844,13 @@ class _MenuPageState extends State<MenuPage> {
                                                             context)
                                                         .showSnackBar(SnackBar(
                                                       content:
-                                                          Text(e.toString()),
+                                                           ZText(content:e.toString()),
                                                     ));
                                                   }
                                                 }
                                               }
                                             },
-                                            child: Text(I18n.of(context).save),
+                                            child:  ZText(content:I18n.of(context).save),
                                           )
                                         ],
                                       ),
@@ -875,33 +876,32 @@ class _MenuPageState extends State<MenuPage> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                     ZText(content:
                       menu.name,
                       textAlign: TextAlign.left,
                       //overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
+                      
                         color: Color(Styling.textColor),
                         fontWeight: FontWeight.bold,
-                        height: 1,
+                     
                         fontSize: SizeConfig.diagonal * 1.5,
                       ),
-                    ),
+                   
                     SizedBox(width: SizeConfig.diagonal * 1),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Expanded(
                           flex: 1,
-                          child: Text(
+                          child:  ZText(content:
                             "${formatNumber(menu.price)} ${I18n.of(context).fbu}",
                             textAlign: TextAlign.left,
-                            style: TextStyle(
+                           
                               color: Color(Styling.textColor),
                               fontWeight: FontWeight.normal,
                               fontSize: SizeConfig.diagonal * 1.5,
                               //fontFamily: "assets/Cochin.ttf",
                             ),
-                          ),
                         ),
                         widget.userRole != Fields.client
                             ? Expanded(
@@ -969,14 +969,14 @@ class _MenuPageState extends State<MenuPage> {
                                                 SizeConfig.diagonal * 1),
                                             child: Row(
                                               children: [
-                                                Text(
+                                                 ZText(content:
                                                   I18n.of(context).addItem,
-                                                  style: TextStyle(
+                                                  
                                                       color: Colors.white,
                                                       fontSize:
                                                           SizeConfig.diagonal *
                                                               1.5),
-                                                ),
+                                                
                                                 SizedBox(
                                                     width: SizeConfig.diagonal *
                                                         0.5),
@@ -1044,10 +1044,10 @@ class _MenuPageState extends State<MenuPage> {
             borderRadius: BorderRadius.circular(SizeConfig.diagonal * 3),
           ),
           child: Center(
-            child: Text(
+            child:  ZText(content:
               category.name,
               textAlign: TextAlign.center,
-              style: TextStyle(
+              
                   fontSize: SizeConfig.diagonal * 2,
                   color: Colors.white,
                   fontWeight: selectedCategory == category.name
@@ -1056,7 +1056,7 @@ class _MenuPageState extends State<MenuPage> {
             ),
           ),
         ),
-      ),
+    
     );
   }
 
@@ -1073,7 +1073,7 @@ class _MenuPageState extends State<MenuPage> {
       print('Error: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(e.toString()),
+          content:  ZText(content:e.toString()),
         ),
       );
     }
@@ -1123,18 +1123,18 @@ class _MenuPageState extends State<MenuPage> {
       if (!isOnline) {
         EasyLoading.dismiss();
         ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(I18n.of(context).noInternet)));
+            .showSnackBar(SnackBar(content:  ZText(content:I18n.of(context).noInternet)));
       } else {
         try {
           await widget.db.updateImage(context, images!, name);
           EasyLoading.dismiss();
           ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(I18n.of(context).photoChanged)));
+              SnackBar(content:  ZText(content:I18n.of(context).photoChanged)));
         } on Exception catch (e) {
           EasyLoading.dismiss();
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(e.toString()),
+              content:  ZText(content:e.toString()),
             ),
           );
         }

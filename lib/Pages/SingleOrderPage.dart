@@ -29,6 +29,7 @@ import 'package:intl/intl.dart';
 import 'package:timelines/timelines.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import '../Components/ZText.dart';
 import 'DashboardPage.dart';
 import 'DisabledPage.dart';
 import 'PrintPage.dart';
@@ -379,7 +380,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                           EasyLoading.dismiss();
 
                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content: Text(I18n.of(context).noInternet),
+                            content:  ZText(content:I18n.of(context).noInternet),
                           ));
                         } else {
                           try {
@@ -391,23 +392,23 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                             EasyLoading.dismiss();
 
                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              content: Text(I18n.of(context).messageSent),
+                              content:  ZText(content:I18n.of(context).messageSent),
                             ));
                           } on Exception catch (e) {
                             EasyLoading.dismiss();
 
                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              content: Text(e.toString()),
+                              content:  ZText(content:e.toString()),
                             ));
                           }
                         }
                       },
-                      label: Text(
+                      label:  ZText(content:
                         I18n.of(context).callThewaiter,
-                        style: TextStyle(
+                        
                             color: Color(Styling.primaryBackgroundColor),
                             fontSize: SizeConfig.diagonal * 1.5),
-                      ),
+                     
                       icon: Icon(
                         FontAwesomeIcons.handPointUp,
                         size: SizeConfig.diagonal * 2.5,
@@ -528,7 +529,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
 
      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(I18n.of(context).noInternet),
+          content:  ZText(content:I18n.of(context).noInternet),
         ),
       );
     } else {
@@ -546,7 +547,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
 
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(e.toString()),
+            content:  ZText(content:e.toString()),
           ),
         );
       }
@@ -561,9 +562,9 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
         onpressed: assignOrder,
         topPadding: 0.0,
         bottomPadding: 0.0,
-        child: Text(
+        child:  ZText(content:
           I18n.of(context).deliverOrder,
-          style: TextStyle(color: Color(Styling.primaryBackgroundColor)),
+       color: Color(Styling.primaryBackgroundColor)
         ),
       ),
     );
@@ -698,7 +699,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
               (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
             if (snapshot.data == null)
               return Center(
-                child: Text(""),
+                child:  ZText(content:""),
               );
 
             Order order = Order.buildObjectAsync(snapshot);
@@ -732,14 +733,14 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                 top: SizeConfig.diagonal * 1.5,
                 bottom: SizeConfig.diagonal * 1.5,
               ),
-              child: Text(
+              child:  ZText(content:
                 I18n.of(context).orderStatus,
-                style: TextStyle(
+               
                     fontWeight: FontWeight.bold,
                     color: Color(
                       Styling.textColor,
                     ),
-                    fontSize: SizeConfig.diagonal * 1.5),
+                    fontSize: SizeConfig.diagonal * 1.5,
                 textAlign: TextAlign.center,
               ),
             ),
@@ -774,27 +775,27 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(
+                           ZText(content:
                             I18n.of(context).pending,
-                            style: TextStyle(
+                           
                               fontSize: SizeConfig.diagonal * 1.5,
                               color: order.status == 1
                                   ? Color(Styling.accentColor)
                                   : Color(Styling.primaryColor),
-                            ),
+                            
                           ),
                           SizedBox(height: SizeConfig.diagonal * 1),
-                          Text(
+                           ZText(content:
                             order.orderDate == null
                                 ? ""
                                 : '${widget.formatter.format(order.orderDate!.toDate())}',
-                            style: TextStyle(
+                           
                               fontSize: SizeConfig.diagonal * 1.5,
                               color: order.status == 1
                                   ? Color(Styling.accentColor)
                                   : Color(Styling.primaryColor),
                             ),
-                          ),
+                         
                         ],
                       ),
                     ),
@@ -851,9 +852,9 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(
+                           ZText(content:
                             I18n.of(context).confirmed,
-                            style: TextStyle(
+                           
                               fontSize: SizeConfig.diagonal * 1.5,
                               color: order.status == 2
                                   ? Color(Styling.accentColor)
@@ -862,15 +863,15 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                                           .withOpacity(0.2)
                                       : Color(Styling.primaryColor),
                             ),
-                          ),
+                          
                           SizedBox(
                             height: SizeConfig.diagonal * 1,
                           ),
-                          Text(
+                           ZText(content:
                             order.confirmedDate == null
                                 ? ""
                                 : '${widget.formatter.format(order.confirmedDate!.toDate())}',
-                            style: TextStyle(
+                           
                               fontSize: SizeConfig.diagonal * 1.5,
                               color: order.status == 2
                                   ? Color(Styling.accentColor)
@@ -879,7 +880,6 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                                           .withOpacity(0.2)
                                       : Color(Styling.primaryColor),
                             ),
-                          ),
                         ],
                       ),
                     ),
@@ -947,9 +947,9 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(
+                           ZText(content:
                             I18n.of(context).preparing,
-                            style: TextStyle(
+                           
                               fontSize: SizeConfig.diagonal * 1.5,
                               color: order.status == 3
                                   ? Color(Styling.accentColor)
@@ -958,13 +958,13 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                                           .withOpacity(0.2)
                                       : Color(Styling.primaryColor),
                             ),
-                          ),
+                          
                           SizedBox(height: SizeConfig.diagonal * 1),
-                          Text(
+                           ZText(content:
                             order.preparationDate == null
                                 ? ""
                                 : '${widget.formatter.format(order.preparationDate!.toDate())}',
-                            style: TextStyle(
+                            
                               fontSize: SizeConfig.diagonal * 1.5,
                               color: order.status == 3
                                   ? Color(Styling.accentColor)
@@ -973,7 +973,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                                           .withOpacity(0.2)
                                       : Color(Styling.primaryColor),
                             ),
-                          ),
+                         
                         ],
                       ),
                     ),
@@ -1041,9 +1041,9 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(
+                          ZText(content:
                             I18n.of(context).served,
-                            style: TextStyle(
+                            
                               fontSize: SizeConfig.diagonal * 1.5,
                               color: order.status == 4
                                   ? Color(Styling.accentColor)
@@ -1052,13 +1052,13 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                                           .withOpacity(0.2)
                                       : Color(Styling.primaryColor),
                             ),
-                          ),
+                        
                           SizedBox(height: SizeConfig.diagonal * 1),
-                          Text(
+                           ZText(content:
                             order.servedDate == null
                                 ? ""
                                 : '${widget.formatter.format(order.servedDate!.toDate())}',
-                            style: TextStyle(
+                           
                               fontSize: SizeConfig.diagonal * 1.5,
                               color: order.status == 4
                                   ? Color(Styling.accentColor)
@@ -1067,7 +1067,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                                           .withOpacity(0.2)
                                       : Color(Styling.primaryColor),
                             ),
-                          ),
+                         
                         ],
                       ),
                     ),
@@ -1120,14 +1120,14 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
           children: [
             Container(
               margin: EdgeInsets.all(SizeConfig.diagonal * 1),
-              child: Text(
+              child:  ZText(content:
                 I18n.of(context).updateStatus,
-                style: new TextStyle(
+               
                   fontWeight: FontWeight.bold,
                   fontSize: SizeConfig.diagonal * 1.5,
                 ),
               ),
-            ),
+           
             Padding(
               padding: EdgeInsets.symmetric(
                   horizontal: SizeConfig.diagonal * 1,
@@ -1144,43 +1144,43 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                     groupValue: _orderStatus,
                     onChanged: handleStatusChange,
                   ),
-                  new Text(
+                 ZText(content:
                     I18n.of(context).pendingOrder,
-                    style: new TextStyle(fontSize: SizeConfig.diagonal * 1.5),
-                  ),
+                   fontSize: SizeConfig.diagonal * 1.5),
+                
                   new Radio(
                     value: 2,
                     groupValue: _orderStatus,
                     onChanged: handleStatusChange,
                   ),
-                  new Text(
+                   ZText(content:
                     I18n.of(context).confirmedOrder,
-                    style: new TextStyle(
+                   
                       fontSize: SizeConfig.diagonal * 1.5,
                     ),
-                  ),
+                  
                   new Radio(
                     value: 3,
                     groupValue: _orderStatus,
                     onChanged: handleStatusChange,
                   ),
-                  new Text(
+                  ZText(content:
                     I18n.of(context).orderPreparation,
-                    style: new TextStyle(
+                    
                       fontSize: SizeConfig.diagonal * 1.5,
                     ),
-                  ),
+                
                   new Radio(
                     value: 4,
                     groupValue: _orderStatus,
                     onChanged: handleStatusChange,
                   ),
-                  new Text(
+                   ZText(content:
                     I18n.of(context).orderServed,
-                    style: new TextStyle(
+                   
                       fontSize: SizeConfig.diagonal * 1.5,
                     ),
-                  ),
+                 
                 ],
               ),
             ),
@@ -1210,7 +1210,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.data == null)
           return Center(
-            child: Text(""),
+            child:  ZText(content:""),
           );
 
         return Padding(
@@ -1230,15 +1230,15 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                       top: SizeConfig.diagonal * 1.5,
                       bottom: SizeConfig.diagonal * 1.5),
                   child: Center(
-                    child: Text(
+                    child:  ZText(content:
                       I18n.of(context).order,
-                      style: TextStyle(
+                     
                           fontSize: SizeConfig.diagonal * 1.5,
                           color: Color(Styling.textColor),
                           fontWeight: FontWeight.bold),
                     ),
                   ),
-                ),
+                
                 Padding(
                   padding: EdgeInsets.only(
                       left: SizeConfig.diagonal * 2,
@@ -1252,21 +1252,21 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                 ),
                 ListTile(
                   onTap: () {},
-                  title: Text(
+                  title:  ZText(content:
                     I18n.of(context).items,
-                    style: TextStyle(
+                    
                       color: Color(Styling.textColor),
                       fontWeight: FontWeight.bold,
                       fontSize: SizeConfig.diagonal * 1.5,
                     ),
-                  ),
-                  trailing: Text(
+                 
+                  trailing:  ZText(content:
                     I18n.of(context).number,
-                    style: TextStyle(
+                   
                       color: Color(Styling.textColor),
                       fontWeight: FontWeight.bold,
                       fontSize: SizeConfig.diagonal * 1.5,
-                    ),
+                   
                   ),
                 ),
                 Column(
@@ -1298,25 +1298,25 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
             children: [
               Expanded(
                 flex: 4,
-                child: Text(
+                child:  ZText(content:
                   '${orderItem.menuItem.name}',
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
+                 
                     fontSize: SizeConfig.diagonal * 1.5,
                     color: Color(Styling.textColor),
-                  ),
+                  
                 ),
               ),
               SizedBox(width: SizeConfig.diagonal * 1),
               Expanded(
                 flex: 1,
-                child: Text(
+                child:  ZText(content:
                   '${orderItem.count}',
                   overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.end,
-                  style: TextStyle(
+                 
                     color: Color(Styling.textColor),
-                  ),
+                 
                 ),
               ),
             ],
@@ -1332,7 +1332,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.data == null)
           return Center(
-            child: Text(""),
+            child:  ZText(content:""),
           );
 
         return Column(
@@ -1343,11 +1343,11 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                 top: SizeConfig.diagonal * 1.5,
               ),
               child: Center(
-                child: Text(
+                child:  ZText(content:
                   I18n.of(context).billDetails,
-                  style: TextStyle(
+                 
                     fontWeight: FontWeight.bold,
-                  ),
+                  
                 ),
               ),
             ),
@@ -1403,24 +1403,24 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
               children: [
                 Expanded(
                   flex: 3,
-                  child: Text(
+                  child:  ZText(content:
                     '${orderItem.menuItem.name} x ${orderItem.count}',
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
+                   
                       color: Color(Styling.textColor),
-                    ),
+                   
                   ),
                 ),
                 SizedBox(width: SizeConfig.diagonal * 1),
                 Expanded(
                   flex: 1,
-                  child: Text(
+                  child:  ZText(content:
                     '${formatNumber(orderItem.menuItem.price)} Fbu',
                     overflow: TextOverflow.ellipsis,
                     textAlign: TextAlign.end,
-                    style: TextStyle(
+                    
                       color: Color(Styling.textColor),
-                    ),
+                   
                   ),
                 ),
               ],
@@ -1436,7 +1436,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
           (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
         if (snapshot.data == null)
           return Center(
-            child: Text(""),
+            child:  ZText(content:""),
           );
 
         Order order = Order.buildObjectAsync(snapshot);
@@ -1464,25 +1464,25 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
             children: [
               Expanded(
                 flex: 1,
-                child: Text(
+                child:  ZText(content:
                   '${I18n.of(context).taxCharge}',
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
+                 
                     color: Color(Styling.textColor),
-                  ),
+                  
                 ),
               ),
               SizedBox(width: SizeConfig.diagonal * 1),
               Expanded(
                 flex: 1,
-                child: Text(
+                child:  ZText(content:
                   appliedTaxFromTotal(
                       context, order.total, order.taxPercentage),
                   overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.end,
-                  style: TextStyle(
+                  
                     color: Color(Styling.textColor),
-                  ),
+                  
                 ),
               ),
             ],
@@ -1499,24 +1499,24 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
             children: [
               Expanded(
                 flex: 1,
-                child: Text(
+                child:  ZText(content:
                   '${I18n.of(context).grandTotal}',
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
+                 
                     color: Color(Styling.textColor),
                   ),
-                ),
+               
               ),
               SizedBox(width: SizeConfig.diagonal * 1),
               Expanded(
                 flex: 1,
-                child: Text(
+                child: ZText(content:
                   '${formatNumber(order.grandTotal)} Fbu',
                   overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.end,
-                  style: TextStyle(
+                 
                     color: Color(Styling.textColor),
-                  ),
+                 
                 ),
               ),
             ],
@@ -1533,7 +1533,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
           (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
         if (snapshot.data == null)
           return Center(
-            child: Text(""),
+            child:  ZText(content:""),
           );
 
         Order order = Order.buildObjectAsync(snapshot);
@@ -1565,13 +1565,13 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                 top: SizeConfig.diagonal * 1.5,
                 bottom: SizeConfig.diagonal * 1.5,
               ),
-              child: Text(
+              child: ZText(content:
                 I18n.of(context).orderInformation,
-                style: TextStyle(
+               
                   fontWeight: FontWeight.bold,
                   color: Color(
                     Styling.textColor,
-                  ),
+                
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -1598,32 +1598,32 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                 children: [
                   Expanded(
                     flex: 1,
-                    child: Text(
+                    child:  ZText(content:
                       '${I18n.of(context).orderDate}',
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
+                     
                         color: Color(
                           Styling.textColor,
-                        ),
+                       
                       ),
                     ),
                   ),
                   SizedBox(width: SizeConfig.diagonal * 1),
                   Expanded(
                     flex: 1,
-                    child: Text(
+                    child:  ZText(content:
                       order.orderDate == null
                           ? ''
                           : '${widget.formatter.format(order.orderDate!.toDate())}',
                       overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.end,
-                      style: TextStyle(
+                      
                         color: Color(
                           Styling.textColor,
                         ),
                       ),
                     ),
-                  ),
+                  
                 ],
               ),
             ),
@@ -1638,27 +1638,27 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                 children: [
                   Expanded(
                     flex: 1,
-                    child: Text(
+                    child:  ZText(content:
                       '${tableAddressStatus(order)}',
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
+                     
                         color: Color(
                           Styling.textColor,
-                        ),
+                       
                       ),
                     ),
                   ),
                   SizedBox(width: SizeConfig.diagonal * 1),
                   Expanded(
                     flex: 1,
-                    child: Text(
+                    child:  ZText(content:
                       order.tableAdress,
                       overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.end,
-                      style: TextStyle(
+                     
                         color: Color(
                           Styling.textColor,
-                        ),
+                        
                       ),
                     ),
                   ),
@@ -1677,31 +1677,31 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                   children: [
                     Expanded(
                       flex: 1,
-                      child: Text(
+                      child:  ZText(content:
                         I18n.of(context).instr,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
+                        
                           color: Color(
                             Styling.textColor,
-                          ),
+                         
                         ),
                       ),
                     ),
                     SizedBox(width: SizeConfig.diagonal * 1),
                     Expanded(
                       flex: 1,
-                      child: Text(
+                      child:  ZText(content:
                         order.instructions,
                         overflow: TextOverflow.visible,
                         textAlign: TextAlign.end,
-                        style: TextStyle(
-                          height: 1,
+                       
+                         
                           color: Color(
                             Styling.textColor,
                           ),
                         ),
                       ),
-                    ),
+                   
                   ],
                 ),
               ),
@@ -1732,9 +1732,9 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
         await widget.db.cancelOrder(widget.orderId);
         backFunction();
       },
-      child: Text(
+      child:  ZText(content:
         I18n.of(context).cancelOrder,
-        style: TextStyle(color: Color(Styling.primaryBackgroundColor)),
+        color: Color(Styling.primaryBackgroundColor),
       ),
     );
   }
