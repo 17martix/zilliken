@@ -49,9 +49,9 @@ class _ConnectToMenuState extends State<LinkToMenu> {
 
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
+  final _formKey = GlobalKey<FormState>();
+
   num? quantity;
-  // String name;
-  // String id;
 
   @override
   void initState() {
@@ -62,10 +62,20 @@ class _ConnectToMenuState extends State<LinkToMenu> {
 
   void waitForItems() {
     widget.db.getMenuItems(widget.stock.id!).then((value) {
+      value.forEach((menuItem) {
+        if (menuItem.condiments != null) {
+          Stock? exist = menuItem.condiments!
+              .firstWhereOrNull((element) => element.id == widget.stock.id);
+          if (exist != null) {
+            menuItem.controller.text = '${exist.quantity}';
+          }
+        }
+      });
+
       setState(() {
         itemList = value;
       });
-      log("new length is ${itemList.length}");
+      // log("new length is ${itemList.length}");
     });
   }
 
@@ -109,34 +119,41 @@ class _ConnectToMenuState extends State<LinkToMenu> {
               ),
               ZElevatedButton(
                 onpressed: () async {
-                  EasyLoading.show(status: I18n.of(context).loading);
-                  bool isOnline = await hasConnection();
-                  if (!isOnline) {
-                    EasyLoading.dismiss();
+                  final form = _formKey.currentState;
 
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: ZText(content: I18n.of(context).noInternet),
-                    ));
-                  } else {
-                    try {
-                      await widget.db
-                          .linkToStock(itemsToSend, widget.stock, quantity!);
-
+                  if (form!.validate()) {
+                    form.save();
+                    EasyLoading.show(status: I18n.of(context).loading);
+                    bool isOnline = await hasConnection();
+                    if (!isOnline) {
                       EasyLoading.dismiss();
 
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content: ZText(content: I18n.of(context).messageSent),
+                        content: ZText(content: I18n.of(context).noInternet),
                       ));
-                    } on Exception catch (e) {
-                      EasyLoading.dismiss();
+                    } else {
+                      try {
+                        await widget.db.linkToStock(itemsToSend, widget.stock);
 
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content: ZText(content: e.toString()),
-                      ));
+                        EasyLoading.dismiss();
+
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: ZText(content: I18n.of(context).messageSent),
+                        ));
+                      } on Exception catch (e) {
+                        EasyLoading.dismiss();
+
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: ZText(content: e.toString()),
+                        ));
+                      }
                     }
                   }
                 },
-                child: ZText(content: I18n.of(context).save),
+                child: ZText(
+                  content: I18n.of(context).save,
+                  color: Color(Styling.primaryBackgroundColor),
+                ),
                 bottomPadding: SizeConfig.diagonal * 0.8,
                 topPadding: SizeConfig.diagonal * 0.8,
               ),
@@ -148,7 +165,7 @@ class _ConnectToMenuState extends State<LinkToMenu> {
   }
 
   Widget itemsList() {
-    log("length is ${itemList.length}");
+    // log("length is ${itemList.length}");
     return ListView.builder(
         shrinkWrap: true,
         //physics: BouncingScrollPhysics(),
@@ -161,55 +178,106 @@ class _ConnectToMenuState extends State<LinkToMenu> {
   Widget itemTile(MenuItem menuItem) {
     return Container(
       width: double.infinity,
-      height: menuItem.isChecked!
-          ? SizeConfig.diagonal * 15
-          : SizeConfig.diagonal * 8,
       child: Card(
         elevation: 8,
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5)),
-        child: Column(
-          children: [
-            CheckboxListTile(
-              activeColor: Color(Styling.accentColor),
-              title: ZText(content: menuItem.name),
-              value: menuItem.isChecked,
-              onChanged: (value) {
-                setState(() {
-                  menuItem.isChecked = value;
-                  if (menuItem.isChecked!) {
-                    MenuItem? exist = itemsToSend.firstWhereOrNull(
-                        (element) => element.id == menuItem.id);
-                    if (exist == null) {
-                      itemsToSend.add(menuItem);
-                    }
-                  } else {
-                    itemsToSend
-                        .removeWhere((element) => element.id == menuItem.id);
-                  }
-                });
-              },
-            ),
-            Padding(
-              padding: EdgeInsets.only(right: SizeConfig.diagonal * 4),
-              child: menuItem.isChecked!
-                  ? ZTextField(
-                      validator: (value) => value == null || value.isEmpty
-                          ? I18n.of(context).requit
-                          : null,
-                      onSaved: (newValue) {
-                        if (newValue != null) quantity = num.parse(newValue);
-                      },
-                      outsidePrefix: Padding(
-                        padding:
-                            EdgeInsets.only(left: SizeConfig.diagonal * 0.5),
-                        child: ZText(content: 'Qty needed :'),
+        child: CheckboxListTile(
+          activeColor: Color(Styling.accentColor),
+          title: ZText(content: menuItem.name),
+          value: menuItem.isChecked,
+          onChanged: (value) {
+            if (value!) {
+              showGeneralDialog(
+                context: context,
+                barrierColor: Colors.black.withOpacity(0.5),
+                transitionBuilder: (context, a1, a2, widget) {
+                  return Transform.scale(
+                    scale: a1.value,
+                    child: Opacity(
+                      opacity: a1.value,
+                      child: Dialog(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                            SizeConfig.diagonal * 1.5,
+                          ),
+                        ),
+                        child: Container(
+                          padding: EdgeInsets.only(
+                              left: SizeConfig.diagonal * 0.9,
+                              right: SizeConfig.diagonal * 0.9),
+                          //height: SizeConfig.diagonal * 32,
+                          //color: Colors.amber,
+                          child: SingleChildScrollView(
+                            child: Form(
+                              key: _formKey,
+                              autovalidateMode: AutovalidateMode.disabled,
+                              child: Column(
+                                children: [
+                                  SizedBox(
+                                    height: SizeConfig.diagonal * 2.5,
+                                  ),
+                                  ZTextField(
+                                    hint: I18n.of(context).itemPrice,
+                                    onSaved: (value) {
+                                      if (value != null) {
+                                        quantity = num.parse(value);
+                                      }
+                                    },
+                                    validator: (value) =>
+                                        value == null || value.isEmpty
+                                            ? I18n.of(context).requit
+                                            : null,
+                                    icon: Icons.restaurant,
+                                  ),
+                                  ZElevatedButton(
+                                    onpressed: () {
+                                      final form = _formKey.currentState;
+
+                                      if (form!.validate()) {
+                                        form.save();
+
+                                        EasyLoading.show(
+                                            status: I18n.of(context).loading);
+                                      }
+                                    },
+                                    child:
+                                        ZText(content: I18n.of(context).save),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
-                      elevation: 1.3,
-                    )
-                  : null,
-            )
-          ],
+                    ),
+                  );
+                },
+                barrierDismissible: true,
+                barrierLabel: '',
+                transitionDuration: Duration(milliseconds: 300),
+                pageBuilder: (context, animation1, animation2) {
+                  return Container();
+                },
+              );
+            }
+
+            setState(() {
+              menuItem.isChecked = value;
+
+              if (menuItem.isChecked!) {
+                MenuItem? exist = itemsToSend
+                    .firstWhereOrNull((element) => element.id == menuItem.id);
+                if (exist == null) {
+                  itemsToSend.add(menuItem);
+                }
+              } else {
+                menuItem.condiments!
+                    .removeWhere((element) => element.id == menuItem.id);
+                itemsToSend.removeWhere((element) => element.id == menuItem.id);
+              }
+            });
+          },
         ),
       ),
     );

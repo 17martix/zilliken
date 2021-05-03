@@ -819,25 +819,17 @@ class Database {
       }
     });
 
-    log('here');
-
-    menuItemList.forEach((element) {
-      log('menu name is ${element.name}');
-    });
-
     return menuItemList;
   }
 
-  Future<void> linkToStock(
-      List<MenuItem> menuList, Stock stock, num quantity) async {
-    String text = stock.buildStringFromObject(quantity);
-
+  Future<void> linkToStock(List<MenuItem> menuList, Stock stock) async {
     WriteBatch batch = databaseReference.batch();
 
     menuList.forEach((menu) {
       DocumentReference documentReference =
           databaseReference.collection(Fields.menu).doc(menu.id);
       List<String> condimentsText = [];
+      String text = stock.buildStringFromObject(menu.quantity!);
       if (menu.condiments == null) {
         condimentsText.add(text);
       } else {

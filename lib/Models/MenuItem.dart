@@ -15,8 +15,10 @@ class MenuItem {
   late Timestamp? createdAt;
   late String? imageName;
   late int? isDrink;
-  late List<Stock>? condiments;
+  List<Stock>? condiments;
   late bool? isChecked;
+  num? quantity;
+  TextEditingController controller = TextEditingController();
 
   MenuItem({
     this.category,
@@ -31,6 +33,7 @@ class MenuItem {
     this.isDrink,
     this.condiments,
     this.isChecked,
+    this.quantity,
   });
 
   MenuItem.buildObject(DocumentSnapshot document) {
