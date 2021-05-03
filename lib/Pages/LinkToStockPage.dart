@@ -17,8 +17,11 @@ import 'package:zilliken/Services/Authentication.dart';
 import 'package:zilliken/Services/Database.dart';
 import 'package:zilliken/Services/Messaging.dart';
 import 'package:zilliken/i18n.dart';
+import 'package:collection/collection.dart';
 
 import '../Components/ZText.dart';
+import '../Models/MenuItem.dart';
+import '../Models/MenuItem.dart';
 
 class LinkToMenu extends StatefulWidget {
   final Authentication auth;
@@ -29,11 +32,11 @@ class LinkToMenu extends StatefulWidget {
   final Stock stock;
 
   LinkToMenu({
-   required this.auth,
-   required this.db,
-   required this.messaging,
-   required this.userId,
-   required this.userRole,
+    required this.auth,
+    required this.db,
+    required this.messaging,
+    required this.userId,
+    required this.userRole,
     required this.stock,
   });
   @override
@@ -42,7 +45,7 @@ class LinkToMenu extends StatefulWidget {
 
 class _ConnectToMenuState extends State<LinkToMenu> {
   List<MenuItem> itemList = [];
-  List<String> itemsToSend = [];
+  List<MenuItem> itemsToSend = [];
 
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -95,7 +98,7 @@ class _ConnectToMenuState extends State<LinkToMenu> {
         Container(
           height: SizeConfig.diagonal * 5,
           child: Center(
-            child:  ZText(content:'Choose any meal that requires this item'),
+            child: ZText(content: 'Choose any meal that requires this item'),
           ),
         ),
         Expanded(
@@ -111,28 +114,29 @@ class _ConnectToMenuState extends State<LinkToMenu> {
                   if (!isOnline) {
                     EasyLoading.dismiss();
 
-                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content:  ZText(content:I18n.of(context).noInternet),
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: ZText(content: I18n.of(context).noInternet),
                     ));
                   } else {
                     try {
-                      await widget.db.linkToStock(itemsToSend, widget.stock);
+                      await widget.db
+                          .linkToStock(itemsToSend, widget.stock, quantity!);
 
                       EasyLoading.dismiss();
 
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content:  ZText(content:I18n.of(context).messageSent),
+                        content: ZText(content: I18n.of(context).messageSent),
                       ));
                     } on Exception catch (e) {
                       EasyLoading.dismiss();
 
-                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content:  ZText(content:e.toString()),
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: ZText(content: e.toString()),
                       ));
                     }
                   }
                 },
-                child:  ZText(content:I18n.of(context).save),
+                child: ZText(content: I18n.of(context).save),
                 bottomPadding: SizeConfig.diagonal * 0.8,
                 topPadding: SizeConfig.diagonal * 0.8,
               ),
@@ -168,19 +172,20 @@ class _ConnectToMenuState extends State<LinkToMenu> {
           children: [
             CheckboxListTile(
               activeColor: Color(Styling.accentColor),
-              title:  ZText(content:menuItem.name),
+              title: ZText(content: menuItem.name),
               value: menuItem.isChecked,
               onChanged: (value) {
                 setState(() {
                   menuItem.isChecked = value;
                   if (menuItem.isChecked!) {
-                    if (!itemsToSend.contains(menuItem.id)) {
-                      itemsToSend.add(menuItem.id!);
+                    MenuItem? exist = itemsToSend.firstWhereOrNull(
+                        (element) => element.id == menuItem.id);
+                    if (exist == null) {
+                      itemsToSend.add(menuItem);
                     }
                   } else {
-                    if (itemsToSend.contains(menuItem.id)) {
-                      itemsToSend.remove(menuItem.id);
-                    }
+                    itemsToSend
+                        .removeWhere((element) => element.id == menuItem.id);
                   }
                 });
               },
@@ -189,16 +194,16 @@ class _ConnectToMenuState extends State<LinkToMenu> {
               padding: EdgeInsets.only(right: SizeConfig.diagonal * 4),
               child: menuItem.isChecked!
                   ? ZTextField(
-                      validator: (value) =>
-                       value==null ||   value.isEmpty ? I18n.of(context).requit : null,
+                      validator: (value) => value == null || value.isEmpty
+                          ? I18n.of(context).requit
+                          : null,
                       onSaved: (newValue) {
-                        if(newValue!=null)
-                        quantity = num.parse(newValue);
+                        if (newValue != null) quantity = num.parse(newValue);
                       },
                       outsidePrefix: Padding(
                         padding:
                             EdgeInsets.only(left: SizeConfig.diagonal * 0.5),
-                        child:  ZText(content:'Qty needed :'),
+                        child: ZText(content: 'Qty needed :'),
                       ),
                       elevation: 1.3,
                     )
