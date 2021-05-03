@@ -390,7 +390,7 @@ class Database {
   }
 
   Future<void> updateStatus(
-      String id, int status, int value, Order order,num grandTotal) async {
+      String id, int status, int value,num grandTotal) async {
     var document = databaseReference.collection(Fields.order).doc(id);
 
     if (value == 1) {

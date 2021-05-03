@@ -40,8 +40,6 @@ class _StatPageState extends State<StatPage> {
   List<Graph>? data;
   ScrollController _scrollController = ScrollController();
   List<DocumentSnapshot> items = [];
-  CollectionReference statistic =
-      FirebaseFirestore.instance.collection(Fields.statistic);
 
   bool isLoading = false;
   bool hasMore = true;
@@ -61,40 +59,6 @@ class _StatPageState extends State<StatPage> {
 
   void initState() {
     super.initState();
-    final barGroup1 = makeGroupData(0, 12);
-    final barGroup2 = makeGroupData(1, 12);
-    final barGroup3 = makeGroupData(2, 5);
-    final barGroup4 = makeGroupData(3, 16);
-    final barGroup5 = makeGroupData(4, 6);
-    final barGroup6 = makeGroupData(5, 1.5);
-    final barGroup7 = makeGroupData(6, 1.5);
-    final barGroup8 = makeGroupData(5, 1.5);
-    final barGroup9 = makeGroupData(6, 1.5);
-    final barGroup10 = makeGroupData(0, 12);
-    final barGroup11 = makeGroupData(1, 12);
-    final barGroup12 = makeGroupData(2, 5);
-    final barGroup13 = makeGroupData(3, 16);
-    final barGroup14 = makeGroupData(6, 1.5);
-
-    final items = [
-      barGroup1,
-      barGroup2,
-      barGroup3,
-      barGroup4,
-      barGroup5,
-      barGroup6,
-      barGroup7,
-      barGroup8,
-      barGroup9,
-      barGroup10,
-      barGroup11,
-      barGroup12,
-      barGroup13,
-      barGroup14,
-    ];
-    rawBarGroups = items;
-
-    showingBarGroups = rawBarGroups;
 
     /*data = [
       Graph(year: '2000', subscribers: null, count: 178),
@@ -105,21 +69,56 @@ class _StatPageState extends State<StatPage> {
     //animationController =
     //AnimationController(duration: new Duration(seconds: 2),);
     //animationController.repeat();
-    statQuery();
+    statisticQuery();
     _scrollController.addListener(() {
       double maxScroll = _scrollController.position.maxScrollExtent;
       double currentScroll = _scrollController.position.pixels;
       double delta = MediaQuery.of(context).size.width * 0.20;
       if (maxScroll - currentScroll <= delta) {
-        statQuery();
+        statisticQuery();
       }
     });
   }
 
-  void statQuery() async {
+  void graphData() {
+    int length = items.length;
+    if (length > 7) length = 7;
+    final List<BarChartGroupData> barItems = [];
+    for (int i = 0; i < length; i++) {
+      final barGroup = makeGroupData(0, items[i].data()![Fields.total]);
+      barItems.add(barGroup);
+    }
+    /* final barGroup1 = makeGroupData(0, items[0].data()![Fields.total]);
+    final barGroup2 = makeGroupData(1, items[2].data()![Fields.total]);
+    final barGroup3 = makeGroupData(2, items[3].data()![Fields.total]);
+    final barGroup4 = makeGroupData(3, items[4].data()![Fields.total]);
+    final barGroup5 = makeGroupData(4, items[5].data()![Fields.total]);
+    final barGroup6 = makeGroupData(5, items[6].data()![Fields.total]);
+    final barGroup7 = makeGroupData(6, items[7].data()![Fields.total]);
+
+    final barItems = [
+      barGroup1,
+      barGroup2,
+      barGroup3,
+      barGroup4,
+      barGroup5,
+      barGroup6,
+      barGroup7,
+    ];*/
+    rawBarGroups = barItems;
+
+    showingBarGroups = rawBarGroups;
+  }
+
+  void statisticQuery() async {
     if (isLoading) {
       return;
     }
+
+    if (hasMore == false) {
+      return;
+    }
+
     setState(() {
       isLoading = true;
     });
@@ -128,7 +127,7 @@ class _StatPageState extends State<StatPage> {
       statref = await widget.db.databaseReference
           .collection(Fields.statistic)
           .limit(documentLimit)
-          .orderBy(Fields.date)
+          .orderBy(Fields.date, descending: true)
           .get();
     } else {
       statref = await widget.db.databaseReference
@@ -149,6 +148,8 @@ class _StatPageState extends State<StatPage> {
       for (int i = 0; i < statref!.docs.length; i++) {
         items.add(statref!.docs[i]);
       }
+
+      graphData();
       isLoading = false;
 
       log('length is ${items.length}');
@@ -176,18 +177,15 @@ class _StatPageState extends State<StatPage> {
               child: Container(
                 padding: EdgeInsets.all(SizeConfig.diagonal * 0.2),
                 height: 3,
-                color: Color(Styling.iconColor).withOpacity(0.1),
+                color: Colors.grey.withOpacity(0.2),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    ZText(content:
-                      "${statistic.total}",
-                    
-                        color: Color(Styling.accentColor),
-                        fontSize: SizeConfig.diagonal * 3,
-                        fontWeight: FontWeight.bold,
-                        
-                     
+                    ZText(
+                      content: "${statistic.total}",
+                      color: Color(Styling.accentColor),
+                      fontSize: SizeConfig.diagonal * 3,
+                      fontWeight: FontWeight.bold,
                     ),
                     ZText(
                       content: " Fbu",
@@ -205,20 +203,17 @@ class _StatPageState extends State<StatPage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                   ZText(content:
-                      I18n.of(context).date,
+                    ZText(
+                      content: I18n.of(context).date,
                       textAlign: TextAlign.center,
-                     
-                        color: Color(Styling.iconColor),
-                        fontSize: SizeConfig.diagonal * 2,
-                      
+                      color: Color(Styling.iconColor),
+                      fontSize: SizeConfig.diagonal * 2,
                     ),
-                   ZText(content:
-                      "  : ${widget.formatter.format(statistic.date.toDate())}",
-                     
-                        color: Color(Styling.iconColor),
-                        fontSize: SizeConfig.diagonal * 2,
-                      
+                    ZText(
+                      content:
+                          "  : ${widget.formatter.format(statistic.date.toDate())}",
+                      color: Color(Styling.iconColor),
+                      fontSize: SizeConfig.diagonal * 2,
                     ),
                   ],
                 ),
@@ -240,78 +235,73 @@ class _StatPageState extends State<StatPage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ZText(content:
-              I18n.of(context).dailytotal,
+            ZText(
+              content: I18n.of(context).dailytotal,
               textAlign: TextAlign.center,
-              
-                color: Color(Styling.iconColor),
-                fontStyle: FontStyle.normal,
-                fontSize: SizeConfig.diagonal * 2.5,
-              
+              color: Color(Styling.iconColor),
+              fontStyle: FontStyle.normal,
+              fontSize: SizeConfig.diagonal * 2.5,
             ),
           ],
         ),
-        Expanded(
-          flex: 1,
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            controller: _scrollController,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                items.length == 0
-                    ? Center(
-                        child: ZText(content:""),
-                      )
-                    : Row(
-                        children: items.map((document) {
-                          Statistic statistic = Statistic.buildObject(document);
-                          return itemCard(statistic);
-                          //return graph();
-                        }).toList(),
-                      ),
-                /* ListView.builder(
-                        shrinkWrap: true,
-                        scrollDirection: Axis.horizontal,
-                        controller: _scrollController,
-                        itemCount: items.length,
-                        itemBuilder: (context, index) {
-                          Statistic statistic = Statistic();
-                          statistic.buildObject(items[index]);
-                          return Row(
-                            children: [
-                              body(statistic),
-                            ],
-                          );
-                        },
-                      ),*/
-                isLoading
-                    ? Container(
-                        width: SizeConfig.diagonal * 8,
-                        height: SizeConfig.diagonal * 8,
-                        padding: EdgeInsets.all(SizeConfig.diagonal * 1.5),
-                        child: Card(
-                          elevation: 0.0,
-                          color: Colors.white.withOpacity(1),
-                          shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(SizeConfig.diagonal * 1),
-                          ),
-                          child: CircularProgressIndicator(
-                            // valueColor: animationController
-                            //.drive(ColorTween(begin: Colors.blueAccent, end: Colors.red)),
-
-                            //valueColor:Animation<blue> valueColor ,
-
-                            semanticsLabel: 'Linear progress indicator',
-
-                            backgroundColor: Color(Styling.primaryDarkColor),
-                          ),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          controller: _scrollController,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              items.length == 0
+                  ? Center(
+                      child: ZText(content: ""),
+                    )
+                  : Row(
+                      children: items.map((document) {
+                        Statistic statistic = Statistic.buildObject(document);
+                        return itemCard(statistic);
+                        //return graph();
+                      }).toList(),
+                    ),
+              /* ListView.builder(
+                      shrinkWrap: true,
+                      scrollDirection: Axis.horizontal,
+                      controller: _scrollController,
+                      itemCount: items.length,
+                      itemBuilder: (context, index) {
+                        Statistic statistic = Statistic();
+                        statistic.buildObject(items[index]);
+                        return Row(
+                          children: [
+                            body(statistic),
+                          ],
+                        );
+                      },
+                    ),*/
+              isLoading
+                  ? Container(
+                      width: SizeConfig.diagonal * 8,
+                      height: SizeConfig.diagonal * 8,
+                      padding: EdgeInsets.all(SizeConfig.diagonal * 1.5),
+                      child: Card(
+                        elevation: 0.0,
+                        color: Colors.white.withOpacity(1),
+                        shape: RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.circular(SizeConfig.diagonal * 1),
                         ),
-                      )
-                    : Container()
-              ],
-            ),
+                        child: CircularProgressIndicator(
+                          // valueColor: animationController
+                          //.drive(ColorTween(begin: Colors.blueAccent, end: Colors.red)),
+
+                          //valueColor:Animation<blue> valueColor ,
+
+                          semanticsLabel: 'Linear progress indicator',
+
+                          backgroundColor: Color(Styling.primaryDarkColor),
+                        ),
+                      ),
+                    )
+                  : Container()
+            ],
           ),
         ),
         graph(),
@@ -321,11 +311,11 @@ class _StatPageState extends State<StatPage> {
 
   BarChartGroupData makeGroupData(
     int x,
-    double y1,
+    num y1,
   ) {
     return BarChartGroupData(barsSpace: 4, x: x, barRods: [
       BarChartRodData(
-        y: y1,
+        y: y1.toDouble(),
         colors: [rightBarColor],
         width: 3,
       ),
@@ -335,7 +325,7 @@ class _StatPageState extends State<StatPage> {
   Widget graph() {
     return Container(
       child: AspectRatio(
-        aspectRatio: 1.2,
+        aspectRatio: 1.3,
         child: Card(
           elevation: 5,
           shape: RoundedRectangleBorder(
@@ -349,29 +339,31 @@ class _StatPageState extends State<StatPage> {
               mainAxisAlignment: MainAxisAlignment.start,
               mainAxisSize: MainAxisSize.max,
               children: <Widget>[
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    makeTransactionsIcon(),
-                    const SizedBox(
-                      width: 45,
-                    ),
-                    ZText(content:
-                      'Transactions',
-                    
-                          color: Color(Styling.iconColor), fontSize: 15),
-                  
-                    const SizedBox(
-                      width: 5,
-                    ),
-                    ZText(content:
-                      'state',
-                      
-                          color: Color(Styling.accentColor), fontSize: 12),
-                    
-                  ],
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 15, vertical: 7),
+                  color: Colors.grey.withOpacity(0.2),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      makeTransactionsIcon(),
+                      const SizedBox(
+                        width: 45,
+                      ),
+                      ZText(
+                          content: 'Transactions',
+                          color: Color(Styling.iconColor),
+                          fontSize: 15),
+                      const SizedBox(
+                        width: 5,
+                      ),
+                      ZText(
+                          content: 'state',
+                          color: Color(Styling.accentColor),
+                          fontSize: 12),
+                    ],
+                  ),
                 ),
                 const SizedBox(
                   height: 4,
@@ -380,125 +372,124 @@ class _StatPageState extends State<StatPage> {
                   flex: 1,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      controller: _scrollController,
-                      child: BarChart(
-                        BarChartData(
-                          // groupsSpace:6,
-                          maxY: 25,
-                          barTouchData: BarTouchData(
-                              touchTooltipData: BarTouchTooltipData(
-                                tooltipBgColor: Colors.grey,
-                                getTooltipItem: (_a, _b, _c, _d) => null,
-                              ),
-                              touchCallback: (response) {
-                                if (response.spot == null) {
-                                  setState(() {
-                                    touchedGroupIndex = -1;
-                                    showingBarGroups = List.of(rawBarGroups);
-                                  });
-                                  return;
-                                }
+                    child: BarChart(
+                      BarChartData(
+                        // groupsSpace:6,
+                        maxY: 25,
+                        barTouchData: BarTouchData(
+                          touchTooltipData: BarTouchTooltipData(
+                            tooltipBgColor: Colors.red,
+                            getTooltipItem: (_a, _b, _c, _d) => null,
+                          ),
 
-                                touchedGroupIndex =
-                                    response.spot!.touchedBarGroupIndex;
-
+                          /*touchCallback: (response) {
+                              if (response.spot == null) {
                                 setState(() {
-                                  if (response.touchInput is PointerExitEvent ||
-                                      response.touchInput is PointerUpEvent) {
-                                    touchedGroupIndex = -1;
-                                    showingBarGroups = List.of(rawBarGroups);
-                                  } else {
-                                    showingBarGroups = List.of(rawBarGroups);
-                                    if (touchedGroupIndex != -1) {
-                                      double sum = 0;
-                                      for (BarChartRodData rod
-                                          in showingBarGroups[
-                                                  touchedGroupIndex!]
-                                              .barRods) {
-                                        sum += rod.y;
-                                      }
-                                      final avg = sum /
+                                  touchedGroupIndex = -1;
+                                  showingBarGroups = List.of(rawBarGroups);
+                                });
+
+                                return;
+                              }
+
+                              touchedGroupIndex =
+                                  response.spot!.touchedBarGroupIndex;
+
+                              setState(() {
+                                if (response.touchInput is PointerExitEvent ||
+                                    response.touchInput is PointerUpEvent) {
+                                  touchedGroupIndex = -1;
+                                  showingBarGroups = List.of(rawBarGroups);
+                                } else {
+                                  showingBarGroups = List.of(rawBarGroups);
+                                  if (touchedGroupIndex != -1) {
+                                    double sum = 0;
+                                    for (BarChartRodData rod
+                                        in showingBarGroups[touchedGroupIndex!]
+                                            .barRods) {
+                                      sum += rod.y;
+                                    }
+                                    final avg = sum /
+                                        showingBarGroups[touchedGroupIndex!]
+                                            .barRods
+                                            .length;
+
+                                    showingBarGroups[touchedGroupIndex!] =
+                                        showingBarGroups[touchedGroupIndex!]
+                                            .copyWith(
+                                      barRods:
                                           showingBarGroups[touchedGroupIndex!]
                                               .barRods
-                                              .length;
-
-                                      showingBarGroups[touchedGroupIndex!] =
-                                          showingBarGroups[touchedGroupIndex!]
-                                              .copyWith(
-                                        barRods:
-                                            showingBarGroups[touchedGroupIndex!]
-                                                .barRods
-                                                .map((rod) {
-                                          return rod.copyWith(y: avg);
-                                        }).toList(),
-                                      );
-                                    }
+                                              .map((rod) {
+                                        return rod.copyWith(y: avg);
+                                      }).toList(),
+                                    );
                                   }
-                                });
-                              }),
-                          titlesData: FlTitlesData(
-                            show: true,
-                            bottomTitles: SideTitles(
-                              showTitles: true,
-                              getTextStyles: (value) => const TextStyle(
-                                  color: Color(Styling.iconColor),
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 10),
-                              margin: 15,
-                              getTitles: (double value) {
-                                switch (value.toInt()) {
-                                  case 0:
-                                    return 'Mn';
-                                  case 1:
-                                    return 'Te';
-                                  case 2:
-                                    return 'Wd';
-                                  case 3:
-                                    return 'Tu';
-                                  case 4:
-                                    return 'Fr';
-                                  case 5:
-                                    return 'St';
-                                  case 6:
-                                    return 'Sn';
-
-                                  default:
-                                    return '';
                                 }
-                              },
-                            ),
-                            leftTitles: SideTitles(
-                              showTitles: true,
-                              getTextStyles: (value) => const TextStyle(
-                                  color: Color(Styling.iconColor),
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14),
-                              margin: 20,
-                              reservedSize: 20,
-                              getTitles: (value) {
-                                if (value == 0) {
-                                  return '50K';
-                                } else if (value == 10) {
-                                  return '1M';
-                                } else if (value == 19) {
-                                  return '10M';
-                                } else if (value == 30) {
-                                  return '50M';
-                                } else {
-                                  return '';
-                                }
-                              },
-                            ),
-                          ),
-                          borderData: FlBorderData(
-                            show: false,
-                          ),
-                          barGroups: showingBarGroups,
+                              });
+                            }
+                            */
                         ),
-                        swapAnimationDuration: Duration(milliseconds: 150),
+                        titlesData: FlTitlesData(
+                          show: true,
+                          bottomTitles: SideTitles(
+                            showTitles: true,
+                            getTextStyles: (value) => const TextStyle(
+                                color: Color(Styling.iconColor),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 10),
+                            margin: 15,
+                            getTitles: (double value) {
+                              switch (value.toInt()) {
+                                case 0:
+                                  return '28/04';
+                                case 1:
+                                  return '28/04';
+                                case 2:
+                                  return '28/04';
+                                case 3:
+                                  return '28/04';
+                                case 4:
+                                  return '28/04';
+                                case 5:
+                                  return '28/04';
+                                case 6:
+                                  return '28/04';
+
+                                default:
+                                  return '';
+                              }
+                            },
+                          ),
+                          leftTitles: SideTitles(
+                            showTitles: true,
+                            getTextStyles: (value) => const TextStyle(
+                                color: Color(Styling.iconColor),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14),
+                            margin: 20,
+                            reservedSize: 20,
+                            getTitles: (value) {
+                              if (value == 0) {
+                                return '50K';
+                              } else if (value == 10) {
+                                return '1M';
+                              } else if (value == 19) {
+                                return '10M';
+                              } else if (value == 30) {
+                                return '50M';
+                              } else {
+                                return '';
+                              }
+                            },
+                          ),
+                        ),
+                        borderData: FlBorderData(
+                          show: false,
+                        ),
+                        barGroups: showingBarGroups,
                       ),
+                      //swapAnimationDuration: Duration(milliseconds: 150),
                     ),
                   ),
                 ),
@@ -520,7 +511,7 @@ class _StatPageState extends State<StatPage> {
           Container(
             width: width,
             height: 10,
-            color: Colors.white.withOpacity(0.9),
+            color: Colors.grey.withOpacity(0.4),
           ),
           const SizedBox(
             width: space,
@@ -528,7 +519,7 @@ class _StatPageState extends State<StatPage> {
           Container(
             width: width,
             height: 10,
-            color: Colors.white.withOpacity(0.9),
+            color: Colors.grey.withOpacity(0.9),
           ),
           const SizedBox(
             width: space,
@@ -536,7 +527,7 @@ class _StatPageState extends State<StatPage> {
           Container(
             width: width,
             height: 10,
-            color: Colors.white.withOpacity(0.9),
+            color: Colors.black.withOpacity(0.5),
           ),
           const SizedBox(
             width: space,
