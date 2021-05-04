@@ -113,7 +113,7 @@ class _NewItemPageState extends State<NewItemPage> {
                 height: SizeConfig.diagonal * 3,
               ),
               DropdownButton(
-                  hint: ZText(content: 'Select the Unit'),
+                  hint: ZText(content: I18n.of(context).selectUnit),
                   value: selectedValue,
                   items: unitList.map((String value) {
                     return DropdownMenuItem<String>(

@@ -47,8 +47,6 @@ class _ConnectToMenuState extends State<LinkToMenu> {
   List<MenuItem> itemList = [];
   List<MenuItem> itemsToSend = [];
 
-  GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
   final _formKey = GlobalKey<FormState>();
 
   num? quantity;
@@ -138,7 +136,8 @@ class _ConnectToMenuState extends State<LinkToMenu> {
                         EasyLoading.dismiss();
 
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: ZText(content: I18n.of(context).messageSent),
+                          content: ZText(
+                              content: I18n.of(context).operationSucceeded),
                         ));
                       } on Exception catch (e) {
                         EasyLoading.dismiss();
@@ -187,6 +186,9 @@ class _ConnectToMenuState extends State<LinkToMenu> {
           title: ZText(content: menuItem.name),
           value: menuItem.isChecked,
           onChanged: (value) {
+            setState(() {
+              menuItem.isChecked = value;
+            });
             if (value!) {
               showGeneralDialog(
                 context: context,
@@ -218,10 +220,11 @@ class _ConnectToMenuState extends State<LinkToMenu> {
                                     height: SizeConfig.diagonal * 2.5,
                                   ),
                                   ZTextField(
-                                    hint: I18n.of(context).itemPrice,
+                                    hint: I18n.of(context).quantity,
+                                    controller: menuItem.controller,
                                     onSaved: (value) {
                                       if (value != null) {
-                                        quantity = num.parse(value);
+                                        menuItem.quantity = num.parse(value);
                                       }
                                     },
                                     validator: (value) =>
@@ -237,12 +240,32 @@ class _ConnectToMenuState extends State<LinkToMenu> {
                                       if (form!.validate()) {
                                         form.save();
 
-                                        EasyLoading.show(
-                                            status: I18n.of(context).loading);
+                                        // MenuItem? exists = itemsToSend
+                                        //     .firstWhereOrNull((element) =>
+                                        //         element.id == menuItem.id);
+                                        // if (exists == null) {
+                                        //   itemsToSend.add(menuItem);
+                                        // } else {
+                                        menuItem.condiments!.firstWhereOrNull(
+                                            (element) =>
+                                                element.id == menuItem.id);
+                                        itemsToSend.removeWhere((element) =>
+                                            element.id == menuItem.id);
+
+                                        Navigator.of(context).pop();
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(SnackBar(
+                                                content: ZText(
+                                                    content: I18n.of(context)
+                                                        .operationSucceeded)));
+                                        // }
                                       }
                                     },
-                                    child:
-                                        ZText(content: I18n.of(context).save),
+                                    child: ZText(
+                                      content: I18n.of(context).save,
+                                      color:
+                                          Color(Styling.primaryBackgroundColor),
+                                    ),
                                   )
                                 ],
                               ),
@@ -253,7 +276,7 @@ class _ConnectToMenuState extends State<LinkToMenu> {
                     ),
                   );
                 },
-                barrierDismissible: true,
+                barrierDismissible: false,
                 barrierLabel: '',
                 transitionDuration: Duration(milliseconds: 300),
                 pageBuilder: (context, animation1, animation2) {
@@ -262,21 +285,17 @@ class _ConnectToMenuState extends State<LinkToMenu> {
               );
             }
 
-            setState(() {
-              menuItem.isChecked = value;
-
-              if (menuItem.isChecked!) {
-                MenuItem? exist = itemsToSend
-                    .firstWhereOrNull((element) => element.id == menuItem.id);
-                if (exist == null) {
-                  itemsToSend.add(menuItem);
-                }
-              } else {
-                menuItem.condiments!
-                    .removeWhere((element) => element.id == menuItem.id);
-                itemsToSend.removeWhere((element) => element.id == menuItem.id);
+            if (menuItem.isChecked!) {
+              MenuItem? exist = itemsToSend
+                  .firstWhereOrNull((element) => element.id == menuItem.id);
+              if (exist == null) {
+                itemsToSend.add(menuItem);
               }
-            });
+            } else {
+              menuItem.condiments!
+                  .removeWhere((element) => element.id == menuItem.id);
+              itemsToSend.removeWhere((element) => element.id == menuItem.id);
+            }
           },
         ),
       ),

@@ -215,6 +215,14 @@ class I18n {
 
   String get printingDisabled => _getText("printingDisabled");
 
+  String get cancelOnly => _getText("cancelOnly");
+
+  String get update => _getText("update");
+
+  String get linkToMenu => _getText("linkToMenu");
+
+  String get selectUnit => _getText("selectUnit");
+
   static late Map<String, String> _localizedValues;
 
   static const _enValues = {
@@ -323,6 +331,10 @@ class I18n {
     "itemDescription": "Enter Item Description",
     "itemEditing": "Edit Item Details",
     "printingDisabled": "Printing Disabled",
+    "cancelOnly": "Cancel",
+    "update": "Update",
+    "linkToMenu": "Link to Menu",
+    "selectUnit": "Select Unit",
   };
 
   static const _frValues = {
@@ -431,6 +443,10 @@ class I18n {
     "itemDescription": "Entrer Déscription",
     "itemEditing": "Modifier Détails",
     "printingDisabled": "Impression désactivée",
+    "cancelOnly": "Annuler",
+    "update": "Mettre à Jour",
+    "linkToMenu": "Lier au Menu",
+    "selectUnit": "Choisir l'Unité",
   };
 
   static const _allValues = {

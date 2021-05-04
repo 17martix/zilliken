@@ -25,11 +25,11 @@ class StockPage extends StatefulWidget {
   final DateFormat formatter = DateFormat();
 
   StockPage({
-   required this.auth,
-   required this.db,
-   required this.messaging,
-   required this.userId,
-   required this.userRole,
+    required this.auth,
+    required this.db,
+    required this.messaging,
+    required this.userId,
+    required this.userRole,
   });
 
   @override
@@ -75,7 +75,7 @@ class _StockPageState extends State<StockPage> {
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.data == null)
             return Center(
-              child: ZText(content:''),
+              child: ZText(content: ''),
             );
 
           return ListView.builder(
@@ -108,7 +108,7 @@ class _StockPageState extends State<StockPage> {
                   Icons.cancel,
                   size: SizeConfig.diagonal * 2.5,
                 ),
-                ZText(content:'Cancel'),
+                ZText(content: I18n.of(context).cancelOnly),
               ],
             ),
             decoration: BoxDecoration(
@@ -143,7 +143,7 @@ class _StockPageState extends State<StockPage> {
                   Icons.update,
                   size: SizeConfig.diagonal * 2.5,
                 ),
-                ZText(content:'Update'),
+                ZText(content: I18n.of(context).update),
               ],
             ),
             decoration: BoxDecoration(
@@ -178,7 +178,7 @@ class _StockPageState extends State<StockPage> {
                   Icons.link,
                   size: SizeConfig.diagonal * 2.5,
                 ),
-                ZText(content:'Link to Menu'),
+                ZText(content: I18n.of(context).cancelOnly),
               ],
             ),
             decoration: BoxDecoration(
@@ -205,17 +205,16 @@ class _StockPageState extends State<StockPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                ZText(content:
-                  I18n.of(context).name + ' : ' + stock.name,
+                ZText(
+                  content: I18n.of(context).name + ' : ${stock.name}',
                   textAlign: TextAlign.start,
                 ),
-             ZText(content:I18n.of(context).quantity +
-                    ' : ' +
-                    '${stock.quantity}' +
-                    ' ' +
-                    stock.unit),
-                ZText(content:I18n.of(context).used + ' : ' + '${stock.usedSince}'),
-                ZText(content:'${widget.formatter.format(stock.date!.toDate())}')
+                ZText(
+                    content: I18n.of(context).quantity +
+                        ' : ${stock.quantity} ${stock.unit}'),
+                ZText(content: I18n.of(context).used + ' : ${stock.usedSince}'),
+                ZText(
+                    content: '${widget.formatter.format(stock.date!.toDate())}')
               ],
             ),
           ),
