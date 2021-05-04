@@ -23,6 +23,8 @@ class StatPage extends StatefulWidget {
   final String userId;
   final String userRole;
   final DateFormat formatter = DateFormat('dd/MM/yy');
+  final DateFormat format = DateFormat('dd/MM');
+
   final List<Graph> data;
 
   StatPage({
@@ -55,6 +57,8 @@ class _StatPageState extends State<StatPage> {
   final double width = 7;
 
   int documentLimit = 10;
+
+  double maxY = 0;
   // AnimationController animationController;
 
   void initState() {
@@ -83,10 +87,16 @@ class _StatPageState extends State<StatPage> {
   void graphData() {
     int length = items.length;
     if (length > 7) length = 7;
+
     final List<BarChartGroupData> barItems = [];
     for (int i = 0; i < length; i++) {
       final barGroup = makeGroupData(0, items[i].data()![Fields.total]);
       barItems.add(barGroup);
+      if (maxY < items[i].data()![Fields.total]) {
+        setState(() {
+          maxY = items[i].data()![Fields.total];
+        });
+      }
     }
     /* final barGroup1 = makeGroupData(0, items[0].data()![Fields.total]);
     final barGroup2 = makeGroupData(1, items[2].data()![Fields.total]);
@@ -323,6 +333,7 @@ class _StatPageState extends State<StatPage> {
   }
 
   Widget graph() {
+    //maxY1 = maxY / 4;
     return Container(
       child: AspectRatio(
         aspectRatio: 1.3,
@@ -375,7 +386,7 @@ class _StatPageState extends State<StatPage> {
                     child: BarChart(
                       BarChartData(
                         // groupsSpace:6,
-                        maxY: 25,
+                        maxY: maxY,
                         barTouchData: BarTouchData(
                           touchTooltipData: BarTouchTooltipData(
                             tooltipBgColor: Colors.red,
@@ -442,19 +453,9 @@ class _StatPageState extends State<StatPage> {
                             getTitles: (double value) {
                               switch (value.toInt()) {
                                 case 0:
-                                  return '28/04';
+                                  return '29/2';
                                 case 1:
-                                  return '28/04';
-                                case 2:
-                                  return '28/04';
-                                case 3:
-                                  return '28/04';
-                                case 4:
-                                  return '28/04';
-                                case 5:
-                                  return '28/04';
-                                case 6:
-                                  return '28/04';
+                                  return '23/3';
 
                                 default:
                                   return '';
@@ -471,13 +472,13 @@ class _StatPageState extends State<StatPage> {
                             reservedSize: 20,
                             getTitles: (value) {
                               if (value == 0) {
-                                return '50K';
-                              } else if (value == 10) {
-                                return '1M';
-                              } else if (value == 19) {
-                                return '10M';
-                              } else if (value == 30) {
-                                return '50M';
+                                return '0';
+                              } else if (value == 15000) {
+                                return '15k';
+                              } else if (value == 35000) {
+                                return '35k';
+                              } else if (value == 400000) {
+                                return '40k';
                               } else {
                                 return '';
                               }
