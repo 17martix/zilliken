@@ -46,6 +46,7 @@ class LinkToMenu extends StatefulWidget {
 class _ConnectToMenuState extends State<LinkToMenu> {
   List<MenuItem> itemList = [];
   List<MenuItem> itemsToSend = [];
+  List<MenuItem> itemsToRemove = [];
 
   final _formKey = GlobalKey<FormState>();
 
@@ -60,15 +61,11 @@ class _ConnectToMenuState extends State<LinkToMenu> {
 
   void waitForItems() {
     widget.db.getMenuItems(widget.stock.id!).then((value) {
-      value.forEach((menuItem) {
-        if (menuItem.condiments != null) {
-          Stock? exist = menuItem.condiments!
-              .firstWhereOrNull((element) => element.id == widget.stock.id);
-          if (exist != null) {
-            menuItem.controller.text = '${exist.quantity}';
-          }
+      /*value.forEach((element) {
+        if (element.isChecked!) {
+          itemsToSend.add(element);
         }
-      });
+      });*/
 
       setState(() {
         itemList = value;
@@ -106,7 +103,7 @@ class _ConnectToMenuState extends State<LinkToMenu> {
         Container(
           height: SizeConfig.diagonal * 5,
           child: Center(
-            child: ZText(content: 'Choose any meal that requires this item'),
+            child: ZText(content: I18n.of(context).linkDescription),
           ),
         ),
         Expanded(
@@ -117,35 +114,38 @@ class _ConnectToMenuState extends State<LinkToMenu> {
               ),
               ZElevatedButton(
                 onpressed: () async {
-                  final form = _formKey.currentState;
+                  EasyLoading.show(status: I18n.of(context).loading);
+                  bool isOnline = await hasConnection();
+                  if (!isOnline) {
+                    EasyLoading.dismiss();
 
-                  if (form!.validate()) {
-                    form.save();
-                    EasyLoading.show(status: I18n.of(context).loading);
-                    bool isOnline = await hasConnection();
-                    if (!isOnline) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: ZText(content: I18n.of(context).noInternet),
+                      ),
+                    );
+                  } else {
+                    try {
+                      await widget.db.linkToStock(
+                          itemsToSend, widget.stock, itemsToRemove);
+                      log('itemsToSend: ${itemsToSend}');
+                      /*  itemsToSend.clear();
+                      itemsToRemove.clear();*/
+
+                      EasyLoading.dismiss();
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: ZText(
+                              content: I18n.of(context).operationSucceeded),
+                        ),
+                      );
+                    } on Exception catch (e) {
                       EasyLoading.dismiss();
 
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content: ZText(content: I18n.of(context).noInternet),
+                        content: ZText(content: e.toString()),
                       ));
-                    } else {
-                      try {
-                        await widget.db.linkToStock(itemsToSend, widget.stock);
-
-                        EasyLoading.dismiss();
-
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: ZText(
-                              content: I18n.of(context).operationSucceeded),
-                        ));
-                      } on Exception catch (e) {
-                        EasyLoading.dismiss();
-
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: ZText(content: e.toString()),
-                        ));
-                      }
                     }
                   }
                 },
@@ -184,6 +184,7 @@ class _ConnectToMenuState extends State<LinkToMenu> {
         child: CheckboxListTile(
           activeColor: Color(Styling.accentColor),
           title: ZText(content: menuItem.name),
+          //subtitle: ZText(content: '${menuItem.quantity} ${widget.stock.unit}'),
           value: menuItem.isChecked,
           onChanged: (value) {
             setState(() {
@@ -224,13 +225,14 @@ class _ConnectToMenuState extends State<LinkToMenu> {
                                     controller: menuItem.controller,
                                     onSaved: (value) {
                                       if (value != null) {
-                                        menuItem.quantity = num.parse(value);
+                                        setState(() {
+                                          menuItem.quantity = num.parse(value);
+                                        });
                                       }
                                     },
-                                    validator: (value) =>
-                                        value == null || value.isEmpty
-                                            ? I18n.of(context).requit
-                                            : null,
+                                    validator: (value) => value!.isEmpty
+                                        ? I18n.of(context).requit
+                                        : null,
                                     icon: Icons.restaurant,
                                   ),
                                   ZElevatedButton(
@@ -240,33 +242,38 @@ class _ConnectToMenuState extends State<LinkToMenu> {
                                       if (form!.validate()) {
                                         form.save();
 
-                                        // MenuItem? exists = itemsToSend
-                                        //     .firstWhereOrNull((element) =>
-                                        //         element.id == menuItem.id);
-                                        // if (exists == null) {
-                                        //   itemsToSend.add(menuItem);
-                                        // } else {
-                                        menuItem.condiments!.firstWhereOrNull(
-                                            (element) =>
-                                                element.id == menuItem.id);
                                         itemsToSend.removeWhere((element) =>
                                             element.id == menuItem.id);
+                                        itemsToSend.add(menuItem);
 
                                         Navigator.of(context).pop();
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(SnackBar(
                                                 content: ZText(
                                                     content: I18n.of(context)
-                                                        .operationSucceeded)));
+                                                        .added)));
                                         // }
                                       }
                                     },
                                     child: ZText(
-                                      content: I18n.of(context).save,
+                                      content: I18n.of(context).addItem,
                                       color:
                                           Color(Styling.primaryBackgroundColor),
                                     ),
-                                  )
+                                    bottomPadding: SizeConfig.diagonal * 0.3,
+                                  ),
+                                  IconButton(
+                                      color: Colors.red,
+                                      icon: Icon(
+                                        Icons.cancel_sharp,
+                                      ),
+                                      iconSize: SizeConfig.diagonal * 5,
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                        setState(() {
+                                          menuItem.isChecked = false;
+                                        });
+                                      })
                                 ],
                               ),
                             ),
@@ -283,18 +290,28 @@ class _ConnectToMenuState extends State<LinkToMenu> {
                   return Container();
                 },
               );
-            }
-
-            if (menuItem.isChecked!) {
-              MenuItem? exist = itemsToSend
-                  .firstWhereOrNull((element) => element.id == menuItem.id);
-              if (exist == null) {
-                itemsToSend.add(menuItem);
-              }
             } else {
-              menuItem.condiments!
+              log('else is executed');
+
+              /*  menuItem.condiments!
                   .removeWhere((element) => element.id == menuItem.id);
-              itemsToSend.removeWhere((element) => element.id == menuItem.id);
+              itemsToSend.removeWhere((element) => element.id == menuItem.id);*/
+
+              /*MenuItem item = itemsToSend
+                  .firstWhere((element) => element.id == menuItem.id);
+              item.condiments!
+                  .removeWhere((element) => element.id == widget.stock.id);
+              if (item.condiments!.isEmpty) {
+                item.condiments = null;
+              }*/
+
+              menuItem.condiments!
+                  .removeWhere((condiment) => condiment.id == widget.stock.id);
+              if (menuItem.condiments!.isEmpty) {
+                menuItem.condiments = null;
+              }
+
+              itemsToRemove.add(menuItem);
             }
           },
         ),

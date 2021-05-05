@@ -822,7 +822,8 @@ class Database {
     return menuItemList;
   }
 
-  Future<void> linkToStock(List<MenuItem> menuList, Stock stock) async {
+  Future<void> linkToStock(
+      List<MenuItem> menuList, Stock stock, List<MenuItem> removeList) async {
     WriteBatch batch = databaseReference.batch();
 
     menuList.forEach((menu) {
@@ -845,9 +846,34 @@ class Database {
               (elements[0] == texts[0] && elements[2] != texts[2]));
         });
         condimentsText.add(text);
+
+        // if (menuList.isEmpty) {
+        //   documentReference.update({
+        //     Fields.condiments: '',
+        //   });
+        // }
       }
 
       batch.update(documentReference, {
+        Fields.condiments: condimentsText,
+      });
+    });
+
+    removeList.forEach((element) {
+      DocumentReference removeReference =
+          databaseReference.collection(Fields.menu).doc(element.id);
+
+      List<String>? condimentsText = [];
+      if (element.condiments == null) {
+        condimentsText = null;
+      } else {
+        element.condiments!.forEach((element) {
+          String t = element.buildStringFromObject(element.quantity);
+          condimentsText!.add(t);
+        });
+      }
+
+      batch.update(removeReference, {
         Fields.condiments: condimentsText,
       });
     });

@@ -223,6 +223,10 @@ class I18n {
 
   String get selectUnit => _getText("selectUnit");
 
+  String get added => _getText("added");
+
+  String get linkDescription => _getText("linkDescription");
+
   static late Map<String, String> _localizedValues;
 
   static const _enValues = {
@@ -335,6 +339,8 @@ class I18n {
     "update": "Update",
     "linkToMenu": "Link to Menu",
     "selectUnit": "Select Unit",
+    "added": "Added",
+    "linkDescription": "Choose any meal that requires this item",
   };
 
   static const _frValues = {
@@ -447,6 +453,8 @@ class I18n {
     "update": "Mettre à Jour",
     "linkToMenu": "Lier au Menu",
     "selectUnit": "Choisir l'Unité",
+    "added": "Ajouté",
+    "linkDescription": "Choisissez chaque repas qui nécessite cet article",
   };
 
   static const _allValues = {

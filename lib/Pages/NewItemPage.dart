@@ -44,7 +44,6 @@ class _NewItemPageState extends State<NewItemPage> {
   }
 
   final _formKey = GlobalKey<FormState>();
-  final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   List<String> unitList = [
     'Kilogram(s)',

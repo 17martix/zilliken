@@ -97,93 +97,102 @@ class _StockPageState extends State<StockPage> {
     return Slidable(
       actionPane: SlidableDrawerActionPane(),
       actions: [
-        SlideAction(
-          child: Container(
-            height: SizeConfig.diagonal * 12,
-            width: double.infinity,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.cancel,
-                  size: SizeConfig.diagonal * 2.5,
-                ),
-                ZText(content: I18n.of(context).cancelOnly),
-              ],
-            ),
-            decoration: BoxDecoration(
-              color: Colors.red,
-              borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5),
+        Padding(
+          padding: EdgeInsets.only(left: SizeConfig.diagonal * 0.9),
+          child: SlideAction(
+            child: Container(
+              height: SizeConfig.diagonal * 11.3,
+              width: double.infinity,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.cancel,
+                    size: SizeConfig.diagonal * 2.5,
+                  ),
+                  ZText(content: I18n.of(context).cancelOnly),
+                ],
+              ),
+              decoration: BoxDecoration(
+                color: Colors.red,
+                borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5),
+              ),
             ),
           ),
         ),
-        SlideAction(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ItemUpdatePage(
-                  db: widget.db,
-                  auth: widget.auth,
-                  userId: widget.userId,
-                  userRole: widget.userRole,
-                  messaging: widget.messaging,
-                  stock: stock,
+        Padding(
+          padding: EdgeInsets.only(left: SizeConfig.diagonal * 0.9),
+          child: SlideAction(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ItemUpdatePage(
+                    db: widget.db,
+                    auth: widget.auth,
+                    userId: widget.userId,
+                    userRole: widget.userRole,
+                    messaging: widget.messaging,
+                    stock: stock,
+                  ),
                 ),
+              );
+            },
+            child: Container(
+              height: SizeConfig.diagonal * 11.3,
+              width: double.infinity,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.update,
+                    size: SizeConfig.diagonal * 2.5,
+                  ),
+                  ZText(content: I18n.of(context).update),
+                ],
               ),
-            );
-          },
-          child: Container(
-            height: SizeConfig.diagonal * 12,
-            width: double.infinity,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.update,
-                  size: SizeConfig.diagonal * 2.5,
-                ),
-                ZText(content: I18n.of(context).update),
-              ],
-            ),
-            decoration: BoxDecoration(
-              color: Colors.blue,
-              borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5),
+              decoration: BoxDecoration(
+                color: Colors.blue,
+                borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5),
+              ),
             ),
           ),
         ),
-        SlideAction(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => LinkToMenu(
-                  db: widget.db,
-                  auth: widget.auth,
-                  userId: widget.userId,
-                  userRole: widget.userRole,
-                  messaging: widget.messaging,
-                  stock: stock,
+        Padding(
+          padding: EdgeInsets.only(left: SizeConfig.diagonal * 0.9),
+          child: SlideAction(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => LinkToMenu(
+                    db: widget.db,
+                    auth: widget.auth,
+                    userId: widget.userId,
+                    userRole: widget.userRole,
+                    messaging: widget.messaging,
+                    stock: stock,
+                  ),
                 ),
+              );
+            },
+            child: Container(
+              width: double.infinity,
+              height: SizeConfig.diagonal * 11.3,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.link,
+                    size: SizeConfig.diagonal * 2.5,
+                  ),
+                  ZText(content: I18n.of(context).linkToMenu),
+                ],
               ),
-            );
-          },
-          child: Container(
-            width: double.infinity,
-            height: SizeConfig.diagonal * 12,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.link,
-                  size: SizeConfig.diagonal * 2.5,
-                ),
-                ZText(content: I18n.of(context).cancelOnly),
-              ],
-            ),
-            decoration: BoxDecoration(
-              color: Colors.grey,
-              borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5),
+              decoration: BoxDecoration(
+                color: Colors.grey,
+                borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5),
+              ),
             ),
           ),
         ),
