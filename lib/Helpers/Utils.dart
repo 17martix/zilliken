@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/services.dart';
@@ -293,4 +294,25 @@ String? getMapsKey() {
   }
 
   return key;
+}
+
+String? formatInterVal(double number) {
+  String? text;
+
+  int a = number.round();
+  String textNumber = a.toString();
+
+  int length = textNumber.length;
+
+  if (length < 4) {
+    text = textNumber;
+  } else if (length < 7) {
+    text = textNumber.substring(0, length - 3) + 'k';
+  } else if (length < 10) {
+    text = textNumber.substring(0, length - 6) + 'M';
+  } else {
+    text = textNumber;
+  }
+
+  return text;
 }

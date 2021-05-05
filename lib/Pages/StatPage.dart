@@ -2,10 +2,12 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 import 'package:zilliken/Helpers/SizeConfig.dart';
 import 'package:zilliken/Helpers/Styling.dart';
+import 'package:zilliken/Helpers/Utils.dart';
 import 'package:zilliken/Models/Fields.dart';
 import 'package:zilliken/Models/Graph.dart';
 import 'package:zilliken/Models/Statistic.dart';
@@ -13,7 +15,6 @@ import 'package:intl/intl.dart';
 import 'package:zilliken/Services/Authentication.dart';
 import 'package:zilliken/Services/Database.dart';
 import 'package:zilliken/i18n.dart';
-import 'package:flutter/gestures.dart';
 
 import '../Components/ZText.dart';
 
@@ -25,21 +26,21 @@ class StatPage extends StatefulWidget {
   final DateFormat formatter = DateFormat('dd/MM/yy');
   final DateFormat format = DateFormat('dd/MM');
 
-  final List<Graph> data;
+  //final List<Graph> data;
 
   StatPage({
     required this.auth,
     required this.db,
     required this.userId,
     required this.userRole,
-    required this.data,
+    //required this.data,
   });
   @override
   _StatPageState createState() => _StatPageState();
 }
 
 class _StatPageState extends State<StatPage> {
-  List<Graph>? data;
+  //List<Graph>? data;
   ScrollController _scrollController = ScrollController();
   List<DocumentSnapshot> items = [];
 
@@ -58,7 +59,7 @@ class _StatPageState extends State<StatPage> {
 
   int documentLimit = 10;
 
-  double maxY = 0;
+  num maxY = 0;
   // AnimationController animationController;
 
   void initState() {
@@ -90,7 +91,7 @@ class _StatPageState extends State<StatPage> {
 
     final List<BarChartGroupData> barItems = [];
     for (int i = 0; i < length; i++) {
-      final barGroup = makeGroupData(0, items[i].data()![Fields.total]);
+      final barGroup = makeGroupData(i, items[i].data()![Fields.total]);
       barItems.add(barGroup);
       if (maxY < items[i].data()![Fields.total]) {
         setState(() {
@@ -380,20 +381,19 @@ class _StatPageState extends State<StatPage> {
                   height: 4,
                 ),
                 Expanded(
-                  flex: 1,
+                  //flex: 1,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     child: BarChart(
                       BarChartData(
                         // groupsSpace:6,
-                        maxY: maxY,
+                        maxY: maxY.toDouble(),
                         barTouchData: BarTouchData(
-                          touchTooltipData: BarTouchTooltipData(
-                            tooltipBgColor: Colors.red,
-                            getTooltipItem: (_a, _b, _c, _d) => null,
-                          ),
-
-                          /*touchCallback: (response) {
+                            touchTooltipData: BarTouchTooltipData(
+                              tooltipBgColor: Colors.red,
+                              getTooltipItem: (_a, _b, _c, _d) => null,
+                            ),
+                            touchCallback: (response) {
                               if (response.spot == null) {
                                 setState(() {
                                   touchedGroupIndex = -1;
@@ -438,9 +438,7 @@ class _StatPageState extends State<StatPage> {
                                   }
                                 }
                               });
-                            }
-                            */
-                        ),
+                            }),
                         titlesData: FlTitlesData(
                           show: true,
                           bottomTitles: SideTitles(
@@ -453,9 +451,33 @@ class _StatPageState extends State<StatPage> {
                             getTitles: (double value) {
                               switch (value.toInt()) {
                                 case 0:
-                                  return '29/2';
+                                  Timestamp date =
+                                      items[0].data()![Fields.date];
+                                  return widget.format.format(date.toDate());
                                 case 1:
-                                  return '23/3';
+                                  Timestamp date =
+                                      items[1].data()![Fields.date];
+                                  return widget.format.format(date.toDate());
+                                case 2:
+                                  Timestamp date =
+                                      items[2].data()![Fields.date];
+                                  return widget.format.format(date.toDate());
+                                case 3:
+                                  Timestamp date =
+                                      items[3].data()![Fields.date];
+                                  return widget.format.format(date.toDate());
+                                case 4:
+                                  Timestamp date =
+                                      items[4].data()![Fields.date];
+                                  return widget.format.format(date.toDate());
+                                case 5:
+                                  Timestamp date =
+                                      items[5].data()![Fields.date];
+                                  return widget.format.format(date.toDate());
+                                case 6:
+                                  Timestamp date =
+                                      items[6].data()![Fields.date];
+                                  return widget.format.format(date.toDate());
 
                                 default:
                                   return '';
@@ -470,15 +492,19 @@ class _StatPageState extends State<StatPage> {
                                 fontSize: 14),
                             margin: 20,
                             reservedSize: 20,
+                            interval: maxY / 4,
                             getTitles: (value) {
+                              log("value is $value");
                               if (value == 0) {
                                 return '0';
-                              } else if (value == 15000) {
-                                return '15k';
-                              } else if (value == 35000) {
-                                return '35k';
-                              } else if (value == 400000) {
-                                return '40k';
+                              } else if (value == maxY / 4) {
+                                return formatInterVal(maxY / 4)!;
+                              } else if (value == maxY / 2) {
+                                return formatInterVal(maxY / 2)!;
+                              } else if (value == maxY * 3 / 4) {
+                                return formatInterVal( maxY * 3 / 4)!;
+                              } else if (value == maxY) {
+                                return formatInterVal(maxY.toDouble())!;
                               } else {
                                 return '';
                               }
