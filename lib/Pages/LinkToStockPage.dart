@@ -10,7 +10,6 @@ import 'package:zilliken/Helpers/SizeConfig.dart';
 import 'package:zilliken/Helpers/Styling.dart';
 import 'package:zilliken/Helpers/Utils.dart';
 import 'package:zilliken/Models/Fields.dart';
-import 'package:zilliken/Models/Condiment.dart';
 import 'package:zilliken/Models/MenuItem.dart';
 import 'package:zilliken/Models/Stock.dart';
 import 'package:zilliken/Services/Authentication.dart';
@@ -45,8 +44,8 @@ class LinkToMenu extends StatefulWidget {
 
 class _ConnectToMenuState extends State<LinkToMenu> {
   List<MenuItem> itemList = [];
-  List<MenuItem> itemsToSend = [];
-  List<MenuItem> itemsToRemove = [];
+  List<MenuItem>? itemsToSend = [];
+  List<MenuItem>? itemsToRemove = [];
 
   final _formKey = GlobalKey<FormState>();
 
@@ -127,8 +126,9 @@ class _ConnectToMenuState extends State<LinkToMenu> {
                   } else {
                     try {
                       await widget.db.linkToStock(
-                          itemsToSend, widget.stock, itemsToRemove);
+                          itemsToSend!, widget.stock, itemsToRemove!);
                       log('itemsToSend: ${itemsToSend}');
+                      log('itemsToRemove: ${itemsToRemove}');
                       /*  itemsToSend.clear();
                       itemsToRemove.clear();*/
 
@@ -242,9 +242,9 @@ class _ConnectToMenuState extends State<LinkToMenu> {
                                       if (form!.validate()) {
                                         form.save();
 
-                                        itemsToSend.removeWhere((element) =>
+                                        itemsToSend!.removeWhere((element) =>
                                             element.id == menuItem.id);
-                                        itemsToSend.add(menuItem);
+                                        itemsToSend!.add(menuItem);
 
                                         Navigator.of(context).pop();
                                         ScaffoldMessenger.of(context)
@@ -311,7 +311,7 @@ class _ConnectToMenuState extends State<LinkToMenu> {
                 menuItem.condiments = null;
               }
 
-              itemsToRemove.add(menuItem);
+              itemsToRemove!.add(menuItem);
             }
           },
         ),

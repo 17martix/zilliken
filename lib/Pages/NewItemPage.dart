@@ -171,6 +171,11 @@ class _NewItemPageState extends State<NewItemPage> {
           await widget.db.addInventoryItem(context, newStock);
 
           EasyLoading.dismiss();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: ZText(content: I18n.of(context).operationSucceeded),
+            ),
+          );
 
           setState(() {
             _formKey.currentState!.reset();
