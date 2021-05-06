@@ -60,6 +60,8 @@ class _StatPageState extends State<StatPage> {
   int documentLimit = 10;
 
   num maxY = 0;
+
+  ScrollController _controller = ScrollController();
   // AnimationController animationController;
 
   void initState() {
@@ -315,7 +317,18 @@ class _StatPageState extends State<StatPage> {
             ],
           ),
         ),
-        graph(),
+        Expanded(
+          child: SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+            controller: _controller,
+            child: Column(
+              children: [
+                graph(),
+                graph2(),
+              ],
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -389,11 +402,11 @@ class _StatPageState extends State<StatPage> {
                         // groupsSpace:6,
                         maxY: maxY.toDouble(),
                         barTouchData: BarTouchData(
-                            touchTooltipData: BarTouchTooltipData(
-                              tooltipBgColor: Colors.red,
-                              getTooltipItem: (_a, _b, _c, _d) => null,
-                            ),
-                            touchCallback: (response) {
+                          touchTooltipData: BarTouchTooltipData(
+                            tooltipBgColor: Colors.red,
+                            getTooltipItem: (_a, _b, _c, _d) => null,
+                          ),
+                          /*touchCallback: (response) {
                               if (response.spot == null) {
                                 setState(() {
                                   touchedGroupIndex = -1;
@@ -438,7 +451,191 @@ class _StatPageState extends State<StatPage> {
                                   }
                                 }
                               });
-                            }),
+                            }*/
+                        ),
+                        titlesData: FlTitlesData(
+                          show: true,
+                          bottomTitles: SideTitles(
+                            showTitles: true,
+                            getTextStyles: (value) => const TextStyle(
+                                color: Color(Styling.iconColor),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 10),
+                            margin: 15,
+                            getTitles: (double value) {
+                              switch (value.toInt()) {
+                                case 0:
+                                  Timestamp date =
+                                      items[0].data()![Fields.date];
+                                  return widget.format.format(date.toDate());
+                                case 1:
+                                  Timestamp date =
+                                      items[1].data()![Fields.date];
+                                  return widget.format.format(date.toDate());
+                                case 2:
+                                  Timestamp date =
+                                      items[2].data()![Fields.date];
+                                  return widget.format.format(date.toDate());
+                                case 3:
+                                  Timestamp date =
+                                      items[3].data()![Fields.date];
+                                  return widget.format.format(date.toDate());
+                                case 4:
+                                  Timestamp date =
+                                      items[4].data()![Fields.date];
+                                  return widget.format.format(date.toDate());
+                                case 5:
+                                  Timestamp date =
+                                      items[5].data()![Fields.date];
+                                  return widget.format.format(date.toDate());
+                                case 6:
+                                  Timestamp date =
+                                      items[6].data()![Fields.date];
+                                  return widget.format.format(date.toDate());
+
+                                default:
+                                  return '';
+                              }
+                            },
+                          ),
+                          leftTitles: SideTitles(
+                            showTitles: true,
+                            getTextStyles: (value) => const TextStyle(
+                                color: Color(Styling.iconColor),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14),
+                            margin: 20,
+                            reservedSize: 20,
+                            interval: maxY / 4,
+                            getTitles: (value) {
+                              log("value is $value");
+                              if (value == maxY / 0) {
+                                return formatInterVal(maxY / 0)!;
+                              } else if (value == maxY / 4) {
+                                return formatInterVal(maxY / 4)!;
+                              } else if (value == maxY / 2) {
+                                return formatInterVal(maxY / 2)!;
+                              } else if (value == maxY * 3 / 4) {
+                                return formatInterVal(maxY * 3 / 4)!;
+                              } else if (value == maxY) {
+                                return formatInterVal(maxY.toDouble())!;
+                              } else {
+                                return '';
+                              }
+                            },
+                          ),
+                        ),
+                        borderData: FlBorderData(
+                          show: false,
+                        ),
+                        barGroups: showingBarGroups,
+                      ),
+                      //swapAnimationDuration: Duration(milliseconds: 150),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget makeTransactionsIcon() {
+    const double width = 7;
+    const double space = 7;
+    return Row(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          Container(
+            width: width,
+            height: 10,
+            color: Colors.grey.withOpacity(0.4),
+          ),
+          const SizedBox(
+            width: space,
+          ),
+          Container(
+            width: width,
+            height: 10,
+            color: Colors.grey.withOpacity(0.9),
+          ),
+          const SizedBox(
+            width: space,
+          ),
+          Container(
+            width: width,
+            height: 10,
+            color: Colors.black.withOpacity(0.5),
+          ),
+          const SizedBox(
+            width: space,
+          ),
+        ]);
+  }
+
+  Widget graph2() {
+    return Container(
+      child: AspectRatio(
+        aspectRatio: 1.3,
+        child: Card(
+          elevation: 5,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(SizeConfig.diagonal * 2),
+          ),
+          color: Color(Styling.primaryBackgroundColor).withOpacity(0.9),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisSize: MainAxisSize.max,
+              children: <Widget>[
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 15, vertical: 7),
+                  color: Colors.grey.withOpacity(0.2),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      makeTransactionsIcon(),
+                      const SizedBox(
+                        width: 45,
+                      ),
+                      ZText(
+                          content: 'Transactions',
+                          color: Color(Styling.iconColor),
+                          fontSize: 15),
+                      const SizedBox(
+                        width: 5,
+                      ),
+                      ZText(
+                          content: 'state',
+                          color: Color(Styling.accentColor),
+                          fontSize: 12),
+                    ],
+                  ),
+                ),
+                const SizedBox(
+                  height: 4,
+                ),
+                Expanded(
+                  //flex: 1,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: BarChart(
+                      BarChartData(
+                        // groupsSpace:6,
+                        maxY: maxY.toDouble(),
+                        barTouchData: BarTouchData(
+                          touchTooltipData: BarTouchTooltipData(
+                            tooltipBgColor: Colors.red,
+                            getTooltipItem: (_a, _b, _c, _d) => null,
+                          ),
+                        ),
                         titlesData: FlTitlesData(
                           show: true,
                           bottomTitles: SideTitles(
@@ -502,7 +699,7 @@ class _StatPageState extends State<StatPage> {
                               } else if (value == maxY / 2) {
                                 return formatInterVal(maxY / 2)!;
                               } else if (value == maxY * 3 / 4) {
-                                return formatInterVal( maxY * 3 / 4)!;
+                                return formatInterVal(maxY * 3 / 4)!;
                               } else if (value == maxY) {
                                 return formatInterVal(maxY.toDouble())!;
                               } else {
@@ -526,40 +723,6 @@ class _StatPageState extends State<StatPage> {
         ),
       ),
     );
-  }
-
-  Widget makeTransactionsIcon() {
-    const double width = 7;
-    const double space = 7;
-    return Row(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          Container(
-            width: width,
-            height: 10,
-            color: Colors.grey.withOpacity(0.4),
-          ),
-          const SizedBox(
-            width: space,
-          ),
-          Container(
-            width: width,
-            height: 10,
-            color: Colors.grey.withOpacity(0.9),
-          ),
-          const SizedBox(
-            width: space,
-          ),
-          Container(
-            width: width,
-            height: 10,
-            color: Colors.black.withOpacity(0.5),
-          ),
-          const SizedBox(
-            width: space,
-          ),
-        ]);
   }
 
   /* Widget statisticStream() {
