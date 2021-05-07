@@ -191,6 +191,8 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
         items = value;
       });
     });
+
+    widget.db.getStockItem().then((value) {});
   }
 
   void initLocation() {

@@ -880,4 +880,20 @@ class Database {
 
     await batch.commit();
   }
+
+  Future<List<Stock>> getStockItem() async {
+    List<Stock> stockItems = [];
+
+    CollectionReference stockReference =
+        databaseReference.collection(Fields.stock);
+    await stockReference.get().then((QuerySnapshot snapshot) {
+      snapshot.docs.forEach((element) async {
+        if (snapshot != null && snapshot.docs.isNotEmpty) {
+          Stock stock = Stock.buildObject(element);
+          stockItems.add(stock);
+        }
+      });
+    });
+    return stockItems;
+  }
 }
