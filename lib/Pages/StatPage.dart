@@ -9,9 +9,10 @@ import 'package:zilliken/Helpers/SizeConfig.dart';
 import 'package:zilliken/Helpers/Styling.dart';
 import 'package:zilliken/Helpers/Utils.dart';
 import 'package:zilliken/Models/Fields.dart';
-import 'package:zilliken/Models/Graph.dart';
+
 import 'package:zilliken/Models/Statistic.dart';
 import 'package:intl/intl.dart';
+import 'package:zilliken/Models/UserProfile.dart';
 import 'package:zilliken/Services/Authentication.dart';
 import 'package:zilliken/Services/Database.dart';
 import 'package:zilliken/i18n.dart';
@@ -33,6 +34,7 @@ class StatPage extends StatefulWidget {
     required this.db,
     required this.userId,
     required this.userRole,
+
     //required this.data,
   });
   @override
@@ -59,7 +61,8 @@ class _StatPageState extends State<StatPage> {
 
   int documentLimit = 10;
 
-  num maxY = 0;
+  num maxY = 1;
+  num pourcentage = 0;
 
   ScrollController _controller = ScrollController();
   // AnimationController animationController;
@@ -356,7 +359,7 @@ class _StatPageState extends State<StatPage> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(SizeConfig.diagonal * 2),
           ),
-          color: Color(Styling.primaryBackgroundColor).withOpacity(0.9),
+          color: Color(Styling.primaryBackgroundColor),
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
@@ -509,8 +512,8 @@ class _StatPageState extends State<StatPage> {
                             interval: maxY / 4,
                             getTitles: (value) {
                               log("value is $value");
-                              if (value == maxY / 0) {
-                                return formatInterVal(maxY / 0)!;
+                              if (value == 0) {
+                                return '0';
                               } else if (value == maxY / 4) {
                                 return formatInterVal(maxY / 4)!;
                               } else if (value == maxY / 2) {
@@ -578,244 +581,94 @@ class _StatPageState extends State<StatPage> {
 
   Widget graph2() {
     return Container(
-      child: AspectRatio(
-        aspectRatio: 1.3,
-        child: Card(
-          elevation: 5,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(SizeConfig.diagonal * 2),
-          ),
-          color: Color(Styling.primaryBackgroundColor).withOpacity(0.9),
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisAlignment: MainAxisAlignment.start,
-              mainAxisSize: MainAxisSize.max,
-              children: <Widget>[
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 15, vertical: 7),
-                  color: Colors.grey.withOpacity(0.2),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      makeTransactionsIcon(),
-                      const SizedBox(
-                        width: 45,
-                      ),
-                      ZText(
-                          content: 'Transactions',
-                          color: Color(Styling.iconColor),
-                          fontSize: 15),
-                      const SizedBox(
-                        width: 5,
-                      ),
-                      ZText(
-                          content: 'state',
-                          color: Color(Styling.accentColor),
-                          fontSize: 12),
-                    ],
+      child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(SizeConfig.diagonal * 2),
+        ),
+        color: Color(Styling.primaryBackgroundColor),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Row(
+                children: [
+                  ZText(
+                    content: 'Total : ',
+                    color: Color(Styling.accentColor),
+                    fontSize: SizeConfig.diagonal * 2,
+                    fontWeight: FontWeight.bold,
                   ),
-                ),
-                const SizedBox(
-                  height: 4,
-                ),
-                Expanded(
-                  //flex: 1,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: BarChart(
-                      BarChartData(
-                        // groupsSpace:6,
-                        maxY: maxY.toDouble(),
-                        barTouchData: BarTouchData(
-                          touchTooltipData: BarTouchTooltipData(
-                            tooltipBgColor: Colors.red,
-                            getTooltipItem: (_a, _b, _c, _d) => null,
-                          ),
-                        ),
-                        titlesData: FlTitlesData(
-                          show: true,
-                          bottomTitles: SideTitles(
-                            showTitles: true,
-                            getTextStyles: (value) => const TextStyle(
-                                color: Color(Styling.iconColor),
-                                fontWeight: FontWeight.bold,
-                                fontSize: 10),
-                            margin: 15,
-                            getTitles: (double value) {
-                              switch (value.toInt()) {
-                                case 0:
-                                  Timestamp date =
-                                      items[0].data()![Fields.date];
-                                  return widget.format.format(date.toDate());
-                                case 1:
-                                  Timestamp date =
-                                      items[1].data()![Fields.date];
-                                  return widget.format.format(date.toDate());
-                                case 2:
-                                  Timestamp date =
-                                      items[2].data()![Fields.date];
-                                  return widget.format.format(date.toDate());
-                                case 3:
-                                  Timestamp date =
-                                      items[3].data()![Fields.date];
-                                  return widget.format.format(date.toDate());
-                                case 4:
-                                  Timestamp date =
-                                      items[4].data()![Fields.date];
-                                  return widget.format.format(date.toDate());
-                                case 5:
-                                  Timestamp date =
-                                      items[5].data()![Fields.date];
-                                  return widget.format.format(date.toDate());
-                                case 6:
-                                  Timestamp date =
-                                      items[6].data()![Fields.date];
-                                  return widget.format.format(date.toDate());
-
-                                default:
-                                  return '';
-                              }
-                            },
-                          ),
-                          leftTitles: SideTitles(
-                            showTitles: true,
-                            getTextStyles: (value) => const TextStyle(
-                                color: Color(Styling.iconColor),
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14),
-                            margin: 20,
-                            reservedSize: 20,
-                            interval: maxY / 4,
-                            getTitles: (value) {
-                              log("value is $value");
-                              if (value == 0) {
-                                return '0';
-                              } else if (value == maxY / 4) {
-                                return formatInterVal(maxY / 4)!;
-                              } else if (value == maxY / 2) {
-                                return formatInterVal(maxY / 2)!;
-                              } else if (value == maxY * 3 / 4) {
-                                return formatInterVal(maxY * 3 / 4)!;
-                              } else if (value == maxY) {
-                                return formatInterVal(maxY.toDouble())!;
-                              } else {
-                                return '';
-                              }
-                            },
-                          ),
-                        ),
-                        borderData: FlBorderData(
-                          show: false,
-                        ),
-                        barGroups: showingBarGroups,
+                  Expanded(
+                    child: SizedBox(
+                      height: 20,
+                      width: 5,
+                      child: LinearProgressIndicator(
+                        value: 1,
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                            Colors.lightGreen.shade200),
+                        backgroundColor: Colors.lightGreen,
                       ),
-                      //swapAnimationDuration: Duration(milliseconds: 150),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Row(
+                children: [
+                  ZText(
+                    content: 'Solana : ',
+                    color: Color(Styling.accentColor),
+                    fontSize: SizeConfig.diagonal * 2,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  Expanded(
+                    child: SizedBox(
+                      height: 20,
+                      width: 5,
+                      child: LinearProgressIndicator(
+                        value: 0.5,
+                        valueColor:
+                            AlwaysStoppedAnimation<Color>(Colors.purpleAccent),
+                        backgroundColor: Colors.cyan,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Row(
+                children: [
+                  ZText(
+                    content: 'Lavinie : ',
+                    color: Color(Styling.accentColor),
+                    fontSize: SizeConfig.diagonal * 2,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  Expanded(
+                    child: SizedBox(
+                      height: 20,
+                      width: 5,
+                      child: LinearProgressIndicator(
+                        value: pourcentage.toDouble(),
+                        semanticsLabel: "aaaa",
+                        valueColor:
+                            AlwaysStoppedAnimation<Color>(Colors.orange),
+                        backgroundColor:
+                            Color(Styling.secondaryBackgroundColor),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
-
-  /* Widget statisticStream() {
-    return Column(
-      children: [
-        Padding(
-          padding: EdgeInsets.all(SizeConfig.diagonal * 1),
-          child: Text(
-            "Title",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Color(Styling.accentColor),
-              fontSize: SizeConfig.diagonal * 3.5,
-              fontStyle: FontStyle.italic,
-            ),
-          ),
-        ),
-        StreamBuilder<QuerySnapshot> (
-          stream: statistic.snapshots(),
-          // ignore: missing_return
-          builder:
-              (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-            return Container(
-              height: SizeConfig.diagonal * 20,
-              child: ListView.builder(
-                  controller: _scrollController,
-                  scrollDirection: Axis.horizontal,
-                  itemCount: snapshot.data.docs.length,
-                  itemBuilder: (BuildContext context, index) {
-                    Statistic stat = Statistic();
-                    stat.buildObject(snapshot.data.docs[index]);
-                    return Row(
-                      children: [
-                        body(stat),
-                      ],
-                    );
-                  }),
-            );
-          },
-        ),
-      ],
-    );
-  }*/
-
-  /*Widget body() {
-    return SingleChildScrollView(
-      controller: _scrollController,
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          card(),
-        ],
-      ),
-    );
-  }*/
-
-  /*Widget card() {
-    return Card(
-      child: Column(
-        children: [
-          Expanded(
-                    child: GridView.builder(
-                padding: EdgeInsets.symmetric(
-                    horizontal: SizeConfig.safeBlockHorizontal * 1),
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  childAspectRatio: 20 / 28.5,
-                  crossAxisCount: 4,
-                  mainAxisSpacing: SizeConfig.diagonal * 0.2,
-                  crossAxisSpacing: SizeConfig.diagonal * 0.2,
-                ),
-                itemCount: items.length,
-                itemBuilder: (BuildContext context, int index) {
-                  MenuItem ad = MenuItem();
-                  ad.buildObject(items[index]);
-                }),
-          ),
-          Card(
-            0,
-            color: Color(Styling.primaryBackgroundColor),
-            shape: RoundedRectangleBorder(
-              belevationorderRadius: BorderRadius.circular(30),
-            ),
-            child: ListTile(
-              title: Text("le prix"),
-              subtitle: Text("le jour"),
-            ),
-          ),
-        ],
-      ),
-     
-    );
-  }*/
 }
