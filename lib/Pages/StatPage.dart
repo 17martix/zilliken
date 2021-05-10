@@ -180,14 +180,11 @@ class _StatPageState extends State<StatPage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    ZText(content:
-                      "${statistic.total}",
-                    
-                        color: Color(Styling.accentColor),
-                        fontSize: SizeConfig.diagonal * 3,
-                        fontWeight: FontWeight.bold,
-                        
-                     
+                    ZText(
+                      content: "${statistic.total}",
+                      color: Color(Styling.accentColor),
+                      fontSize: SizeConfig.diagonal * 3,
+                      fontWeight: FontWeight.bold,
                     ),
                     ZText(
                       content: " Fbu",
@@ -205,20 +202,17 @@ class _StatPageState extends State<StatPage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                   ZText(content:
-                      I18n.of(context).date,
+                    ZText(
+                      content: I18n.of(context).date,
                       textAlign: TextAlign.center,
-                     
-                        color: Color(Styling.iconColor),
-                        fontSize: SizeConfig.diagonal * 2,
-                      
+                      color: Color(Styling.iconColor),
+                      fontSize: SizeConfig.diagonal * 2,
                     ),
-                   ZText(content:
-                      "  : ${widget.formatter.format(statistic.date.toDate())}",
-                     
-                        color: Color(Styling.iconColor),
-                        fontSize: SizeConfig.diagonal * 2,
-                      
+                    ZText(
+                      content:
+                          "  : ${widget.formatter.format(statistic.date.toDate())}",
+                      color: Color(Styling.iconColor),
+                      fontSize: SizeConfig.diagonal * 2,
                     ),
                   ],
                 ),
@@ -240,14 +234,12 @@ class _StatPageState extends State<StatPage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ZText(content:
-              I18n.of(context).dailytotal,
+            ZText(
+              content: I18n.of(context).dailytotal,
               textAlign: TextAlign.center,
-              
-                color: Color(Styling.iconColor),
-                fontStyle: FontStyle.normal,
-                fontSize: SizeConfig.diagonal * 2.5,
-              
+              color: Color(Styling.iconColor),
+              fontStyle: FontStyle.normal,
+              fontSize: SizeConfig.diagonal * 2.5,
             ),
           ],
         ),
@@ -261,7 +253,7 @@ class _StatPageState extends State<StatPage> {
               children: [
                 items.length == 0
                     ? Center(
-                        child: ZText(content:""),
+                        child: ZText(content: ""),
                       )
                     : Row(
                         children: items.map((document) {
@@ -358,19 +350,17 @@ class _StatPageState extends State<StatPage> {
                     const SizedBox(
                       width: 45,
                     ),
-                    ZText(content:
-                      'Transactions',
-                    
-                          color: Color(Styling.iconColor), fontSize: 15),
-                  
+                    ZText(
+                        content: 'Transactions',
+                        color: Color(Styling.iconColor),
+                        fontSize: 15),
                     const SizedBox(
                       width: 5,
                     ),
-                    ZText(content:
-                      'state',
-                      
-                          color: Color(Styling.accentColor), fontSize: 12),
-                    
+                    ZText(
+                        content: 'state',
+                        color: Color(Styling.accentColor),
+                        fontSize: 12),
                   ],
                 ),
                 const SizedBox(

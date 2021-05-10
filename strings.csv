@@ -103,4 +103,5 @@ unit,Unit,Unité
 itemDescription,Enter Item Description,Entrer Déscription
 itemEditing,Edit Item Details,Modifier Détails
 printingDisabled,Printing Disabled,Impression désactivée
+cancelOnly,Cancel,Annuler
 noResult,No Result,Pas De Résultat

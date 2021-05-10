@@ -331,6 +331,23 @@ String? getMapsKey() {
   return key;
 }
 
+String? formatInterVal(double number) {
+  String? text;
+
+  int a = number.round();
+  String textNumber = a.toString();
+  int length = textNumber.length;
+
+  if (length < 4) {
+    text = textNumber;
+  } else if (length < 7) {
+    text = textNumber.substring(0, length - 3) + 'k';
+  } else if (length < 10) {
+    text = textNumber.substring(0, length - 3) + 'M';
+  } else {
+    text = textNumber;
+  }
+
 String searchReady(String text) {
   text = text.trim();
   text = text.toLowerCase();
