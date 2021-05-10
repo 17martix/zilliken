@@ -419,6 +419,8 @@ class Database {
       Statistic newStatistic = Statistic(
         date: Timestamp.fromDate(DateTime(today.year, today.month, today.day)),
         total: grandTotal,
+        
+      
       );
 
       await databaseReference

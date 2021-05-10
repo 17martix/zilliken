@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/services.dart';
@@ -343,7 +344,7 @@ String? formatInterVal(double number) {
   } else if (length < 7) {
     text = textNumber.substring(0, length - 3) + 'k';
   } else if (length < 10) {
-    text = textNumber.substring(0, length - 3) + 'M';
+    text = textNumber.substring(0, length - 6) + 'M';
   } else {
     text = textNumber;
   }
