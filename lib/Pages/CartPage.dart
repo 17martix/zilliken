@@ -21,6 +21,7 @@ import 'package:zilliken/Models/Fields.dart';
 import 'package:zilliken/Models/MenuItem.dart';
 import 'package:zilliken/Models/Order.dart';
 import 'package:zilliken/Models/OrderItem.dart';
+import 'package:zilliken/Models/UserProfile.dart';
 import 'package:zilliken/Pages/SingleOrderPage.dart';
 import 'package:zilliken/Services/Authentication.dart';
 import 'package:zilliken/Services/Database.dart';
@@ -238,7 +239,7 @@ class _CartPageState extends State<CartPage> {
     return FlatButton(
       child: Row(
         children: [
-          ZText(content:I18n.of(context).saveAddress),
+          ZText(content: I18n.of(context).saveAddress),
           SizedBox(width: SizeConfig.diagonal * 1),
           Icon(
             Icons.check,
@@ -254,7 +255,7 @@ class _CartPageState extends State<CartPage> {
 
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content:  ZText(content:I18n.of(context).noInternet),
+              content: ZText(content: I18n.of(context).noInternet),
             ),
           );
         } else {
@@ -281,7 +282,7 @@ class _CartPageState extends State<CartPage> {
 
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content:  ZText(content:e.toString()),
+                content: ZText(content: e.toString()),
               ),
             );
           }
@@ -316,12 +317,10 @@ class _CartPageState extends State<CartPage> {
         color: Color(Styling.primaryColor),
         child: Row(
           children: [
-             ZText(content:
-              address.addressName,
-             
-                  color: Color(Styling.primaryBackgroundColor),
-                  fontSize: SizeConfig.diagonal * 1.5),
-          
+            ZText(
+                content: address.addressName,
+                color: Color(Styling.primaryBackgroundColor),
+                fontSize: SizeConfig.diagonal * 1.5),
             SizedBox(width: SizeConfig.diagonal * 1),
             PopupMenuButton(
               color: Color(Styling.primaryBackgroundColor),
@@ -330,7 +329,8 @@ class _CartPageState extends State<CartPage> {
               ),
               offset: Offset(-125, 40),
               itemBuilder: (context) => [
-                PopupMenuItem(child:  ZText(content:I18n.of(context).delete), value: 0),
+                PopupMenuItem(
+                    child: ZText(content: I18n.of(context).delete), value: 0),
               ],
               onSelected: (value) async {
                 switch (value) {
@@ -343,7 +343,7 @@ class _CartPageState extends State<CartPage> {
 
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content:  ZText(content:I18n.of(context).noInternet),
+                          content: ZText(content: I18n.of(context).noInternet),
                         ),
                       );
                     } else {
@@ -364,7 +364,7 @@ class _CartPageState extends State<CartPage> {
 
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content:  ZText(content:e.toString()),
+                            content: ZText(content: e.toString()),
                           ),
                         );
                       }
@@ -385,13 +385,11 @@ class _CartPageState extends State<CartPage> {
       children: [
         Padding(
           padding: EdgeInsets.all(SizeConfig.diagonal * 1),
-          child:  ZText(content:
-            I18n.of(context).orders,
+          child: ZText(
+            content: I18n.of(context).orders,
             textAlign: TextAlign.center,
-            
-              color: Color(Styling.iconColor),
-              fontSize: SizeConfig.diagonal * 1.5,
-            
+            color: Color(Styling.iconColor),
+            fontSize: SizeConfig.diagonal * 1.5,
           ),
         ),
         Container(
@@ -441,29 +439,26 @@ class _CartPageState extends State<CartPage> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                   ZText(content:
-                    menu.name,
+                  ZText(
+                    content: menu.name,
                     textAlign: TextAlign.left,
-                    
-                      color: Color(Styling.textColor),
-                      fontWeight: FontWeight.bold,
-                      fontSize: SizeConfig.diagonal * 1.5,
-                    ),
-                
+                    color: Color(Styling.textColor),
+                    fontWeight: FontWeight.bold,
+                    fontSize: SizeConfig.diagonal * 1.5,
+                  ),
                   SizedBox(width: SizeConfig.diagonal * 1),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Expanded(
                         flex: 1,
-                        child:  ZText(content:
-                          "${formatNumber(menu.price)} ${I18n.of(context).fbu}",
+                        child: ZText(
+                          content:
+                              "${formatNumber(menu.price)} ${I18n.of(context).fbu}",
                           textAlign: TextAlign.left,
-                        
-                            color: Color(Styling.textColor),
-                            fontWeight: FontWeight.normal,
-                            fontSize: SizeConfig.diagonal * 1.5,
-                        
+                          color: Color(Styling.textColor),
+                          fontWeight: FontWeight.normal,
+                          fontSize: SizeConfig.diagonal * 1.5,
                         ),
                       ),
                       isAlreadyOnTheOrder(clientOrder!, menu.id!)
@@ -519,13 +514,11 @@ class _CartPageState extends State<CartPage> {
                                           SizeConfig.diagonal * 1),
                                       child: Row(
                                         children: [
-                                           ZText(content:
-                                            I18n.of(context).addItem,
-                                            
-                                                color: Colors.white,
-                                                fontSize:
-                                                    SizeConfig.diagonal * 1.5),
-                                          
+                                          ZText(
+                                              content: I18n.of(context).addItem,
+                                              color: Colors.white,
+                                              fontSize:
+                                                  SizeConfig.diagonal * 1.5),
                                           SizedBox(
                                               width: SizeConfig.diagonal * 0.5),
                                           Icon(
@@ -557,14 +550,12 @@ class _CartPageState extends State<CartPage> {
       children: [
         Padding(
           padding: EdgeInsets.all(SizeConfig.diagonal * 1),
-          child:  ZText(content:
-            I18n.of(context).orderKind,
-            textAlign: TextAlign.center,
-          
-                color: Color(Styling.iconColor),
-                fontSize: SizeConfig.diagonal * 1.5),
-          ),
-      
+          child: ZText(
+              content: I18n.of(context).orderKind,
+              textAlign: TextAlign.center,
+              color: Color(Styling.iconColor),
+              fontSize: SizeConfig.diagonal * 1.5),
+        ),
         Container(
           margin: EdgeInsets.all(SizeConfig.diagonal * 1),
           width: double.infinity,
@@ -598,22 +589,18 @@ class _CartPageState extends State<CartPage> {
                   value: 0,
                   groupValue: restaurantOrRoomOrder,
                   onChanged: restaurantRoomChange),
-               ZText(content:
-                I18n.of(context).restaurantOrder,
-               
-                  fontSize: SizeConfig.diagonal * 1.5,
-              
+              ZText(
+                content: I18n.of(context).restaurantOrder,
+                fontSize: SizeConfig.diagonal * 1.5,
               ),
               Radio(
                 value: 1,
                 groupValue: restaurantOrRoomOrder,
                 onChanged: restaurantRoomChange,
               ),
-               ZText(content:
-                I18n.of(context).livrdomicile,
-               
-                  fontSize: SizeConfig.diagonal * 1.5,
-               
+              ZText(
+                content: I18n.of(context).livrdomicile,
+                fontSize: SizeConfig.diagonal * 1.5,
               ),
             ],
           ),
@@ -645,15 +632,14 @@ class _CartPageState extends State<CartPage> {
                               color: Color(Styling.primaryColor),
                             ),
                           ),
-                           ZText(content:
-                            addressName ?? I18n.of(context).selectLocation,
+                          ZText(
+                            content:
+                                addressName ?? I18n.of(context).selectLocation,
                             textAlign: TextAlign.left,
                             overflow: TextOverflow.ellipsis,
-                           
-                              color: Color(Styling.primaryBackgroundColor),
-                              fontSize: SizeConfig.diagonal * 1.5,
-                            ),
-                        
+                            color: Color(Styling.primaryBackgroundColor),
+                            fontSize: SizeConfig.diagonal * 1.5,
+                          ),
                         ]),
                     onpressed: selectLocation,
                   ),
@@ -735,13 +721,11 @@ class _CartPageState extends State<CartPage> {
                 children: [
                   Padding(
                     padding: EdgeInsets.all(SizeConfig.diagonal * 1),
-                    child:  ZText(content:
-                      I18n.of(context).bil,
+                    child: ZText(
+                      content: I18n.of(context).bil,
                       textAlign: TextAlign.center,
-                  
-                        fontSize: SizeConfig.diagonal * 1.5,
-                        color: Color(Styling.textColor),
-                     
+                      fontSize: SizeConfig.diagonal * 1.5,
+                      color: Color(Styling.textColor),
                     ),
                   ),
                   Container(
@@ -757,43 +741,15 @@ class _CartPageState extends State<CartPage> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                             ZText(content:
-                              I18n.of(context).total,
+                            ZText(
+                              content: I18n.of(context).total,
                               textAlign: TextAlign.center,
-                             
-                                fontSize: SizeConfig.diagonal * 1.5,
-                                color:
-                                    Color(Styling.textColor).withOpacity(0.7),
-                            
+                              fontSize: SizeConfig.diagonal * 1.5,
+                              color: Color(Styling.textColor).withOpacity(0.7),
                             ),
-                             ZText(content:
-                              priceItemsTotal(context, clientOrder!),
-                             
-                                fontSize: SizeConfig.diagonal * 1.5,
-                              ),
-                          
-                          ],
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.all(SizeConfig.diagonal * 1),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                             ZText(content:
-                              I18n.of(context).taxCharge,
-                              textAlign: TextAlign.center,
-                             
-                                color:
-                                    Color(Styling.accentColor).withOpacity(0.7),
-                                fontSize: SizeConfig.diagonal * 1.5,
-                              
-                            ),
-                             ZText(content:
-                              appliedTax(context, clientOrder!, tax),
-                             
-                                fontSize: SizeConfig.diagonal * 1.5,
-                           
+                            ZText(
+                              content: priceItemsTotal(context, clientOrder!),
+                              fontSize: SizeConfig.diagonal * 1.5,
                             ),
                           ],
                         ),
@@ -803,19 +759,34 @@ class _CartPageState extends State<CartPage> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                             ZText(content:
-                              I18n.of(context).gtotal,
+                            ZText(
+                              content: I18n.of(context).taxCharge,
                               textAlign: TextAlign.center,
-                              
-                                color: Color(Styling.accentColor),
-                                fontSize: SizeConfig.diagonal * 1.5,
-                             
+                              color:
+                                  Color(Styling.accentColor).withOpacity(0.7),
+                              fontSize: SizeConfig.diagonal * 1.5,
                             ),
-                             ZText(content:
-                              grandTotal(context, clientOrder!, tax),
-                             
-                                fontSize: SizeConfig.diagonal * 1.5,
-                             
+                            ZText(
+                              content: appliedTax(context, clientOrder!, tax),
+                              fontSize: SizeConfig.diagonal * 1.5,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.all(SizeConfig.diagonal * 1),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            ZText(
+                              content: I18n.of(context).gtotal,
+                              textAlign: TextAlign.center,
+                              color: Color(Styling.accentColor),
+                              fontSize: SizeConfig.diagonal * 1.5,
+                            ),
+                            ZText(
+                              content: grandTotal(context, clientOrder!, tax),
+                              fontSize: SizeConfig.diagonal * 1.5,
                             ),
                           ],
                         ),
@@ -827,14 +798,12 @@ class _CartPageState extends State<CartPage> {
                     color: Color(Styling.accentColor),
                     leftPadding: 0.0,
                     rightPadding: 0.0,
-                    child:  ZText(content:
-                      I18n.of(context).ordPlace,
-                      
-                        color: Color(Styling.primaryBackgroundColor),
-                        fontSize: SizeConfig.diagonal * 1.5,
-                      ),
+                    child: ZText(
+                      content: I18n.of(context).ordPlace,
+                      color: Color(Styling.primaryBackgroundColor),
+                      fontSize: SizeConfig.diagonal * 1.5,
                     ),
-                 
+                  ),
                 ],
               ),
             ),
@@ -857,7 +826,7 @@ class _CartPageState extends State<CartPage> {
           (addressName == null || addressName == '')) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content:  ZText(content:I18n.of(context).enterLocation),
+            content: ZText(content: I18n.of(context).enterLocation),
           ),
         );
       } else {
@@ -869,11 +838,12 @@ class _CartPageState extends State<CartPage> {
 
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content:  ZText(content:I18n.of(context).noInternet),
+              content: ZText(content: I18n.of(context).noInternet),
             ),
           );
         } else {
           try {
+            UserProfile? userProfile = await widget.db.getUserProfile(widget.userId);
             Order order = Order(
               clientOrder: clientOrder!,
               orderLocation: restaurantOrRoomOrder,
@@ -887,6 +857,7 @@ class _CartPageState extends State<CartPage> {
               status: 1,
               userId: widget.userId,
               userRole: widget.userRole,
+              userName: userProfile!.name,
               taxPercentage: tax,
               total: priceItemsTotalNumber(context, clientOrder!),
               addressName: addressName,
@@ -920,7 +891,7 @@ class _CartPageState extends State<CartPage> {
 
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content:  ZText(content:e.toString()),
+                content: ZText(content: e.toString()),
               ),
             );
           }

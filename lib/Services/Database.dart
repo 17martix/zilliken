@@ -16,6 +16,7 @@ import 'package:zilliken/Models/Order.dart';
 import 'package:zilliken/Models/OrderItem.dart';
 import 'package:zilliken/Models/Result.dart';
 import 'package:zilliken/Models/Statistic.dart';
+import 'package:zilliken/Models/StatisticUser.dart';
 import 'package:zilliken/Models/Stock.dart';
 import 'package:zilliken/Models/UserProfile.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
@@ -127,6 +128,7 @@ class Database {
       Fields.userRole: order.userRole,
       Fields.taxPercentage: order.taxPercentage,
       Fields.total: order.total,
+      Fields.userName: order.userName,
       Fields.geoPoint: order.geoPoint,
       Fields.addressName: order.addressName,
       Fields.deliveringOrderId: null,
@@ -391,7 +393,7 @@ class Database {
   }
 
   Future<void> updateStatus(
-      String id, int status, int value, num grandTotal, String userId) async {
+      String id, int status, int value, num grandTotal,Order order) async {
     var document = databaseReference.collection(Fields.order).doc(id);
 
     if (value == 1) {
@@ -447,33 +449,34 @@ class Database {
         }
       });
 
+      StatisticUser statisticUser = StatisticUser(
+        date: Timestamp.fromDate(DateTime(today.year, today.month, today.day)),
+        total: grandTotal,
+        
+      
+      );
+
       await databaseReference
-          .collection(Fields.users)
-          .doc(userId)
-          .collection(Fields.statistic)
-          .where(Fields.date, isEqualTo: newStatistic.date)
+          .collection(Fields.statisticUser)
+          .where(Fields.date, isEqualTo: statisticUser.date)
           .get()
           .then((value) async {
         if (value != null && value.size > 0) {
           await databaseReference
-              .collection(Fields.users)
-              .doc(userId)
-              .collection(Fields.statistic)
+              .collection(Fields.statisticUser)
               .doc(value.docs[0].id)
               .update({
-            Fields.total: FieldValue.increment(newStatistic.total),
+            Fields.total: FieldValue.increment(statisticUser.total),
           });
         } else {
           DocumentReference statref = databaseReference
-              .collection(Fields.users)
-              .doc(userId)
-              .collection(Fields.statistic)
+              .collection(Fields.statisticUser)
               .doc();
 
           await statref.set({
             Fields.id: statref.id,
-            Fields.total: newStatistic.total,
-            Fields.date: newStatistic.date,
+            Fields.total: statisticUser.total,
+            Fields.date: statisticUser.date,
           });
         }
       });

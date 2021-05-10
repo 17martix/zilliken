@@ -18,6 +18,7 @@ class Fields {
 
   static final String chefCuisine = 'chefCuisine';
   static final String chefBoissons = 'chefBoissons';
+  static final String statisticUser = 'statisticUser';
 
   static final String taxes = 'taxes';
   static final String percentage = 'percentage';
@@ -34,6 +35,8 @@ class Fields {
   static final String userRole = 'userRole';
   static final String taxPercentage = 'taxPercentage';
   static final String total = 'total';
+
+  static final String userName = 'userName';
 
   static final String count = 'count';
   static final String name = 'name';
