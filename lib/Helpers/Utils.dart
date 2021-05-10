@@ -118,8 +118,7 @@ String? orderStatus(context, Order order) {
   return text;
 }
 
-List<String> getUserTags(
-   String name, String phoneNumber) {
+List<String> getUserTags(String name, String phoneNumber) {
   List<String> searchIndex = [];
 
   searchIndex.addAll(createTags(name));
@@ -348,6 +347,8 @@ String? formatInterVal(double number) {
   } else {
     text = textNumber;
   }
+  return text;
+}
 
 String searchReady(String text) {
   text = text.trim();
