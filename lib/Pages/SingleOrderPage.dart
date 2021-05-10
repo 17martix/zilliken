@@ -1692,7 +1692,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                     Expanded(
                       flex: 1,
                       child:  ZText(content:
-                        order.instructions,
+                        order.instructions!,
                         overflow: TextOverflow.visible,
                         textAlign: TextAlign.end,
                        
