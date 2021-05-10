@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/cupertino.dart';
 
 import 'package:flutter/services.dart';
 import 'package:zilliken/Helpers/Utils.dart';
@@ -194,7 +195,7 @@ class Database {
           Fields.name: userProfile.name,
           Fields.role: userProfile.role,
           Fields.phoneNumber: userProfile.phoneNumber,
-          Fields.tags:userProfile.tags,
+          Fields.tags: userProfile.tags,
           Fields.lastSeenAt: FieldValue.serverTimestamp(),
           Fields.createdAt: FieldValue.serverTimestamp(),
         })
@@ -310,7 +311,7 @@ class Database {
         createdAt: snapshot[Fields.createdAt],
         lastSeenAt: snapshot[Fields.lastSeenAt],
         token: snapshot[Fields.token],
-        tags : List.from(snapshot[Fields.tags]),
+        tags: List.from(snapshot[Fields.tags]),
       );
     });
 
@@ -393,7 +394,7 @@ class Database {
   }
 
   Future<void> updateStatus(
-      String id, int status, int value, num grandTotal,Order order) async {
+      String id, int status, int value, num grandTotal, Order order) async {
     var document = databaseReference.collection(Fields.order).doc(id);
 
     if (value == 1) {
@@ -421,8 +422,7 @@ class Database {
       Statistic newStatistic = Statistic(
         date: Timestamp.fromDate(DateTime(today.year, today.month, today.day)),
         total: grandTotal,
-        
-      
+        id: id,
       );
 
       await databaseReference
@@ -452,12 +452,13 @@ class Database {
       StatisticUser statisticUser = StatisticUser(
         date: Timestamp.fromDate(DateTime(today.year, today.month, today.day)),
         total: grandTotal,
-        
-      
+        userId: order.userId,
+        userName: order.userName,
       );
 
       await databaseReference
           .collection(Fields.statisticUser)
+          .where(Fields.userId, isEqualTo: statisticUser.userId)
           .where(Fields.date, isEqualTo: statisticUser.date)
           .get()
           .then((value) async {
@@ -467,16 +468,19 @@ class Database {
               .doc(value.docs[0].id)
               .update({
             Fields.total: FieldValue.increment(statisticUser.total),
+            Fields.count: FieldValue.increment(1),
           });
         } else {
-          DocumentReference statref = databaseReference
-              .collection(Fields.statisticUser)
-              .doc();
+          DocumentReference statref =
+              databaseReference.collection(Fields.statisticUser).doc();
 
           await statref.set({
             Fields.id: statref.id,
             Fields.total: statisticUser.total,
             Fields.date: statisticUser.date,
+            Fields.userName: statisticUser.userName,
+            Fields.count: 1,
+            Fields.userId: statisticUser.userId,
           });
         }
       });
