@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:zilliken/Components/ZTextField.dart';
 import 'package:zilliken/Helpers/SizeConfig.dart';
+import 'package:zilliken/Helpers/Styling.dart';
+import 'package:zilliken/Helpers/Utils.dart';
 import 'package:zilliken/Models/Fields.dart';
 import 'package:zilliken/Models/UserProfile.dart';
 import 'package:zilliken/Pages/SingleUserPage.dart';
@@ -8,9 +10,11 @@ import 'package:zilliken/Services/Authentication.dart';
 import 'package:zilliken/Services/Database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+import 'package:collection/collection.dart';
 
 import '../Components/ZText.dart';
 import '../i18n.dart';
+import 'SearchPage.dart';
 
 class UserPage extends StatefulWidget {
   final Authentication auth;
@@ -31,49 +35,207 @@ class UserPage extends StatefulWidget {
 }
 
 class _UserPageState extends State<UserPage> {
-  var users = FirebaseFirestore.instance.collection(Fields.users);
+  late QuerySnapshot itemref;
+  int documentLimit = 10;
+  bool hasMore = true;
+  DocumentSnapshot? lastDocument;
+  List<DocumentSnapshot> items = [];
+
+  TextEditingController searchController = TextEditingController();
+  String? searchText = '';
+  ScrollController _scrollController = ScrollController();
+  late Query searchRef1;
+  late Query searchRef2;
+  List<DocumentSnapshot> searchList = [];
+  String? noResult = '';
+  bool isSearchLoading = false;
+  bool displayCancelButton = false;
+  bool isSearching = false;
+  bool isLoading = false;
+  List<String> searchTags = [];
+
+  @override
+  void initState() {
+    super.initState();
+    itemQuery();
+    _scrollController.addListener(() {
+      double maxScroll = _scrollController.position.maxScrollExtent;
+      double currentScroll = _scrollController.position.pixels;
+      double delta = MediaQuery.of(context).size.height * 0.20;
+      if (maxScroll - currentScroll <= delta) {
+        if (isLoading == false) {
+          itemQuery();
+        }
+      }
+    });
+  }
+
+  void itemQuery() async {
+    if (!hasMore) {
+      return;
+    }
+
+    if (isLoading == true) {
+      return;
+    }
+
+    setState(() {
+      isLoading = true;
+    });
+
+    if (lastDocument == null) {
+      itemref = await widget.db.databaseReference
+          .collection(Fields.users)
+          .orderBy(Fields.lastSeenAt, descending: true)
+          .limit(documentLimit)
+          .get();
+    } else {
+      itemref = await widget.db.databaseReference
+          .collection(Fields.users)
+          .orderBy(Fields.lastSeenAt, descending: true)
+          .startAfterDocument(lastDocument!)
+          .limit(documentLimit)
+          .get();
+    }
+
+    if (itemref.docs.length < documentLimit) {
+      hasMore = false;
+    }
+
+    if (itemref.docs.length > 0)
+      lastDocument = itemref.docs[itemref.docs.length - 1];
+    setState(() {
+      for (int i = 0; i < itemref.docs.length; i++) {
+        items.add(itemref.docs[i]);
+      }
+      isLoading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
     return Scaffold(
-      body: body(),
+      backgroundColor: Colors.transparent,
+      body: Column(
+        children: [
+          Padding(
+            padding: EdgeInsets.all(SizeConfig.diagonal * 1),
+            child: ZTextField(
+              hint: (I18n.of(context).search),
+              maxLines: 1,
+              controller: searchController,
+              keyboardType: TextInputType.text,
+              textInputAction: TextInputAction.search,
+              outsidePrefix: Icon(
+                Icons.search,
+                size: SizeConfig.diagonal * 2.5,
+              ),
+              outsideSuffix: Row(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  displayCancelButton
+                      ? IconButton(
+                          icon: Icon(
+                            Icons.cancel_outlined,
+                            color: Color(Styling.primaryColor),
+                            size: SizeConfig.diagonal * 2.5,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              searchController.clear();
+                              isSearching = false;
+                              displayCancelButton = false;
+                            });
+                          })
+                      : Text(''),
+                ],
+              ),
+              onFieldSubmitted: (String? value) {
+                if (value != null && value.isNotEmpty && value != '') {
+                  setState(() {
+                    isSearching = true;
+                  });
+                  searchText = value;
+                  isSearchLoading = false;
+                  searchQuery();
+                } else {
+                  setState(() {
+                    isSearching = false;
+                  });
+                }
+              },
+              onChanged: (String? value) {
+                if (value == null || value.isEmpty || value == '') {
+                  setState(() {
+                    isSearching = false;
+                    displayCancelButton = false;
+                  });
+                } else {
+                  setState(() {
+                    displayCancelButton = true;
+                  });
+                }
+              },
+            ),
+          ),
+          isSearching ? searchBody() : body(),
+        ],
+      ),
+    );
+  }
+
+  Widget searchBody() {
+    return SearchPage(
+      auth: widget.auth,
+      db: widget.db,
+      userId: widget.userId,
+      userRole: widget.userRole,
+      isLoading: isSearchLoading,
+      noResult: noResult!,
+      searchList: searchList,
     );
   }
 
   Widget body() {
-    return Column(
-      children: [
-        Padding(
-          padding: EdgeInsets.all(SizeConfig.diagonal * 1),
-          child: ZTextField(
-            hint: (I18n.of(context).search),
-            keyboardType: TextInputType.text,
-            outsidePrefix: Icon(
-              Icons.search,
-              size: SizeConfig.diagonal * 2.5,
-            ),
-          ),
+    return Expanded(
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            userListStream(),
+          ],
         ),
-        Expanded(child: userListStream()),
-      ],
+      ),
     );
   }
 
   Widget userListStream() {
-    return StreamBuilder<QuerySnapshot>(
-      stream: users.snapshots(),
-      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        if (snapshot.data == null) return Center(child: ZText(content: ""));
-
-        return ListView(
-          shrinkWrap: true,
-          children: snapshot.data!.docs.map((DocumentSnapshot document) {
-            UserProfile userProfile = UserProfile.buildObject(document);
-            return userList(userProfile);
-          }).toList(),
-        );
-      },
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        items.length == 0
+            ? Center(
+                child: ZText(content: ""),
+              )
+            : Column(
+                children: items.map((DocumentSnapshot document) {
+                  UserProfile userProfile = UserProfile.buildObject(document);
+                  return userList(userProfile);
+                }).toList(),
+              ),
+        isLoading
+            ? Container(
+                width: MediaQuery.of(context).size.width,
+                padding: EdgeInsets.all(SizeConfig.diagonal * 1),
+                child: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              )
+            : Container()
+      ],
     );
   }
 
@@ -112,5 +274,127 @@ class _UserPageState extends State<UserPage> {
         },
       ),
     );
+  }
+
+  void searchQuery() {
+    if (isSearchLoading == true) {
+      // log("here 2");
+      return;
+    }
+    searchList.clear();
+    if (mounted) {
+      setState(() {
+        isSearchLoading = true;
+        noResult = '';
+      });
+    }
+
+    searchRef1 = FirebaseFirestore.instance
+        .collection(Fields.users)
+        .where(Fields.tags, arrayContains: searchReady(searchText!))
+        .limit(50);
+
+    searchRef1.get().then((QuerySnapshot? snapshot) {
+      if (snapshot == null || snapshot.docs.length < 1) {
+        // log("here 8");
+        searchQuery2();
+      } else {
+        //log("here 9");
+        if (mounted) {
+          setState(() {
+            searchList.removeWhere((Object item) {
+              if (item is DocumentSnapshot) {
+                DocumentSnapshot? exist = snapshot.docs.firstWhereOrNull(
+                    (DocumentSnapshot element) => element.id == item.id);
+                if (exist == null) {
+                  return true;
+                } else {
+                  return false;
+                }
+              } else {
+                return true;
+              }
+            });
+
+            snapshot.docs.forEach((item) {
+              Object? exist = searchList.firstWhereOrNull((Object element) {
+                if (element is DocumentSnapshot) {
+                  bool isEqual = element.id == item.id;
+                  return isEqual;
+                } else {
+                  return false;
+                }
+              });
+
+              if (exist == null) {
+                searchList.add(item);
+              }
+            });
+            isSearchLoading = false;
+          });
+        }
+      }
+    });
+  }
+
+  void searchQuery2() {
+    searchTags = [];
+    searchTags = createTags(searchText!);
+    if (searchTags.length > 10) {
+      searchTags = searchTags.sublist(0, 10);
+    }
+
+    searchRef2 = FirebaseFirestore.instance
+        .collection(Fields.users)
+        .where(Fields.tags, arrayContainsAny: searchTags)
+        .limit(50);
+
+    searchRef2.get().then((QuerySnapshot? snapshot) {
+      if (snapshot == null || snapshot.docs.length < 1) {
+        // log("here 13");
+        if (mounted) {
+          setState(() {
+            isSearchLoading = false;
+            noResult = I18n.of(context).noResult;
+          });
+        }
+      } else {
+        // log("here 14");
+        if (mounted) {
+          setState(() {
+            searchList.removeWhere((Object item) {
+              if (item is DocumentSnapshot) {
+                DocumentSnapshot? exist = snapshot.docs.firstWhereOrNull(
+                    (DocumentSnapshot element) => element.id == item.id);
+                if (exist == null) {
+                  return true;
+                } else {
+                  return false;
+                }
+              } else {
+                return true;
+              }
+            });
+
+            snapshot.docs.forEach((item) {
+              Object? exist = searchList.firstWhereOrNull((Object element) {
+                if (element is DocumentSnapshot) {
+                  bool isEqual = element.id == item.id;
+                  return isEqual;
+                } else {
+                  return false;
+                }
+              });
+
+              if (exist == null) {
+                searchList.add(item);
+              }
+            });
+
+            isSearchLoading = false;
+          });
+        }
+      }
+    });
   }
 }

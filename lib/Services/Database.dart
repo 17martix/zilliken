@@ -192,6 +192,7 @@ class Database {
           Fields.name: userProfile.name,
           Fields.role: userProfile.role,
           Fields.phoneNumber: userProfile.phoneNumber,
+          Fields.tags:userProfile.tags,
           Fields.lastSeenAt: FieldValue.serverTimestamp(),
           Fields.createdAt: FieldValue.serverTimestamp(),
         })
@@ -307,6 +308,7 @@ class Database {
         createdAt: snapshot[Fields.createdAt],
         lastSeenAt: snapshot[Fields.lastSeenAt],
         token: snapshot[Fields.token],
+        tags : List.from(snapshot[Fields.tags]),
       );
     });
 

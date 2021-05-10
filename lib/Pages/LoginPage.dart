@@ -424,6 +424,7 @@ class _LoginPageState extends State<LoginPage> {
             role: Fields.client,
             phoneNumber: currentUser.phoneNumber!,
             token: token,
+            tags: getUserTags(_name!,currentUser.phoneNumber!),
           );
           await widget.db.createAccount(context, userProfile);
           EasyLoading.dismiss();

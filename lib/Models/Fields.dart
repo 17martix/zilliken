@@ -89,4 +89,6 @@ class Fields {
   static final String substQuantity = 'substQuantity';
   static final String linked = 'linked';
   static final String condiments = 'condiments';
+
+  static final String tags = 'tags';
 }
