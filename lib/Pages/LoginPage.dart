@@ -147,21 +147,20 @@ class _LoginPageState extends State<LoginPage> {
                                 Container(
                                   margin: EdgeInsets.only(
                                       bottom: SizeConfig.diagonal * 6),
-                                  child:  ZText(content:
-                                    I18n.of(context)
+                                  child: ZText(
+                                    content: I18n.of(context)
                                         .createaccount
                                         .toUpperCase(),
-                                   
-                                      color: Color(Styling.accentColor),
-                                      fontSize: SizeConfig.diagonal * 2,
-                                      fontStyle: FontStyle.normal,
-                                    ),
+                                    color: Color(Styling.accentColor),
+                                    fontSize: SizeConfig.diagonal * 2,
+                                    fontStyle: FontStyle.normal,
                                   ),
-                             
+                                ),
                                 Form(
                                   key: _phoneKey,
                                   child: ZTextField(
-                                    outsidePrefix:  ZText(content:_selectedAreaCode),
+                                    outsidePrefix:
+                                        ZText(content: _selectedAreaCode),
                                     hint: I18n.of(context).yourphonenumber,
                                     keyboardType: TextInputType.number,
                                     inputFormatters: [
@@ -171,22 +170,21 @@ class _LoginPageState extends State<LoginPage> {
                                         sendCode(),
                                     onSaved: (newValue) =>
                                         _phoneNumber = newValue,
-                                    validator: (value) => value==null || value.isEmpty
-                                        ? I18n.of(context).requiredInput
-                                        : null,
+                                    validator: (value) =>
+                                        value == null || value.isEmpty
+                                            ? I18n.of(context).requiredInput
+                                            : null,
                                   ),
                                 ),
                                 ZElevatedButton(
                                   onpressed: sendCode,
-                                  child:  ZText(content:
-                                    I18n.of(context).signin,
-                                   
-                                      color:
-                                          Color(Styling.primaryBackgroundColor),
-                                      fontSize: SizeConfig.diagonal * 1.5,
-                                    ),
+                                  child: ZText(
+                                    content: I18n.of(context).signin,
+                                    color:
+                                        Color(Styling.primaryBackgroundColor),
+                                    fontSize: SizeConfig.diagonal * 1.5,
                                   ),
-                               
+                                ),
                               ],
                             ),
                           ),
@@ -221,15 +219,13 @@ class _LoginPageState extends State<LoginPage> {
                             Container(
                               margin: EdgeInsets.only(
                                   bottom: SizeConfig.diagonal * 5),
-                              child:  ZText(content:
-                                I18n.of(context).smscode.toUpperCase(),
-                               
-                                  color: Color(Styling.accentColor),
-                                  fontSize: SizeConfig.diagonal * 3,
-                                  fontStyle: FontStyle.normal,
-                                ),
+                              child: ZText(
+                                content: I18n.of(context).smscode.toUpperCase(),
+                                color: Color(Styling.accentColor),
+                                fontSize: SizeConfig.diagonal * 3,
+                                fontStyle: FontStyle.normal,
                               ),
-                          
+                            ),
                             Form(
                               key: _pinKey,
                               child: PinPut(
@@ -268,12 +264,9 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                             ZElevatedButton(
                               color: Color(Styling.accentColor),
-                              child:  ZText(content:
-                                I18n.of(context).confirm,
-                               
-                                    color:
-                                        Color(Styling.primaryBackgroundColor)),
-                             
+                              child: ZText(
+                                  content: I18n.of(context).confirm,
+                                  color: Color(Styling.primaryBackgroundColor)),
                               onpressed: () =>
                                   confirmSMSCode(_pinPutController.text),
                             ),
@@ -310,15 +303,15 @@ class _LoginPageState extends State<LoginPage> {
                               Container(
                                 margin: EdgeInsets.only(
                                     bottom: SizeConfig.diagonal * 5),
-                                child:  ZText(content:
-                                  I18n.of(context).createprofile.toUpperCase(),
-                                  
-                                    color: Color(Styling.accentColor),
-                                    fontSize: SizeConfig.diagonal * 3,
-                                    fontStyle: FontStyle.normal,
-                                  ),
+                                child: ZText(
+                                  content: I18n.of(context)
+                                      .createprofile
+                                      .toUpperCase(),
+                                  color: Color(Styling.accentColor),
+                                  fontSize: SizeConfig.diagonal * 3,
+                                  fontStyle: FontStyle.normal,
                                 ),
-                         
+                              ),
                               Form(
                                 key: _nameKey,
                                 child: ZTextField(
@@ -330,15 +323,12 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                               ZElevatedButton(
                                 onpressed: createAccount,
-                                child:  ZText(content:
-                                  I18n.of(context).signUp,
-                                  
-                                    color:
-                                        Color(Styling.primaryBackgroundColor),
-                                    fontSize: SizeConfig.diagonal * 1.5,
-                                  ),
+                                child: ZText(
+                                  content: I18n.of(context).signUp,
+                                  color: Color(Styling.primaryBackgroundColor),
+                                  fontSize: SizeConfig.diagonal * 1.5,
                                 ),
-                             
+                              ),
                             ],
                           ),
                         ),
@@ -366,8 +356,8 @@ class _LoginPageState extends State<LoginPage> {
         isProfileCreated(user);
       } on Exception catch (e) {
         EasyLoading.dismiss();
-       ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content:  ZText(content:I18n.of(context).operationFailed)));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: ZText(content: I18n.of(context).operationFailed)));
       }
     }
   }
@@ -417,7 +407,8 @@ class _LoginPageState extends State<LoginPage> {
       bool isOnline = await hasConnection();
       if (!isOnline) {
         EasyLoading.dismiss();
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:  ZText(content:I18n.of(context).noInternet)));
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: ZText(content: I18n.of(context).noInternet)));
       } else {
         try {
           User currentUser;
@@ -451,7 +442,8 @@ class _LoginPageState extends State<LoginPage> {
           );
         } on Exception catch (e) {
           EasyLoading.dismiss();
-         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:  ZText(content:I18n.of(context).operationFailed)));
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: ZText(content: I18n.of(context).operationFailed)));
         }
       }
     }
@@ -473,7 +465,8 @@ class _LoginPageState extends State<LoginPage> {
       bool isOnline = await hasConnection();
       if (!isOnline) {
         EasyLoading.dismiss();
-       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:  ZText(content:I18n.of(context).noInternet)));
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: ZText(content: I18n.of(context).noInternet)));
       } else {
         try {
           String number = _selectedAreaCode + _phoneNumber!;
@@ -486,8 +479,9 @@ class _LoginPageState extends State<LoginPage> {
             },
             verificationFailed: (FirebaseAuthException e) {
               EasyLoading.dismiss();
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content:  ZText(content:e.message!),
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: ZText(content: e.message!),
                 ),
               );
             },
@@ -520,7 +514,8 @@ class _LoginPageState extends State<LoginPage> {
           );
         } on Exception catch (e) {
           EasyLoading.dismiss();
-         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:  ZText(content:I18n.of(context).operationFailed)));
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: ZText(content: I18n.of(context).operationFailed)));
         }
       }
     }

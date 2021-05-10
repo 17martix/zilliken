@@ -64,7 +64,7 @@ class _UserPageState extends State<UserPage> {
     return StreamBuilder<QuerySnapshot>(
       stream: users.snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        if (snapshot.data == null) return Center(child: ZText(content:""));
+        if (snapshot.data == null) return Center(child: ZText(content: ""));
 
         return ListView(
           shrinkWrap: true,
@@ -80,19 +80,19 @@ class _UserPageState extends State<UserPage> {
   Widget userList(UserProfile userProfile) {
     return Card(
       child: ListTile(
-        title: ZText(content:
-          '${I18n.of(context).name} ' " : " ' ${userProfile.name}',
+        title: ZText(
+          content: '${I18n.of(context).name} ' " : " ' ${userProfile.name}',
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ZText(content:
-              I18n.of(context).phone + " : " + userProfile.phoneNumber,
+            ZText(
+              content: I18n.of(context).phone + " : " + userProfile.phoneNumber,
             ),
-            ZText(content:
-              '${I18n.of(context).last} '
-              " : "
-              '${widget.formatter.format(userProfile.lastSeenAt!.toDate())}',
+            ZText(
+              content: '${I18n.of(context).last} '
+                  " : "
+                  '${widget.formatter.format(userProfile.lastSeenAt!.toDate())}',
             ),
           ],
         ),
@@ -105,7 +105,7 @@ class _UserPageState extends State<UserPage> {
                 auth: widget.auth,
                 userId: widget.userId,
                 userRole: widget.userRole,
-                userData:userProfile,
+                userData: userProfile,
               ),
             ),
           );
