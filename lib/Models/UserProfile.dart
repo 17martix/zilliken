@@ -12,6 +12,7 @@ class UserProfile {
   late String phoneNumber;
   late Timestamp? lastSeenAt;
   late Timestamp? createdAt;
+  late List<String>? tags;
 
   UserProfile({
     required this.id,
@@ -21,6 +22,7 @@ class UserProfile {
      this.token,
      this.lastSeenAt,
      this.createdAt,
+     required this.tags,
   });
 
   UserProfile.buildObject(DocumentSnapshot document) {
@@ -31,6 +33,7 @@ class UserProfile {
     token = document.data()?[Fields.token];
     lastSeenAt = document.data()![Fields.lastSeenAt];
     createdAt = document.data()![Fields.createdAt];
+     tags = List.from(document.data()![Fields.tags]);
   }
 
   UserProfile.buildObjectAsync(AsyncSnapshot<DocumentSnapshot> document) {
@@ -41,5 +44,6 @@ class UserProfile {
     token = document.data?[Fields.token];
     lastSeenAt = document.data![Fields.lastSeenAt];
     createdAt = document.data![Fields.createdAt];
+     tags = List.from(document.data![Fields.tags]);
   }
 }

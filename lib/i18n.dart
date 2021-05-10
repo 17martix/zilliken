@@ -215,6 +215,8 @@ class I18n {
 
   String get printingDisabled => _getText("printingDisabled");
 
+  String get noResult => _getText("noResult");
+
   static late Map<String, String> _localizedValues;
 
   static const _enValues = {
@@ -323,6 +325,7 @@ class I18n {
     "itemDescription": "Enter Item Description",
     "itemEditing": "Edit Item Details",
     "printingDisabled": "Printing Disabled",
+    "noResult": "No Result",
   };
 
   static const _frValues = {
@@ -431,6 +434,7 @@ class I18n {
     "itemDescription": "Entrer Déscription",
     "itemEditing": "Modifier Détails",
     "printingDisabled": "Impression désactivée",
+    "noResult": "Pas De Résultat",
   };
 
   static const _allValues = {

@@ -118,6 +118,42 @@ String? orderStatus(context, Order order) {
   return text;
 }
 
+List<String> getUserTags(
+   String name, String phoneNumber) {
+  List<String> searchIndex = [];
+
+  searchIndex.addAll(createTags(name));
+  searchIndex.addAll(createTags(phoneNumber));
+
+  return searchIndex;
+}
+
+List<String> createTags(String text) {
+  text = text.trim();
+  text = text.toLowerCase();
+  text = text.replaceAll(new RegExp(r'(?:_|[^\w\s])+'), '');
+  List<String> list = [];
+  String s = '';
+  List<String> splitList = text.split(" ");
+
+  for (int i = 0; i < splitList.length; i++) {
+    list.add(splitList[i]);
+    if (s == '') s = splitList[i];
+
+    if (i > 0) {
+      for (int j = i; j < splitList.length; j++) {
+        s += " " + splitList[j];
+        list.add(s);
+      }
+      s = splitList[i];
+    }
+  }
+
+  //for (int i = 0; i < list.length; i++) print(list[i]);
+
+  return list;
+}
+
 String itemTotal(context, OrderItem orderItem) {
   int total = orderItem.menuItem.price * orderItem.count;
   return "$total ${I18n.of(context).fbu}";
@@ -301,7 +337,6 @@ String? formatInterVal(double number) {
 
   int a = number.round();
   String textNumber = a.toString();
-
   int length = textNumber.length;
 
   if (length < 4) {
@@ -314,5 +349,9 @@ String? formatInterVal(double number) {
     text = textNumber;
   }
 
+String searchReady(String text) {
+  text = text.trim();
+  text = text.toLowerCase();
+  text = text.replaceAll(new RegExp(r'(?:_|[^\w\s])+'), '');
   return text;
 }
