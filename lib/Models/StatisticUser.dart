@@ -8,20 +8,23 @@ class StatisticUser {
   late num total;
   late Timestamp date;
   late String userId;
-  late num count;
+  late String userName;
+   num? count;
 
   StatisticUser(
       {this.id,
       required this.total,
       required this.date,
       required this.userId,
-      required this.count});
+      required this.userName,
+       this.count});
 
   StatisticUser.buildObject(DocumentSnapshot document) {
     id = document.id;
     total = document.data()![Fields.total];
     date = document.data()![Fields.date];
     userId = document.data()![Fields.userId];
+     userName = document.data()![Fields.userName];
 
     count = document.data()![Fields.count];
   }
@@ -31,6 +34,7 @@ class StatisticUser {
     total = document.data![Fields.total];
     date = document.data![Fields.date];
     userId = document.data![Fields.userId];
+    userName = document.data![Fields.userName];
     count = document.data![Fields.count];
   }
 }
