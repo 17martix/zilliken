@@ -327,7 +327,7 @@ class _StatPageState extends State<StatPage> {
             child: Column(
               children: [
                 graph(),
-                graph2(),
+                statUser(),
               ],
             ),
           ),
@@ -579,7 +579,7 @@ class _StatPageState extends State<StatPage> {
         ]);
   }
 
-  Widget graph2() {
+  Widget statUser() {
     return Container(
       child: Card(
         shape: RoundedRectangleBorder(
