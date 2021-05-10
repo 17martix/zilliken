@@ -110,17 +110,15 @@ class _SingleUserPageState extends State<SingleUserPage> {
 
     if (lastDocument == null) {
       statref = await widget.db.databaseReference
-          .collection(Fields.users)
-          .doc(widget.userData.id)
-          .collection(Fields.statistic)
+          .collection(Fields.statisticUser)
+          .where(Fields.userId, isEqualTo: widget.userData.id)
           .limit(documentLimit)
           .orderBy(Fields.date)
           .get();
     } else {
       statref = await widget.db.databaseReference
           .collection(Fields.users)
-          .doc(widget.userData.id)
-          .collection(Fields.statistic)
+          .where(Fields.userId, isEqualTo: widget.userData.id)
           .limit(documentLimit)
           .orderBy(Fields.date, descending: true)
           .startAfterDocument(lastDocument!)
