@@ -403,6 +403,21 @@ class Database {
         Fields.status: Fields.confirmed,
         Fields.confirmedDate: FieldValue.serverTimestamp(),
       });
+
+      order.clientOrder.forEach((orderItem) async {
+        if (orderItem.menuItem.condiments != null) {
+          orderItem.menuItem.condiments!.forEach((stock) async {
+            var stockReference =
+                databaseReference.collection(Fields.stock).doc(stock.id);
+            WriteBatch batch = databaseReference.batch();
+
+            batch.update(stockReference, {
+              Fields.quantity: stock.quantity - orderItem.menuItem.quantity!,
+            });
+            await batch.commit();
+          });
+        }
+      });
     } else if (value == 3) {
       await document.update({
         Fields.status: Fields.preparation,

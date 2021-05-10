@@ -66,7 +66,6 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
 
   int _orderStatus = 1;
   int enabled = 1;
-  int myvalue = 1111111;
 
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   Order? order;
@@ -171,9 +170,11 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
     });
 
     widget.db.getOrder(widget.orderId).then((value) {
+      setState(() {
+        order = value;
+      });
       if (value!.orderLocation == 1) {
         setState(() {
-          order = value;
           _currentPoint = value.currentPoint;
           if (_status != 4) {
             if (widget.userId == order!.deliveringOrderId) {
@@ -191,8 +192,6 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
         items = value;
       });
     });
-
-    widget.db.getStockItem().then((value) {});
   }
 
   void initLocation() {
@@ -493,7 +492,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
               goingBack == false)
             map(),
           if (widget.userRole == Fields.client) progressionTimeLine(),
-          if (widget.userRole != Fields.client) statusUpdate(),
+          if (widget.userRole != Fields.client && order != null) statusUpdate(),
           orderItemStream(),
           informationStream(),
           Padding(
