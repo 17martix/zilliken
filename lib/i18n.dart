@@ -229,6 +229,8 @@ class I18n {
 
   String get enterQuantity => _getText("enterQuantity");
 
+  String get edit => _getText("edit");
+
   static late Map<String, String> _localizedValues;
 
   static const _enValues = {
@@ -344,6 +346,7 @@ class I18n {
     "added": "Added",
     "linkDescription": "Choose any meal that requires this item",
     "enterQuantity": "Enter Quantity",
+    "edit": "Edit",
   };
 
   static const _frValues = {
@@ -459,6 +462,7 @@ class I18n {
     "added": "Ajouté",
     "linkDescription": "Choisissez chaque repas qui nécessite cet article",
     "enterQuantity": "Saisissez la Quantité",
+    "edit": "Modifier",
   };
 
   static const _allValues = {

@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:zilliken/Components/ZAppBar.dart';
 import 'package:zilliken/Components/ZElevatedButton.dart';
 import 'package:zilliken/Components/ZTextField.dart';
@@ -45,7 +46,7 @@ class LinkToMenu extends StatefulWidget {
 class _ConnectToMenuState extends State<LinkToMenu> {
   List<MenuItem> itemList = [];
   List<MenuItem>? itemsToSend = [];
-  List<MenuItem>? itemsToRemove = [];
+  // List<MenuItem>? itemsToRemove = [];
 
   final _formKey = GlobalKey<FormState>();
 
@@ -125,10 +126,9 @@ class _ConnectToMenuState extends State<LinkToMenu> {
                     );
                   } else {
                     try {
-                      await widget.db.linkToStock(
-                          itemsToSend!, widget.stock, itemsToRemove!);
+                      await widget.db.linkToStock(itemsToSend!, widget.stock);
                       log('itemsToSend: ${itemsToSend}');
-                      log('itemsToRemove: ${itemsToRemove}');
+                      // log('itemsToRemove: ${itemsToRemove}');
                       /*  itemsToSend.clear();
                       itemsToRemove.clear();*/
 
@@ -175,129 +175,285 @@ class _ConnectToMenuState extends State<LinkToMenu> {
   }
 
   Widget itemTile(MenuItem menuItem) {
-    return Container(
-      width: double.infinity,
-      child: Card(
-        elevation: 8,
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5)),
-        child: CheckboxListTile(
-          activeColor: Color(Styling.accentColor),
-          title: ZText(content: menuItem.name),
-          //subtitle: ZText(content: '${menuItem.quantity} ${widget.stock.unit}'),
-          value: menuItem.isChecked,
-          onChanged: (value) {
-            setState(() {
-              menuItem.isChecked = value;
-            });
-            if (value!) {
-              showGeneralDialog(
-                context: context,
-                barrierColor: Colors.black.withOpacity(0.5),
-                transitionBuilder: (context, a1, a2, widget) {
-                  return Transform.scale(
-                    scale: a1.value,
-                    child: Opacity(
-                      opacity: a1.value,
-                      child: Dialog(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(
-                            SizeConfig.diagonal * 1.5,
+    return Slidable(
+      actionPane: SlidableDrawerActionPane(),
+      actions: [
+        Padding(
+          padding: EdgeInsets.only(left: SizeConfig.diagonal * 0.9),
+          child: SlideAction(
+            child: Container(
+              height: SizeConfig.diagonal * 6.3,
+              width: double.infinity,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.cancel,
+                    size: SizeConfig.diagonal * 2.5,
+                  ),
+                  ZText(content: I18n.of(context).cancelOnly),
+                ],
+              ),
+              decoration: BoxDecoration(
+                color: Colors.red,
+                borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5),
+              ),
+            ),
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.only(left: SizeConfig.diagonal * 0.9),
+          child: SlideAction(
+            onTap: () {
+              if (menuItem.isChecked!) {
+                showGeneralDialog(
+                  context: context,
+                  barrierColor: Colors.black.withOpacity(0.5),
+                  transitionBuilder: (context, a1, a2, widget) {
+                    return Transform.scale(
+                      scale: a1.value,
+                      child: Opacity(
+                        opacity: a1.value,
+                        child: Dialog(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                              SizeConfig.diagonal * 1.5,
+                            ),
                           ),
-                        ),
-                        child: Container(
-                          padding: EdgeInsets.only(
-                              left: SizeConfig.diagonal * 0.9,
-                              right: SizeConfig.diagonal * 0.9),
-                          //height: SizeConfig.diagonal * 32,
-                          //color: Colors.amber,
-                          child: SingleChildScrollView(
-                            child: Form(
-                              key: _formKey,
-                              autovalidateMode: AutovalidateMode.disabled,
-                              child: Column(
-                                children: [
-                                  SizedBox(
-                                    height: SizeConfig.diagonal * 2.5,
-                                  ),
-                                  ZTextField(
-                                    hint: I18n.of(context).quantity,
-                                    controller: menuItem.controller,
-                                    onSaved: (value) {
-                                      if (value != null) {
-                                        setState(() {
-                                          menuItem.quantity = num.parse(value);
-                                        });
-                                      }
-                                    },
-                                    validator: (value) => value!.isEmpty
-                                        ? I18n.of(context).requit
-                                        : null,
-                                    icon: Icons.restaurant,
-                                  ),
-                                  ZElevatedButton(
-                                    onpressed: () {
-                                      final form = _formKey.currentState;
-
-                                      if (form!.validate()) {
-                                        form.save();
-
-                                        itemsToSend!.removeWhere((element) =>
-                                            element.id == menuItem.id);
-                                        itemsToSend!.add(menuItem);
-
-                                        Navigator.of(context).pop();
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(SnackBar(
-                                                content: ZText(
-                                                    content: I18n.of(context)
-                                                        .added)));
-                                        // }
-                                      }
-                                    },
-                                    child: ZText(
-                                      content: I18n.of(context).addItem,
-                                      color:
-                                          Color(Styling.primaryBackgroundColor),
+                          child: Container(
+                            padding: EdgeInsets.only(
+                                left: SizeConfig.diagonal * 0.9,
+                                right: SizeConfig.diagonal * 0.9),
+                            //height: SizeConfig.diagonal * 32,
+                            //color: Colors.amber,
+                            child: SingleChildScrollView(
+                              child: Form(
+                                key: _formKey,
+                                autovalidateMode: AutovalidateMode.disabled,
+                                child: Column(
+                                  children: [
+                                    SizedBox(
+                                      height: SizeConfig.diagonal * 2.5,
                                     ),
-                                    bottomPadding: SizeConfig.diagonal * 0.3,
-                                  ),
-                                  IconButton(
-                                      color: Colors.red,
-                                      icon: Icon(
-                                        Icons.cancel_sharp,
+                                    ZTextField(
+                                      hint: I18n.of(context).quantity,
+                                      controller: menuItem.controller,
+                                      onSaved: (value) {
+                                        if (value != null) {
+                                          setState(() {
+                                            menuItem.quantity =
+                                                num.parse(value);
+                                          });
+                                        }
+                                      },
+                                      validator: (value) => value!.isEmpty
+                                          ? I18n.of(context).requit
+                                          : null,
+                                      icon: Icons.restaurant,
+                                    ),
+                                    ZElevatedButton(
+                                      onpressed: () {
+                                        final form = _formKey.currentState;
+
+                                        if (form!.validate()) {
+                                          form.save();
+
+                                          itemsToSend!.removeWhere((element) =>
+                                              element.id == menuItem.id);
+                                          itemsToSend!.add(menuItem);
+
+                                          Navigator.of(context).pop();
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(SnackBar(
+                                                  content: ZText(
+                                                      content: I18n.of(context)
+                                                          .added)));
+                                          // }
+                                        }
+                                      },
+                                      child: ZText(
+                                        content: I18n.of(context).addItem,
+                                        color: Color(
+                                            Styling.primaryBackgroundColor),
                                       ),
-                                      iconSize: SizeConfig.diagonal * 5,
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                        setState(() {
-                                          menuItem.isChecked = false;
-                                        });
-                                      })
-                                ],
+                                      bottomPadding: SizeConfig.diagonal * 0.3,
+                                    ),
+                                    IconButton(
+                                        color: Colors.red,
+                                        icon: Icon(
+                                          Icons.cancel_sharp,
+                                        ),
+                                        iconSize: SizeConfig.diagonal * 5,
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        })
+                                  ],
+                                ),
                               ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                  );
-                },
-                barrierDismissible: false,
-                barrierLabel: '',
-                transitionDuration: Duration(milliseconds: 300),
-                pageBuilder: (context, animation1, animation2) {
-                  return Container();
-                },
-              );
-            } else {
-              log('else is executed');
+                    );
+                  },
+                  barrierDismissible: false,
+                  barrierLabel: '',
+                  transitionDuration: Duration(milliseconds: 300),
+                  pageBuilder: (context, animation1, animation2) {
+                    return Container();
+                  },
+                );
+              }
+            },
+            child: Container(
+              height: SizeConfig.diagonal * 6.3,
+              width: double.infinity,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.edit,
+                    color: Colors.white,
+                    size: SizeConfig.diagonal * 2.5,
+                  ),
+                  ZText(
+                    content: I18n.of(context).edit,
+                    color: Colors.white,
+                  ),
+                ],
+              ),
+              decoration: BoxDecoration(
+                color: Color(Styling.primaryColor),
+                borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5),
+              ),
+            ),
+          ),
+        ),
+      ],
+      child: Container(
+        width: double.infinity,
+        child: Card(
+          elevation: 8,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5)),
+          child: CheckboxListTile(
+            activeColor: Color(Styling.accentColor),
+            title: ZText(content: menuItem.name),
+            //subtitle: ZText(content: '${menuItem.quantity} ${widget.stock.unit}'),
+            value: menuItem.isChecked,
+            onChanged: (value) {
+              setState(() {
+                menuItem.isChecked = value;
+              });
+              if (value!) {
+                showGeneralDialog(
+                  context: context,
+                  barrierColor: Colors.black.withOpacity(0.5),
+                  transitionBuilder: (context, a1, a2, widget) {
+                    return Transform.scale(
+                      scale: a1.value,
+                      child: Opacity(
+                        opacity: a1.value,
+                        child: Dialog(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                              SizeConfig.diagonal * 1.5,
+                            ),
+                          ),
+                          child: Container(
+                            padding: EdgeInsets.only(
+                                left: SizeConfig.diagonal * 0.9,
+                                right: SizeConfig.diagonal * 0.9),
+                            //height: SizeConfig.diagonal * 32,
+                            //color: Colors.amber,
+                            child: SingleChildScrollView(
+                              child: Form(
+                                key: _formKey,
+                                autovalidateMode: AutovalidateMode.disabled,
+                                child: Column(
+                                  children: [
+                                    SizedBox(
+                                      height: SizeConfig.diagonal * 2.5,
+                                    ),
+                                    ZTextField(
+                                      hint: I18n.of(context).quantity,
+                                      controller: menuItem.controller,
+                                      onSaved: (value) {
+                                        if (value != null) {
+                                          setState(() {
+                                            menuItem.quantity =
+                                                num.parse(value);
+                                          });
+                                        }
+                                      },
+                                      validator: (value) => value!.isEmpty
+                                          ? I18n.of(context).requit
+                                          : null,
+                                      icon: Icons.restaurant,
+                                    ),
+                                    ZElevatedButton(
+                                      onpressed: () {
+                                        final form = _formKey.currentState;
 
-              /*  menuItem.condiments!
+                                        if (form!.validate()) {
+                                          form.save();
+
+                                          itemsToSend!.removeWhere((element) =>
+                                              element.id == menuItem.id);
+                                          itemsToSend!.add(menuItem);
+
+                                          Navigator.of(context).pop();
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(SnackBar(
+                                                  content: ZText(
+                                                      content: I18n.of(context)
+                                                          .added)));
+                                          // }
+                                        }
+                                      },
+                                      child: ZText(
+                                        content: I18n.of(context).addItem,
+                                        color: Color(
+                                            Styling.primaryBackgroundColor),
+                                      ),
+                                      bottomPadding: SizeConfig.diagonal * 0.3,
+                                    ),
+                                    IconButton(
+                                        color: Colors.red,
+                                        icon: Icon(
+                                          Icons.cancel_sharp,
+                                        ),
+                                        iconSize: SizeConfig.diagonal * 5,
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                          setState(() {
+                                            menuItem.isChecked = false;
+                                          });
+                                        })
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                  barrierDismissible: false,
+                  barrierLabel: '',
+                  transitionDuration: Duration(milliseconds: 300),
+                  pageBuilder: (context, animation1, animation2) {
+                    return Container();
+                  },
+                );
+              } else {
+                log('else is executed');
+
+                /*  menuItem.condiments!
                   .removeWhere((element) => element.id == menuItem.id);
               itemsToSend.removeWhere((element) => element.id == menuItem.id);*/
 
-              /*MenuItem item = itemsToSend
+                /*MenuItem item = itemsToSend
                   .firstWhere((element) => element.id == menuItem.id);
               item.condiments!
                   .removeWhere((element) => element.id == widget.stock.id);
@@ -305,15 +461,21 @@ class _ConnectToMenuState extends State<LinkToMenu> {
                 item.condiments = null;
               }*/
 
-              menuItem.condiments!
-                  .removeWhere((condiment) => condiment.id == widget.stock.id);
-              if (menuItem.condiments!.isEmpty) {
-                menuItem.condiments = null;
-              }
+                menuItem.condiments!.removeWhere(
+                    (condiment) => condiment.id == widget.stock.id);
+                if (menuItem.condiments!.isEmpty) {
+                  menuItem.condiments = null;
+                }
+                menuItem.quantity = null;
 
-              itemsToRemove!.add(menuItem);
-            }
-          },
+                itemsToSend!
+                    .removeWhere((element) => element.id == menuItem.id);
+                itemsToSend!.add(menuItem);
+
+                //itemsToRemove!.add(menuItem);
+              }
+            },
+          ),
         ),
       ),
     );

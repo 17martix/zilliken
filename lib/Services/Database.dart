@@ -403,21 +403,28 @@ class Database {
         Fields.status: Fields.confirmed,
         Fields.confirmedDate: FieldValue.serverTimestamp(),
       });
+      log('end of first part');
 
       order.clientOrder.forEach((orderItem) async {
         if (orderItem.menuItem.condiments != null) {
+          log('entering if');
           orderItem.menuItem.condiments!.forEach((stock) async {
             var stockReference =
                 databaseReference.collection(Fields.stock).doc(stock.id);
             WriteBatch batch = databaseReference.batch();
 
             batch.update(stockReference, {
-              Fields.quantity: stock.quantity - orderItem.menuItem.quantity!,
+              Fields.quantity:
+                  '${stock.quantity - orderItem.menuItem.quantity!}',
             });
+            log('substracting function reached');
             await batch.commit();
           });
         }
+        log('exiting if');
       });
+
+      log('end of part 2');
     } else if (value == 3) {
       await document.update({
         Fields.status: Fields.preparation,
@@ -837,36 +844,36 @@ class Database {
     return menuItemList;
   }
 
-  Future<void> linkToStock(
-      List<MenuItem> menuList, Stock stock, List<MenuItem> removeList) async {
+  Future<void> linkToStock(List<MenuItem> menuList, Stock stock) async {
     WriteBatch batch = databaseReference.batch();
 
     menuList.forEach((menu) {
       DocumentReference documentReference =
           databaseReference.collection(Fields.menu).doc(menu.id);
-      List<String> condimentsText = [];
-      String text = stock.buildStringFromObject(menu.quantity!);
+      List<String>? condimentsText = [];
       if (menu.condiments == null) {
-        condimentsText.add(text);
+        if (menu.quantity == null) {
+          condimentsText = null;
+        } else {
+          String text = stock.buildStringFromObject(menu.quantity!);
+          condimentsText.add(text);
+        }
       } else {
         menu.condiments!.forEach((element) {
           String t = element.buildStringFromObject(element.quantity);
-          condimentsText.add(t);
+          condimentsText!.add(t);
         });
 
-        condimentsText.removeWhere((element) {
-          List<String> elements = element.split(";");
-          List<String> texts = text.split(";");
-          return (element == text ||
-              (elements[0] == texts[0] && elements[2] != texts[2]));
-        });
-        condimentsText.add(text);
-
-        // if (menuList.isEmpty) {
-        //   documentReference.update({
-        //     Fields.condiments: '',
-        //   });
-        // }
+        if (menu.quantity != null) {
+          String text = stock.buildStringFromObject(menu.quantity!);
+          condimentsText.removeWhere((element) {
+            List<String> elements = element.split(";");
+            List<String> texts = text.split(";");
+            return (element == text ||
+                (elements[0] == texts[0] && elements[2] != texts[2]));
+          });
+          condimentsText.add(text);
+        }
       }
 
       batch.update(documentReference, {
@@ -874,41 +881,22 @@ class Database {
       });
     });
 
-    removeList.forEach((element) {
-      DocumentReference removeReference =
-          databaseReference.collection(Fields.menu).doc(element.id);
-
-      List<String>? condimentsText = [];
-      if (element.condiments == null) {
-        condimentsText = null;
-      } else {
-        element.condiments!.forEach((element) {
-          String t = element.buildStringFromObject(element.quantity);
-          condimentsText!.add(t);
-        });
-      }
-
-      batch.update(removeReference, {
-        Fields.condiments: condimentsText,
-      });
-    });
-
     await batch.commit();
   }
 
-  Future<List<Stock>> getStockItem() async {
-    List<Stock> stockItems = [];
+  // Future<List<Stock>> getStockItem() async {
+  //   List<Stock> stockItems = [];
 
-    CollectionReference stockReference =
-        databaseReference.collection(Fields.stock);
-    await stockReference.get().then((QuerySnapshot snapshot) {
-      snapshot.docs.forEach((element) async {
-        if (snapshot != null && snapshot.docs.isNotEmpty) {
-          Stock stock = Stock.buildObject(element);
-          stockItems.add(stock);
-        }
-      });
-    });
-    return stockItems;
-  }
+  //   CollectionReference stockReference =
+  //       databaseReference.collection(Fields.stock);
+  //   await stockReference.get().then((QuerySnapshot snapshot) {
+  //     snapshot.docs.forEach((element) async {
+  //       if (snapshot != null && snapshot.docs.isNotEmpty) {
+  //         Stock stock = Stock.buildObject(element);
+  //         stockItems.add(stock);
+  //       }
+  //     });
+  //   });
+  //   return stockItems;
+  // }
 }
