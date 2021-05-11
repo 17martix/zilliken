@@ -12,6 +12,7 @@ import 'package:zilliken/Models/Fields.dart';
 
 import 'package:zilliken/Models/Statistic.dart';
 import 'package:intl/intl.dart';
+import 'package:zilliken/Models/StatisticUser.dart';
 import 'package:zilliken/Models/UserProfile.dart';
 import 'package:zilliken/Services/Authentication.dart';
 import 'package:zilliken/Services/Database.dart';
@@ -66,9 +67,16 @@ class _StatPageState extends State<StatPage> {
 
   ScrollController _controller = ScrollController();
   // AnimationController animationController;
+  List<StatisticUser> statisticList=[];
 
   void initState() {
     super.initState();
+
+    widget.db.getTodayStatUser().then((value) {
+    setState(() {
+      statisticList=value;
+    });
+    });
 
     /*data = [
       Graph(year: '2000', subscribers: null, count: 178),
@@ -579,7 +587,7 @@ class _StatPageState extends State<StatPage> {
         ]);
   }
 
-  Widget statUser() {
+  Widget statUser( ) {
     return Container(
       child: Card(
         shape: RoundedRectangleBorder(
@@ -594,7 +602,7 @@ class _StatPageState extends State<StatPage> {
               child: Row(
                 children: [
                   ZText(
-                    content: 'Total : ',
+                    content: 'total',
                     color: Color(Styling.accentColor),
                     fontSize: SizeConfig.diagonal * 2,
                     fontWeight: FontWeight.bold,
@@ -619,7 +627,7 @@ class _StatPageState extends State<StatPage> {
               child: Row(
                 children: [
                   ZText(
-                    content: 'Solana : ',
+                    content: 'nana',
                     color: Color(Styling.accentColor),
                     fontSize: SizeConfig.diagonal * 2,
                     fontWeight: FontWeight.bold,
@@ -644,7 +652,7 @@ class _StatPageState extends State<StatPage> {
               child: Row(
                 children: [
                   ZText(
-                    content: 'Lavinie : ',
+                    content: 'soso',
                     color: Color(Styling.accentColor),
                     fontSize: SizeConfig.diagonal * 2,
                     fontWeight: FontWeight.bold,

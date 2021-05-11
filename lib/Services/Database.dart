@@ -1,11 +1,9 @@
 import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
-
 import 'package:flutter/services.dart';
 import 'package:zilliken/Helpers/Utils.dart';
 import 'package:zilliken/Models/Call.dart';
@@ -883,5 +881,13 @@ class Database {
     });
 
     await batch.commit();
+  }
+
+  Future<List<StatisticUser>> getTodayStatUser() async{
+    List<StatisticUser> list=[];
+
+    //code
+
+    return list;
   }
 }
