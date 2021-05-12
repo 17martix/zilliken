@@ -883,11 +883,23 @@ class Database {
     await batch.commit();
   }
 
-  Future<List<StatisticUser>> getTodayStatUser() async{
-    List<StatisticUser> list=[];
+  Future<List<StatisticUser>> getTodayStatUser() async {
+    List<StatisticUser> list = [];
 
-    //code
+    DateTime today = DateTime.now();
+    Timestamp timestamp= Timestamp.fromDate(DateTime(today.year, today.month, today.day));
 
+    var statUserRef = databaseReference
+        .collection(Fields.statisticUser)
+        .where(Fields.date, isEqualTo:timestamp )
+        ;
+    await statUserRef.get().then((QuerySnapshot snapshot) {
+      if (snapshot != null && snapshot.docs.isNotEmpty)
+        snapshot.docs.forEach((element) async {
+          StatisticUser userStat = StatisticUser.buildObject(element);
+          list.add(userStat);
+        });
+    });
     return list;
   }
 }

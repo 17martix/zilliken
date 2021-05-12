@@ -67,15 +67,15 @@ class _StatPageState extends State<StatPage> {
 
   ScrollController _controller = ScrollController();
   // AnimationController animationController;
-  List<StatisticUser> statisticList=[];
+  List<StatisticUser> statisticList = [];
 
   void initState() {
     super.initState();
 
     widget.db.getTodayStatUser().then((value) {
-    setState(() {
-      statisticList=value;
-    });
+      setState(() {
+        statisticList = value;
+      });
     });
 
     /*data = [
@@ -112,23 +112,6 @@ class _StatPageState extends State<StatPage> {
         });
       }
     }
-    /* final barGroup1 = makeGroupData(0, items[0].data()![Fields.total]);
-    final barGroup2 = makeGroupData(1, items[2].data()![Fields.total]);
-    final barGroup3 = makeGroupData(2, items[3].data()![Fields.total]);
-    final barGroup4 = makeGroupData(3, items[4].data()![Fields.total]);
-    final barGroup5 = makeGroupData(4, items[5].data()![Fields.total]);
-    final barGroup6 = makeGroupData(5, items[6].data()![Fields.total]);
-    final barGroup7 = makeGroupData(6, items[7].data()![Fields.total]);
-
-    final barItems = [
-      barGroup1,
-      barGroup2,
-      barGroup3,
-      barGroup4,
-      barGroup5,
-      barGroup6,
-      barGroup7,
-    ];*/
     rawBarGroups = barItems;
 
     showingBarGroups = rawBarGroups;
@@ -318,7 +301,7 @@ class _StatPageState extends State<StatPage> {
 
                           //valueColor:Animation<blue> valueColor ,
 
-                          semanticsLabel: 'Linear progress indicator',
+                          //semanticsLabel: 'Linear progress indicator',
 
                           backgroundColor: Color(Styling.primaryDarkColor),
                         ),
@@ -519,7 +502,7 @@ class _StatPageState extends State<StatPage> {
                             reservedSize: 20,
                             interval: maxY / 4,
                             getTitles: (value) {
-                              log("value is $value");
+                              // log("value is $value");
                               if (value == 0) {
                                 return '0';
                               } else if (value == maxY / 4) {
@@ -587,95 +570,48 @@ class _StatPageState extends State<StatPage> {
         ]);
   }
 
-  Widget statUser( ) {
-    return Container(
-      child: Card(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(SizeConfig.diagonal * 2),
+  Widget statUser() {
+    return Column(
+      children: [
+        Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(SizeConfig.diagonal * 2),
+          ),
+          color: Color(Styling.primaryBackgroundColor),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: statisticList.map((userStat) {
+              return statUserItem(userStat);
+            }).toList(),
+          ),
         ),
-        color: Color(Styling.primaryBackgroundColor),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Row(
-                children: [
-                  ZText(
-                    content: 'total',
-                    color: Color(Styling.accentColor),
-                    fontSize: SizeConfig.diagonal * 2,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  Expanded(
-                    child: SizedBox(
-                      height: 20,
-                      width: 5,
-                      child: LinearProgressIndicator(
-                        value: 1,
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                            Colors.lightGreen.shade200),
-                        backgroundColor: Colors.lightGreen,
-                      ),
-                    ),
-                  ),
-                ],
+      ],
+    );
+  }
+
+  Padding statUserItem(StatisticUser statisticUser) {
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: Row(
+        children: [
+          ZText(
+            content: statisticUser.userName,
+            color: Color(Styling.accentColor),
+            fontSize: SizeConfig.diagonal * 2,
+            fontWeight: FontWeight.bold,
+          ),
+          Expanded(
+            child: SizedBox(
+              height: 20,
+              width: 5,
+              child: LinearProgressIndicator(
+                value: 0.5,
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.purpleAccent),
+                backgroundColor: Colors.cyan,
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Row(
-                children: [
-                  ZText(
-                    content: 'nana',
-                    color: Color(Styling.accentColor),
-                    fontSize: SizeConfig.diagonal * 2,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  Expanded(
-                    child: SizedBox(
-                      height: 20,
-                      width: 5,
-                      child: LinearProgressIndicator(
-                        value: 0.5,
-                        valueColor:
-                            AlwaysStoppedAnimation<Color>(Colors.purpleAccent),
-                        backgroundColor: Colors.cyan,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Row(
-                children: [
-                  ZText(
-                    content: 'soso',
-                    color: Color(Styling.accentColor),
-                    fontSize: SizeConfig.diagonal * 2,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  Expanded(
-                    child: SizedBox(
-                      height: 20,
-                      width: 5,
-                      child: LinearProgressIndicator(
-                        value: pourcentage.toDouble(),
-                        semanticsLabel: "aaaa",
-                        valueColor:
-                            AlwaysStoppedAnimation<Color>(Colors.orange),
-                        backgroundColor:
-                            Color(Styling.secondaryBackgroundColor),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
