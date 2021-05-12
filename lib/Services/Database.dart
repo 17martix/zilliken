@@ -898,7 +898,7 @@ class Database {
         snapshot.docs.forEach((element) async {
           StatisticUser userStat = StatisticUser.buildObject(element);
           list.add(userStat);
-        });
+        });git 
     });
     return list;
   }
