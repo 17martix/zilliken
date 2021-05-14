@@ -1,6 +1,5 @@
 import 'dart:developer';
 import 'dart:ffi';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/gestures.dart';
@@ -59,15 +58,16 @@ class _SingleUserPageState extends State<SingleUserPage> {
   final double width = 7;
 
   int documentLimit = 10;
-  num maxY = 0;
+  num maxY = 1;
   ScrollController _controller = ScrollController();
 
   @override
   void initState() {
     super.initState();
 
-    oneUserDetails =
-        FirebaseFirestore.instance.collection(Fields.users).doc(widget.userId);
+    oneUserDetails = FirebaseFirestore.instance
+        .collection(Fields.users)
+        .doc(widget.userData.id);
 
     statQuery();
     _scrollController.addListener(() {
@@ -145,24 +145,31 @@ class _SingleUserPageState extends State<SingleUserPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: buildAppBar(
-        context,
-        widget.auth,
-        true,
-        null,
-        null,
-        null,
-        null,
+    return Container(
+      decoration: BoxDecoration(
+          image: DecorationImage(
+        image: AssetImage('assets/Zilliken.jpg'),
+        fit: BoxFit.cover,
+      )),
+      child: Scaffold(
+        appBar: buildAppBar(
+          context,
+          widget.auth,
+          true,
+          null,
+          null,
+          null,
+          null,
+        ),
+        body: body(),
       ),
-      body: body(),
     );
   }
 
   Widget body() {
     return Column(children: [
       statList(),
-      //userStream(),
+      userStream(),
     ]);
   }
 
@@ -343,91 +350,87 @@ class _SingleUserPageState extends State<SingleUserPage> {
                   flex: 1,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      controller: _scrollController,
-                      child: BarChart(
-                        BarChartData(
-                          maxY: maxY.toDouble(),
-                          titlesData: FlTitlesData(
-                            show: true,
-                            bottomTitles: SideTitles(
-                              showTitles: true,
-                              getTextStyles: (value) => const TextStyle(
-                                  color: Color(Styling.iconColor),
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 10),
-                              margin: 15,
-                              getTitles: (double value) {
-                                switch (value.toInt()) {
-                                  case 0:
-                                    Timestamp date =
-                                        items[0].data()![Fields.date];
-                                    return widget.format.format(date.toDate());
-                                  case 1:
-                                    Timestamp date =
-                                        items[1].data()![Fields.date];
-                                    return widget.format.format(date.toDate());
-                                  case 2:
-                                    Timestamp date =
-                                        items[2].data()![Fields.date];
-                                    return widget.format.format(date.toDate());
-                                  case 3:
-                                    Timestamp date =
-                                        items[3].data()![Fields.date];
-                                    return widget.format.format(date.toDate());
-                                  case 4:
-                                    Timestamp date =
-                                        items[4].data()![Fields.date];
-                                    return widget.format.format(date.toDate());
-                                  case 5:
-                                    Timestamp date =
-                                        items[5].data()![Fields.date];
-                                    return widget.format.format(date.toDate());
-                                  case 6:
-                                    Timestamp date =
-                                        items[6].data()![Fields.date];
-                                    return widget.format.format(date.toDate());
+                    child: BarChart(
+                      BarChartData(
+                        maxY: maxY.toDouble(),
+                        titlesData: FlTitlesData(
+                          show: true,
+                          bottomTitles: SideTitles(
+                            showTitles: true,
+                            getTextStyles: (value) => const TextStyle(
+                                color: Color(Styling.iconColor),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 10),
+                            margin: 15,
+                            getTitles: (double value) {
+                              switch (value.toInt()) {
+                                case 0:
+                                  Timestamp date =
+                                      items[0].data()![Fields.date];
+                                  return widget.format.format(date.toDate());
+                                case 1:
+                                  Timestamp date =
+                                      items[1].data()![Fields.date];
+                                  return widget.format.format(date.toDate());
+                                case 2:
+                                  Timestamp date =
+                                      items[2].data()![Fields.date];
+                                  return widget.format.format(date.toDate());
+                                case 3:
+                                  Timestamp date =
+                                      items[3].data()![Fields.date];
+                                  return widget.format.format(date.toDate());
+                                case 4:
+                                  Timestamp date =
+                                      items[4].data()![Fields.date];
+                                  return widget.format.format(date.toDate());
+                                case 5:
+                                  Timestamp date =
+                                      items[5].data()![Fields.date];
+                                  return widget.format.format(date.toDate());
+                                case 6:
+                                  Timestamp date =
+                                      items[6].data()![Fields.date];
+                                  return widget.format.format(date.toDate());
 
-                                  default:
-                                    return '';
-                                }
-                              },
-                            ),
-                            leftTitles: SideTitles(
-                              showTitles: true,
-                              getTextStyles: (value) => const TextStyle(
-                                  color: Color(Styling.iconColor),
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14),
-                              margin: 20,
-                              reservedSize: 20,
-                              interval: maxY / 4,
-                              getTitles: (value) {
-                                log("value is $value");
-                                if (value == 0) {
-                                  return '0';
-                                } else if (value == maxY / 4) {
-                                  return formatInterVal(maxY / 4)!;
-                                } else if (value == maxY / 2) {
-                                  return formatInterVal(maxY / 2)!;
-                                } else if (value == maxY * 3 / 4) {
-                                  return formatInterVal(maxY * 3 / 4)!;
-                                } else if (value == maxY) {
-                                  return formatInterVal(maxY.toDouble())!;
-                                } else {
+                                default:
                                   return '';
-                                }
-                              },
-                            ),
+                              }
+                            },
                           ),
-                          borderData: FlBorderData(
-                            show: false,
+                          leftTitles: SideTitles(
+                            showTitles: true,
+                            getTextStyles: (value) => const TextStyle(
+                                color: Color(Styling.iconColor),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14),
+                            margin: 20,
+                            reservedSize: 20,
+                            interval: maxY / 4,
+                            getTitles: (value) {
+                              log("value is $value");
+                              if (value == 0) {
+                                return '0';
+                              } else if (value == maxY / 4) {
+                                return formatInterVal(maxY / 4)!;
+                              } else if (value == maxY / 2) {
+                                return formatInterVal(maxY / 2)!;
+                              } else if (value == maxY * 3 / 4) {
+                                return formatInterVal(maxY * 3 / 4)!;
+                              } else if (value == maxY) {
+                                return formatInterVal(maxY.toDouble())!;
+                              } else {
+                                return '';
+                              }
+                            },
                           ),
-                          barGroups: showingBarGroups,
                         ),
-                        swapAnimationDuration: Duration(milliseconds: 150),
+                        borderData: FlBorderData(
+                          show: false,
+                        ),
+                        barGroups: showingBarGroups,
                       ),
+                      swapAnimationDuration: Duration(milliseconds: 150),
                     ),
                   ),
                 ),
