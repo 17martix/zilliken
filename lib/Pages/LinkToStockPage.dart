@@ -72,6 +72,8 @@ class _ConnectToMenuState extends State<LinkToMenu> {
       });
       // log("new length is ${itemList.length}");
     });
+    // itemList.sortByCompare(
+    //     (element) => element.name, (a, b) => a!.length.compareTo(b!.length));
   }
 
   void backFunction() {

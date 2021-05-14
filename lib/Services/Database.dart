@@ -108,7 +108,7 @@ class Database {
     return taxPercentage;
   }
 
-  Future<String> placeOrder(Order order) async {
+  Future<String> placeOrder(Order order, List<OrderItem> newClientOrder) async {
     var document = databaseReference.collection(Fields.order).doc();
     order.id = document.id;
 
@@ -149,6 +149,16 @@ class Database {
           Fields.global: order.clientOrder[i].menuItem.global,
         });
       }
+      newClientOrder.forEach((element) async {
+        await databaseReference
+            .collection(Fields.order)
+            .doc(document.id)
+            .collection(Fields.items)
+            .doc(element.menuItem.id)
+            .set({
+          Fields.condiments: element.menuItem.condiments,
+        });
+      });
     });
 
     return document.id;
@@ -403,25 +413,29 @@ class Database {
         Fields.status: Fields.confirmed,
         Fields.confirmedDate: FieldValue.serverTimestamp(),
       });
-      log('end of first part');
 
       order.clientOrder.forEach((orderItem) async {
+        log('value ordertem: ${orderItem}');
+
+        log('value of condiments : ${orderItem.menuItem.condiments}');
+
         if (orderItem.menuItem.condiments != null) {
           log('entering if');
           orderItem.menuItem.condiments!.forEach((stock) async {
             var stockReference =
                 databaseReference.collection(Fields.stock).doc(stock.id);
+            log('stock docId: ${stock.id}');
             WriteBatch batch = databaseReference.batch();
 
             batch.update(stockReference, {
               Fields.quantity:
-                  '${stock.quantity - orderItem.menuItem.quantity!}',
+                  FieldValue.increment(-orderItem.menuItem.quantity!),
             });
             log('substracting function reached');
             await batch.commit();
           });
+          log('exiting if');
         }
-        log('exiting if');
       });
 
       log('end of part 2');
