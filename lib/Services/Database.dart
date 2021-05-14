@@ -421,6 +421,7 @@ class Database {
         date: Timestamp.fromDate(DateTime(today.year, today.month, today.day)),
         total: grandTotal,
         id: id,
+        //count:1,
       );
 
       await databaseReference
@@ -898,7 +899,7 @@ class Database {
         snapshot.docs.forEach((element) async {
           StatisticUser userStat = StatisticUser.buildObject(element);
           list.add(userStat);
-        });git 
+        });
     });
     return list;
   }

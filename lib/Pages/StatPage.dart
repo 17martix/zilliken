@@ -69,12 +69,18 @@ class _StatPageState extends State<StatPage> {
   // AnimationController animationController;
   List<StatisticUser> statisticList = [];
 
+  num totalCount = 0;
+
   void initState() {
     super.initState();
 
     widget.db.getTodayStatUser().then((value) {
       setState(() {
         statisticList = value;
+      });
+
+      statisticList.forEach((element) {
+        totalCount = totalCount + element.count!;
       });
     });
 
@@ -592,26 +598,51 @@ class _StatPageState extends State<StatPage> {
   Padding statUserItem(StatisticUser statisticUser) {
     return Padding(
       padding: const EdgeInsets.all(10.0),
-      child: Row(
-        children: [
-          ZText(
-            content: statisticUser.userName,
-            color: Color(Styling.accentColor),
-            fontSize: SizeConfig.diagonal * 2,
-            fontWeight: FontWeight.bold,
-          ),
-          Expanded(
-            child: SizedBox(
-              height: 20,
-              width: 5,
-              child: LinearProgressIndicator(
-                value: 0.5,
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.purpleAccent),
-                backgroundColor: Colors.cyan,
+      
+      child: Container(
+        
+        child: Row(
+          children: [
+             SizedBox(
+                height: 20,
+                width: 5,
+                child: LinearProgressIndicator(
+                  value: statisticUser.count!.toDouble(),
+                  backgroundColor: Colors.cyan.shade100,
+                  valueColor:
+                      AlwaysStoppedAnimation<Color>(Colors.purpleAccent.shade100),
+                ),
+              ),
+            
+            ZText(
+              content: statisticUser.userName,
+              color: Color(Styling.accentColor),
+              fontSize: SizeConfig.diagonal * 2,
+              fontWeight: FontWeight.bold,
+            ),
+            Expanded(
+              child: SizedBox(
+                height: 20,
+                width: 5,
+                child: LinearProgressIndicator(
+                  value: statisticUser.count! / totalCount,
+                  backgroundColor: Colors.cyan.shade100,
+                  valueColor:
+                      AlwaysStoppedAnimation<Color>(Colors.purpleAccent.shade100),
+                ),
               ),
             ),
-          ),
-        ],
+            Align(
+              child: Text(
+                " ${(statisticUser.count! * 100 / totalCount)}",
+                style: TextStyle(
+                  color: Colors.amber[200],
+                ),
+              ),
+              alignment: Alignment.topCenter,
+            ),
+          ],
+        ),
       ),
     );
   }
