@@ -113,11 +113,11 @@ class _SingleUserPageState extends State<SingleUserPage> {
           .collection(Fields.statisticUser)
           .where(Fields.userId, isEqualTo: widget.userData.id)
           .limit(documentLimit)
-          .orderBy(Fields.date)
+          .orderBy(Fields.date, descending: true)
           .get();
     } else {
       statref = await widget.db.databaseReference
-          .collection(Fields.users)
+          .collection(Fields.statisticUser)
           .where(Fields.userId, isEqualTo: widget.userData.id)
           .limit(documentLimit)
           .orderBy(Fields.date, descending: true)
@@ -143,6 +143,12 @@ class _SingleUserPageState extends State<SingleUserPage> {
     });
   }
 
+  void _actionPression(UserProfile userProfile) async {
+    bool isActive = !userProfile.isActive;
+
+    await widget.db.updateIsActive(userProfile.id!, isActive);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -162,6 +168,7 @@ class _SingleUserPageState extends State<SingleUserPage> {
           null,
         ),
         body: body(),
+        backgroundColor: Colors.transparent,
       ),
     );
   }
@@ -169,7 +176,18 @@ class _SingleUserPageState extends State<SingleUserPage> {
   Widget body() {
     return Column(children: [
       statList(),
-      userStream(),
+      Expanded(
+        child: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          controller: _controller,
+          child: Column(
+            children: [
+              graph(),
+              userStream(),
+            ],
+          ),
+        ),
+      ),
     ]);
   }
 
@@ -240,7 +258,7 @@ class _SingleUserPageState extends State<SingleUserPage> {
             ZText(
               content: '${I18n.of(context).dailyTotal}',
               textAlign: TextAlign.center,
-              color: Color(Styling.accentColor),
+              color: Colors.black,
               fontSize: SizeConfig.diagonal * 3.5,
               fontStyle: FontStyle.normal,
             ),
@@ -286,7 +304,6 @@ class _SingleUserPageState extends State<SingleUserPage> {
             ],
           ),
         ),
-        graph(),
       ],
     );
   }
@@ -489,20 +506,78 @@ class _SingleUserPageState extends State<SingleUserPage> {
 
   Widget userDetails(UserProfile userProfile) {
     return Card(
+      elevation: 5,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(SizeConfig.diagonal * 2),
+      ),
+      color: Color(Styling.primaryBackgroundColor).withOpacity(0.9),
       child: Container(
         child: Column(
           children: [
-            Container(
-                child: ZText(
-                    content: '${I18n.of(context).name} : ${userProfile.name}')),
-            Container(
+            Padding(
+              padding: EdgeInsets.symmetric(
+                  horizontal: SizeConfig.diagonal * 1,
+                  vertical: SizeConfig.diagonal * 1),
               child: ZText(
-                  content:
-                      '${I18n.of(context).phone} : ${userProfile.phoneNumber}'),
+                content: "Desactiver l'utilisateur?",
+                textAlign: TextAlign.center,
+                fontSize: SizeConfig.diagonal * 1.5,
+                color: Color(Styling.textColor),
+              ),
             ),
-            /*ElevatedButton(
-              child: Text("activer"),
-            ),*/
+            Container(
+              margin: EdgeInsets.all(SizeConfig.diagonal * 1),
+              width: double.infinity,
+              height: 1,
+              color: Color(Styling.primaryColor),
+            ),
+            Container(
+                child: Padding(
+              padding: EdgeInsets.all(SizeConfig.diagonal * 1),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  ZText(
+                    content: '${I18n.of(context).name} :',
+                    textAlign: TextAlign.center,
+                    fontSize: SizeConfig.diagonal * 1.5,
+                    color: Color(Styling.textColor).withOpacity(0.7),
+                  ),
+                  ZText(
+                    content: '${userProfile.name}',
+                    textAlign: TextAlign.center,
+                    color: Color(Styling.textColor).withOpacity(0.7),
+                    fontSize: SizeConfig.diagonal * 1.5,
+                  ),
+                ],
+              ),
+            )),
+            Container(
+              child: Padding(
+                padding: EdgeInsets.all(SizeConfig.diagonal * 1),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    ZText(
+                      content: '${I18n.of(context).phone} :',
+                      textAlign: TextAlign.center,
+                      fontSize: SizeConfig.diagonal * 1.5,
+                      color: Color(Styling.textColor).withOpacity(0.7),
+                    ),
+                    ZText(
+                      content: '${userProfile.phoneNumber}',
+                      textAlign: TextAlign.center,
+                      color: Color(Styling.textColor).withOpacity(0.7),
+                      fontSize: SizeConfig.diagonal * 1.5,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            ZElevatedButton(
+              child: Text(userProfile.isActive ? "Desactiver" : "Activer"),
+              onpressed: () => _actionPression(userProfile),
+            ),
           ],
         ),
       ),

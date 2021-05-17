@@ -9,6 +9,7 @@ class Fields {
   static final String id = "id";
   static final String role = "role";
   static final String receiveNotifications = "receiveNotifications";
+  static final String isActive = "isActive";
 
   static final String client = 'client';
   static final String chef = 'chef';
