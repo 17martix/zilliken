@@ -187,23 +187,21 @@ class _StatPageState extends State<StatPage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Expanded(
+              flex: 1,
               child: Container(
-                padding: EdgeInsets.all(SizeConfig.diagonal * 0.2),
-                height: 3,
-                color: Colors.grey.withOpacity(0.2),
+                padding: EdgeInsets.all(SizeConfig.diagonal * 1.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     ZText(
                       content: "${statistic.total}",
                       color: Color(Styling.accentColor),
-                      fontSize: SizeConfig.diagonal * 3,
-                      fontWeight: FontWeight.bold,
+                      fontSize: SizeConfig.diagonal * 2,
                     ),
                     ZText(
                       content: " Fbu",
                       color: Color(Styling.iconColor),
-                      fontSize: SizeConfig.diagonal * 2.5,
+                      fontSize: SizeConfig.diagonal * 1.5,
                     ),
                   ],
                 ),
@@ -211,8 +209,7 @@ class _StatPageState extends State<StatPage> {
             ),
             Expanded(
               child: Container(
-                padding: EdgeInsets.all(SizeConfig.diagonal * 0.2),
-                color: Color(Styling.primaryBackgroundColor).withOpacity(0.3),
+                padding: EdgeInsets.all(SizeConfig.diagonal * 1.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -220,13 +217,13 @@ class _StatPageState extends State<StatPage> {
                       content: I18n.of(context).date,
                       textAlign: TextAlign.center,
                       color: Color(Styling.iconColor),
-                      fontSize: SizeConfig.diagonal * 2,
+                      fontSize: SizeConfig.diagonal * 1.5,
                     ),
                     ZText(
                       content:
                           "  : ${widget.formatter.format(statistic.date.toDate())}",
                       color: Color(Styling.iconColor),
-                      fontSize: SizeConfig.diagonal * 2,
+                      fontSize: SizeConfig.diagonal * 1.5,
                     ),
                   ],
                 ),
@@ -252,8 +249,7 @@ class _StatPageState extends State<StatPage> {
               content: I18n.of(context).dailytotal,
               textAlign: TextAlign.center,
               color: Color(Styling.iconColor),
-              fontStyle: FontStyle.normal,
-              fontSize: SizeConfig.diagonal * 2.5,
+              fontSize: SizeConfig.diagonal * 2,
             ),
           ],
         ),
@@ -350,7 +346,7 @@ class _StatPageState extends State<StatPage> {
     //maxY1 = maxY / 4;
     return Container(
       child: AspectRatio(
-        aspectRatio: 1.3,
+        aspectRatio: 1.6,
         child: Card(
           elevation: 5,
           shape: RoundedRectangleBorder(
@@ -362,36 +358,31 @@ class _StatPageState extends State<StatPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisAlignment: MainAxisAlignment.start,
-              mainAxisSize: MainAxisSize.max,
+              mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 15, vertical: 7),
-                  color: Colors.grey.withOpacity(0.2),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      makeTransactionsIcon(),
-                      const SizedBox(
-                        width: 45,
-                      ),
-                      ZText(
-                          content: 'Transactions',
-                          color: Color(Styling.iconColor),
-                          fontSize: 15),
-                      const SizedBox(
-                        width: 5,
-                      ),
-                      ZText(
-                          content: 'state',
-                          color: Color(Styling.accentColor),
-                          fontSize: 12),
-                    ],
-                  ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    makeTransactionsIcon(),
+                    const SizedBox(
+                      width: 45,
+                    ),
+                    ZText(
+                        content: 'TOTAL JOURNALIER',
+                        color: Color(Styling.iconColor),
+                        fontSize: SizeConfig.diagonal * 2),
+                    const SizedBox(
+                      width: 5,
+                    ),
+                  ],
                 ),
-                const SizedBox(
-                  height: 4,
+                Container(
+                  margin: EdgeInsets.all(SizeConfig.diagonal * 2),
+                  height: 1,
+                  color: Color(Styling.iconColor),
+                  padding: EdgeInsets.all(SizeConfig.diagonal * 3),
                 ),
                 Expanded(
                   //flex: 1,
@@ -458,9 +449,9 @@ class _StatPageState extends State<StatPage> {
                           bottomTitles: SideTitles(
                             showTitles: true,
                             getTextStyles: (value) => const TextStyle(
-                                color: Color(Styling.iconColor),
-                                fontWeight: FontWeight.bold,
-                                fontSize: 10),
+                              color: Color(Styling.iconColor),
+                              fontSize: 10,
+                            ),
                             margin: 15,
                             getTitles: (double value) {
                               switch (value.toInt()) {
@@ -501,11 +492,11 @@ class _StatPageState extends State<StatPage> {
                           leftTitles: SideTitles(
                             showTitles: true,
                             getTextStyles: (value) => const TextStyle(
-                                color: Color(Styling.iconColor),
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14),
+                              color: Color(Styling.iconColor),
+                              fontSize: 10,
+                            ),
                             margin: 20,
-                            reservedSize: 20,
+                            reservedSize: 26,
                             interval: maxY / 4,
                             getTitles: (value) {
                               // log("value is $value");
@@ -552,7 +543,7 @@ class _StatPageState extends State<StatPage> {
           Container(
             width: width,
             height: 10,
-            color: Colors.grey.withOpacity(0.4),
+            color: Color(Styling.iconColor).withOpacity(0.3),
           ),
           const SizedBox(
             width: space,
@@ -560,7 +551,7 @@ class _StatPageState extends State<StatPage> {
           Container(
             width: width,
             height: 10,
-            color: Colors.grey.withOpacity(0.9),
+            color: Color(Styling.iconColor).withOpacity(0.6),
           ),
           const SizedBox(
             width: space,
@@ -568,7 +559,7 @@ class _StatPageState extends State<StatPage> {
           Container(
             width: width,
             height: 10,
-            color: Colors.black.withOpacity(0.5),
+            color: Color(Styling.iconColor).withOpacity(0.9),
           ),
           const SizedBox(
             width: space,
@@ -586,9 +577,48 @@ class _StatPageState extends State<StatPage> {
           color: Color(Styling.primaryBackgroundColor),
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            children: statisticList.map((userStat) {
-              return statUserItem(userStat);
-            }).toList(),
+            children: [
+              Padding(padding: const EdgeInsets.all(6.0)),
+              ZText(
+                content: "TOTAL JOURNALIER ",
+                fontSize: SizeConfig.diagonal * 2,
+                color: Color(Styling.iconColor),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Expanded(
+                  child: Stack(
+                    children: [
+                      SizedBox(
+                        height: 20,
+                        width: double.infinity,
+                        child: LinearProgressIndicator(
+                          value: totalCount.toDouble(),
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Color(Styling.iconColor).withOpacity(0.9),
+                          ),
+                        ),
+                      ),
+                      Align(
+                        child: Text(
+                          "Total Count : $totalCount commandes",
+                          style: TextStyle(
+                            color: Color(Styling.primaryBackgroundColor),
+                          ),
+                        ),
+                        alignment: Alignment.topCenter,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: statisticList.map((userStat) {
+                  return statUserItem(userStat);
+                }).toList(),
+              ),
+            ],
           ),
         ),
       ],
@@ -598,45 +628,26 @@ class _StatPageState extends State<StatPage> {
   Padding statUserItem(StatisticUser statisticUser) {
     return Padding(
       padding: const EdgeInsets.all(10.0),
-      
-      child: Container(
-        
-        child: Row(
+      child: Expanded(
+        child: Stack(
           children: [
-             SizedBox(
-                height: 20,
-                width: 5,
-                child: LinearProgressIndicator(
-                  value: statisticUser.count!.toDouble(),
-                  backgroundColor: Colors.cyan.shade100,
-                  valueColor:
-                      AlwaysStoppedAnimation<Color>(Colors.purpleAccent.shade100),
-                ),
-              ),
-            
-            ZText(
-              content: statisticUser.userName,
-              color: Color(Styling.accentColor),
-              fontSize: SizeConfig.diagonal * 2,
-              fontWeight: FontWeight.bold,
-            ),
-            Expanded(
-              child: SizedBox(
-                height: 20,
-                width: 5,
-                child: LinearProgressIndicator(
-                  value: statisticUser.count! / totalCount,
-                  backgroundColor: Colors.cyan.shade100,
-                  valueColor:
-                      AlwaysStoppedAnimation<Color>(Colors.purpleAccent.shade100),
+            SizedBox(
+              height: 20,
+              width: double.infinity,
+              child: LinearProgressIndicator(
+                value: statisticUser.count! / totalCount,
+                backgroundColor:
+                    Color(Styling.transparentBackgroundDark).withOpacity(0.2),
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  Color(Styling.iconColor).withOpacity(0.8),
                 ),
               ),
             ),
             Align(
               child: Text(
-                " ${(statisticUser.count! * 100 / totalCount)}",
+                "${statisticUser.userName}: ${(statisticUser.count)} commandes",
                 style: TextStyle(
-                  color: Colors.amber[200],
+                  color: Color(Styling.primaryBackgroundColor),
                 ),
               ),
               alignment: Alignment.topCenter,

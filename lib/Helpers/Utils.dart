@@ -343,7 +343,8 @@ String? formatInterVal(double number) {
   } else if (length < 7) {
     text = textNumber.substring(0, length - 3) + 'k';
   } else if (length < 10) {
-    text = textNumber.substring(0, length - 6) + 'M';
+    text =
+        '${textNumber.substring(0, length - 6)}.${textNumber.substring(1, length - 5)} M';
   } else {
     text = textNumber;
   }
