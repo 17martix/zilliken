@@ -108,7 +108,7 @@ class Database {
     return taxPercentage;
   }
 
-  Future<String> placeOrder(Order order, List<OrderItem> newClientOrder) async {
+  Future<String> placeOrder(Order order) async {
     var document = databaseReference.collection(Fields.order).doc();
     order.id = document.id;
 
@@ -132,8 +132,28 @@ class Database {
       Fields.addressName: order.addressName,
       Fields.deliveringOrderId: null,
       Fields.currentPoint: order.currentPoint,
+      Fields.userName: order.userName,
     }).then((value) async {
       for (int i = 0; i < order.clientOrder.length; i++) {
+        // if (order.clientOrder[i].menuItem.condiments != null) {
+        //   condimentsList
+        //       .add(order.clientOrder[i].menuItem.condiments!.whereNotNull());
+        // }
+        List<String>? condimentsList;
+        if (order.clientOrder[i].menuItem.condiments != null) {
+          condimentsList = [];
+          order.clientOrder[i].menuItem.condiments!.forEach((element) {
+            condimentsList!
+                .add(element.buildStringFromObject(element.quantity));
+          });
+        }
+
+        /*order.clientOrder.forEach((orderItem) {
+          orderItem.menuItem.condiments!.whereNotNull().forEach((stockElement) {
+            condimentsList.add(stockElement);
+          });
+        });*/
+        log('condiments is: $condimentsList');
         await databaseReference
             .collection(Fields.order)
             .doc(document.id)
@@ -147,18 +167,9 @@ class Database {
           Fields.price: order.clientOrder[i].menuItem.price,
           Fields.rank: order.clientOrder[i].menuItem.rank,
           Fields.global: order.clientOrder[i].menuItem.global,
+          Fields.condiments: condimentsList,
         });
       }
-      newClientOrder.forEach((element) async {
-        await databaseReference
-            .collection(Fields.order)
-            .doc(document.id)
-            .collection(Fields.items)
-            .doc(element.menuItem.id)
-            .set({
-          Fields.condiments: element.menuItem.condiments,
-        });
-      });
     });
 
     return document.id;
@@ -415,30 +426,22 @@ class Database {
       });
 
       order.clientOrder.forEach((orderItem) async {
-        log('value ordertem: ${orderItem}');
-
-        log('value of condiments : ${orderItem.menuItem.condiments}');
-
         if (orderItem.menuItem.condiments != null) {
-          log('entering if');
           orderItem.menuItem.condiments!.forEach((stock) async {
             var stockReference =
                 databaseReference.collection(Fields.stock).doc(stock.id);
-            log('stock docId: ${stock.id}');
             WriteBatch batch = databaseReference.batch();
 
             batch.update(stockReference, {
-              Fields.quantity:
-                  FieldValue.increment(-orderItem.menuItem.quantity!),
+              Fields.quantity: FieldValue.increment(-stock.quantity),
+              Fields.usedSince: FieldValue.increment(stock.quantity),
+              Fields.usedTotal: FieldValue.increment(stock.quantity),
             });
-            log('substracting function reached');
+
             await batch.commit();
           });
-          log('exiting if');
         }
       });
-
-      log('end of part 2');
     } else if (value == 3) {
       await document.update({
         Fields.status: Fields.preparation,
@@ -816,6 +819,7 @@ class Database {
     await inventory
         .update({
           Fields.quantity: stock.quantity,
+          Fields.usedSince: 0,
         })
         .whenComplete(() => result = Result(
             isSuccess: true, message: I18n.of(context).operationSucceeded))
@@ -898,19 +902,16 @@ class Database {
     await batch.commit();
   }
 
-  // Future<List<Stock>> getStockItem() async {
-  //   List<Stock> stockItems = [];
-
-  //   CollectionReference stockReference =
-  //       databaseReference.collection(Fields.stock);
-  //   await stockReference.get().then((QuerySnapshot snapshot) {
-  //     snapshot.docs.forEach((element) async {
-  //       if (snapshot != null && snapshot.docs.isNotEmpty) {
-  //         Stock stock = Stock.buildObject(element);
-  //         stockItems.add(stock);
-  //       }
-  //     });
-  //   });
-  //   return stockItems;
-  // }
+  Future<Result> deleteStockItem(context, String docId) async {
+    Result result =
+        Result(isSuccess: false, message: I18n.of(context).operationFailed);
+    var stockRef = databaseReference.collection(Fields.stock).doc(docId);
+    await stockRef
+        .delete()
+        .whenComplete(() => result = Result(
+            isSuccess: true, message: I18n.of(context).operationSucceeded))
+        .catchError((error) => result = Result(
+            isSuccess: false, message: I18n.of(context).operationFailed));
+    return result;
+  }
 }

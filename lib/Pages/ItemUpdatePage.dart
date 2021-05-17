@@ -28,18 +28,20 @@ class ItemUpdatePage extends StatefulWidget {
   final Stock stock;
 
   ItemUpdatePage({
-  required  this.auth,
-   required this.db,
-   required this.messaging,
-   required this.userId,
-  required  this.userRole,
-   required this.stock,
+    required this.auth,
+    required this.db,
+    required this.messaging,
+    required this.userId,
+    required this.userRole,
+    required this.stock,
   });
   @override
   _ItemEditPageState createState() => _ItemEditPageState();
 }
 
 class _ItemEditPageState extends State<ItemUpdatePage> {
+  num? quantity;
+
   // @override
   // void initState() {
   //   super.initState();
@@ -76,35 +78,35 @@ class _ItemEditPageState extends State<ItemUpdatePage> {
               Container(
                 height: SizeConfig.diagonal * 15,
                 child: Center(
-                  child:  ZText(content:I18n.of(context).itemEditing),
+                  child: ZText(content: I18n.of(context).itemEditing),
                 ),
               ),
-             /* ZTextField(
-                outsidePrefix: Text(I18n.of(context).quantity + ' :'),
-                onSaved: (value) => widget.stock.quantity = num.parse(value),
-                validator: (value) =>
-                  ( value==null || value.isEmpty) ? I18n.of(context).requit : null,
-              ),*/
+              ZTextField(
+                hint: '${widget.stock.quantity}',
+                onSaved: (value) => quantity = num.parse(value!),
+                validator: (value) => (value == null || value.isEmpty)
+                    ? I18n.of(context).requit
+                    : null,
+              ),
               SizedBox(
                 height: SizeConfig.diagonal * 3,
               ),
               // ZTextField(
               //   outsidePrefix: Text(I18n.of(context).unit + ' :'),
-              //   //onSaved: (value) => newStockValue.quantity = num.parse(value),
+              //   onSaved: (value) => unit = num.parse(value!),
               //   validator: (value) =>
-              //       value.isEmpty ? I18n.of(context).requit : null,
+              //       value!.isEmpty ? I18n.of(context).requit : null,
               // ),
-              // SizedBox(
-              //   height: SizeConfig.diagonal * 3,
-              // ),
+              SizedBox(
+                height: SizeConfig.diagonal * 3,
+              ),
 
               ZElevatedButton(
                 onpressed: itemUpdate,
-                child:  ZText(content:
-                  I18n.of(context).save,
-                 color: Color(Styling.textColor)),
-                ),
-              
+                child: ZText(
+                    content: I18n.of(context).save,
+                    color: Color(Styling.textColor)),
+              ),
             ],
           ),
         ),
@@ -123,14 +125,20 @@ class _ItemEditPageState extends State<ItemUpdatePage> {
       if (!isOnline) {
         EasyLoading.dismiss();
 
-      ScaffoldMessenger.of(context).showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: ZText(content:I18n.of(context).noInternet),
+            content: ZText(content: I18n.of(context).noInternet),
           ),
         );
       } else {
         try {
-          await widget.db.updateInventoryItem(context, widget.stock);
+          Stock stock = Stock(
+              name: widget.stock.name,
+              quantity: quantity!,
+              unit: widget.stock.unit,
+              usedSince: widget.stock.usedSince,
+              usedTotal: widget.stock.usedTotal);
+          await widget.db.updateInventoryItem(context, stock);
 
           EasyLoading.dismiss();
 
@@ -143,9 +151,9 @@ class _ItemEditPageState extends State<ItemUpdatePage> {
             _formKey.currentState!.reset();
           });
 
-         ScaffoldMessenger.of(context).showSnackBar(
+          ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content:  ZText(content:e.toString()),
+              content: ZText(content: e.toString()),
             ),
           );
         }

@@ -25,6 +25,7 @@ class Order {
   late GeoPoint? currentPoint;
   late String? addressName;
   late String? deliveringOrderId;
+  late String? userName;
 
   Order({
     this.id,
@@ -47,6 +48,7 @@ class Order {
     this.geoPoint,
     this.currentPoint,
     this.deliveringOrderId,
+    this.userName,
   });
 
   Order.buildObject(DocumentSnapshot document) {
@@ -69,6 +71,7 @@ class Order {
     geoPoint = document.data()?[Fields.geoPoint];
     currentPoint = document.data()?[Fields.currentPoint];
     deliveringOrderId = document.data()?[Fields.deliveringOrderId];
+    userName = document.data()?[Fields.userName];
   }
 
   Order.buildObjectAsync(AsyncSnapshot<DocumentSnapshot> document) {
@@ -91,5 +94,6 @@ class Order {
     geoPoint = document.data?[Fields.geoPoint];
     currentPoint = document.data?[Fields.currentPoint];
     deliveringOrderId = document.data?[Fields.deliveringOrderId];
+    userName = document.data?[Fields.userName];
   }
 }

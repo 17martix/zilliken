@@ -843,25 +843,26 @@ class _CartPageState extends State<CartPage> {
         } else {
           try {
             Order order = Order(
-              clientOrder: clientOrder!,
-              orderLocation: restaurantOrRoomOrder,
-              tableAdress: tableAdress!,
-              phoneNumber: phone,
-              instructions: instruction,
-              grandTotal: grandTotalNumber(context, clientOrder!, tax),
-              orderDate: null,
-              confirmedDate: null,
-              servedDate: null,
-              status: 1,
-              userId: widget.userId,
-              userRole: widget.userRole,
-              taxPercentage: tax,
-              total: priceItemsTotalNumber(context, clientOrder!),
-              addressName: addressName,
-              geoPoint: geoPoint,
-              currentPoint: GeoPoint(-3.3834389, 29.3616122),
-            );
-            await widget.db.placeOrder(order, widget.clientOrder);
+                clientOrder: clientOrder!,
+                orderLocation: restaurantOrRoomOrder,
+                tableAdress: tableAdress!,
+                phoneNumber: phone,
+                instructions: instruction,
+                grandTotal: grandTotalNumber(context, clientOrder!, tax),
+                orderDate: null,
+                confirmedDate: null,
+                servedDate: null,
+                status: 1,
+                userId: widget.userId,
+                userRole: widget.userRole,
+                taxPercentage: tax,
+                total: priceItemsTotalNumber(context, clientOrder!),
+                addressName: addressName,
+                geoPoint: geoPoint,
+                currentPoint: GeoPoint(-3.3834389, 29.3616122),
+                userName: 'Lionel');
+
+            await widget.db.placeOrder(order);
 
             EasyLoading.dismiss();
 

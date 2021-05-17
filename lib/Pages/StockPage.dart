@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:zilliken/Helpers/SizeConfig.dart';
 import 'package:zilliken/Helpers/Styling.dart';
+import 'package:zilliken/Helpers/Utils.dart';
 import 'package:zilliken/Models/Fields.dart';
 import 'package:zilliken/Models/Stock.dart';
 import 'package:zilliken/Pages/LinkToStockPage.dart';
@@ -98,30 +100,37 @@ class _StockPageState extends State<StockPage> {
       actionPane: SlidableDrawerActionPane(),
       actions: [
         Padding(
-          padding: EdgeInsets.only(left: SizeConfig.diagonal * 0.9),
+          padding: EdgeInsets.only(left: SizeConfig.diagonal * 0.3),
           child: SlideAction(
-            child: Container(
-              height: SizeConfig.diagonal * 11.3,
-              width: double.infinity,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.cancel,
-                    size: SizeConfig.diagonal * 2.5,
-                  ),
-                  ZText(content: I18n.of(context).cancelOnly),
-                ],
-              ),
-              decoration: BoxDecoration(
-                color: Colors.red,
-                borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5),
+            child: Card(
+              shape: RoundedRectangleBorder(
+                  borderRadius:
+                      BorderRadius.circular(SizeConfig.diagonal * 1.5)),
+              elevation: 8,
+              child: Container(
+                height: SizeConfig.diagonal * 11.3,
+                width: double.infinity,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.cancel,
+                      size: SizeConfig.diagonal * 2.5,
+                    ),
+                    ZText(content: I18n.of(context).cancelOnly),
+                  ],
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.deepOrange,
+                  borderRadius:
+                      BorderRadius.circular(SizeConfig.diagonal * 1.5),
+                ),
               ),
             ),
           ),
         ),
         Padding(
-          padding: EdgeInsets.only(left: SizeConfig.diagonal * 0.9),
+          padding: EdgeInsets.only(left: SizeConfig.diagonal * 0.1),
           child: SlideAction(
             onTap: () {
               Navigator.push(
@@ -138,28 +147,35 @@ class _StockPageState extends State<StockPage> {
                 ),
               );
             },
-            child: Container(
-              height: SizeConfig.diagonal * 11.3,
-              width: double.infinity,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.update,
-                    size: SizeConfig.diagonal * 2.5,
-                  ),
-                  ZText(content: I18n.of(context).update),
-                ],
-              ),
-              decoration: BoxDecoration(
-                color: Colors.blue,
-                borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5),
+            child: Card(
+              shape: RoundedRectangleBorder(
+                  borderRadius:
+                      BorderRadius.circular(SizeConfig.diagonal * 1.5)),
+              elevation: 8,
+              child: Container(
+                height: SizeConfig.diagonal * 11.3,
+                width: double.infinity,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.update,
+                      size: SizeConfig.diagonal * 2.5,
+                    ),
+                    ZText(content: I18n.of(context).update),
+                  ],
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.blue,
+                  borderRadius:
+                      BorderRadius.circular(SizeConfig.diagonal * 1.5),
+                ),
               ),
             ),
           ),
         ),
         Padding(
-          padding: EdgeInsets.only(left: SizeConfig.diagonal * 0.9),
+          padding: EdgeInsets.only(left: SizeConfig.diagonal * 0.1),
           child: SlideAction(
             onTap: () {
               Navigator.push(
@@ -176,22 +192,29 @@ class _StockPageState extends State<StockPage> {
                 ),
               );
             },
-            child: Container(
-              width: double.infinity,
-              height: SizeConfig.diagonal * 11.3,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.link,
-                    size: SizeConfig.diagonal * 2.5,
-                  ),
-                  ZText(content: I18n.of(context).linkToMenu),
-                ],
-              ),
-              decoration: BoxDecoration(
-                color: Colors.grey,
-                borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5),
+            child: Card(
+              shape: RoundedRectangleBorder(
+                  borderRadius:
+                      BorderRadius.circular(SizeConfig.diagonal * 1.5)),
+              elevation: 8,
+              child: Container(
+                width: double.infinity,
+                height: SizeConfig.diagonal * 11.3,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.link,
+                      size: SizeConfig.diagonal * 2.5,
+                    ),
+                    ZText(content: I18n.of(context).linkToMenu),
+                  ],
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.grey,
+                  borderRadius:
+                      BorderRadius.circular(SizeConfig.diagonal * 1.5),
+                ),
               ),
             ),
           ),
@@ -229,6 +252,65 @@ class _StockPageState extends State<StockPage> {
           ),
         ),
       ),
+      secondaryActions: [
+        Padding(
+          padding: EdgeInsets.only(right: SizeConfig.diagonal * 0.3),
+          child: SlideAction(
+            onTap: () async {
+              EasyLoading.show(status: I18n.of(context).loading);
+
+              bool isOnline = await hasConnection();
+              if (!isOnline) {
+                EasyLoading.dismiss();
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: ZText(content: I18n.of(context).noInternet),
+                  ),
+                );
+              } else {
+                try {
+                  await widget.db.deleteStockItem(context, stock.id!);
+                  EasyLoading.dismiss();
+                } on Exception catch (e) {
+                  EasyLoading.dismiss();
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: ZText(content: e.toString()),
+                    ),
+                  );
+                }
+              }
+            },
+            child: Card(
+              shape: RoundedRectangleBorder(
+                  borderRadius:
+                      BorderRadius.circular(SizeConfig.diagonal * 1.5)),
+              elevation: 8,
+              child: Container(
+                height: SizeConfig.diagonal * 11.3,
+                width: double.infinity,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.delete_forever_sharp,
+                      size: SizeConfig.diagonal * 2.5,
+                    ),
+                    ZText(content: I18n.of(context).delete),
+                  ],
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.red,
+                  borderRadius:
+                      BorderRadius.circular(SizeConfig.diagonal * 1.5),
+                ),
+              ),
+            ),
+          ),
+        )
+      ],
     )
 
         /*Card(
