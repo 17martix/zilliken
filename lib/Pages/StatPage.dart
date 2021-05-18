@@ -194,7 +194,7 @@ class _StatPageState extends State<StatPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     ZText(
-                      content: "${statistic.total}",
+                      content: formatNumber(statistic.total),
                       color: Color(Styling.accentColor),
                       fontSize: SizeConfig.diagonal * 2,
                     ),
@@ -246,7 +246,7 @@ class _StatPageState extends State<StatPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ZText(
-              content: I18n.of(context).dailytotal,
+              content: I18n.of(context).dailyTotal,
               textAlign: TextAlign.center,
               color: Color(Styling.iconColor),
               fontSize: SizeConfig.diagonal * 2,
@@ -270,21 +270,6 @@ class _StatPageState extends State<StatPage> {
                         //return graph();
                       }).toList(),
                     ),
-              /* ListView.builder(
-                      shrinkWrap: true,
-                      scrollDirection: Axis.horizontal,
-                      controller: _scrollController,
-                      itemCount: items.length,
-                      itemBuilder: (context, index) {
-                        Statistic statistic = Statistic();
-                        statistic.buildObject(items[index]);
-                        return Row(
-                          children: [
-                            body(statistic),
-                          ],
-                        );
-                      },
-                    ),*/
               isLoading
                   ? Container(
                       width: SizeConfig.diagonal * 8,
@@ -298,13 +283,6 @@ class _StatPageState extends State<StatPage> {
                               BorderRadius.circular(SizeConfig.diagonal * 1),
                         ),
                         child: CircularProgressIndicator(
-                          // valueColor: animationController
-                          //.drive(ColorTween(begin: Colors.blueAccent, end: Colors.red)),
-
-                          //valueColor:Animation<blue> valueColor ,
-
-                          //semanticsLabel: 'Linear progress indicator',
-
                           backgroundColor: Color(Styling.primaryDarkColor),
                         ),
                       ),
@@ -370,7 +348,7 @@ class _StatPageState extends State<StatPage> {
                       width: 45,
                     ),
                     ZText(
-                        content: 'TOTAL JOURNALIER',
+                        content: I18n.of(context).weeklyinventory,
                         color: Color(Styling.iconColor),
                         fontSize: SizeConfig.diagonal * 2),
                     const SizedBox(
@@ -397,52 +375,6 @@ class _StatPageState extends State<StatPage> {
                             tooltipBgColor: Colors.red,
                             getTooltipItem: (_a, _b, _c, _d) => null,
                           ),
-                          /*touchCallback: (response) {
-                              if (response.spot == null) {
-                                setState(() {
-                                  touchedGroupIndex = -1;
-                                  showingBarGroups = List.of(rawBarGroups);
-                                });
-
-                                return;
-                              }
-
-                              touchedGroupIndex =
-                                  response.spot!.touchedBarGroupIndex;
-
-                              setState(() {
-                                if (response.touchInput is PointerExitEvent ||
-                                    response.touchInput is PointerUpEvent) {
-                                  touchedGroupIndex = -1;
-                                  showingBarGroups = List.of(rawBarGroups);
-                                } else {
-                                  showingBarGroups = List.of(rawBarGroups);
-                                  if (touchedGroupIndex != -1) {
-                                    double sum = 0;
-                                    for (BarChartRodData rod
-                                        in showingBarGroups[touchedGroupIndex!]
-                                            .barRods) {
-                                      sum += rod.y;
-                                    }
-                                    final avg = sum /
-                                        showingBarGroups[touchedGroupIndex!]
-                                            .barRods
-                                            .length;
-
-                                    showingBarGroups[touchedGroupIndex!] =
-                                        showingBarGroups[touchedGroupIndex!]
-                                            .copyWith(
-                                      barRods:
-                                          showingBarGroups[touchedGroupIndex!]
-                                              .barRods
-                                              .map((rod) {
-                                        return rod.copyWith(y: avg);
-                                      }).toList(),
-                                    );
-                                  }
-                                }
-                              });
-                            }*/
                         ),
                         titlesData: FlTitlesData(
                           show: true,
@@ -580,7 +512,7 @@ class _StatPageState extends State<StatPage> {
             children: [
               Padding(padding: const EdgeInsets.all(6.0)),
               ZText(
-                content: "TOTAL JOURNALIER ",
+                content: I18n.of(context).totalOrders,
                 fontSize: SizeConfig.diagonal * 2,
                 color: Color(Styling.iconColor),
               ),
@@ -590,7 +522,7 @@ class _StatPageState extends State<StatPage> {
                   child: Stack(
                     children: [
                       SizedBox(
-                        height: 20,
+                        height: 17,
                         width: double.infinity,
                         child: LinearProgressIndicator(
                           value: totalCount.toDouble(),
@@ -601,7 +533,7 @@ class _StatPageState extends State<StatPage> {
                       ),
                       Align(
                         child: Text(
-                          "Total Count : $totalCount commandes",
+                          "${I18n.of(context).totalCount} : $totalCount ${commandePluriel(totalCount, context)}",
                           style: TextStyle(
                             color: Color(Styling.primaryBackgroundColor),
                           ),
@@ -632,7 +564,7 @@ class _StatPageState extends State<StatPage> {
         child: Stack(
           children: [
             SizedBox(
-              height: 20,
+              height: 17,
               width: double.infinity,
               child: LinearProgressIndicator(
                 value: statisticUser.count! / totalCount,
@@ -645,7 +577,7 @@ class _StatPageState extends State<StatPage> {
             ),
             Align(
               child: Text(
-                "${statisticUser.userName}: ${(statisticUser.count)} commandes",
+                "${statisticUser.userName}: ${(statisticUser.count)} ${commandePluriel(statisticUser.count!, context)}",
                 style: TextStyle(
                   color: Color(Styling.primaryBackgroundColor),
                 ),

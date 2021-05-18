@@ -357,3 +357,13 @@ String searchReady(String text) {
   text = text.replaceAll(new RegExp(r'(?:_|[^\w\s])+'), '');
   return text;
 }
+
+String? commandePluriel(num count, context) {
+  String? commande;
+  if (count == 1) {
+    commande = I18n.of(context).order;
+  } else {
+    commande = I18n.of(context).orders;
+  }
+  return commande;
+}

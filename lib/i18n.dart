@@ -215,7 +215,15 @@ class I18n {
 
   String get printingDisabled => _getText("printingDisabled");
 
+  String get cancelOnly => _getText("cancelOnly");
+
   String get noResult => _getText("noResult");
+
+  String get weeklyinventory => _getText("weeklyinventory");
+
+  String get totalOrders => _getText("totalOrders");
+
+  String get totalCount => _getText("totalCount");
 
   static late Map<String, String> _localizedValues;
 
@@ -325,7 +333,11 @@ class I18n {
     "itemDescription": "Enter Item Description",
     "itemEditing": "Edit Item Details",
     "printingDisabled": "Printing Disabled",
+    "cancelOnly": "Cancel",
     "noResult": "No Result",
+    "weeklyinventory": "weekly inventory",
+    "totalOrders": "Total Orders per Day",
+    "totalCount": "Total Count",
   };
 
   static const _frValues = {
@@ -427,14 +439,18 @@ class I18n {
     "phone": "Tél",
     "last": "Vu à",
     "active": "Activer",
-    "dailyTotal": " Le total journalier",
+    "dailyTotal": " Total Journalier",
     "quantity": "Quantité",
     "used": "Utilisé",
     "unit": "Unité",
     "itemDescription": "Entrer Déscription",
     "itemEditing": "Modifier Détails",
     "printingDisabled": "Impression désactivée",
+    "cancelOnly": "Annuler",
     "noResult": "Pas De Résultat",
+    "weeklyinventory": "Inventaire Hebdomadaire",
+    "totalOrders": "Total des Commandes par Jour",
+    "totalCount": "Compte Total",
   };
 
   static const _allValues = {
