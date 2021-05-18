@@ -902,7 +902,7 @@ class Database {
     await batch.commit();
   }
 
-  Future<Result> deleteStockItem(context, String docId) async {
+  Future<Result> deleteStockItem(context, String docId, String itemId) async {
     Result result =
         Result(isSuccess: false, message: I18n.of(context).operationFailed);
     var stockRef = databaseReference.collection(Fields.stock).doc(docId);

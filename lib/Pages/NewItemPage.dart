@@ -133,8 +133,9 @@ class _NewItemPageState extends State<NewItemPage> {
               ZElevatedButton(
                 onpressed: saveItem,
                 child: ZText(
-                    content: I18n.of(context).save,
-                    color: Color(Styling.textColor)),
+                  content: I18n.of(context).save,
+                  color: Color(Styling.textColor),
+                ),
               ),
             ],
           ),

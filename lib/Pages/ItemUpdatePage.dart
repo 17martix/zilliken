@@ -83,14 +83,19 @@ class _ItemEditPageState extends State<ItemUpdatePage> {
               ),
               ZTextField(
                 hint: '${widget.stock.quantity}',
-                onSaved: (value) => quantity = num.parse(value!),
-                validator: (value) => (value == null || value.isEmpty)
+                outsidePrefix: ZText(content: I18n.of(context).quantity + ' :'),
+                onSaved: (value) {
+                  if (value != null) {
+                    quantity = num.parse(value);
+                  }
+                },
+                validator: (value) => value == null || value.isEmpty
                     ? I18n.of(context).requit
                     : null,
               ),
-              SizedBox(
-                height: SizeConfig.diagonal * 3,
-              ),
+              // SizedBox(
+              //   height: SizeConfig.diagonal * 3,
+              // ),
               // ZTextField(
               //   outsidePrefix: Text(I18n.of(context).unit + ' :'),
               //   onSaved: (value) => unit = num.parse(value!),
@@ -104,8 +109,9 @@ class _ItemEditPageState extends State<ItemUpdatePage> {
               ZElevatedButton(
                 onpressed: itemUpdate,
                 child: ZText(
-                    content: I18n.of(context).save,
-                    color: Color(Styling.textColor)),
+                  content: I18n.of(context).save,
+                  color: Color(Styling.textColor),
+                ),
               ),
             ],
           ),
@@ -132,15 +138,22 @@ class _ItemEditPageState extends State<ItemUpdatePage> {
         );
       } else {
         try {
-          Stock stock = Stock(
-              name: widget.stock.name,
-              quantity: quantity!,
-              unit: widget.stock.unit,
-              usedSince: widget.stock.usedSince,
-              usedTotal: widget.stock.usedTotal);
-          await widget.db.updateInventoryItem(context, stock);
+          Stock newStock = Stock(
+            id: widget.stock.id,
+            name: widget.stock.name,
+            quantity: quantity!,
+            unit: widget.stock.unit,
+            usedSince: widget.stock.usedSince,
+            usedTotal: widget.stock.usedTotal,
+          );
+          await widget.db.updateInventoryItem(context, newStock);
 
           EasyLoading.dismiss();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: ZText(content: I18n.of(context).operationSucceeded),
+            ),
+          );
 
           setState(() {
             _formKey.currentState!.reset();

@@ -272,6 +272,12 @@ class _StockPageState extends State<StockPage> {
                 try {
                   await widget.db.deleteStockItem(context, stock.id!);
                   EasyLoading.dismiss();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content:
+                          ZText(content: I18n.of(context).operationSucceeded),
+                    ),
+                  );
                 } on Exception catch (e) {
                   EasyLoading.dismiss();
 
