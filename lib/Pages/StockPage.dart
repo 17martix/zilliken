@@ -6,6 +6,7 @@ import 'package:zilliken/Helpers/SizeConfig.dart';
 import 'package:zilliken/Helpers/Styling.dart';
 import 'package:zilliken/Helpers/Utils.dart';
 import 'package:zilliken/Models/Fields.dart';
+import 'package:zilliken/Models/MenuItem.dart';
 import 'package:zilliken/Models/Stock.dart';
 import 'package:zilliken/Pages/LinkToStockPage.dart';
 import 'package:zilliken/Pages/ItemUpdatePage.dart';
@@ -96,6 +97,8 @@ class _StockPageState extends State<StockPage> {
   }
 
   Widget itemTile(Stock stock) {
+    // List<MenuItem> menuItem = [];
+
     return Slidable(
       actionPane: SlidableDrawerActionPane(),
       actions: [
@@ -257,6 +260,9 @@ class _StockPageState extends State<StockPage> {
           padding: EdgeInsets.only(right: SizeConfig.diagonal * 0.3),
           child: SlideAction(
             onTap: () async {
+              num q = stock.quantity;
+              String newStock = stock.buildStringFromObject(q);
+
               EasyLoading.show(status: I18n.of(context).loading);
 
               bool isOnline = await hasConnection();
@@ -270,7 +276,7 @@ class _StockPageState extends State<StockPage> {
                 );
               } else {
                 try {
-                  await widget.db.deleteStockItem(context, stock.id!);
+                  await widget.db.deleteStockItem(context, stock.id!, newStock);
                   EasyLoading.dismiss();
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(

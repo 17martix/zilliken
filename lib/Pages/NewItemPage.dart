@@ -197,5 +197,6 @@ class _NewItemPageState extends State<NewItemPage> {
         }
       }
     }
+    Navigator.of(context).pop();
   }
 }

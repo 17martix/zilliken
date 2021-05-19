@@ -158,6 +158,7 @@ class _ItemEditPageState extends State<ItemUpdatePage> {
           setState(() {
             _formKey.currentState!.reset();
           });
+          Navigator.of(context).pop();
         } on Exception catch (e) {
           EasyLoading.dismiss();
           setState(() {
