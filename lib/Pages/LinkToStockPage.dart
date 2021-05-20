@@ -181,30 +181,37 @@ class _ConnectToMenuState extends State<LinkToMenu> {
       actionPane: SlidableDrawerActionPane(),
       actions: [
         Padding(
-          padding: EdgeInsets.only(left: SizeConfig.diagonal * 0.9),
+          padding: EdgeInsets.only(left: SizeConfig.diagonal * 0.1),
           child: SlideAction(
-            child: Container(
-              height: SizeConfig.diagonal * 6.3,
-              width: double.infinity,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.cancel,
-                    size: SizeConfig.diagonal * 2.5,
-                  ),
-                  ZText(content: I18n.of(context).cancelOnly),
-                ],
-              ),
-              decoration: BoxDecoration(
-                color: Colors.red,
+            child: Card(
+              elevation: 8,
+              shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5),
+              ),
+              child: Container(
+                height: SizeConfig.diagonal * 6.3,
+                width: double.infinity,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.cancel,
+                      size: SizeConfig.diagonal * 2.5,
+                    ),
+                    ZText(content: I18n.of(context).cancelOnly),
+                  ],
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.red,
+                  borderRadius:
+                      BorderRadius.circular(SizeConfig.diagonal * 1.5),
+                ),
               ),
             ),
           ),
         ),
         Padding(
-          padding: EdgeInsets.only(left: SizeConfig.diagonal * 0.9),
+          padding: EdgeInsets.only(left: SizeConfig.diagonal * 0.1),
           child: SlideAction(
             onTap: () {
               if (menuItem.isChecked!) {
@@ -307,26 +314,65 @@ class _ConnectToMenuState extends State<LinkToMenu> {
                 );
               }
             },
-            child: Container(
-              height: SizeConfig.diagonal * 6.3,
-              width: double.infinity,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.edit,
-                    color: Colors.white,
-                    size: SizeConfig.diagonal * 2.5,
-                  ),
-                  ZText(
-                    content: I18n.of(context).edit,
-                    color: Colors.white,
-                  ),
-                ],
-              ),
-              decoration: BoxDecoration(
-                color: Color(Styling.primaryColor),
+            child: Card(
+              elevation: 8,
+              shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5),
+              ),
+              child: Container(
+                height: SizeConfig.diagonal * 6.3,
+                width: double.infinity,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.edit,
+                      color: Colors.white,
+                      size: SizeConfig.diagonal * 2.5,
+                    ),
+                    ZText(
+                      content: I18n.of(context).edit,
+                      color: Colors.white,
+                    ),
+                  ],
+                ),
+                decoration: BoxDecoration(
+                  color: Color(Styling.primaryColor),
+                  borderRadius:
+                      BorderRadius.circular(SizeConfig.diagonal * 1.5),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+      secondaryActions: [
+        Padding(
+          padding: EdgeInsets.only(left: SizeConfig.diagonal * 0.1),
+          child: SlideAction(
+            child: Card(
+              elevation: 8,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5),
+              ),
+              child: Container(
+                height: SizeConfig.diagonal * 6.3,
+                width: double.infinity,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.adjust,
+                      size: SizeConfig.diagonal * 2.5,
+                    ),
+                    ZText(content: I18n.of(context).adjust),
+                  ],
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.deepPurple,
+                  borderRadius:
+                      BorderRadius.circular(SizeConfig.diagonal * 1.5),
+                ),
               ),
             ),
           ),

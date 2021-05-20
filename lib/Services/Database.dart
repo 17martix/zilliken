@@ -902,44 +902,67 @@ class Database {
     await batch.commit();
   }
 
-  Future<Result> deleteStockItem(
-      context, String docId, String itemString) async {
+  Future<Result> deleteStockItem(context, Stock stock) async {
     Result result =
         Result(isSuccess: false, message: I18n.of(context).operationFailed);
 
     WriteBatch batch = databaseReference.batch();
 
-    var stockRef = databaseReference.collection(Fields.stock).doc(docId);
-
+    var stockRef = databaseReference.collection(Fields.stock).doc(stock.id!);
+    // log('newStock ${newStock}');
     var menuItemRef = databaseReference.collection(Fields.menu);
+    // .where(Fields.condiments, arrayContains: itemString);
 
     await menuItemRef.get().then((value) async {
-      List<String>? menuCondiments = [];
-      value.docs.forEach((documentSnapshot) {
-        menuCondiments.add(documentSnapshot.data()[Fields.condiments]);
+      log('value is ${value.docs.length}');
 
-        log('menuCondiments added ${menuCondiments.length}');
+      if (value.docs.isNotEmpty) {
+        log('start of if');
+        value.docs.forEach((documentSnapshot) {
+          List<String>? condimentsText = [];
+          MenuItem menuItem = MenuItem.buildObject(documentSnapshot);
+          Stock? exist;
+          if (menuItem.condiments != null) {
+            exist = menuItem.condiments!
+                .firstWhereOrNull((element) => element.id == stock.id);
+          }
 
-        if (menuCondiments.contains(itemString) && itemString.isNotEmpty) {
-          menuCondiments.removeWhere((element) => element == itemString);
-          log('menuCondiments removed ${menuCondiments.length}');
-        }
+          if (exist != null) {
+            menuItem.condiments!
+                .removeWhere((element) => element.id == stock.id);
 
-        var docRef = databaseReference
-            .collection(Fields.menu)
-            .doc(documentSnapshot.data()[Fields.id]);
-        batch.update(docRef, {
-          Fields.condiments: menuCondiments,
+            log('element length: ${menuItem.condiments}');
+            log('stockId: ${stock.id}');
+
+            if (menuItem.condiments == null || menuItem.condiments!.isEmpty) {
+              condimentsText = null;
+            } else {
+              menuItem.condiments!.forEach((element) {
+                String t = element.buildStringFromObject(element.quantity);
+                condimentsText!.add(t);
+              });
+            }
+
+            var docRef = databaseReference
+                .collection(Fields.menu)
+                .doc(documentSnapshot.data()[Fields.id]);
+            batch.update(docRef, {
+              Fields.condiments: condimentsText,
+            });
+          }
         });
-      });
-      await batch.commit();
-
+        await batch.commit();
+      }
       await stockRef
           .delete()
-          .whenComplete(() => result = Result(
-              isSuccess: true, message: I18n.of(context).operationSucceeded))
-          .catchError((error) => result = Result(
-              isSuccess: false, message: I18n.of(context).operationFailed));
+          .whenComplete(
+            () => result = Result(
+                isSuccess: true, message: I18n.of(context).operationSucceeded),
+          )
+          .catchError(
+            (error) => result = Result(
+                isSuccess: false, message: I18n.of(context).operationFailed),
+          );
     });
 
     return result;

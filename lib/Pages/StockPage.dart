@@ -260,9 +260,6 @@ class _StockPageState extends State<StockPage> {
           padding: EdgeInsets.only(right: SizeConfig.diagonal * 0.3),
           child: SlideAction(
             onTap: () async {
-              num q = stock.quantity;
-              String newStock = stock.buildStringFromObject(q);
-
               EasyLoading.show(status: I18n.of(context).loading);
 
               bool isOnline = await hasConnection();
@@ -276,7 +273,7 @@ class _StockPageState extends State<StockPage> {
                 );
               } else {
                 try {
-                  await widget.db.deleteStockItem(context, stock.id!, newStock);
+                  await widget.db.deleteStockItem(context, stock);
                   EasyLoading.dismiss();
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
