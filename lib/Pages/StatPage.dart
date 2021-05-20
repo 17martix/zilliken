@@ -13,6 +13,7 @@ import 'package:zilliken/Models/Fields.dart';
 
 import 'package:zilliken/Models/Statistic.dart';
 import 'package:intl/intl.dart';
+import 'package:zilliken/Models/StatisticStock.dart';
 import 'package:zilliken/Models/StatisticUser.dart';
 import 'package:zilliken/Models/UserProfile.dart';
 import 'package:zilliken/Services/Authentication.dart';
@@ -58,6 +59,8 @@ class _StatPageState extends State<StatPage> {
 
   List<BarChartGroupData> rawBarGroups = [];
   List<BarChartGroupData> showingBarGroups = [];
+  List<BarChartGroupData> rawPieGroups = [];
+  List<BarChartGroupData> sections = [];
   int? touchedGroupIndex;
 
   final Color rightBarColor = Color(Styling.accentColor);
@@ -66,14 +69,18 @@ class _StatPageState extends State<StatPage> {
   int documentLimit = 10;
 
   num maxY = 1;
+  num perc = 1;
   num pourcentage = 0;
   int touchedIndex = 0;
 
   ScrollController _controller = ScrollController();
   // AnimationController animationController;
   List<StatisticUser> statisticList = [];
+  List<StatisticStock> stock = [];
 
   num totalCount = 0;
+
+  num maxQuantity = 0;
 
   void initState() {
     super.initState();
@@ -88,7 +95,16 @@ class _StatPageState extends State<StatPage> {
       });
     });
 
-    
+    widget.db.getTodayStatisticStock().then((value) {
+      log("valueSize is ${value.length}");
+      setState(() {
+        stock = value;
+      });
+      stock.forEach((element) {
+        maxQuantity = maxQuantity + element.quantity;
+      });
+    });
+
     statisticQuery();
     _scrollController.addListener(() {
       double maxScroll = _scrollController.position.maxScrollExtent;
@@ -118,6 +134,22 @@ class _StatPageState extends State<StatPage> {
 
     showingBarGroups = rawBarGroups;
   }
+
+  /* void graph2() {
+    int length = items.length;
+    if (length > 5) length = 5;
+    final List<PieChartSectionData> pieItems = [];
+
+    for (int i = 0; i < length; i++) {
+      final pieItems = List.generate(i, items[i].data()![Fields.quantity]);
+      pieItems.add(perc);
+      if (perc < items[i].data()![Fields.quantity]) {
+        setState(() {
+          perc = items[i].data()![Fields.quantity];
+        });
+      }
+    }
+  }*/
 
   void statisticQuery() async {
     if (isLoading) {
@@ -284,7 +316,7 @@ class _StatPageState extends State<StatPage> {
                       ),
                     )
                   : Container()
-                  ],
+            ],
           ),
         ),
         Expanded(
@@ -307,137 +339,118 @@ class _StatPageState extends State<StatPage> {
   Widget stockUser() {
     return Container(
       child: AspectRatio(
-      aspectRatio: 1.3,
-      child: Card(
-        color: Colors.white,
-        child: Row(
-          children: <Widget>[
-            const SizedBox(
-              height: 18,
-            ),
-            Expanded(
-              child: AspectRatio(
-                aspectRatio: 1,
-                child: PieChart(
-                  PieChartData(
-                      pieTouchData: PieTouchData(touchCallback: (pieTouchResponse) {
-                        setState(() {
-                          final desiredTouch = pieTouchResponse.touchInput is! PointerExitEvent &&
-                              pieTouchResponse.touchInput is! PointerUpEvent;
-                          if (desiredTouch && pieTouchResponse.touchedSection != null) {
-                            touchedIndex = pieTouchResponse.touchedSection!.touchedSectionIndex;
-                          } else {
-                            touchedIndex = -1;
-                          }
-                        });
-                      }),
-                      borderData: FlBorderData(
-                        show: false,
+        aspectRatio: 1.3,
+        child: Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(SizeConfig.diagonal * 2),
+          ),
+          color: Colors.white,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    const SizedBox(
+                      height: 18,
+                    ),
+                    makeTransactionsIcon(),
+                    const SizedBox(
+                      width: 45,
+                    ),
+                    ZText(
+                        content: I18n.of(context).weeklyinventory,
+                        color: Color(Styling.iconColor),
+                        textAlign: TextAlign.center,
+                        fontSize: SizeConfig.diagonal * 2),
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    Expanded(
+                      child: AspectRatio(
+                        aspectRatio: 1,
+                        child: PieChart(
+                          PieChartData(
+                              pieTouchData: PieTouchData(
+                                  touchCallback: (pieTouchResponse) {
+                                setState(() {
+                                  final desiredTouch = pieTouchResponse
+                                          .touchInput is! PointerExitEvent &&
+                                      pieTouchResponse.touchInput
+                                          is! PointerUpEvent;
+                                  if (desiredTouch &&
+                                      pieTouchResponse.touchedSection != null) {
+                                    touchedIndex = pieTouchResponse
+                                        .touchedSection!.touchedSectionIndex;
+                                  } else {
+                                    touchedIndex = -1;
+                                  }
+                                });
+                              }),
+                              borderData: FlBorderData(
+                                show: false,
+                              ),
+                              sectionsSpace: 0,
+                              centerSpaceRadius: 40,
+                              sections: showingSections()),
+                        ),
                       ),
-                      sectionsSpace: 0,
-                      centerSpaceRadius: 40,
-                      sections: showingSections()),
+                    ),
+                    Column(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: stock.map((e) {
+                        return Column(
+                          children: [
+                            Indicator(
+                              color: Color(0xff0293ee),
+                              text: '${e.name}',
+                              isSquare: true,
+                            ),
+                            SizedBox(
+                              height: 4,
+                            ),
+                          ],
+                        );
+                      }).toList(),
+                    ),
+                    const SizedBox(
+                      width: 28,
+                    ),
+                  ],
                 ),
-              ),
-            ),
-            Column(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: const <Widget>[
-                Indicator(
-                  color: Color(0xff0293ee),
-                  text: 'First',
-                  isSquare: true,
-                ),
-                SizedBox(
-                  height: 4,
-                ),
-                Indicator(
-                  color: Color(0xfff8b250),
-                  text: 'Second',
-                  isSquare: true,
-                ),
-                SizedBox(
-                  height: 4,
-                ),
-                Indicator(
-                  color: Color(0xff845bef),
-                  text: 'Third',
-                  isSquare: true,
-                ),
-                SizedBox(
-                  height: 4,
-                ),
-                Indicator(
-                  color: Color(0xff13d38e),
-                  text: 'Fourth',
-                  isSquare: true,
-                ),
-                SizedBox(
-                  height: 18,
+                Container(
+                  margin: EdgeInsets.all(SizeConfig.diagonal * 2),
+                  height: 1,
+                  color: Color(Styling.iconColor),
+                  padding: EdgeInsets.all(SizeConfig.diagonal * 3),
                 ),
               ],
             ),
-            const SizedBox(
-              width: 28,
-            ),
-          ],
+          ),
         ),
-      ),
       ),
     );
   }
 
-
-   List<PieChartSectionData> showingSections() {
-    return List.generate(4, (i) {
-      final isTouched = i == touchedIndex;
-      final fontSize = isTouched ? 25.0 : 16.0;
-      final radius = isTouched ? 60.0 : 50.0;
-      switch (i) {
-        case 0:
-          return PieChartSectionData(
-            color: const Color(0xff0293ee),
-            value: 40,
-            title: '40%',
-            radius: radius,
-            titleStyle: TextStyle(
-                fontSize: fontSize, fontWeight: FontWeight.bold, color: const Color(0xffffffff)),
-          );
-        case 1:
-          return PieChartSectionData(
-            color: const Color(0xfff8b250),
-            value: 30,
-            title: '30%',
-            radius: radius,
-            titleStyle: TextStyle(
-                fontSize: fontSize, fontWeight: FontWeight.bold, color: const Color(0xffffffff)),
-          );
-        case 2:
-          return PieChartSectionData(
-            color: const Color(0xff845bef),
-            value: 15,
-            title: '15%',
-            radius: radius,
-            titleStyle: TextStyle(
-                fontSize: fontSize, fontWeight: FontWeight.bold, color: const Color(0xffffffff)),
-          );
-        case 3:
-          return PieChartSectionData(
-            color: const Color(0xff13d38e),
-            value: 15,
-            title: '15%',
-            radius: radius,
-            titleStyle: TextStyle(
-                fontSize: fontSize, fontWeight: FontWeight.bold, color: const Color(0xffffffff)),
-          );
-        default:
-          throw Error();
-      }
-    });
+  List<PieChartSectionData> showingSections() {
+    return stock.map((e) {
+      return PieChartSectionData(
+        color: const Color(0xff0293ee),
+        value: (e.quantity / maxQuantity),
+        title: '${e.quantity} ${e.unit}',
+        radius: 60.0,
+        titleStyle: TextStyle(
+            fontSize: SizeConfig.diagonal * 1.5,
+            fontWeight: FontWeight.bold,
+            color: const Color(0xffffffff)),
+      );
+    }).toList();
   }
-
 
   BarChartGroupData makeGroupData(
     int x,
@@ -639,50 +652,60 @@ class _StatPageState extends State<StatPage> {
             borderRadius: BorderRadius.circular(SizeConfig.diagonal * 2),
           ),
           color: Color(Styling.primaryBackgroundColor),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Padding(padding: const EdgeInsets.all(6.0)),
-              ZText(
-                content: I18n.of(context).totalOrders,
-                fontSize: SizeConfig.diagonal * 2,
-                color: Color(Styling.iconColor),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Expanded(
-                  child: Stack(
-                    children: [
-                      SizedBox(
-                        height: 17,
-                        width: double.infinity,
-                        child: LinearProgressIndicator(
-                          value: totalCount.toDouble(),
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            Color(Styling.iconColor).withOpacity(0.9),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  children: [
+                    makeTransactionsIcon(),
+                    const SizedBox(
+                      width: 45,
+                    ),
+                    ZText(
+                      content: I18n.of(context).totalOrders,
+                      fontSize: SizeConfig.diagonal * 2,
+                      color: Color(Styling.iconColor),
+                    ),
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Expanded(
+                    child: Stack(
+                      children: [
+                        SizedBox(
+                          height: 17,
+                          width: double.infinity,
+                          child: LinearProgressIndicator(
+                            value: totalCount.toDouble(),
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Color(Styling.iconColor).withOpacity(0.9),
+                            ),
                           ),
                         ),
-                      ),
-                      Align(
-                        child: Text(
-                          "${I18n.of(context).totalCount} : $totalCount ${commandePluriel(totalCount, context)}",
-                          style: TextStyle(
-                            color: Color(Styling.primaryBackgroundColor),
+                        Align(
+                          child: Text(
+                            "${I18n.of(context).totalCount} : $totalCount ${commandePluriel(totalCount, context)}",
+                            style: TextStyle(
+                              color: Color(Styling.primaryBackgroundColor),
+                            ),
                           ),
+                          alignment: Alignment.topCenter,
                         ),
-                        alignment: Alignment.topCenter,
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                children: statisticList.map((userStat) {
-                  return statUserItem(userStat);
-                }).toList(),
-              ),
-            ],
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: statisticList.map((userStat) {
+                    return statUserItem(userStat);
+                  }).toList(),
+                ),
+              ],
+            ),
           ),
         ),
       ],
