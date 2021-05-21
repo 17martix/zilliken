@@ -832,8 +832,22 @@ class _MenuPageState extends State<MenuPage> {
                                               }
                                             },
                                             child: ZText(
-                                                content: I18n.of(context).save),
-                                          )
+                                              content: I18n.of(context).save,
+                                              color: Color(Styling
+                                                  .primaryBackgroundColor),
+                                            ),
+                                            bottomPadding:
+                                                SizeConfig.diagonal * 0.3,
+                                          ),
+                                          IconButton(
+                                              color: Colors.red,
+                                              icon: Icon(
+                                                Icons.cancel_sharp,
+                                              ),
+                                              iconSize: SizeConfig.diagonal * 5,
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                              }),
                                         ],
                                       ),
                                     ),
@@ -843,7 +857,7 @@ class _MenuPageState extends State<MenuPage> {
                             ),
                           );
                         },
-                        barrierDismissible: true,
+                        barrierDismissible: false,
                         barrierLabel: '',
                         transitionDuration: Duration(milliseconds: 300),
                         pageBuilder: (context, animation1, animation2) {

@@ -45,14 +45,7 @@ class _NewItemPageState extends State<NewItemPage> {
 
   final _formKey = GlobalKey<FormState>();
 
-  List<String> unitList = [
-    'Kilogram(s)',
-    'Liter(s)',
-    'Box(es)',
-    'Bottle(s)',
-    'Item(s)',
-    'gram(s)'
-  ];
+  List<String> unitList = ['Kg', 'l', 'Box', 'Bottle', 'Item', 'g'];
 
   String? selectedValue;
   String? name;
@@ -74,7 +67,7 @@ class _NewItemPageState extends State<NewItemPage> {
 
   Widget body() {
     return SingleChildScrollView(
-      physics: BouncingScrollPhysics(),
+      // physics: BouncingScrollPhysics(),
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: SizeConfig.diagonal * 0.9),
         child: Form(

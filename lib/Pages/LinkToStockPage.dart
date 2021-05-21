@@ -129,7 +129,7 @@ class _ConnectToMenuState extends State<LinkToMenu> {
                   } else {
                     try {
                       await widget.db.linkToStock(itemsToSend!, widget.stock);
-                      log('itemsToSend: ${itemsToSend}');
+                      // log('itemsToSend: ${itemsToSend}');
                       // log('itemsToRemove: ${itemsToRemove}');
                       /*  itemsToSend.clear();
                       itemsToRemove.clear();*/
@@ -338,38 +338,6 @@ class _ConnectToMenuState extends State<LinkToMenu> {
                 ),
                 decoration: BoxDecoration(
                   color: Color(Styling.primaryColor),
-                  borderRadius:
-                      BorderRadius.circular(SizeConfig.diagonal * 1.5),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ],
-      secondaryActions: [
-        Padding(
-          padding: EdgeInsets.only(left: SizeConfig.diagonal * 0.1),
-          child: SlideAction(
-            child: Card(
-              elevation: 8,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5),
-              ),
-              child: Container(
-                height: SizeConfig.diagonal * 6.3,
-                width: double.infinity,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.adjust,
-                      size: SizeConfig.diagonal * 2.5,
-                    ),
-                    ZText(content: I18n.of(context).adjust),
-                  ],
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.deepPurple,
                   borderRadius:
                       BorderRadius.circular(SizeConfig.diagonal * 1.5),
                 ),

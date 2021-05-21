@@ -967,4 +967,23 @@ class Database {
 
     return result;
   }
+
+  Future<Result> manualAdjust(context, Stock stock) async {
+    Result result =
+        Result(isSuccess: false, message: I18n.of(context).operationFailed);
+
+    var stockRef = databaseReference.collection(Fields.stock).doc(stock.id);
+
+    await stockRef
+        .update({
+          Fields.quantity: FieldValue.increment(-stock.quantity),
+          Fields.usedSince: FieldValue.increment(stock.quantity),
+          Fields.usedTotal: FieldValue.increment(stock.quantity),
+        })
+        .whenComplete(() => result = Result(
+            isSuccess: true, message: I18n.of(context).operationSucceeded))
+        .catchError((error) => result = Result(
+            isSuccess: false, message: I18n.of(context).operationFailed));
+    return result;
+  }
 }
