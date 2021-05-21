@@ -339,98 +339,102 @@ class _StatPageState extends State<StatPage> {
   Widget stockUser() {
     return Container(
       child: AspectRatio(
-        aspectRatio: 1.3,
+        aspectRatio: 1.1,
         child: Card(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(SizeConfig.diagonal * 2),
           ),
           color: Colors.white,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    const SizedBox(
-                      height: 18,
-                    ),
-                    makeTransactionsIcon(),
-                    const SizedBox(
-                      width: 45,
-                    ),
-                    ZText(
-                        content: I18n.of(context).weeklyinventory,
-                        color: Color(Styling.iconColor),
-                        textAlign: TextAlign.center,
-                        fontSize: SizeConfig.diagonal * 2),
-                    const SizedBox(
-                      width: 5,
-                    ),
-                    Expanded(
-                      child: AspectRatio(
-                        aspectRatio: 1,
-                        child: PieChart(
-                          PieChartData(
-                              pieTouchData: PieTouchData(
-                                  touchCallback: (pieTouchResponse) {
-                                setState(() {
-                                  final desiredTouch = pieTouchResponse
-                                          .touchInput is! PointerExitEvent &&
-                                      pieTouchResponse.touchInput
-                                          is! PointerUpEvent;
-                                  if (desiredTouch &&
-                                      pieTouchResponse.touchedSection != null) {
-                                    touchedIndex = pieTouchResponse
-                                        .touchedSection!.touchedSectionIndex;
-                                  } else {
-                                    touchedIndex = -1;
-                                  }
-                                });
-                              }),
-                              borderData: FlBorderData(
-                                show: false,
-                              ),
-                              sectionsSpace: 0,
-                              centerSpaceRadius: 40,
-                              sections: showingSections()),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.all(SizeConfig.diagonal * 1),
+                  ),
+                  const SizedBox(
+                    height: 18,
+                  ),
+                  makeTransactionsIcon(),
+                  const SizedBox(
+                    width: 45,
+                  ),
+                  ZText(
+                      content: I18n.of(context).weeklyinventory,
+                      color: Color(Styling.iconColor),
+                      textAlign: TextAlign.center,
+                      fontSize: SizeConfig.diagonal * 2),
+                  const SizedBox(
+                    width: 5,
+                  ),
+                ],
+              ),
+              Container(
+                margin: EdgeInsets.all(SizeConfig.diagonal * 2),
+                height: 1,
+                color: Color(Styling.iconColor),
+                padding: EdgeInsets.all(SizeConfig.diagonal * 3),
+              ),
+              Expanded(
+                child: AspectRatio(
+                  aspectRatio: 1,
+                  child: PieChart(
+                    PieChartData(
+                        pieTouchData:
+                            PieTouchData(touchCallback: (pieTouchResponse) {
+                          setState(() {
+                            final desiredTouch = pieTouchResponse.touchInput
+                                    is! PointerExitEvent &&
+                                pieTouchResponse.touchInput is! PointerUpEvent;
+                            if (desiredTouch &&
+                                pieTouchResponse.touchedSection != null) {
+                              touchedIndex = pieTouchResponse
+                                  .touchedSection!.touchedSectionIndex;
+                            } else {
+                              touchedIndex = -1;
+                            }
+                          });
+                        }),
+                        borderData: FlBorderData(
+                          show: false,
                         ),
-                      ),
-                    ),
-                    Column(
-                      mainAxisSize: MainAxisSize.max,
+                        sectionsSpace: 0,
+                        centerSpaceRadius: 20,
+                        sections: showingSections()),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: stock.map((e) {
+                    log("name is ${e.name}");
+                    return Column(
+                      mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.end,
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: stock.map((e) {
-                        return Column(
-                          children: [
-                            Indicator(
-                              color: Color(0xff0293ee),
-                              text: '${e.name}',
-                              isSquare: true,
-                            ),
-                            SizedBox(
-                              height: 4,
-                            ),
-                          ],
-                        );
-                      }).toList(),
-                    ),
-                    const SizedBox(
-                      width: 28,
-                    ),
-                  ],
+                      children: [
+                        Indicator(
+                          color: Color(0xff0293ee),
+                          text: '${e.name}',
+                          isSquare: true,
+                        ),
+                        SizedBox(
+                          height: 4,
+                        ),
+                      ],
+                    );
+                  }).toList(),
                 ),
-                Container(
-                  margin: EdgeInsets.all(SizeConfig.diagonal * 2),
-                  height: 1,
-                  color: Color(Styling.iconColor),
-                  padding: EdgeInsets.all(SizeConfig.diagonal * 3),
-                ),
-              ],
-            ),
+              ),
+              const SizedBox(
+                width: 28,
+              ),
+            ],
           ),
         ),
       ),
