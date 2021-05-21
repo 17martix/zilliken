@@ -258,8 +258,8 @@ class _SingleUserPageState extends State<SingleUserPage> {
             ZText(
               content: '${I18n.of(context).dailyTotal}',
               textAlign: TextAlign.center,
-              color: Colors.black,
-              fontSize: SizeConfig.diagonal * 3.5,
+              color: Color(Styling.iconColor),
+              fontSize: SizeConfig.diagonal * 2.5,
               fontStyle: FontStyle.normal,
             ),
           ],
@@ -324,7 +324,7 @@ class _SingleUserPageState extends State<SingleUserPage> {
   Widget graph() {
     return Container(
       child: AspectRatio(
-        aspectRatio: 1.3,
+        aspectRatio: 1.4,
         child: Card(
           elevation: 5,
           shape: RoundedRectangleBorder(
@@ -345,23 +345,26 @@ class _SingleUserPageState extends State<SingleUserPage> {
                   children: <Widget>[
                     makeTransactionsIcon(),
                     const SizedBox(
-                      width: 45,
+                      width: 20,
                     ),
                     ZText(
-                        content: 'Transactions',
+                        content: '${I18n.of(context).evaluationSem} ',
                         color: Color(Styling.iconColor),
                         fontSize: 15),
                     const SizedBox(
-                      width: 5,
+                      width: 2,
                     ),
-                    ZText(
-                        content: 'state',
-                        color: Color(Styling.accentColor),
-                        fontSize: 12),
                   ],
                 ),
                 const SizedBox(
-                  height: 4,
+                  height: 2,
+                ),
+                Container(
+                  margin: EdgeInsets.all(SizeConfig.diagonal * 1.5),
+                  padding: EdgeInsets.all(SizeConfig.diagonal * 1),
+                  width: double.infinity,
+                  height: 1,
+                  color: Color(Styling.primaryColor),
                 ),
                 Expanded(
                   flex: 1,
@@ -375,10 +378,9 @@ class _SingleUserPageState extends State<SingleUserPage> {
                           bottomTitles: SideTitles(
                             showTitles: true,
                             getTextStyles: (value) => const TextStyle(
-                                color: Color(Styling.iconColor),
-                                fontWeight: FontWeight.bold,
-                                fontSize: 10),
+                                color: Color(Styling.iconColor), fontSize: 10),
                             margin: 15,
+                            reservedSize: 8,
                             getTitles: (double value) {
                               switch (value.toInt()) {
                                 case 0:
@@ -418,11 +420,9 @@ class _SingleUserPageState extends State<SingleUserPage> {
                           leftTitles: SideTitles(
                             showTitles: true,
                             getTextStyles: (value) => const TextStyle(
-                                color: Color(Styling.iconColor),
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14),
+                                color: Color(Styling.iconColor), fontSize: 14),
                             margin: 20,
-                            reservedSize: 20,
+                            reservedSize: 15,
                             interval: maxY / 4,
                             getTitles: (value) {
                               log("value is $value");
@@ -469,7 +469,7 @@ class _SingleUserPageState extends State<SingleUserPage> {
           Container(
             width: width,
             height: 10,
-            color: Colors.white.withOpacity(0.9),
+            color: Color(Styling.iconColor).withOpacity(0.4),
           ),
           const SizedBox(
             width: space,
@@ -477,7 +477,7 @@ class _SingleUserPageState extends State<SingleUserPage> {
           Container(
             width: width,
             height: 10,
-            color: Colors.white.withOpacity(0.9),
+            color: Color(Styling.iconColor).withOpacity(0.6),
           ),
           const SizedBox(
             width: space,
@@ -485,7 +485,7 @@ class _SingleUserPageState extends State<SingleUserPage> {
           Container(
             width: width,
             height: 10,
-            color: Colors.white.withOpacity(0.9),
+            color: Color(Styling.iconColor).withOpacity(0.9),
           ),
           const SizedBox(
             width: space,
@@ -519,7 +519,7 @@ class _SingleUserPageState extends State<SingleUserPage> {
                   horizontal: SizeConfig.diagonal * 1,
                   vertical: SizeConfig.diagonal * 1),
               child: ZText(
-                content: "Desactiver l'utilisateur?",
+                content: '${I18n.of(context).deactivateUser}',
                 textAlign: TextAlign.center,
                 fontSize: SizeConfig.diagonal * 1.5,
                 color: Color(Styling.textColor),
@@ -574,10 +574,12 @@ class _SingleUserPageState extends State<SingleUserPage> {
                 ),
               ),
             ),
-            ZElevatedButton(
-              child: Text(userProfile.isActive ? "Desactiver" : "Activer"),
-              onpressed: () => _actionPression(userProfile),
-            ),
+            if (userProfile.role == 'admin')
+              ZElevatedButton(
+                  child: Text(userProfile.isActive
+                      ? "${I18n.of(context).desactive}"
+                      : "${I18n.of(context).active}"),
+                  onpressed: () => _actionPression(userProfile)),
           ],
         ),
       ),

@@ -395,6 +395,11 @@ class Database {
     await document.update({Fields.availability: isEnabled});
   }
 
+  Future<void> updateIsActive(String id, bool isEnabled) async {
+    var document = databaseReference.collection(Fields.users).doc(id);
+    await document.update({Fields.isActive: isEnabled});
+  }
+
   Future<void> updateStatus(
       String id, int status, int value, num grandTotal, Order order) async {
     var document = databaseReference.collection(Fields.order).doc(id);

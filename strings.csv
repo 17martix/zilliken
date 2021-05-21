@@ -96,7 +96,7 @@ name,Name,Nom
 phone,Phone,Tél
 last,Last seen at,Vu à
 active,Activate,Activer
-dailyTotal, Daily Total, Le total journalier
+dailyTotal,Daily Total,Total journalier
 quantity,Quantity,Quantité
 used,Used,Utilisé
 unit,Unit,Unité
@@ -105,3 +105,6 @@ itemEditing,Edit Item Details,Modifier Détails
 printingDisabled,Printing Disabled,Impression désactivée
 cancelOnly,Cancel,Annuler
 noResult,No Result,Pas De Résultat
+deactivateUser,Deactivate user ?,Désactiver l'utilisateur?
+desactive,Desactivate,Désactiver
+evaluationSem,Evaluation of the week,Evaluation de la semaine

@@ -215,7 +215,15 @@ class I18n {
 
   String get printingDisabled => _getText("printingDisabled");
 
+  String get cancelOnly => _getText("cancelOnly");
+
   String get noResult => _getText("noResult");
+
+  String get deactivateUser => _getText("deactivateUser");
+
+  String get desactive => _getText("desactive");
+
+  String get evaluationSem => _getText("evaluationSem");
 
   static late Map<String, String> _localizedValues;
 
@@ -318,14 +326,18 @@ class I18n {
     "phone": "Phone",
     "last": "Last seen at",
     "active": "Activate",
-    "dailyTotal": " Daily Total",
+    "dailyTotal": "Daily Total",
     "quantity": "Quantity",
     "used": "Used",
     "unit": "Unit",
     "itemDescription": "Enter Item Description",
     "itemEditing": "Edit Item Details",
     "printingDisabled": "Printing Disabled",
+    "cancelOnly": "Cancel",
     "noResult": "No Result",
+    "deactivateUser": "Deactivate user ?",
+    "desactive": "Desactivate",
+    "evaluationSem": "Evaluation of the week",
   };
 
   static const _frValues = {
@@ -427,14 +439,18 @@ class I18n {
     "phone": "Tél",
     "last": "Vu à",
     "active": "Activer",
-    "dailyTotal": " Le total journalier",
+    "dailyTotal": "Total journalier",
     "quantity": "Quantité",
     "used": "Utilisé",
     "unit": "Unité",
     "itemDescription": "Entrer Déscription",
     "itemEditing": "Modifier Détails",
     "printingDisabled": "Impression désactivée",
+    "cancelOnly": "Annuler",
     "noResult": "Pas De Résultat",
+    "deactivateUser": "Désactiver l'utilisateur?",
+    "desactive": "Désactiver",
+    "evaluationSem": "Evaluation de la semaine",
   };
 
   static const _allValues = {
