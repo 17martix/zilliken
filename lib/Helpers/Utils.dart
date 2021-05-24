@@ -370,20 +370,20 @@ String? commandePluriel(num count, context) {
   return commande;
 }
 
-// Color? colorsStatStock(num quantity, Color color) {
-//   Color? colorStock;
+Color? colorsStatStock(int index) {
+  Color? colorStock;
 
-//   if (quantity == 1) {
-//     Color c = Colors.black;
-//   } else if (quantity == 2) {
-//     Color c = Colors.red;
-//   } else if (quantity == 3) {
-//     //colorStock =  Color(0xff0293ee);
-//   } else if (quantity == 4) {
-//     Color c = Colors.yellow;
-//   } else if (quantity == 5) {
-//     Color c = Colors.yellow;
-//   }
+  if (index == 0) {
+    colorStock = Colors.blue;
+  } else if (index == 1) {
+    colorStock = Colors.yellow;
+  } else if (index == 2) {
+    colorStock = Colors.purpleAccent;
+  } else if (index == 3) {
+    colorStock = Colors.lightGreen;
+  } else if (index == 4) {
+    colorStock = Colors.pink;
+  }
 
-//   return colorStock;
-// }
+  return colorStock;
+}

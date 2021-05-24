@@ -339,8 +339,9 @@ class _StatPageState extends State<StatPage> {
   Widget stockUser() {
     return Container(
       child: AspectRatio(
-        aspectRatio: 1.1,
+        aspectRatio: 0.98,
         child: Card(
+          elevation: 1,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(SizeConfig.diagonal * 2),
           ),
@@ -377,32 +378,29 @@ class _StatPageState extends State<StatPage> {
                 padding: EdgeInsets.all(SizeConfig.diagonal * 3),
               ),
               Expanded(
-                child: AspectRatio(
-                  aspectRatio: 1,
-                  child: PieChart(
-                    PieChartData(
-                        pieTouchData:
-                            PieTouchData(touchCallback: (pieTouchResponse) {
-                          setState(() {
-                            final desiredTouch = pieTouchResponse.touchInput
-                                    is! PointerExitEvent &&
-                                pieTouchResponse.touchInput is! PointerUpEvent;
-                            if (desiredTouch &&
-                                pieTouchResponse.touchedSection != null) {
-                              touchedIndex = pieTouchResponse
-                                  .touchedSection!.touchedSectionIndex;
-                            } else {
-                              touchedIndex = -1;
-                            }
-                          });
-                        }),
-                        borderData: FlBorderData(
-                          show: false,
-                        ),
-                        sectionsSpace: 0,
-                        centerSpaceRadius: 20,
-                        sections: showingSections()),
-                  ),
+                child: PieChart(
+                  PieChartData(
+                      pieTouchData:
+                          PieTouchData(touchCallback: (pieTouchResponse) {
+                        setState(() {
+                          final desiredTouch = pieTouchResponse.touchInput
+                                  is! PointerExitEvent &&
+                              pieTouchResponse.touchInput is! PointerUpEvent;
+                          if (desiredTouch &&
+                              pieTouchResponse.touchedSection != null) {
+                            touchedIndex = pieTouchResponse
+                                .touchedSection!.touchedSectionIndex;
+                          } else {
+                            touchedIndex = -1;
+                          }
+                        });
+                      }),
+                      borderData: FlBorderData(
+                        show: false,
+                      ),
+                      sectionsSpace: 0,
+                      centerSpaceRadius: 20,
+                      sections: showingSections()),
                 ),
               ),
               Padding(
@@ -419,7 +417,7 @@ class _StatPageState extends State<StatPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Indicator(
-                          color: Color(0xff0293ee),
+                          color: Colors.black,
                           text: '${e.name}',
                           isSquare: true,
                         ),
@@ -442,9 +440,16 @@ class _StatPageState extends State<StatPage> {
   }
 
   List<PieChartSectionData> showingSections() {
+    // int index = 0;
+   
+    // for (int i = 0; i < index; i++) {
+    //   colorsStatStock(index);
+    // }
+
     return stock.map((e) {
+      int index=stock.indexOf(e);
       return PieChartSectionData(
-        color: const Color(0xff0293ee),
+        color: colorsStatStock(index),
         value: (e.quantity / maxQuantity),
         title: '${e.quantity} ${e.unit}',
         radius: 60.0,
