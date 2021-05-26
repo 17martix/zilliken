@@ -90,13 +90,12 @@ enterLocation,Select your delivery location,Sélectionnez votre lieu de livraiso
 addr,Complete Address,Adresse Complète
 totEncaisse,Total cashed on,Le Total encaissé le
 date,Date,Date
-dailytotal,DAILY TOTAL,LE TOTAL JOURNALIER
 search,Search,Rechercher
 name,Name,Nom
 phone,Phone,Tél
 last,Last seen at,Vu à
 active,Activate,Activer
-dailyTotal,Daily Total,Total journalier
+dailyTotal, Daily Total, Total Journalier
 quantity,Quantity,Quantité
 used,Used,Utilisé
 unit,Unit,Unité
@@ -105,6 +104,9 @@ itemEditing,Edit Item Details,Modifier Détails
 printingDisabled,Printing Disabled,Impression désactivée
 cancelOnly,Cancel,Annuler
 noResult,No Result,Pas De Résultat
+weeklyinventory,weekly inventory,Inventaire Hebdomadaire
+totalOrders,Total Orders per Day,Total des Commandes par Jour
+totalCount,Total Count,Compte Total
 deactivateUser,Deactivate user ?,Désactiver l'utilisateur?
 desactive,Desactivate,Désactiver
 evaluationSem,Evaluation of the week,Evaluation de la semaine

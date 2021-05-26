@@ -20,6 +20,7 @@ class Fields {
   static final String chefCuisine = 'chefCuisine';
   static final String chefBoissons = 'chefBoissons';
   static final String statisticUser = 'statisticUser';
+   static final String statisticStock = 'statisticStock';
 
   static final String taxes = 'taxes';
   static final String percentage = 'percentage';

@@ -89,8 +89,8 @@ class _AdminPageState extends State<AdminPage> {
           animationDuration: Duration(milliseconds: 800),
           index: _pageState,
           items: <Widget>[
-            Icon(Icons.access_alarms),
-            Icon(Icons.satellite),
+            Icon(Icons.stacked_bar_chart),
+            Icon(Icons.fastfood),
             Icon(Icons.supervised_user_circle),
           ],
           onTap: (index) {
@@ -112,7 +112,6 @@ class _AdminPageState extends State<AdminPage> {
             db: widget.db,
             userId: widget.userId,
             userRole: widget.userRole,
-            
           ),
           duration: Duration(milliseconds: 800),
           curve: Curves.easeInBack,

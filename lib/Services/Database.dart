@@ -1,11 +1,9 @@
 import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
-
 import 'package:flutter/services.dart';
 import 'package:zilliken/Helpers/Utils.dart';
 import 'package:zilliken/Models/Call.dart';
@@ -17,6 +15,7 @@ import 'package:zilliken/Models/Order.dart';
 import 'package:zilliken/Models/OrderItem.dart';
 import 'package:zilliken/Models/Result.dart';
 import 'package:zilliken/Models/Statistic.dart';
+import 'package:zilliken/Models/StatisticStock.dart';
 import 'package:zilliken/Models/StatisticUser.dart';
 import 'package:zilliken/Models/Stock.dart';
 import 'package:zilliken/Models/UserProfile.dart';
@@ -430,6 +429,7 @@ class Database {
         date: Timestamp.fromDate(DateTime(today.year, today.month, today.day)),
         total: grandTotal,
         id: id,
+        //count:1,
       );
 
       await databaseReference
@@ -890,5 +890,48 @@ class Database {
     });
 
     await batch.commit();
+  }
+
+  Future<List<StatisticUser>> getTodayStatUser() async {
+    List<StatisticUser> list = [];
+
+    DateTime today = DateTime.now();
+    Timestamp timestamp =
+        Timestamp.fromDate(DateTime(today.year, today.month, today.day));
+
+    var statUserRef = databaseReference
+        .collection(Fields.statisticUser)
+        .where(Fields.date, isEqualTo: timestamp);
+    await statUserRef.get().then((QuerySnapshot snapshot) {
+      if (snapshot != null && snapshot.docs.isNotEmpty)
+        snapshot.docs.forEach((element) async {
+          StatisticUser userStat = StatisticUser.buildObject(element);
+          list.add(userStat);
+        });
+    });
+    return list;
+  }
+
+  Future<List<StatisticStock>> getTodayStatisticStock() async {
+    List<StatisticStock> list = [];
+
+    DateTime today = DateTime.now();
+    Timestamp timestamp =
+        Timestamp.fromDate(DateTime(today.year, today.month, today.day));
+
+    var statStockRef = databaseReference
+        .collection(Fields.statisticStock)
+        .where(Fields.date, isEqualTo: timestamp)
+        .orderBy(Fields.quantity, descending: true)
+        .limit(5);
+
+    await statStockRef.get().then((QuerySnapshot snapshot) {
+      if (snapshot.docs.isNotEmpty)
+        snapshot.docs.forEach((element) async {
+          StatisticStock stock = StatisticStock.buildObject(element);
+          list.add(stock);
+        });
+    });
+    return list;
   }
 }

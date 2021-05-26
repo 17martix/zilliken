@@ -2,7 +2,9 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:zilliken/Components/Indicator.dart';
 import 'package:zilliken/Models/Cart.dart';
 import 'package:zilliken/Models/Category.dart';
 import 'package:zilliken/Models/Fields.dart';
@@ -343,7 +345,8 @@ String? formatInterVal(double number) {
   } else if (length < 7) {
     text = textNumber.substring(0, length - 3) + 'k';
   } else if (length < 10) {
-    text = textNumber.substring(0, length - 6) + 'M';
+    text =
+        '${textNumber.substring(0, length - 6)}.${textNumber.substring(1, length - 5)} M';
   } else {
     text = textNumber;
   }
@@ -355,4 +358,32 @@ String searchReady(String text) {
   text = text.toLowerCase();
   text = text.replaceAll(new RegExp(r'(?:_|[^\w\s])+'), '');
   return text;
+}
+
+String? commandePluriel(num count, context) {
+  String? commande;
+  if (count == 1) {
+    commande = I18n.of(context).order;
+  } else {
+    commande = I18n.of(context).orders;
+  }
+  return commande;
+}
+
+Color? colorsStatStock(int index) {
+  Color? colorStock;
+
+  if (index == 0) {
+    colorStock = Colors.blue;
+  } else if (index == 1) {
+    colorStock = Colors.yellow;
+  } else if (index == 2) {
+    colorStock = Colors.purpleAccent;
+  } else if (index == 3) {
+    colorStock = Colors.lightGreen;
+  } else if (index == 4) {
+    colorStock = Colors.pink;
+  }
+
+  return colorStock;
 }

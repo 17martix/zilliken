@@ -110,23 +110,22 @@ class _OrdersPageState extends State<OrdersPage> {
               children: [
                 Expanded(
                   flex: 1,
-                  child:  ZText(content:
-                    '${orderStatus(context, order)}',
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.left,
-                   
-                        color: colorPicker(order.status),
-                        fontSize: SizeConfig.diagonal * 1.5),
-                  ),
+                  child: ZText(
+                      content: '${orderStatus(context, order)}',
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.left,
+                      color: colorPicker(order.status),
+                      fontSize: SizeConfig.diagonal * 1.5),
+                ),
                 Expanded(
                   flex: 1,
-                  child:  ZText(content:
-                    '${I18n.of(context).total} : ${formatNumber(order.grandTotal)} ${I18n.of(context).fbu}',
-                    textAlign: TextAlign.right,
-                    overflow: TextOverflow.ellipsis,
-                   fontSize: SizeConfig.diagonal * 1.5),
-                  ),
-               
+                  child: ZText(
+                      content:
+                          '${I18n.of(context).total} : ${formatNumber(order.grandTotal)} ${I18n.of(context).fbu}',
+                      textAlign: TextAlign.right,
+                      overflow: TextOverflow.ellipsis,
+                      fontSize: SizeConfig.diagonal * 1.5),
+                ),
               ],
             ),
             subtitle: Padding(
@@ -136,24 +135,24 @@ class _OrdersPageState extends State<OrdersPage> {
                 children: [
                   Expanded(
                     flex: 1,
-                    child:  ZText(content:
-                      order.orderLocation == 0
-                          ? '${I18n.of(context).tableNumber} : ${order.tableAdress}'
-                          : '${I18n.of(context).address} : ${order.tableAdress}',
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.left,
-                      fontSize: SizeConfig.diagonal * 1.5),
-                    
+                    child: ZText(
+                        content: order.orderLocation == 0
+                            ? '${I18n.of(context).tableNumber} : ${order.tableAdress}'
+                            : '${I18n.of(context).address} : ${order.tableAdress}',
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.left,
+                        fontSize: SizeConfig.diagonal * 1.5),
                   ),
                   Expanded(
                     flex: 1,
-                    child:  ZText(content:
-                      order.orderDate==null?"":'${widget.formatter.format(order.orderDate!.toDate())}',
-                      textAlign: TextAlign.right,
-                      overflow: TextOverflow.ellipsis,
-                    fontSize: SizeConfig.diagonal * 1.5),
-                    ),
-                  
+                    child: ZText(
+                        content: order.orderDate == null
+                            ? ""
+                            : '${widget.formatter.format(order.orderDate!.toDate())}',
+                        textAlign: TextAlign.right,
+                        overflow: TextOverflow.ellipsis,
+                        fontSize: SizeConfig.diagonal * 1.5),
+                  ),
                 ],
               ),
             ),
@@ -182,14 +181,12 @@ class _OrdersPageState extends State<OrdersPage> {
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.data == null || snapshot.data!.docs.length <= 0) {
           return Center(
-            child:  ZText(content:
-              I18n.of(context).orderPlaceholder,
+            child: ZText(
+              content: I18n.of(context).orderPlaceholder,
               textAlign: TextAlign.center,
-              
-                fontSize: SizeConfig.diagonal * 2,
-                color: Color(Styling.primaryColor),
-                fontWeight: FontWeight.bold,
-             
+              fontSize: SizeConfig.diagonal * 2,
+              color: Color(Styling.primaryColor),
+              fontWeight: FontWeight.bold,
             ),
           );
         }

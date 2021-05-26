@@ -17,7 +17,7 @@ class StatisticUser {
       required this.date,
       required this.userId,
       required this.userName,
-       this.count});
+      this.count});
 
   StatisticUser.buildObject(DocumentSnapshot document) {
     id = document.id;

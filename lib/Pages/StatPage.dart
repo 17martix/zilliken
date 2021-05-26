@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:zilliken/Components/Indicator.dart';
 
 import 'package:zilliken/Helpers/SizeConfig.dart';
 import 'package:zilliken/Helpers/Styling.dart';
@@ -12,10 +13,14 @@ import 'package:zilliken/Models/Fields.dart';
 
 import 'package:zilliken/Models/Statistic.dart';
 import 'package:intl/intl.dart';
+import 'package:zilliken/Models/StatisticStock.dart';
+import 'package:zilliken/Models/StatisticUser.dart';
 import 'package:zilliken/Models/UserProfile.dart';
 import 'package:zilliken/Services/Authentication.dart';
 import 'package:zilliken/Services/Database.dart';
 import 'package:zilliken/i18n.dart';
+
+import 'package:flutter/foundation.dart';
 
 import '../Components/ZText.dart';
 
@@ -54,6 +59,8 @@ class _StatPageState extends State<StatPage> {
 
   List<BarChartGroupData> rawBarGroups = [];
   List<BarChartGroupData> showingBarGroups = [];
+  List<BarChartGroupData> rawPieGroups = [];
+  List<BarChartGroupData> sections = [];
   int? touchedGroupIndex;
 
   final Color rightBarColor = Color(Styling.accentColor);
@@ -62,23 +69,42 @@ class _StatPageState extends State<StatPage> {
   int documentLimit = 10;
 
   num maxY = 1;
+  num perc = 1;
   num pourcentage = 0;
+  int touchedIndex = 0;
 
   ScrollController _controller = ScrollController();
   // AnimationController animationController;
+  List<StatisticUser> statisticList = [];
+  List<StatisticStock> stock = [];
+
+  num totalCount = 0;
+
+  num maxQuantity = 0;
 
   void initState() {
     super.initState();
 
-    /*data = [
-      Graph(year: '2000', subscribers: null, count: 178),
-      Graph(year: '2001', subscribers: null, count: 178),
-      Graph(year: '2002', subscribers: null, count: 178),
-      Graph(year: '2003', subscribers: null, count: 178),
-    ];*/
-    //animationController =
-    //AnimationController(duration: new Duration(seconds: 2),);
-    //animationController.repeat();
+    widget.db.getTodayStatUser().then((value) {
+      setState(() {
+        statisticList = value;
+      });
+
+      statisticList.forEach((element) {
+        totalCount = totalCount + element.count!;
+      });
+    });
+
+    widget.db.getTodayStatisticStock().then((value) {
+      log("valueSize is ${value.length}");
+      setState(() {
+        stock = value;
+      });
+      stock.forEach((element) {
+        maxQuantity = maxQuantity + element.quantity;
+      });
+    });
+
     statisticQuery();
     _scrollController.addListener(() {
       double maxScroll = _scrollController.position.maxScrollExtent;
@@ -104,27 +130,26 @@ class _StatPageState extends State<StatPage> {
         });
       }
     }
-    /* final barGroup1 = makeGroupData(0, items[0].data()![Fields.total]);
-    final barGroup2 = makeGroupData(1, items[2].data()![Fields.total]);
-    final barGroup3 = makeGroupData(2, items[3].data()![Fields.total]);
-    final barGroup4 = makeGroupData(3, items[4].data()![Fields.total]);
-    final barGroup5 = makeGroupData(4, items[5].data()![Fields.total]);
-    final barGroup6 = makeGroupData(5, items[6].data()![Fields.total]);
-    final barGroup7 = makeGroupData(6, items[7].data()![Fields.total]);
-
-    final barItems = [
-      barGroup1,
-      barGroup2,
-      barGroup3,
-      barGroup4,
-      barGroup5,
-      barGroup6,
-      barGroup7,
-    ];*/
     rawBarGroups = barItems;
 
     showingBarGroups = rawBarGroups;
   }
+
+  /* void graph2() {
+    int length = items.length;
+    if (length > 5) length = 5;
+    final List<PieChartSectionData> pieItems = [];
+
+    for (int i = 0; i < length; i++) {
+      final pieItems = List.generate(i, items[i].data()![Fields.quantity]);
+      pieItems.add(perc);
+      if (perc < items[i].data()![Fields.quantity]) {
+        setState(() {
+          perc = items[i].data()![Fields.quantity];
+        });
+      }
+    }
+  }*/
 
   void statisticQuery() async {
     if (isLoading) {
@@ -190,23 +215,21 @@ class _StatPageState extends State<StatPage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Expanded(
+              flex: 1,
               child: Container(
-                padding: EdgeInsets.all(SizeConfig.diagonal * 0.2),
-                height: 3,
-                color: Colors.grey.withOpacity(0.2),
+                padding: EdgeInsets.all(SizeConfig.diagonal * 1.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     ZText(
-                      content: "${statistic.total}",
+                      content: formatNumber(statistic.total),
                       color: Color(Styling.accentColor),
-                      fontSize: SizeConfig.diagonal * 3,
-                      fontWeight: FontWeight.bold,
+                      fontSize: SizeConfig.diagonal * 2,
                     ),
                     ZText(
                       content: " Fbu",
                       color: Color(Styling.iconColor),
-                      fontSize: SizeConfig.diagonal * 2.5,
+                      fontSize: SizeConfig.diagonal * 1.5,
                     ),
                   ],
                 ),
@@ -214,8 +237,7 @@ class _StatPageState extends State<StatPage> {
             ),
             Expanded(
               child: Container(
-                padding: EdgeInsets.all(SizeConfig.diagonal * 0.2),
-                color: Color(Styling.primaryBackgroundColor).withOpacity(0.3),
+                padding: EdgeInsets.all(SizeConfig.diagonal * 1.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -223,13 +245,13 @@ class _StatPageState extends State<StatPage> {
                       content: I18n.of(context).date,
                       textAlign: TextAlign.center,
                       color: Color(Styling.iconColor),
-                      fontSize: SizeConfig.diagonal * 2,
+                      fontSize: SizeConfig.diagonal * 1.5,
                     ),
                     ZText(
                       content:
                           "  : ${widget.formatter.format(statistic.date.toDate())}",
                       color: Color(Styling.iconColor),
-                      fontSize: SizeConfig.diagonal * 2,
+                      fontSize: SizeConfig.diagonal * 1.5,
                     ),
                   ],
                 ),
@@ -252,11 +274,10 @@ class _StatPageState extends State<StatPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ZText(
-              content: I18n.of(context).dailytotal,
+              content: I18n.of(context).dailyTotal,
               textAlign: TextAlign.center,
               color: Color(Styling.iconColor),
-              fontStyle: FontStyle.normal,
-              fontSize: SizeConfig.diagonal * 2.5,
+              fontSize: SizeConfig.diagonal * 2,
             ),
           ],
         ),
@@ -277,21 +298,6 @@ class _StatPageState extends State<StatPage> {
                         //return graph();
                       }).toList(),
                     ),
-              /* ListView.builder(
-                      shrinkWrap: true,
-                      scrollDirection: Axis.horizontal,
-                      controller: _scrollController,
-                      itemCount: items.length,
-                      itemBuilder: (context, index) {
-                        Statistic statistic = Statistic();
-                        statistic.buildObject(items[index]);
-                        return Row(
-                          children: [
-                            body(statistic),
-                          ],
-                        );
-                      },
-                    ),*/
               isLoading
                   ? Container(
                       width: SizeConfig.diagonal * 8,
@@ -305,13 +311,6 @@ class _StatPageState extends State<StatPage> {
                               BorderRadius.circular(SizeConfig.diagonal * 1),
                         ),
                         child: CircularProgressIndicator(
-                          // valueColor: animationController
-                          //.drive(ColorTween(begin: Colors.blueAccent, end: Colors.red)),
-
-                          //valueColor:Animation<blue> valueColor ,
-
-                          semanticsLabel: 'Linear progress indicator',
-
                           backgroundColor: Color(Styling.primaryDarkColor),
                         ),
                       ),
@@ -327,6 +326,7 @@ class _StatPageState extends State<StatPage> {
             child: Column(
               children: [
                 graph(),
+                stockUser(),
                 statUser(),
               ],
             ),
@@ -334,6 +334,131 @@ class _StatPageState extends State<StatPage> {
         ),
       ],
     );
+  }
+
+  Widget stockUser() {
+    return Container(
+      child: AspectRatio(
+        aspectRatio: 0.98,
+        child: Card(
+          elevation: 1,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(SizeConfig.diagonal * 2),
+          ),
+          color: Colors.white,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.all(SizeConfig.diagonal * 1),
+                  ),
+                  const SizedBox(
+                    height: 18,
+                  ),
+                  makeTransactionsIcon(),
+                  const SizedBox(
+                    width: 45,
+                  ),
+                  ZText(
+                      content: I18n.of(context).weeklyinventory,
+                      color: Color(Styling.iconColor),
+                      textAlign: TextAlign.center,
+                      fontSize: SizeConfig.diagonal * 2),
+                  const SizedBox(
+                    width: 5,
+                  ),
+                ],
+              ),
+              Container(
+                margin: EdgeInsets.all(SizeConfig.diagonal * 2),
+                height: 1,
+                color: Color(Styling.iconColor),
+                padding: EdgeInsets.all(SizeConfig.diagonal * 3),
+              ),
+              Expanded(
+                child: PieChart(
+                  PieChartData(
+                      pieTouchData:
+                          PieTouchData(touchCallback: (pieTouchResponse) {
+                        setState(() {
+                          final desiredTouch = pieTouchResponse.touchInput
+                                  is! PointerExitEvent &&
+                              pieTouchResponse.touchInput is! PointerUpEvent;
+                          if (desiredTouch &&
+                              pieTouchResponse.touchedSection != null) {
+                            touchedIndex = pieTouchResponse
+                                .touchedSection!.touchedSectionIndex;
+                          } else {
+                            touchedIndex = -1;
+                          }
+                        });
+                      }),
+                      borderData: FlBorderData(
+                        show: false,
+                      ),
+                      sectionsSpace: 0,
+                      centerSpaceRadius: 20,
+                      sections: showingSections()),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: stock.map((e) {
+                    log("name is ${e.name}");
+                    return Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Indicator(
+                          color: Colors.black,
+                          text: '${e.name}',
+                          isSquare: true,
+                        ),
+                        SizedBox(
+                          height: 4,
+                        ),
+                      ],
+                    );
+                  }).toList(),
+                ),
+              ),
+              const SizedBox(
+                width: 28,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  List<PieChartSectionData> showingSections() {
+    // int index = 0;
+   
+    // for (int i = 0; i < index; i++) {
+    //   colorsStatStock(index);
+    // }
+
+    return stock.map((e) {
+      int index=stock.indexOf(e);
+      return PieChartSectionData(
+        color: colorsStatStock(index),
+        value: (e.quantity / maxQuantity),
+        title: '${e.quantity} ${e.unit}',
+        radius: 60.0,
+        titleStyle: TextStyle(
+            fontSize: SizeConfig.diagonal * 1.5,
+            fontWeight: FontWeight.bold,
+            color: const Color(0xffffffff)),
+      );
+    }).toList();
   }
 
   BarChartGroupData makeGroupData(
@@ -353,7 +478,7 @@ class _StatPageState extends State<StatPage> {
     //maxY1 = maxY / 4;
     return Container(
       child: AspectRatio(
-        aspectRatio: 1.3,
+        aspectRatio: 1.6,
         child: Card(
           elevation: 5,
           shape: RoundedRectangleBorder(
@@ -365,36 +490,31 @@ class _StatPageState extends State<StatPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisAlignment: MainAxisAlignment.start,
-              mainAxisSize: MainAxisSize.max,
+              mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 15, vertical: 7),
-                  color: Colors.grey.withOpacity(0.2),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      makeTransactionsIcon(),
-                      const SizedBox(
-                        width: 45,
-                      ),
-                      ZText(
-                          content: 'Transactions',
-                          color: Color(Styling.iconColor),
-                          fontSize: 15),
-                      const SizedBox(
-                        width: 5,
-                      ),
-                      ZText(
-                          content: 'state',
-                          color: Color(Styling.accentColor),
-                          fontSize: 12),
-                    ],
-                  ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    makeTransactionsIcon(),
+                    const SizedBox(
+                      width: 45,
+                    ),
+                    ZText(
+                        content: I18n.of(context).weeklyinventory,
+                        color: Color(Styling.iconColor),
+                        fontSize: SizeConfig.diagonal * 2),
+                    const SizedBox(
+                      width: 5,
+                    ),
+                  ],
                 ),
-                const SizedBox(
-                  height: 4,
+                Container(
+                  margin: EdgeInsets.all(SizeConfig.diagonal * 2),
+                  height: 1,
+                  color: Color(Styling.iconColor),
+                  padding: EdgeInsets.all(SizeConfig.diagonal * 3),
                 ),
                 Expanded(
                   //flex: 1,
@@ -409,61 +529,15 @@ class _StatPageState extends State<StatPage> {
                             tooltipBgColor: Colors.red,
                             getTooltipItem: (_a, _b, _c, _d) => null,
                           ),
-                          /*touchCallback: (response) {
-                              if (response.spot == null) {
-                                setState(() {
-                                  touchedGroupIndex = -1;
-                                  showingBarGroups = List.of(rawBarGroups);
-                                });
-
-                                return;
-                              }
-
-                              touchedGroupIndex =
-                                  response.spot!.touchedBarGroupIndex;
-
-                              setState(() {
-                                if (response.touchInput is PointerExitEvent ||
-                                    response.touchInput is PointerUpEvent) {
-                                  touchedGroupIndex = -1;
-                                  showingBarGroups = List.of(rawBarGroups);
-                                } else {
-                                  showingBarGroups = List.of(rawBarGroups);
-                                  if (touchedGroupIndex != -1) {
-                                    double sum = 0;
-                                    for (BarChartRodData rod
-                                        in showingBarGroups[touchedGroupIndex!]
-                                            .barRods) {
-                                      sum += rod.y;
-                                    }
-                                    final avg = sum /
-                                        showingBarGroups[touchedGroupIndex!]
-                                            .barRods
-                                            .length;
-
-                                    showingBarGroups[touchedGroupIndex!] =
-                                        showingBarGroups[touchedGroupIndex!]
-                                            .copyWith(
-                                      barRods:
-                                          showingBarGroups[touchedGroupIndex!]
-                                              .barRods
-                                              .map((rod) {
-                                        return rod.copyWith(y: avg);
-                                      }).toList(),
-                                    );
-                                  }
-                                }
-                              });
-                            }*/
                         ),
                         titlesData: FlTitlesData(
                           show: true,
                           bottomTitles: SideTitles(
                             showTitles: true,
                             getTextStyles: (value) => const TextStyle(
-                                color: Color(Styling.iconColor),
-                                fontWeight: FontWeight.bold,
-                                fontSize: 10),
+                              color: Color(Styling.iconColor),
+                              fontSize: 10,
+                            ),
                             margin: 15,
                             getTitles: (double value) {
                               switch (value.toInt()) {
@@ -504,14 +578,14 @@ class _StatPageState extends State<StatPage> {
                           leftTitles: SideTitles(
                             showTitles: true,
                             getTextStyles: (value) => const TextStyle(
-                                color: Color(Styling.iconColor),
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14),
+                              color: Color(Styling.iconColor),
+                              fontSize: 10,
+                            ),
                             margin: 20,
-                            reservedSize: 20,
+                            reservedSize: 26,
                             interval: maxY / 4,
                             getTitles: (value) {
-                              log("value is $value");
+                              // log("value is $value");
                               if (value == 0) {
                                 return '0';
                               } else if (value == maxY / 4) {
@@ -555,7 +629,7 @@ class _StatPageState extends State<StatPage> {
           Container(
             width: width,
             height: 10,
-            color: Colors.grey.withOpacity(0.4),
+            color: Color(Styling.iconColor).withOpacity(0.3),
           ),
           const SizedBox(
             width: space,
@@ -563,7 +637,7 @@ class _StatPageState extends State<StatPage> {
           Container(
             width: width,
             height: 10,
-            color: Colors.grey.withOpacity(0.9),
+            color: Color(Styling.iconColor).withOpacity(0.6),
           ),
           const SizedBox(
             width: space,
@@ -571,7 +645,7 @@ class _StatPageState extends State<StatPage> {
           Container(
             width: width,
             height: 10,
-            color: Colors.black.withOpacity(0.5),
+            color: Color(Styling.iconColor).withOpacity(0.9),
           ),
           const SizedBox(
             width: space,
@@ -580,91 +654,99 @@ class _StatPageState extends State<StatPage> {
   }
 
   Widget statUser() {
-    return Container(
-      child: Card(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(SizeConfig.diagonal * 2),
+    return Column(
+      children: [
+        Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(SizeConfig.diagonal * 2),
+          ),
+          color: Color(Styling.primaryBackgroundColor),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  children: [
+                    makeTransactionsIcon(),
+                    const SizedBox(
+                      width: 45,
+                    ),
+                    ZText(
+                      content: I18n.of(context).totalOrders,
+                      fontSize: SizeConfig.diagonal * 2,
+                      color: Color(Styling.iconColor),
+                    ),
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Expanded(
+                    child: Stack(
+                      children: [
+                        SizedBox(
+                          height: 17,
+                          width: double.infinity,
+                          child: LinearProgressIndicator(
+                            value: totalCount.toDouble(),
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Color(Styling.iconColor).withOpacity(0.9),
+                            ),
+                          ),
+                        ),
+                        Align(
+                          child: Text(
+                            "${I18n.of(context).totalCount} : $totalCount ${commandePluriel(totalCount, context)}",
+                            style: TextStyle(
+                              color: Color(Styling.primaryBackgroundColor),
+                            ),
+                          ),
+                          alignment: Alignment.topCenter,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: statisticList.map((userStat) {
+                    return statUserItem(userStat);
+                  }).toList(),
+                ),
+              ],
+            ),
+          ),
         ),
-        color: Color(Styling.primaryBackgroundColor),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
+      ],
+    );
+  }
+
+  Padding statUserItem(StatisticUser statisticUser) {
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: Expanded(
+        child: Stack(
           children: [
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Row(
-                children: [
-                  ZText(
-                    content: 'Total : ',
-                    color: Color(Styling.accentColor),
-                    fontSize: SizeConfig.diagonal * 2,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  Expanded(
-                    child: SizedBox(
-                      height: 20,
-                      width: 5,
-                      child: LinearProgressIndicator(
-                        value: 1,
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                            Colors.lightGreen.shade200),
-                        backgroundColor: Colors.lightGreen,
-                      ),
-                    ),
-                  ),
-                ],
+            SizedBox(
+              height: 17,
+              width: double.infinity,
+              child: LinearProgressIndicator(
+                value: statisticUser.count! / totalCount,
+                backgroundColor:
+                    Color(Styling.transparentBackgroundDark).withOpacity(0.2),
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  Color(Styling.iconColor).withOpacity(0.8),
+                ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Row(
-                children: [
-                  ZText(
-                    content: 'Solana : ',
-                    color: Color(Styling.accentColor),
-                    fontSize: SizeConfig.diagonal * 2,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  Expanded(
-                    child: SizedBox(
-                      height: 20,
-                      width: 5,
-                      child: LinearProgressIndicator(
-                        value: 0.5,
-                        valueColor:
-                            AlwaysStoppedAnimation<Color>(Colors.purpleAccent),
-                        backgroundColor: Colors.cyan,
-                      ),
-                    ),
-                  ),
-                ],
+            Align(
+              child: Text(
+                "${statisticUser.userName}: ${(statisticUser.count)} ${commandePluriel(statisticUser.count!, context)}",
+                style: TextStyle(
+                  color: Color(Styling.primaryBackgroundColor),
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Row(
-                children: [
-                  ZText(
-                    content: 'Lavinie : ',
-                    color: Color(Styling.accentColor),
-                    fontSize: SizeConfig.diagonal * 2,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  Expanded(
-                    child: SizedBox(
-                      height: 20,
-                      width: 5,
-                      child: LinearProgressIndicator(
-                        value: pourcentage.toDouble(),
-                        semanticsLabel: "aaaa",
-                        valueColor:
-                            AlwaysStoppedAnimation<Color>(Colors.orange),
-                        backgroundColor:
-                            Color(Styling.secondaryBackgroundColor),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+              alignment: Alignment.topCenter,
             ),
           ],
         ),
