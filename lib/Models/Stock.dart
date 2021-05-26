@@ -18,7 +18,7 @@ class Stock {
     required this.unit,
     required this.usedSince,
     required this.usedTotal,
-     this.date,
+    this.date,
   });
 
   Stock.buildObject(DocumentSnapshot document) {
@@ -41,8 +41,8 @@ class Stock {
     date = document.data![Fields.date];
   }
 
-  String buildStringFromObject() {
-    String text = "$id;$name;$quantity;$unit";
+  String buildStringFromObject(num q) {
+    String text = "$id;$name;$q;$unit";
     return text;
   }
 

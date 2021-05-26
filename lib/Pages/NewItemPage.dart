@@ -44,16 +44,8 @@ class _NewItemPageState extends State<NewItemPage> {
   }
 
   final _formKey = GlobalKey<FormState>();
-  final _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  List<String> unitList = [
-    'Kilogram(s)',
-    'Liter(s)',
-    'Box(es)',
-    'Bottle(s)',
-    'Item(s)',
-    'gram(s)'
-  ];
+  List<String> unitList = ['Kg', 'l', 'Box', 'Bottle', 'Item', 'g'];
 
   String? selectedValue;
   String? name;
@@ -75,7 +67,7 @@ class _NewItemPageState extends State<NewItemPage> {
 
   Widget body() {
     return SingleChildScrollView(
-      physics: BouncingScrollPhysics(),
+      // physics: BouncingScrollPhysics(),
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: SizeConfig.diagonal * 0.9),
         child: Form(
@@ -85,11 +77,11 @@ class _NewItemPageState extends State<NewItemPage> {
               Container(
                 height: SizeConfig.diagonal * 15,
                 child: Center(
-                  child:  ZText(content:I18n.of(context).itemDescription),
+                  child: ZText(content: I18n.of(context).itemDescription),
                 ),
               ),
               ZTextField(
-                outsidePrefix:  ZText(content:I18n.of(context).name + ' :'),
+                outsidePrefix: ZText(content: I18n.of(context).name + ' :'),
                 onSaved: (value) => name = value,
                 validator: (value) => value == null || value.isEmpty
                     ? I18n.of(context).requit
@@ -99,26 +91,27 @@ class _NewItemPageState extends State<NewItemPage> {
                 height: SizeConfig.diagonal * 3,
               ),
               ZTextField(
-                outsidePrefix:  ZText(content:I18n.of(context).quantity + ' :'),
+                outsidePrefix: ZText(content: I18n.of(context).quantity + ' :'),
                 onSaved: (value) {
                   if (value != null) {
                     quantity = num.parse(value);
                   }
                 },
-                validator: (value) =>
-                  value == null ||  value.isEmpty ? I18n.of(context).requit : null,
+                validator: (value) => value == null || value.isEmpty
+                    ? I18n.of(context).requit
+                    : null,
               ),
               SizedBox(
                 height: SizeConfig.diagonal * 3,
               ),
               DropdownButton(
-                  hint:  ZText(content:'Select the Unit'),
+                  hint: ZText(content: I18n.of(context).selectUnit),
                   value: selectedValue,
                   items: unitList.map((String value) {
                     return DropdownMenuItem<String>(
                         value: value,
-                        child:  ZText(content:
-                          value,
+                        child: ZText(
+                          content: value,
                         ));
                   }).toList(),
                   onChanged: (String? val) {
@@ -132,9 +125,9 @@ class _NewItemPageState extends State<NewItemPage> {
               ),
               ZElevatedButton(
                 onpressed: saveItem,
-                child:  ZText(content:
-                  I18n.of(context).save,
-                 color: Color(Styling.textColor)
+                child: ZText(
+                  content: I18n.of(context).save,
+                  color: Color(Styling.textColor),
                 ),
               ),
             ],
@@ -155,9 +148,9 @@ class _NewItemPageState extends State<NewItemPage> {
       if (!isOnline) {
         EasyLoading.dismiss();
 
-       ScaffoldMessenger.of(context).showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content:  ZText(content:I18n.of(context).noInternet),
+            content: ZText(content: I18n.of(context).noInternet),
           ),
         );
       } else {
@@ -168,10 +161,15 @@ class _NewItemPageState extends State<NewItemPage> {
               unit: unit!,
               usedSince: 0,
               usedTotal: 0);
-          setState(() {});
+
           await widget.db.addInventoryItem(context, newStock);
 
           EasyLoading.dismiss();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: ZText(content: I18n.of(context).operationSucceeded),
+            ),
+          );
 
           setState(() {
             _formKey.currentState!.reset();
@@ -184,13 +182,14 @@ class _NewItemPageState extends State<NewItemPage> {
             _formKey.currentState!.reset();
           });
 
-        ScaffoldMessenger.of(context).showSnackBar(
+          ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content:  ZText(content:e.toString()),
+              content: ZText(content: e.toString()),
             ),
           );
         }
       }
     }
+    Navigator.of(context).pop();
   }
 }

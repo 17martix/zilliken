@@ -79,7 +79,7 @@ howLiked,How do you like it,Comment le voulez vous
 called,requires your attention,nécessite votre attention
 accept,Go to,Aller à
 oopsSomethingwentwrong,Oops something went wrong!,oups quelque chose s'est mal passée!
-noDevices,No devices,Aucun dispositif 
+noDevices,No devices,"Aucun dispositif "
 pleaseEnablebluetooth,Please enable bluetooth to print,Veuillez activer bluetooth pour imprimer
 callThewaiter,Call a waiter,Appeler un serveur
 messageSent,Message sent,Message envoyé
@@ -103,6 +103,14 @@ itemDescription,Enter Item Description,Entrer Déscription
 itemEditing,Edit Item Details,Modifier Détails
 printingDisabled,Printing Disabled,Impression désactivée
 cancelOnly,Cancel,Annuler
+update,Update,Mettre à Jour
+linkToMenu,Link to Menu,Lier au Menu
+selectUnit,Select Unit,Choisir l'Unité
+added,Added,Ajouté
+linkDescription,Choose any meal that requires this item,Choisissez chaque repas qui nécessite cet article
+enterQuantity,Enter Quantity,Saisissez la Quantité
+edit,Edit,Modifier
+adjust,Adjust,Ajuster
 noResult,No Result,Pas De Résultat
 weeklyinventory,weekly inventory,Inventaire Hebdomadaire
 totalOrders,Total Orders per Day,Total des Commandes par Jour

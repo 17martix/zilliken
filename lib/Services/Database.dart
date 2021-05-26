@@ -22,6 +22,7 @@ import 'package:zilliken/Models/UserProfile.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:collection/collection.dart';
 
+import '../Models/MenuItem.dart';
 import '../i18n.dart';
 
 class Database {
@@ -133,8 +134,28 @@ class Database {
       Fields.addressName: order.addressName,
       Fields.deliveringOrderId: null,
       Fields.currentPoint: order.currentPoint,
+      Fields.userName: order.userName,
     }).then((value) async {
       for (int i = 0; i < order.clientOrder.length; i++) {
+        // if (order.clientOrder[i].menuItem.condiments != null) {
+        //   condimentsList
+        //       .add(order.clientOrder[i].menuItem.condiments!.whereNotNull());
+        // }
+        List<String>? condimentsList;
+        if (order.clientOrder[i].menuItem.condiments != null) {
+          condimentsList = [];
+          order.clientOrder[i].menuItem.condiments!.forEach((element) {
+            condimentsList!
+                .add(element.buildStringFromObject(element.quantity));
+          });
+        }
+
+        /*order.clientOrder.forEach((orderItem) {
+          orderItem.menuItem.condiments!.whereNotNull().forEach((stockElement) {
+            condimentsList.add(stockElement);
+          });
+        });*/
+        log('condiments is: $condimentsList');
         await databaseReference
             .collection(Fields.order)
             .doc(document.id)
@@ -148,6 +169,7 @@ class Database {
           Fields.price: order.clientOrder[i].menuItem.price,
           Fields.rank: order.clientOrder[i].menuItem.rank,
           Fields.global: order.clientOrder[i].menuItem.global,
+          Fields.condiments: condimentsList,
         });
       }
     });
@@ -400,7 +422,7 @@ class Database {
   }
 
   Future<void> updateStatus(
-      String id, int status, int value, num grandTotal, Order order) async {
+      String id, int status, int value, Order order, num grandTotal) async {
     var document = databaseReference.collection(Fields.order).doc(id);
 
     if (value == 1) {
@@ -412,6 +434,24 @@ class Database {
       await document.update({
         Fields.status: Fields.confirmed,
         Fields.confirmedDate: FieldValue.serverTimestamp(),
+      });
+
+      order.clientOrder.forEach((orderItem) async {
+        if (orderItem.menuItem.condiments != null) {
+          orderItem.menuItem.condiments!.forEach((stock) async {
+            var stockReference =
+                databaseReference.collection(Fields.stock).doc(stock.id);
+            WriteBatch batch = databaseReference.batch();
+
+            batch.update(stockReference, {
+              Fields.quantity: FieldValue.increment(-stock.quantity),
+              Fields.usedSince: FieldValue.increment(stock.quantity),
+              Fields.usedTotal: FieldValue.increment(stock.quantity),
+            });
+
+            await batch.commit();
+          });
+        }
       });
     } else if (value == 3) {
       await document.update({
@@ -828,6 +868,7 @@ class Database {
     await inventory
         .update({
           Fields.quantity: stock.quantity,
+          Fields.usedSince: 0,
         })
         .whenComplete(() => result = Result(
             isSuccess: true, message: I18n.of(context).operationSucceeded))
@@ -867,31 +908,133 @@ class Database {
       }
     });
 
-    log('here');
-
-    menuItemList.forEach((element) {
-      log('menu name is ${element.name}');
-    });
-
     return menuItemList;
   }
 
-  Future<void> linkToStock(List<String> menuIdList, Stock stock) async {
-    String text = stock.buildStringFromObject();
-
+  Future<void> linkToStock(List<MenuItem> menuList, Stock stock) async {
     WriteBatch batch = databaseReference.batch();
 
-    menuIdList.forEach((id) {
+    menuList.forEach((menu) {
       DocumentReference documentReference =
-          databaseReference.collection(Fields.menu).doc(id);
+          databaseReference.collection(Fields.menu).doc(menu.id);
+      List<String>? condimentsText = [];
+      if (menu.condiments == null) {
+        if (menu.quantity == null) {
+          condimentsText = null;
+        } else {
+          String text = stock.buildStringFromObject(menu.quantity!);
+          condimentsText.add(text);
+        }
+      } else {
+        menu.condiments!.forEach((element) {
+          String t = element.buildStringFromObject(element.quantity);
+          condimentsText!.add(t);
+        });
+
+        if (menu.quantity != null) {
+          String text = stock.buildStringFromObject(menu.quantity!);
+          condimentsText.removeWhere((element) {
+            List<String> elements = element.split(";");
+            List<String> texts = text.split(";");
+            return (element == text ||
+                (elements[0] == texts[0] && elements[2] != texts[2]));
+          });
+          condimentsText.add(text);
+        }
+      }
+
       batch.update(documentReference, {
-        Fields.condiments: text,
+        Fields.condiments: condimentsText,
       });
     });
 
     await batch.commit();
   }
 
+  Future<Result> deleteStockItem(context, Stock stock) async {
+    Result result =
+        Result(isSuccess: false, message: I18n.of(context).operationFailed);
+
+    WriteBatch batch = databaseReference.batch();
+
+    var stockRef = databaseReference.collection(Fields.stock).doc(stock.id!);
+    // log('newStock ${newStock}');
+    var menuItemRef = databaseReference.collection(Fields.menu);
+    // .where(Fields.condiments, arrayContains: itemString);
+
+    await menuItemRef.get().then((value) async {
+      log('value is ${value.docs.length}');
+
+      if (value.docs.isNotEmpty) {
+        log('start of if');
+        value.docs.forEach((documentSnapshot) {
+          List<String>? condimentsText = [];
+          MenuItem menuItem = MenuItem.buildObject(documentSnapshot);
+          Stock? exist;
+          if (menuItem.condiments != null) {
+            exist = menuItem.condiments!
+                .firstWhereOrNull((element) => element.id == stock.id);
+          }
+
+          if (exist != null) {
+            menuItem.condiments!
+                .removeWhere((element) => element.id == stock.id);
+
+            log('element length: ${menuItem.condiments}');
+            log('stockId: ${stock.id}');
+
+            if (menuItem.condiments == null || menuItem.condiments!.isEmpty) {
+              condimentsText = null;
+            } else {
+              menuItem.condiments!.forEach((element) {
+                String t = element.buildStringFromObject(element.quantity);
+                condimentsText!.add(t);
+              });
+            }
+
+            var docRef = databaseReference
+                .collection(Fields.menu)
+                .doc(documentSnapshot.data()[Fields.id]);
+            batch.update(docRef, {
+              Fields.condiments: condimentsText,
+            });
+          }
+        });
+        await batch.commit();
+      }
+      await stockRef
+          .delete()
+          .whenComplete(
+            () => result = Result(
+                isSuccess: true, message: I18n.of(context).operationSucceeded),
+          )
+          .catchError(
+            (error) => result = Result(
+                isSuccess: false, message: I18n.of(context).operationFailed),
+          );
+    });
+
+    return result;
+  }
+
+  Future<Result> manualAdjust(context, Stock stock) async {
+    Result result =
+        Result(isSuccess: false, message: I18n.of(context).operationFailed);
+
+    var stockRef = databaseReference.collection(Fields.stock).doc(stock.id);
+
+    await stockRef
+        .update({
+          Fields.quantity: FieldValue.increment(-stock.quantity),
+          Fields.usedSince: FieldValue.increment(stock.quantity),
+          Fields.usedTotal: FieldValue.increment(stock.quantity),
+        })
+        .whenComplete(() => result = Result(
+            isSuccess: true, message: I18n.of(context).operationSucceeded))
+        .catchError((error) => result = Result(
+            isSuccess: false, message: I18n.of(context).operationFailed));
+    return result;
+  }
   Future<List<StatisticUser>> getTodayStatUser() async {
     List<StatisticUser> list = [];
 
