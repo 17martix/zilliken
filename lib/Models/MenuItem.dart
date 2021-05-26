@@ -36,7 +36,7 @@ class MenuItem {
     this.quantity,
   });
 
-  MenuItem.buildObject(DocumentSnapshot document) {
+  MenuItem.buildObject(DocumentSnapshot<Map<String,dynamic>> document) {
     if (document.data()?[Fields.condiments] != null) {
       condiments = [];
       List<String> textCondimentList =
@@ -59,7 +59,7 @@ class MenuItem {
     isDrink = document.data()![Fields.isDrink];
   }
 
-  MenuItem.buildObjectAsync(AsyncSnapshot<DocumentSnapshot> document) {
+  MenuItem.buildObjectAsync(AsyncSnapshot<DocumentSnapshot<Map<String,dynamic>>> document) {
     if (document.data?[Fields.condiments] != null) {
       condiments = [];
       List<String> textCondimentList =

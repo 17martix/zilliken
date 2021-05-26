@@ -36,7 +36,7 @@ class OrdersPage extends StatefulWidget {
 }
 
 class _OrdersPageState extends State<OrdersPage> {
-  late Query commandes;
+  late Query<Map<String,dynamic>> commandes;
 
   @override
   void initState() {
@@ -176,9 +176,9 @@ class _OrdersPageState extends State<OrdersPage> {
   }
 
   Widget ordersList() {
-    return StreamBuilder<QuerySnapshot>(
+    return StreamBuilder<QuerySnapshot<Map<String,dynamic>>>(
       stream: commandes.snapshots(),
-      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot<Map<String,dynamic>>> snapshot) {
         if (snapshot.data == null || snapshot.data!.docs.length <= 0) {
           return Center(
             child: ZText(
@@ -192,7 +192,7 @@ class _OrdersPageState extends State<OrdersPage> {
         }
 
         return ListView(
-          children: snapshot.data!.docs.map((DocumentSnapshot document) {
+          children: snapshot.data!.docs.map((DocumentSnapshot<Map<String,dynamic>> document) {
             Order order = Order.buildObject(document);
 
             return item(order);

@@ -17,7 +17,7 @@ class Statistic {
     //required this.orderCount,
   });
 
-  Statistic.buildObject(DocumentSnapshot document) {
+  Statistic.buildObject(DocumentSnapshot<Map<String,dynamic>> document) {
     id = document.id;
     total = document.data()![Fields.total];
     date = document.data()![Fields.date];

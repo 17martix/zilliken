@@ -42,13 +42,13 @@ class SingleUserPage extends StatefulWidget {
 class _SingleUserPageState extends State<SingleUserPage> {
   var oneUserDetails;
 
-  List<DocumentSnapshot> items = [];
+  List<DocumentSnapshot<Map<String,dynamic>>> items = [];
   ScrollController _scrollController = ScrollController();
   bool isLoading = false;
   bool hasMore = true;
 
-  QuerySnapshot? statref;
-  DocumentSnapshot? lastDocument;
+  QuerySnapshot<Map<String,dynamic>>? statref;
+  DocumentSnapshot<Map<String,dynamic>>? lastDocument;
 
   List<BarChartGroupData> rawBarGroups = [];
   List<BarChartGroupData> showingBarGroups = [];
@@ -494,10 +494,10 @@ class _SingleUserPageState extends State<SingleUserPage> {
   }
 
   Widget userStream() {
-    return StreamBuilder<DocumentSnapshot>(
+    return StreamBuilder<DocumentSnapshot<Map<String,dynamic>>>(
         stream: oneUserDetails.snapshots(),
         builder:
-            (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+            (BuildContext context, AsyncSnapshot<DocumentSnapshot<Map<String,dynamic>>> snapshot) {
           if (snapshot.data == null) return Center(child: ZText(content: ""));
           UserProfile userProfile = UserProfile.buildObjectAsync(snapshot);
           return userDetails(userProfile);

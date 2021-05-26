@@ -13,12 +13,12 @@ class OrderItem {
     required this.menuItem,
   });
 
-  OrderItem.buildObject(DocumentSnapshot document) {
+  OrderItem.buildObject(DocumentSnapshot<Map<String,dynamic>> document) {
     menuItem = MenuItem.buildObject(document);
     count = document.data()![Fields.count];
   }
 
-  OrderItem.buildObjectAsync(AsyncSnapshot<DocumentSnapshot> document) {
+  OrderItem.buildObjectAsync(AsyncSnapshot<DocumentSnapshot<Map<String,dynamic>>> document) {
     menuItem = MenuItem.buildObjectAsync(document);
     count = document.data![Fields.count];
   }

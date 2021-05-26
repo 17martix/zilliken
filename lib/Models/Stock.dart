@@ -21,7 +21,7 @@ class Stock {
     this.date,
   });
 
-  Stock.buildObject(DocumentSnapshot document) {
+  Stock.buildObject(DocumentSnapshot<Map<String,dynamic>> document) {
     id = document.id;
     name = document.data()![Fields.name];
     quantity = document.data()![Fields.quantity];
@@ -31,7 +31,7 @@ class Stock {
     date = document.data()![Fields.date];
   }
 
-  Stock.buildObjectAsync(AsyncSnapshot<DocumentSnapshot> document) {
+  Stock.buildObjectAsync(AsyncSnapshot<DocumentSnapshot<Map<String,dynamic>>> document) {
     id = document.data?.id;
     name = document.data![Fields.name];
     quantity = document.data![Fields.quantity];

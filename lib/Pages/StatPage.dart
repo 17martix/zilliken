@@ -49,13 +49,13 @@ class StatPage extends StatefulWidget {
 class _StatPageState extends State<StatPage> {
   //List<Graph>? data;
   ScrollController _scrollController = ScrollController();
-  List<DocumentSnapshot> items = [];
+  List<DocumentSnapshot<Map<String,dynamic>>> items = [];
 
   bool isLoading = false;
   bool hasMore = true;
 
-  QuerySnapshot? statref;
-  DocumentSnapshot? lastDocument;
+  QuerySnapshot<Map<String,dynamic>>? statref;
+  DocumentSnapshot<Map<String,dynamic>>? lastDocument;
 
   List<BarChartGroupData> rawBarGroups = [];
   List<BarChartGroupData> showingBarGroups = [];

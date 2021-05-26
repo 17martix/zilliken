@@ -35,18 +35,18 @@ class UserPage extends StatefulWidget {
 }
 
 class _UserPageState extends State<UserPage> {
-  late QuerySnapshot itemref;
+  late QuerySnapshot<Map<String,dynamic>> itemref;
   int documentLimit = 10;
   bool hasMore = true;
-  DocumentSnapshot? lastDocument;
-  List<DocumentSnapshot> items = [];
+  DocumentSnapshot<Map<String,dynamic>>? lastDocument;
+  List<DocumentSnapshot<Map<String,dynamic>>> items = [];
 
   TextEditingController searchController = TextEditingController();
   String? searchText = '';
   ScrollController _scrollController = ScrollController();
-  late Query searchRef1;
-  late Query searchRef2;
-  List<DocumentSnapshot> searchList = [];
+  late Query<Map<String,dynamic>> searchRef1;
+  late Query<Map<String,dynamic>> searchRef2;
+  List<DocumentSnapshot<Map<String,dynamic>>> searchList = [];
   String? noResult = '';
   bool isSearchLoading = false;
   bool displayCancelButton = false;
@@ -221,7 +221,7 @@ class _UserPageState extends State<UserPage> {
                 child: ZText(content: ""),
               )
             : Column(
-                children: items.map((DocumentSnapshot document) {
+                children: items.map((DocumentSnapshot<Map<String,dynamic>> document) {
                   UserProfile userProfile = UserProfile.buildObject(document);
                   return userList(userProfile);
                 }).toList(),
@@ -294,7 +294,7 @@ class _UserPageState extends State<UserPage> {
         .where(Fields.tags, arrayContains: searchReady(searchText!))
         .limit(50);
 
-    searchRef1.get().then((QuerySnapshot? snapshot) {
+    searchRef1.get().then((QuerySnapshot<Map<String,dynamic>>? snapshot) {
       if (snapshot == null || snapshot.docs.length < 1) {
         // log("here 8");
         searchQuery2();
@@ -303,9 +303,9 @@ class _UserPageState extends State<UserPage> {
         if (mounted) {
           setState(() {
             searchList.removeWhere((Object item) {
-              if (item is DocumentSnapshot) {
-                DocumentSnapshot? exist = snapshot.docs.firstWhereOrNull(
-                    (DocumentSnapshot element) => element.id == item.id);
+              if (item is DocumentSnapshot<Map<String,dynamic>>) {
+                DocumentSnapshot<Map<String,dynamic>>? exist = snapshot.docs.firstWhereOrNull(
+                    (DocumentSnapshot<Map<String,dynamic>> element) => element.id == item.id);
                 if (exist == null) {
                   return true;
                 } else {
@@ -318,7 +318,7 @@ class _UserPageState extends State<UserPage> {
 
             snapshot.docs.forEach((item) {
               Object? exist = searchList.firstWhereOrNull((Object element) {
-                if (element is DocumentSnapshot) {
+                if (element is DocumentSnapshot<Map<String,dynamic>>) {
                   bool isEqual = element.id == item.id;
                   return isEqual;
                 } else {
@@ -349,7 +349,7 @@ class _UserPageState extends State<UserPage> {
         .where(Fields.tags, arrayContainsAny: searchTags)
         .limit(50);
 
-    searchRef2.get().then((QuerySnapshot? snapshot) {
+    searchRef2.get().then((QuerySnapshot<Map<String,dynamic>>? snapshot) {
       if (snapshot == null || snapshot.docs.length < 1) {
         // log("here 13");
         if (mounted) {
@@ -363,9 +363,9 @@ class _UserPageState extends State<UserPage> {
         if (mounted) {
           setState(() {
             searchList.removeWhere((Object item) {
-              if (item is DocumentSnapshot) {
-                DocumentSnapshot? exist = snapshot.docs.firstWhereOrNull(
-                    (DocumentSnapshot element) => element.id == item.id);
+              if (item is DocumentSnapshot<Map<String,dynamic>>) {
+                DocumentSnapshot<Map<String,dynamic>>? exist = snapshot.docs.firstWhereOrNull(
+                    (DocumentSnapshot<Map<String,dynamic>> element) => element.id == item.id);
                 if (exist == null) {
                   return true;
                 } else {
@@ -378,7 +378,7 @@ class _UserPageState extends State<UserPage> {
 
             snapshot.docs.forEach((item) {
               Object? exist = searchList.firstWhereOrNull((Object element) {
-                if (element is DocumentSnapshot) {
+                if (element is DocumentSnapshot<Map<String,dynamic>>) {
                   bool isEqual = element.id == item.id;
                   return isEqual;
                 } else {

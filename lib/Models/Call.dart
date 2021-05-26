@@ -16,14 +16,14 @@ class Call {
      this.createdAt,
   });
 
-  Call.buildObject(DocumentSnapshot document) {
+  Call.buildObject(DocumentSnapshot<Map<String,dynamic>> document) {
     order = Order.buildObject(document);
     hasCalled = document.data()![Fields.hasCalled];
     createdAt = document.data()![Fields.createdAt];
     id = document.id;
   }
 
-  Call.buildObjectAsync(AsyncSnapshot<DocumentSnapshot> document) {
+  Call.buildObjectAsync(AsyncSnapshot<DocumentSnapshot<Map<String,dynamic>>> document) {
     order = Order.buildObjectAsync(document);
     hasCalled = document.data![Fields.hasCalled];
     createdAt = document.data![Fields.createdAt];

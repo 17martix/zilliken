@@ -17,7 +17,7 @@ class Category {
      this.imageName,
   });
 
-  Category.buildObject(DocumentSnapshot document) {
+  Category.buildObject(DocumentSnapshot<Map<String,dynamic>> document) {
     id = document.id;
     name = document.data()![Fields.name];
     rank = document.data()![Fields.rank];

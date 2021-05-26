@@ -101,7 +101,7 @@ class Database {
         .collection(Fields.configuration)
         .doc(Fields.taxes)
         .get()
-        .then((DocumentSnapshot documentSnapshot) {
+        .then((DocumentSnapshot<Map<String,dynamic>> documentSnapshot) {
       if (documentSnapshot.exists) {
         taxPercentage = documentSnapshot.data()![Fields.percentage];
       }
@@ -236,7 +236,7 @@ class Database {
         .doc(userId)
         .collection(Fields.addresses);
 
-    QuerySnapshot querySnapshot = await collection.get();
+    QuerySnapshot<Map<String,dynamic>> querySnapshot = await collection.get();
 
     querySnapshot.docs.forEach((element) {
       Address address = Address.buildObject(element);
@@ -265,7 +265,7 @@ class Database {
         .doc(orderId)
         .collection(Fields.items);
 
-    QuerySnapshot querySnapshot = await collection.get();
+    QuerySnapshot<Map<String,dynamic>> querySnapshot = await collection.get();
 
     querySnapshot.docs.forEach((element) {
       OrderItem orderItem = OrderItem.buildObject(element);
@@ -881,7 +881,7 @@ class Database {
     List<MenuItem> menuItemList = [];
     var reference = databaseReference.collection(Fields.menu);
 
-    await reference.get().then((QuerySnapshot snapshot) {
+    await reference.get().then((QuerySnapshot<Map<String,dynamic>> snapshot) {
       if (snapshot != null && snapshot.docs.isNotEmpty) {
         snapshot.docs.forEach((element) async {
           MenuItem menuItem = MenuItem.buildObject(element);
@@ -1045,7 +1045,7 @@ class Database {
     var statUserRef = databaseReference
         .collection(Fields.statisticUser)
         .where(Fields.date, isEqualTo: timestamp);
-    await statUserRef.get().then((QuerySnapshot snapshot) {
+    await statUserRef.get().then((QuerySnapshot<Map<String,dynamic>> snapshot) {
       if (snapshot != null && snapshot.docs.isNotEmpty)
         snapshot.docs.forEach((element) async {
           StatisticUser userStat = StatisticUser.buildObject(element);
@@ -1068,7 +1068,7 @@ class Database {
         .orderBy(Fields.quantity, descending: true)
         .limit(5);
 
-    await statStockRef.get().then((QuerySnapshot snapshot) {
+    await statStockRef.get().then((QuerySnapshot<Map<String,dynamic>> snapshot) {
       if (snapshot.docs.isNotEmpty)
         snapshot.docs.forEach((element) async {
           StatisticStock stock = StatisticStock.buildObject(element);

@@ -97,7 +97,7 @@ class _CartPageState extends State<CartPage> {
         .collection(Fields.configuration)
         .doc(Fields.settings)
         .snapshots()
-        .listen((DocumentSnapshot documentSnapshot) {
+        .listen((DocumentSnapshot<Map<String,dynamic>> documentSnapshot) {
       setState(() {
         enabled = documentSnapshot.data()![Fields.enabled];
       });
@@ -107,7 +107,7 @@ class _CartPageState extends State<CartPage> {
         .collection(Fields.configuration)
         .doc(Fields.settings)
         .snapshots()
-        .listen((DocumentSnapshot documentSnapshot) {
+        .listen((DocumentSnapshot<Map<String,dynamic>> documentSnapshot) {
       setState(() {
         enabled = documentSnapshot.data()![Fields.enabled];
       });

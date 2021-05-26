@@ -16,7 +16,7 @@ class Address {
   required this.typedAddress,
  });
 
-   Address.buildObject(DocumentSnapshot document) {
+   Address.buildObject(DocumentSnapshot<Map<String,dynamic>> document) {
     id = document.id;
     geoPoint = document.data()![Fields.geoPoint];
     addressName = document.data()![Fields.addressName];

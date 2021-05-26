@@ -19,7 +19,7 @@ class StatisticUser {
       required this.userName,
       this.count});
 
-  StatisticUser.buildObject(DocumentSnapshot document) {
+  StatisticUser.buildObject(DocumentSnapshot<Map<String,dynamic>> document) {
     id = document.id;
     total = document.data()![Fields.total];
     date = document.data()![Fields.date];
@@ -29,7 +29,7 @@ class StatisticUser {
     count = document.data()![Fields.count];
   }
 
-  StatisticUser.buildObjectAsync(AsyncSnapshot<DocumentSnapshot> document) {
+  StatisticUser.buildObjectAsync(AsyncSnapshot<DocumentSnapshot<Map<String,dynamic>>> document) {
     id = document.data!.id;
     total = document.data![Fields.total];
     date = document.data![Fields.date];

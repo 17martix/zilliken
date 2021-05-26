@@ -42,7 +42,7 @@ class StockPage extends StatefulWidget {
 
 class _StockPageState extends State<StockPage> {
   final _formKey = GlobalKey<FormState>();
-  CollectionReference item =
+  CollectionReference<Map<String,dynamic>> item =
       FirebaseFirestore.instance.collection(Fields.stock);
 
   num? quantity;
@@ -77,9 +77,9 @@ class _StockPageState extends State<StockPage> {
   }
 
   Widget itemStream() {
-    return StreamBuilder<QuerySnapshot>(
+    return StreamBuilder<QuerySnapshot<Map<String,dynamic>>>(
         stream: item.snapshots(),
-        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot<Map<String,dynamic>>> snapshot) {
           if (snapshot.data == null)
             return Center(
               child: ZText(content: ''),

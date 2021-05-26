@@ -133,7 +133,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
         .collection(Fields.order)
         .doc(widget.orderId)
         .snapshots()
-        .listen((DocumentSnapshot documentSnapshot) {
+        .listen((DocumentSnapshot<Map<String,dynamic>> documentSnapshot) {
       setState(() {
         goingBack =
             documentSnapshot.data()![Fields.status] < _status ? true : false;
@@ -163,7 +163,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
         .collection(Fields.configuration)
         .doc(Fields.settings)
         .snapshots()
-        .listen((DocumentSnapshot documentSnapshot) {
+        .listen((DocumentSnapshot<Map<String,dynamic>> documentSnapshot) {
       setState(() {
         enabled = documentSnapshot.data()![Fields.enabled];
       });
@@ -693,10 +693,10 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
     oneOrderDetails.snapshots(includeMetadataChanges: true);
     return Container(
       decoration: BoxDecoration(color: Color(Styling.primaryBackgroundColor)),
-      child: StreamBuilder<DocumentSnapshot>(
+      child: StreamBuilder<DocumentSnapshot<Map<String,dynamic>>>(
           stream: oneOrderDetails.snapshots(),
           builder:
-              (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+              (BuildContext context, AsyncSnapshot<DocumentSnapshot<Map<String,dynamic>>> snapshot) {
             if (snapshot.data == null)
               return Center(
                 child: ZText(content: ""),
@@ -1169,14 +1169,14 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
     if (goingBack) {
       backFunction();
     }
-    widget.db.updateStatus(widget.orderId, _orderStatus, value!,
-        widget.clientOrder.grandTotal, widget.clientOrder);
+    widget.db.updateStatus(widget.orderId, _orderStatus, value!
+       , widget.clientOrder ,widget.clientOrder.grandTotal);
   }
 
   Widget orderItemStream() {
-    return StreamBuilder<QuerySnapshot>(
+    return StreamBuilder<QuerySnapshot<Map<String,dynamic>>>(
       stream: orderItems.snapshots(),
-      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot<Map<String,dynamic>>> snapshot) {
         if (snapshot.data == null)
           return Center(
             child: ZText(content: ""),
@@ -1235,7 +1235,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                 Column(
                   mainAxisSize: MainAxisSize.min,
                   children:
-                      snapshot.data!.docs.map((DocumentSnapshot document) {
+                      snapshot.data!.docs.map((DocumentSnapshot<Map<String,dynamic>> document) {
                     OrderItem orderItem = OrderItem.buildObject(document);
                     return orderElement(orderItem);
                   }).toList(),
@@ -1287,9 +1287,9 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
   }
 
   Widget billStream() {
-    return StreamBuilder<QuerySnapshot>(
+    return StreamBuilder<QuerySnapshot<Map<String,dynamic>>>(
       stream: orderItems.snapshots(),
-      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot<Map<String,dynamic>>> snapshot) {
         if (snapshot.data == null)
           return Center(
             child: ZText(content: ""),
@@ -1322,7 +1322,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
             ),
             Column(
               mainAxisSize: MainAxisSize.min,
-              children: snapshot.data!.docs.map((DocumentSnapshot document) {
+              children: snapshot.data!.docs.map((DocumentSnapshot<Map<String,dynamic>> document) {
                 OrderItem orderItem = OrderItem.buildObject(document);
                 if (widget.userRole == Fields.chefBoissons) {
                   if (orderItem.menuItem.isDrink == 1) {
@@ -1384,10 +1384,10 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
   }
 
   Widget billStream2() {
-    return StreamBuilder<DocumentSnapshot>(
+    return StreamBuilder<DocumentSnapshot<Map<String,dynamic>>>(
       stream: oneOrderDetails.snapshots(),
       builder:
-          (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+          (BuildContext context, AsyncSnapshot<DocumentSnapshot<Map<String,dynamic>>> snapshot) {
         if (snapshot.data == null)
           return Center(
             child: ZText(content: ""),
@@ -1473,10 +1473,10 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
   }
 
   Widget informationStream() {
-    return StreamBuilder<DocumentSnapshot>(
+    return StreamBuilder<DocumentSnapshot<Map<String,dynamic>>>(
       stream: oneOrderDetails.snapshots(),
       builder:
-          (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+          (BuildContext context, AsyncSnapshot<DocumentSnapshot<Map<String,dynamic>>> snapshot) {
         if (snapshot.data == null)
           return Center(
             child: ZText(content: ""),

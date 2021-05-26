@@ -48,7 +48,7 @@ class MenuPage extends StatefulWidget {
 }
 
 class _MenuPageState extends State<MenuPage> {
-  late Query commandes;
+  late Query<Map<String,dynamic>> commandes;
   var categories = FirebaseFirestore.instance
       .collection(Fields.category)
       .orderBy(Fields.rank, descending: false);
@@ -583,9 +583,9 @@ class _MenuPageState extends State<MenuPage> {
   }
 
   Widget categoryList() {
-    return StreamBuilder<QuerySnapshot>(
+    return StreamBuilder<QuerySnapshot<Map<String,dynamic>>>(
       stream: categories.snapshots(),
-      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot<Map<String,dynamic>>> snapshot) {
         if (snapshot.data == null)
           return Center(
             child: ZText(content: ""),
@@ -596,7 +596,7 @@ class _MenuPageState extends State<MenuPage> {
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
-              children: snapshot.data!.docs.map((DocumentSnapshot document) {
+              children: snapshot.data!.docs.map((DocumentSnapshot<Map<String,dynamic>> document) {
                 Category category = Category.buildObject(document);
                 return categoryItem(category);
               }).toList(),
@@ -608,9 +608,9 @@ class _MenuPageState extends State<MenuPage> {
   }
 
   Widget menulist() {
-    return StreamBuilder<QuerySnapshot>(
+    return StreamBuilder<QuerySnapshot<Map<String,dynamic>>>(
       stream: commandes.snapshots(),
-      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot<Map<String,dynamic>>> snapshot) {
         if (snapshot.data == null)
           return Center(
             child: ZText(content: ""),

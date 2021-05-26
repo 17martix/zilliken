@@ -76,7 +76,7 @@ class _DashboardPageState extends State<DashboardPage> {
         .collection(Fields.configuration)
         .doc(Fields.settings)
         .snapshots()
-        .listen((DocumentSnapshot documentSnapshot) {
+        .listen((DocumentSnapshot<Map<String,dynamic>> documentSnapshot) {
       setState(() {
         enabled = documentSnapshot.data()![Fields.enabled];
       });
@@ -86,7 +86,7 @@ class _DashboardPageState extends State<DashboardPage> {
         .collection(Fields.users)
         .doc(widget.userId)
         .snapshots()
-        .listen((DocumentSnapshot documentSnapshot) {
+        .listen((DocumentSnapshot<Map<String,dynamic>> documentSnapshot) {
       setState(() {
         isActive = documentSnapshot.data()![Fields.isActive];
       });

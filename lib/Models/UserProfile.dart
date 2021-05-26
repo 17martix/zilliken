@@ -27,7 +27,7 @@ class UserProfile {
     required this.isActive,
   });
 
-  UserProfile.buildObject(DocumentSnapshot document) {
+  UserProfile.buildObject(DocumentSnapshot<Map<String,dynamic>> document) {
     id = document.id;
     role = document.data()![Fields.role];
     phoneNumber = document.data()![Fields.phoneNumber];
@@ -39,7 +39,7 @@ class UserProfile {
     tags = List.from(document.data()![Fields.tags]);
   }
 
-  UserProfile.buildObjectAsync(AsyncSnapshot<DocumentSnapshot> document) {
+  UserProfile.buildObjectAsync(AsyncSnapshot<DocumentSnapshot<Map<String,dynamic>>> document) {
     id = document.data?.id;
     role = document.data![Fields.role];
     phoneNumber = document.data![Fields.phoneNumber];

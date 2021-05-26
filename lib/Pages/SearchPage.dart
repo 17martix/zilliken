@@ -17,7 +17,7 @@ class SearchPage extends StatefulWidget {
   final String userId;
   final String userRole;
   final bool isLoading;
-  final List<DocumentSnapshot> searchList;
+  final List<DocumentSnapshot<Map<String,dynamic>>> searchList;
   final String noResult;
   final DateFormat formatter = DateFormat('dd/MM/yy hh:mm ');
 
@@ -57,7 +57,7 @@ class _SearchPageState extends State<SearchPage> {
               )
             : ListView(
                 shrinkWrap: true,
-                children: widget.searchList.map((DocumentSnapshot document) {
+                children: widget.searchList.map((DocumentSnapshot<Map<String,dynamic>> document) {
                   UserProfile userProfile = UserProfile.buildObject(document);
                   return userList(userProfile);
                 }).toList(),

@@ -16,7 +16,7 @@ class StatisticStock {
     required this.date,
     required this.unit,
   });
-  StatisticStock.buildObject(DocumentSnapshot document) {
+  StatisticStock.buildObject(DocumentSnapshot<Map<String,dynamic>> document) {
     id = document.id;
     name = document.data()![Fields.name];
     quantity = document.data()![Fields.quantity];
@@ -24,7 +24,7 @@ class StatisticStock {
     date = document.data()![Fields.date];
 
   }
-   StatisticStock.buildObjectAsync(AsyncSnapshot<DocumentSnapshot> document) {
+   StatisticStock.buildObjectAsync(AsyncSnapshot<DocumentSnapshot<Map<String,dynamic>>> document) {
     id = document.data!.id;
     name = document.data![Fields.name];
     quantity = document.data![Fields.quantity];
