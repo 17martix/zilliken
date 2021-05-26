@@ -107,3 +107,6 @@ noResult,No Result,Pas De Résultat
 weeklyinventory,weekly inventory,Inventaire Hebdomadaire
 totalOrders,Total Orders per Day,Total des Commandes par Jour
 totalCount,Total Count,Compte Total
+deactivateUser,Deactivate user ?,Désactiver l'utilisateur?
+desactive,Desactivate,Désactiver
+evaluationSem,Evaluation of the week,Evaluation de la semaine
