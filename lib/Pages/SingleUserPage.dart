@@ -1,6 +1,5 @@
 import 'dart:developer';
 import 'dart:ffi';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/gestures.dart';
@@ -59,15 +58,16 @@ class _SingleUserPageState extends State<SingleUserPage> {
   final double width = 7;
 
   int documentLimit = 10;
-  num maxY = 0;
+  num maxY = 1;
   ScrollController _controller = ScrollController();
 
   @override
   void initState() {
     super.initState();
 
-    oneUserDetails =
-        FirebaseFirestore.instance.collection(Fields.users).doc(widget.userId);
+    oneUserDetails = FirebaseFirestore.instance
+        .collection(Fields.users)
+        .doc(widget.userData.id);
 
     statQuery();
     _scrollController.addListener(() {
@@ -113,11 +113,11 @@ class _SingleUserPageState extends State<SingleUserPage> {
           .collection(Fields.statisticUser)
           .where(Fields.userId, isEqualTo: widget.userData.id)
           .limit(documentLimit)
-          .orderBy(Fields.date)
+          .orderBy(Fields.date, descending: true)
           .get();
     } else {
       statref = await widget.db.databaseReference
-          .collection(Fields.users)
+          .collection(Fields.statisticUser)
           .where(Fields.userId, isEqualTo: widget.userData.id)
           .limit(documentLimit)
           .orderBy(Fields.date, descending: true)
@@ -143,26 +143,51 @@ class _SingleUserPageState extends State<SingleUserPage> {
     });
   }
 
+  void _actionPression(UserProfile userProfile) async {
+    bool isActive = !userProfile.isActive;
+
+    await widget.db.updateIsActive(userProfile.id!, isActive);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: buildAppBar(
-        context,
-        widget.auth,
-        true,
-        null,
-        null,
-        null,
-        null,
+    return Container(
+      decoration: BoxDecoration(
+          image: DecorationImage(
+        image: AssetImage('assets/Zilliken.jpg'),
+        fit: BoxFit.cover,
+      )),
+      child: Scaffold(
+        appBar: buildAppBar(
+          context,
+          widget.auth,
+          true,
+          null,
+          null,
+          null,
+          null,
+        ),
+        body: body(),
+        backgroundColor: Colors.transparent,
       ),
-      body: body(),
     );
   }
 
   Widget body() {
     return Column(children: [
       statList(),
-      //userStream(),
+      Expanded(
+        child: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          controller: _controller,
+          child: Column(
+            children: [
+              graph(),
+              userStream(),
+            ],
+          ),
+        ),
+      ),
     ]);
   }
 
@@ -233,8 +258,8 @@ class _SingleUserPageState extends State<SingleUserPage> {
             ZText(
               content: '${I18n.of(context).dailyTotal}',
               textAlign: TextAlign.center,
-              color: Color(Styling.accentColor),
-              fontSize: SizeConfig.diagonal * 3.5,
+              color: Color(Styling.iconColor),
+              fontSize: SizeConfig.diagonal * 2.5,
               fontStyle: FontStyle.normal,
             ),
           ],
@@ -279,7 +304,6 @@ class _SingleUserPageState extends State<SingleUserPage> {
             ],
           ),
         ),
-        graph(),
       ],
     );
   }
@@ -300,7 +324,7 @@ class _SingleUserPageState extends State<SingleUserPage> {
   Widget graph() {
     return Container(
       child: AspectRatio(
-        aspectRatio: 1.3,
+        aspectRatio: 1.4,
         child: Card(
           elevation: 5,
           shape: RoundedRectangleBorder(
@@ -321,113 +345,109 @@ class _SingleUserPageState extends State<SingleUserPage> {
                   children: <Widget>[
                     makeTransactionsIcon(),
                     const SizedBox(
-                      width: 45,
+                      width: 20,
                     ),
                     ZText(
-                        content: 'Transactions',
+                        content: '${I18n.of(context).evaluationSem} ',
                         color: Color(Styling.iconColor),
                         fontSize: 15),
                     const SizedBox(
-                      width: 5,
+                      width: 2,
                     ),
-                    ZText(
-                        content: 'state',
-                        color: Color(Styling.accentColor),
-                        fontSize: 12),
                   ],
                 ),
                 const SizedBox(
-                  height: 4,
+                  height: 2,
+                ),
+                Container(
+                  margin: EdgeInsets.all(SizeConfig.diagonal * 1.5),
+                  padding: EdgeInsets.all(SizeConfig.diagonal * 1),
+                  width: double.infinity,
+                  height: 1,
+                  color: Color(Styling.primaryColor),
                 ),
                 Expanded(
                   flex: 1,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      controller: _scrollController,
-                      child: BarChart(
-                        BarChartData(
-                          maxY: maxY.toDouble(),
-                          titlesData: FlTitlesData(
-                            show: true,
-                            bottomTitles: SideTitles(
-                              showTitles: true,
-                              getTextStyles: (value) => const TextStyle(
-                                  color: Color(Styling.iconColor),
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 10),
-                              margin: 15,
-                              getTitles: (double value) {
-                                switch (value.toInt()) {
-                                  case 0:
-                                    Timestamp date =
-                                        items[0].data()![Fields.date];
-                                    return widget.format.format(date.toDate());
-                                  case 1:
-                                    Timestamp date =
-                                        items[1].data()![Fields.date];
-                                    return widget.format.format(date.toDate());
-                                  case 2:
-                                    Timestamp date =
-                                        items[2].data()![Fields.date];
-                                    return widget.format.format(date.toDate());
-                                  case 3:
-                                    Timestamp date =
-                                        items[3].data()![Fields.date];
-                                    return widget.format.format(date.toDate());
-                                  case 4:
-                                    Timestamp date =
-                                        items[4].data()![Fields.date];
-                                    return widget.format.format(date.toDate());
-                                  case 5:
-                                    Timestamp date =
-                                        items[5].data()![Fields.date];
-                                    return widget.format.format(date.toDate());
-                                  case 6:
-                                    Timestamp date =
-                                        items[6].data()![Fields.date];
-                                    return widget.format.format(date.toDate());
+                    child: BarChart(
+                      BarChartData(
+                        maxY: maxY.toDouble(),
+                        titlesData: FlTitlesData(
+                          show: true,
+                          bottomTitles: SideTitles(
+                            showTitles: true,
+                            getTextStyles: (value) => const TextStyle(
+                                color: Color(Styling.iconColor), fontSize: 10),
+                            margin: 15,
+                            reservedSize: 8,
+                            getTitles: (double value) {
+                              switch (value.toInt()) {
+                                case 0:
+                                  Timestamp date =
+                                      items[0].data()![Fields.date];
+                                  return widget.format.format(date.toDate());
+                                case 1:
+                                  Timestamp date =
+                                      items[1].data()![Fields.date];
+                                  return widget.format.format(date.toDate());
+                                case 2:
+                                  Timestamp date =
+                                      items[2].data()![Fields.date];
+                                  return widget.format.format(date.toDate());
+                                case 3:
+                                  Timestamp date =
+                                      items[3].data()![Fields.date];
+                                  return widget.format.format(date.toDate());
+                                case 4:
+                                  Timestamp date =
+                                      items[4].data()![Fields.date];
+                                  return widget.format.format(date.toDate());
+                                case 5:
+                                  Timestamp date =
+                                      items[5].data()![Fields.date];
+                                  return widget.format.format(date.toDate());
+                                case 6:
+                                  Timestamp date =
+                                      items[6].data()![Fields.date];
+                                  return widget.format.format(date.toDate());
 
-                                  default:
-                                    return '';
-                                }
-                              },
-                            ),
-                            leftTitles: SideTitles(
-                              showTitles: true,
-                              getTextStyles: (value) => const TextStyle(
-                                  color: Color(Styling.iconColor),
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14),
-                              margin: 20,
-                              reservedSize: 20,
-                              interval: maxY / 4,
-                              getTitles: (value) {
-                                log("value is $value");
-                                if (value == 0) {
-                                  return '0';
-                                } else if (value == maxY / 4) {
-                                  return formatInterVal(maxY / 4)!;
-                                } else if (value == maxY / 2) {
-                                  return formatInterVal(maxY / 2)!;
-                                } else if (value == maxY * 3 / 4) {
-                                  return formatInterVal(maxY * 3 / 4)!;
-                                } else if (value == maxY) {
-                                  return formatInterVal(maxY.toDouble())!;
-                                } else {
+                                default:
                                   return '';
-                                }
-                              },
-                            ),
+                              }
+                            },
                           ),
-                          borderData: FlBorderData(
-                            show: false,
+                          leftTitles: SideTitles(
+                            showTitles: true,
+                            getTextStyles: (value) => const TextStyle(
+                                color: Color(Styling.iconColor), fontSize: 14),
+                            margin: 20,
+                            reservedSize: 15,
+                            interval: maxY / 4,
+                            getTitles: (value) {
+                              log("value is $value");
+                              if (value == 0) {
+                                return '0';
+                              } else if (value == maxY / 4) {
+                                return formatInterVal(maxY / 4)!;
+                              } else if (value == maxY / 2) {
+                                return formatInterVal(maxY / 2)!;
+                              } else if (value == maxY * 3 / 4) {
+                                return formatInterVal(maxY * 3 / 4)!;
+                              } else if (value == maxY) {
+                                return formatInterVal(maxY.toDouble())!;
+                              } else {
+                                return '';
+                              }
+                            },
                           ),
-                          barGroups: showingBarGroups,
                         ),
-                        swapAnimationDuration: Duration(milliseconds: 150),
+                        borderData: FlBorderData(
+                          show: false,
+                        ),
+                        barGroups: showingBarGroups,
                       ),
+                      swapAnimationDuration: Duration(milliseconds: 150),
                     ),
                   ),
                 ),
@@ -449,7 +469,7 @@ class _SingleUserPageState extends State<SingleUserPage> {
           Container(
             width: width,
             height: 10,
-            color: Colors.white.withOpacity(0.9),
+            color: Color(Styling.iconColor).withOpacity(0.4),
           ),
           const SizedBox(
             width: space,
@@ -457,7 +477,7 @@ class _SingleUserPageState extends State<SingleUserPage> {
           Container(
             width: width,
             height: 10,
-            color: Colors.white.withOpacity(0.9),
+            color: Color(Styling.iconColor).withOpacity(0.6),
           ),
           const SizedBox(
             width: space,
@@ -465,7 +485,7 @@ class _SingleUserPageState extends State<SingleUserPage> {
           Container(
             width: width,
             height: 10,
-            color: Colors.white.withOpacity(0.9),
+            color: Color(Styling.iconColor).withOpacity(0.9),
           ),
           const SizedBox(
             width: space,
@@ -486,20 +506,80 @@ class _SingleUserPageState extends State<SingleUserPage> {
 
   Widget userDetails(UserProfile userProfile) {
     return Card(
+      elevation: 5,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(SizeConfig.diagonal * 2),
+      ),
+      color: Color(Styling.primaryBackgroundColor).withOpacity(0.9),
       child: Container(
         child: Column(
           children: [
-            Container(
-                child: ZText(
-                    content: '${I18n.of(context).name} : ${userProfile.name}')),
-            Container(
+            Padding(
+              padding: EdgeInsets.symmetric(
+                  horizontal: SizeConfig.diagonal * 1,
+                  vertical: SizeConfig.diagonal * 1),
               child: ZText(
-                  content:
-                      '${I18n.of(context).phone} : ${userProfile.phoneNumber}'),
+                content: '${I18n.of(context).deactivateUser}',
+                textAlign: TextAlign.center,
+                fontSize: SizeConfig.diagonal * 1.5,
+                color: Color(Styling.textColor),
+              ),
             ),
-            /*ElevatedButton(
-              child: Text("activer"),
-            ),*/
+            Container(
+              margin: EdgeInsets.all(SizeConfig.diagonal * 1),
+              width: double.infinity,
+              height: 1,
+              color: Color(Styling.primaryColor),
+            ),
+            Container(
+                child: Padding(
+              padding: EdgeInsets.all(SizeConfig.diagonal * 1),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  ZText(
+                    content: '${I18n.of(context).name} :',
+                    textAlign: TextAlign.center,
+                    fontSize: SizeConfig.diagonal * 1.5,
+                    color: Color(Styling.textColor).withOpacity(0.7),
+                  ),
+                  ZText(
+                    content: '${userProfile.name}',
+                    textAlign: TextAlign.center,
+                    color: Color(Styling.textColor).withOpacity(0.7),
+                    fontSize: SizeConfig.diagonal * 1.5,
+                  ),
+                ],
+              ),
+            )),
+            Container(
+              child: Padding(
+                padding: EdgeInsets.all(SizeConfig.diagonal * 1),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    ZText(
+                      content: '${I18n.of(context).phone} :',
+                      textAlign: TextAlign.center,
+                      fontSize: SizeConfig.diagonal * 1.5,
+                      color: Color(Styling.textColor).withOpacity(0.7),
+                    ),
+                    ZText(
+                      content: '${userProfile.phoneNumber}',
+                      textAlign: TextAlign.center,
+                      color: Color(Styling.textColor).withOpacity(0.7),
+                      fontSize: SizeConfig.diagonal * 1.5,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            if (userProfile.role == 'admin')
+              ZElevatedButton(
+                  child: Text(userProfile.isActive
+                      ? "${I18n.of(context).desactive}"
+                      : "${I18n.of(context).active}"),
+                  onpressed: () => _actionPression(userProfile)),
           ],
         ),
       ),

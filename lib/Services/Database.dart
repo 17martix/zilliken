@@ -196,6 +196,7 @@ class Database {
           Fields.role: userProfile.role,
           Fields.phoneNumber: userProfile.phoneNumber,
           Fields.tags: userProfile.tags,
+          Fields.isActive: userProfile.isActive,
           Fields.lastSeenAt: FieldValue.serverTimestamp(),
           Fields.createdAt: FieldValue.serverTimestamp(),
         })
@@ -311,6 +312,7 @@ class Database {
         createdAt: snapshot[Fields.createdAt],
         lastSeenAt: snapshot[Fields.lastSeenAt],
         token: snapshot[Fields.token],
+        isActive: snapshot[Fields.isActive],
         tags: List.from(snapshot[Fields.tags]),
       );
     });
@@ -391,6 +393,11 @@ class Database {
   Future<void> updateAvailability(String id, int isEnabled) async {
     var document = databaseReference.collection(Fields.menu).doc(id);
     await document.update({Fields.availability: isEnabled});
+  }
+
+  Future<void> updateIsActive(String id, bool isEnabled) async {
+    var document = databaseReference.collection(Fields.users).doc(id);
+    await document.update({Fields.isActive: isEnabled});
   }
 
   Future<void> updateStatus(
