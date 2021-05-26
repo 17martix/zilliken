@@ -2,18 +2,25 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:zilliken/Components/Indicator.dart';
 
 import 'package:zilliken/Helpers/SizeConfig.dart';
 import 'package:zilliken/Helpers/Styling.dart';
+import 'package:zilliken/Helpers/Utils.dart';
 import 'package:zilliken/Models/Fields.dart';
-import 'package:zilliken/Models/Graph.dart';
+
 import 'package:zilliken/Models/Statistic.dart';
 import 'package:intl/intl.dart';
+import 'package:zilliken/Models/StatisticStock.dart';
+import 'package:zilliken/Models/StatisticUser.dart';
+import 'package:zilliken/Models/UserProfile.dart';
 import 'package:zilliken/Services/Authentication.dart';
 import 'package:zilliken/Services/Database.dart';
 import 'package:zilliken/i18n.dart';
-import 'package:flutter/gestures.dart';
+
+import 'package:flutter/foundation.dart';
 
 import '../Components/ZText.dart';
 
@@ -23,25 +30,26 @@ class StatPage extends StatefulWidget {
   final String userId;
   final String userRole;
   final DateFormat formatter = DateFormat('dd/MM/yy');
-  final List<Graph> data;
+  final DateFormat format = DateFormat('dd/MM');
+
+  //final List<Graph> data;
 
   StatPage({
     required this.auth,
     required this.db,
     required this.userId,
     required this.userRole,
-    required this.data,
+
+    //required this.data,
   });
   @override
   _StatPageState createState() => _StatPageState();
 }
 
 class _StatPageState extends State<StatPage> {
-  List<Graph>? data;
+  //List<Graph>? data;
   ScrollController _scrollController = ScrollController();
   List<DocumentSnapshot> items = [];
-  CollectionReference statistic =
-      FirebaseFirestore.instance.collection(Fields.statistic);
 
   bool isLoading = false;
   bool hasMore = true;
@@ -51,75 +59,107 @@ class _StatPageState extends State<StatPage> {
 
   List<BarChartGroupData> rawBarGroups = [];
   List<BarChartGroupData> showingBarGroups = [];
+  List<BarChartGroupData> rawPieGroups = [];
+  List<BarChartGroupData> sections = [];
   int? touchedGroupIndex;
 
   final Color rightBarColor = Color(Styling.accentColor);
   final double width = 7;
 
   int documentLimit = 10;
+
+  num maxY = 1;
+  num perc = 1;
+  num pourcentage = 0;
+  int touchedIndex = 0;
+
+  ScrollController _controller = ScrollController();
   // AnimationController animationController;
+  List<StatisticUser> statisticList = [];
+  List<StatisticStock> stock = [];
+
+  num totalCount = 0;
+
+  num maxQuantity = 0;
 
   void initState() {
     super.initState();
-    final barGroup1 = makeGroupData(0, 12);
-    final barGroup2 = makeGroupData(1, 12);
-    final barGroup3 = makeGroupData(2, 5);
-    final barGroup4 = makeGroupData(3, 16);
-    final barGroup5 = makeGroupData(4, 6);
-    final barGroup6 = makeGroupData(5, 1.5);
-    final barGroup7 = makeGroupData(6, 1.5);
-    final barGroup8 = makeGroupData(5, 1.5);
-    final barGroup9 = makeGroupData(6, 1.5);
-    final barGroup10 = makeGroupData(0, 12);
-    final barGroup11 = makeGroupData(1, 12);
-    final barGroup12 = makeGroupData(2, 5);
-    final barGroup13 = makeGroupData(3, 16);
-    final barGroup14 = makeGroupData(6, 1.5);
 
-    final items = [
-      barGroup1,
-      barGroup2,
-      barGroup3,
-      barGroup4,
-      barGroup5,
-      barGroup6,
-      barGroup7,
-      barGroup8,
-      barGroup9,
-      barGroup10,
-      barGroup11,
-      barGroup12,
-      barGroup13,
-      barGroup14,
-    ];
-    rawBarGroups = items;
+    widget.db.getTodayStatUser().then((value) {
+      setState(() {
+        statisticList = value;
+      });
 
-    showingBarGroups = rawBarGroups;
+      statisticList.forEach((element) {
+        totalCount = totalCount + element.count!;
+      });
+    });
 
-    /*data = [
-      Graph(year: '2000', subscribers: null, count: 178),
-      Graph(year: '2001', subscribers: null, count: 178),
-      Graph(year: '2002', subscribers: null, count: 178),
-      Graph(year: '2003', subscribers: null, count: 178),
-    ];*/
-    //animationController =
-    //AnimationController(duration: new Duration(seconds: 2),);
-    //animationController.repeat();
-    statQuery();
+    widget.db.getTodayStatisticStock().then((value) {
+      log("valueSize is ${value.length}");
+      setState(() {
+        stock = value;
+      });
+      stock.forEach((element) {
+        maxQuantity = maxQuantity + element.quantity;
+      });
+    });
+
+    statisticQuery();
     _scrollController.addListener(() {
       double maxScroll = _scrollController.position.maxScrollExtent;
       double currentScroll = _scrollController.position.pixels;
       double delta = MediaQuery.of(context).size.width * 0.20;
       if (maxScroll - currentScroll <= delta) {
-        statQuery();
+        statisticQuery();
       }
     });
   }
 
-  void statQuery() async {
+  void graphData() {
+    int length = items.length;
+    if (length > 7) length = 7;
+
+    final List<BarChartGroupData> barItems = [];
+    for (int i = 0; i < length; i++) {
+      final barGroup = makeGroupData(i, items[i].data()![Fields.total]);
+      barItems.add(barGroup);
+      if (maxY < items[i].data()![Fields.total]) {
+        setState(() {
+          maxY = items[i].data()![Fields.total];
+        });
+      }
+    }
+    rawBarGroups = barItems;
+
+    showingBarGroups = rawBarGroups;
+  }
+
+  /* void graph2() {
+    int length = items.length;
+    if (length > 5) length = 5;
+    final List<PieChartSectionData> pieItems = [];
+
+    for (int i = 0; i < length; i++) {
+      final pieItems = List.generate(i, items[i].data()![Fields.quantity]);
+      pieItems.add(perc);
+      if (perc < items[i].data()![Fields.quantity]) {
+        setState(() {
+          perc = items[i].data()![Fields.quantity];
+        });
+      }
+    }
+  }*/
+
+  void statisticQuery() async {
     if (isLoading) {
       return;
     }
+
+    if (hasMore == false) {
+      return;
+    }
+
     setState(() {
       isLoading = true;
     });
@@ -128,7 +168,7 @@ class _StatPageState extends State<StatPage> {
       statref = await widget.db.databaseReference
           .collection(Fields.statistic)
           .limit(documentLimit)
-          .orderBy(Fields.date)
+          .orderBy(Fields.date, descending: true)
           .get();
     } else {
       statref = await widget.db.databaseReference
@@ -149,6 +189,8 @@ class _StatPageState extends State<StatPage> {
       for (int i = 0; i < statref!.docs.length; i++) {
         items.add(statref!.docs[i]);
       }
+
+      graphData();
       isLoading = false;
 
       log('length is ${items.length}');
@@ -173,26 +215,21 @@ class _StatPageState extends State<StatPage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Expanded(
+              flex: 1,
               child: Container(
-                padding: EdgeInsets.all(SizeConfig.diagonal * 0.2),
-                height: 3,
-                color: Color(Styling.iconColor).withOpacity(0.1),
+                padding: EdgeInsets.all(SizeConfig.diagonal * 1.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    ZText(content:
-                      "${statistic.total}",
-                    
-                        color: Color(Styling.accentColor),
-                        fontSize: SizeConfig.diagonal * 3,
-                        fontWeight: FontWeight.bold,
-                        
-                     
+                    ZText(
+                      content: formatNumber(statistic.total),
+                      color: Color(Styling.accentColor),
+                      fontSize: SizeConfig.diagonal * 2,
                     ),
                     ZText(
                       content: " Fbu",
                       color: Color(Styling.iconColor),
-                      fontSize: SizeConfig.diagonal * 2.5,
+                      fontSize: SizeConfig.diagonal * 1.5,
                     ),
                   ],
                 ),
@@ -200,25 +237,21 @@ class _StatPageState extends State<StatPage> {
             ),
             Expanded(
               child: Container(
-                padding: EdgeInsets.all(SizeConfig.diagonal * 0.2),
-                color: Color(Styling.primaryBackgroundColor).withOpacity(0.3),
+                padding: EdgeInsets.all(SizeConfig.diagonal * 1.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                   ZText(content:
-                      I18n.of(context).date,
+                    ZText(
+                      content: I18n.of(context).date,
                       textAlign: TextAlign.center,
-                     
-                        color: Color(Styling.iconColor),
-                        fontSize: SizeConfig.diagonal * 2,
-                      
+                      color: Color(Styling.iconColor),
+                      fontSize: SizeConfig.diagonal * 1.5,
                     ),
-                   ZText(content:
-                      "  : ${widget.formatter.format(statistic.date.toDate())}",
-                     
-                        color: Color(Styling.iconColor),
-                        fontSize: SizeConfig.diagonal * 2,
-                      
+                    ZText(
+                      content:
+                          "  : ${widget.formatter.format(statistic.date.toDate())}",
+                      color: Color(Styling.iconColor),
+                      fontSize: SizeConfig.diagonal * 1.5,
                     ),
                   ],
                 ),
@@ -240,92 +273,201 @@ class _StatPageState extends State<StatPage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ZText(content:
-              I18n.of(context).dailytotal,
+            ZText(
+              content: I18n.of(context).dailyTotal,
               textAlign: TextAlign.center,
-              
-                color: Color(Styling.iconColor),
-                fontStyle: FontStyle.normal,
-                fontSize: SizeConfig.diagonal * 2.5,
-              
+              color: Color(Styling.iconColor),
+              fontSize: SizeConfig.diagonal * 2,
             ),
           ],
         ),
-        Expanded(
-          flex: 1,
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            controller: _scrollController,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                items.length == 0
-                    ? Center(
-                        child: ZText(content:""),
-                      )
-                    : Row(
-                        children: items.map((document) {
-                          Statistic statistic = Statistic.buildObject(document);
-                          return itemCard(statistic);
-                          //return graph();
-                        }).toList(),
-                      ),
-                /* ListView.builder(
-                        shrinkWrap: true,
-                        scrollDirection: Axis.horizontal,
-                        controller: _scrollController,
-                        itemCount: items.length,
-                        itemBuilder: (context, index) {
-                          Statistic statistic = Statistic();
-                          statistic.buildObject(items[index]);
-                          return Row(
-                            children: [
-                              body(statistic),
-                            ],
-                          );
-                        },
-                      ),*/
-                isLoading
-                    ? Container(
-                        width: SizeConfig.diagonal * 8,
-                        height: SizeConfig.diagonal * 8,
-                        padding: EdgeInsets.all(SizeConfig.diagonal * 1.5),
-                        child: Card(
-                          elevation: 0.0,
-                          color: Colors.white.withOpacity(1),
-                          shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(SizeConfig.diagonal * 1),
-                          ),
-                          child: CircularProgressIndicator(
-                            // valueColor: animationController
-                            //.drive(ColorTween(begin: Colors.blueAccent, end: Colors.red)),
-
-                            //valueColor:Animation<blue> valueColor ,
-
-                            semanticsLabel: 'Linear progress indicator',
-
-                            backgroundColor: Color(Styling.primaryDarkColor),
-                          ),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          controller: _scrollController,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              items.length == 0
+                  ? Center(
+                      child: ZText(content: ""),
+                    )
+                  : Row(
+                      children: items.map((document) {
+                        Statistic statistic = Statistic.buildObject(document);
+                        return itemCard(statistic);
+                        //return graph();
+                      }).toList(),
+                    ),
+              isLoading
+                  ? Container(
+                      width: SizeConfig.diagonal * 8,
+                      height: SizeConfig.diagonal * 8,
+                      padding: EdgeInsets.all(SizeConfig.diagonal * 1.5),
+                      child: Card(
+                        elevation: 0.0,
+                        color: Colors.white.withOpacity(1),
+                        shape: RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.circular(SizeConfig.diagonal * 1),
                         ),
-                      )
-                    : Container()
+                        child: CircularProgressIndicator(
+                          backgroundColor: Color(Styling.primaryDarkColor),
+                        ),
+                      ),
+                    )
+                  : Container()
+            ],
+          ),
+        ),
+        Expanded(
+          child: SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+            controller: _controller,
+            child: Column(
+              children: [
+                graph(),
+                stockUser(),
+                statUser(),
               ],
             ),
           ),
         ),
-        graph(),
       ],
     );
   }
 
+  Widget stockUser() {
+    return Container(
+      child: AspectRatio(
+        aspectRatio: 0.98,
+        child: Card(
+          elevation: 1,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(SizeConfig.diagonal * 2),
+          ),
+          color: Colors.white,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.all(SizeConfig.diagonal * 1),
+                  ),
+                  const SizedBox(
+                    height: 18,
+                  ),
+                  makeTransactionsIcon(),
+                  const SizedBox(
+                    width: 45,
+                  ),
+                  ZText(
+                      content: I18n.of(context).weeklyinventory,
+                      color: Color(Styling.iconColor),
+                      textAlign: TextAlign.center,
+                      fontSize: SizeConfig.diagonal * 2),
+                  const SizedBox(
+                    width: 5,
+                  ),
+                ],
+              ),
+              Container(
+                margin: EdgeInsets.all(SizeConfig.diagonal * 2),
+                height: 1,
+                color: Color(Styling.iconColor),
+                padding: EdgeInsets.all(SizeConfig.diagonal * 3),
+              ),
+              Expanded(
+                child: PieChart(
+                  PieChartData(
+                      pieTouchData:
+                          PieTouchData(touchCallback: (pieTouchResponse) {
+                        setState(() {
+                          final desiredTouch = pieTouchResponse.touchInput
+                                  is! PointerExitEvent &&
+                              pieTouchResponse.touchInput is! PointerUpEvent;
+                          if (desiredTouch &&
+                              pieTouchResponse.touchedSection != null) {
+                            touchedIndex = pieTouchResponse
+                                .touchedSection!.touchedSectionIndex;
+                          } else {
+                            touchedIndex = -1;
+                          }
+                        });
+                      }),
+                      borderData: FlBorderData(
+                        show: false,
+                      ),
+                      sectionsSpace: 0,
+                      centerSpaceRadius: 20,
+                      sections: showingSections()),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: stock.map((e) {
+                    log("name is ${e.name}");
+                    return Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Indicator(
+                          color: Colors.black,
+                          text: '${e.name}',
+                          isSquare: true,
+                        ),
+                        SizedBox(
+                          height: 4,
+                        ),
+                      ],
+                    );
+                  }).toList(),
+                ),
+              ),
+              const SizedBox(
+                width: 28,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  List<PieChartSectionData> showingSections() {
+    // int index = 0;
+   
+    // for (int i = 0; i < index; i++) {
+    //   colorsStatStock(index);
+    // }
+
+    return stock.map((e) {
+      int index=stock.indexOf(e);
+      return PieChartSectionData(
+        color: colorsStatStock(index),
+        value: (e.quantity / maxQuantity),
+        title: '${e.quantity} ${e.unit}',
+        radius: 60.0,
+        titleStyle: TextStyle(
+            fontSize: SizeConfig.diagonal * 1.5,
+            fontWeight: FontWeight.bold,
+            color: const Color(0xffffffff)),
+      );
+    }).toList();
+  }
+
   BarChartGroupData makeGroupData(
     int x,
-    double y1,
+    num y1,
   ) {
     return BarChartGroupData(barsSpace: 4, x: x, barRods: [
       BarChartRodData(
-        y: y1,
+        y: y1.toDouble(),
         colors: [rightBarColor],
         width: 3,
       ),
@@ -333,21 +475,22 @@ class _StatPageState extends State<StatPage> {
   }
 
   Widget graph() {
+    //maxY1 = maxY / 4;
     return Container(
       child: AspectRatio(
-        aspectRatio: 1.2,
+        aspectRatio: 1.6,
         child: Card(
           elevation: 5,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(SizeConfig.diagonal * 2),
           ),
-          color: Color(Styling.primaryBackgroundColor).withOpacity(0.9),
+          color: Color(Styling.primaryBackgroundColor),
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisAlignment: MainAxisAlignment.start,
-              mainAxisSize: MainAxisSize.max,
+              mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -358,147 +501,113 @@ class _StatPageState extends State<StatPage> {
                     const SizedBox(
                       width: 45,
                     ),
-                    ZText(content:
-                      'Transactions',
-                    
-                          color: Color(Styling.iconColor), fontSize: 15),
-                  
+                    ZText(
+                        content: I18n.of(context).weeklyinventory,
+                        color: Color(Styling.iconColor),
+                        fontSize: SizeConfig.diagonal * 2),
                     const SizedBox(
                       width: 5,
                     ),
-                    ZText(content:
-                      'state',
-                      
-                          color: Color(Styling.accentColor), fontSize: 12),
-                    
                   ],
                 ),
-                const SizedBox(
-                  height: 4,
+                Container(
+                  margin: EdgeInsets.all(SizeConfig.diagonal * 2),
+                  height: 1,
+                  color: Color(Styling.iconColor),
+                  padding: EdgeInsets.all(SizeConfig.diagonal * 3),
                 ),
                 Expanded(
-                  flex: 1,
+                  //flex: 1,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      controller: _scrollController,
-                      child: BarChart(
-                        BarChartData(
-                          // groupsSpace:6,
-                          maxY: 25,
-                          barTouchData: BarTouchData(
-                              touchTooltipData: BarTouchTooltipData(
-                                tooltipBgColor: Colors.grey,
-                                getTooltipItem: (_a, _b, _c, _d) => null,
-                              ),
-                              touchCallback: (response) {
-                                if (response.spot == null) {
-                                  setState(() {
-                                    touchedGroupIndex = -1;
-                                    showingBarGroups = List.of(rawBarGroups);
-                                  });
-                                  return;
-                                }
-
-                                touchedGroupIndex =
-                                    response.spot!.touchedBarGroupIndex;
-
-                                setState(() {
-                                  if (response.touchInput is PointerExitEvent ||
-                                      response.touchInput is PointerUpEvent) {
-                                    touchedGroupIndex = -1;
-                                    showingBarGroups = List.of(rawBarGroups);
-                                  } else {
-                                    showingBarGroups = List.of(rawBarGroups);
-                                    if (touchedGroupIndex != -1) {
-                                      double sum = 0;
-                                      for (BarChartRodData rod
-                                          in showingBarGroups[
-                                                  touchedGroupIndex!]
-                                              .barRods) {
-                                        sum += rod.y;
-                                      }
-                                      final avg = sum /
-                                          showingBarGroups[touchedGroupIndex!]
-                                              .barRods
-                                              .length;
-
-                                      showingBarGroups[touchedGroupIndex!] =
-                                          showingBarGroups[touchedGroupIndex!]
-                                              .copyWith(
-                                        barRods:
-                                            showingBarGroups[touchedGroupIndex!]
-                                                .barRods
-                                                .map((rod) {
-                                          return rod.copyWith(y: avg);
-                                        }).toList(),
-                                      );
-                                    }
-                                  }
-                                });
-                              }),
-                          titlesData: FlTitlesData(
-                            show: true,
-                            bottomTitles: SideTitles(
-                              showTitles: true,
-                              getTextStyles: (value) => const TextStyle(
-                                  color: Color(Styling.iconColor),
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 10),
-                              margin: 15,
-                              getTitles: (double value) {
-                                switch (value.toInt()) {
-                                  case 0:
-                                    return 'Mn';
-                                  case 1:
-                                    return 'Te';
-                                  case 2:
-                                    return 'Wd';
-                                  case 3:
-                                    return 'Tu';
-                                  case 4:
-                                    return 'Fr';
-                                  case 5:
-                                    return 'St';
-                                  case 6:
-                                    return 'Sn';
-
-                                  default:
-                                    return '';
-                                }
-                              },
-                            ),
-                            leftTitles: SideTitles(
-                              showTitles: true,
-                              getTextStyles: (value) => const TextStyle(
-                                  color: Color(Styling.iconColor),
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14),
-                              margin: 20,
-                              reservedSize: 20,
-                              getTitles: (value) {
-                                if (value == 0) {
-                                  return '50K';
-                                } else if (value == 10) {
-                                  return '1M';
-                                } else if (value == 19) {
-                                  return '10M';
-                                } else if (value == 30) {
-                                  return '50M';
-                                } else {
-                                  return '';
-                                }
-                              },
-                            ),
+                    child: BarChart(
+                      BarChartData(
+                        // groupsSpace:6,
+                        maxY: maxY.toDouble(),
+                        barTouchData: BarTouchData(
+                          touchTooltipData: BarTouchTooltipData(
+                            tooltipBgColor: Colors.red,
+                            getTooltipItem: (_a, _b, _c, _d) => null,
                           ),
-                          borderData: FlBorderData(
-                            show: false,
-                          ),
-                          barGroups: showingBarGroups,
                         ),
-                        swapAnimationDuration: Duration(milliseconds: 150),
+                        titlesData: FlTitlesData(
+                          show: true,
+                          bottomTitles: SideTitles(
+                            showTitles: true,
+                            getTextStyles: (value) => const TextStyle(
+                              color: Color(Styling.iconColor),
+                              fontSize: 10,
+                            ),
+                            margin: 15,
+                            getTitles: (double value) {
+                              switch (value.toInt()) {
+                                case 0:
+                                  Timestamp date =
+                                      items[0].data()![Fields.date];
+                                  return widget.format.format(date.toDate());
+                                case 1:
+                                  Timestamp date =
+                                      items[1].data()![Fields.date];
+                                  return widget.format.format(date.toDate());
+                                case 2:
+                                  Timestamp date =
+                                      items[2].data()![Fields.date];
+                                  return widget.format.format(date.toDate());
+                                case 3:
+                                  Timestamp date =
+                                      items[3].data()![Fields.date];
+                                  return widget.format.format(date.toDate());
+                                case 4:
+                                  Timestamp date =
+                                      items[4].data()![Fields.date];
+                                  return widget.format.format(date.toDate());
+                                case 5:
+                                  Timestamp date =
+                                      items[5].data()![Fields.date];
+                                  return widget.format.format(date.toDate());
+                                case 6:
+                                  Timestamp date =
+                                      items[6].data()![Fields.date];
+                                  return widget.format.format(date.toDate());
+
+                                default:
+                                  return '';
+                              }
+                            },
+                          ),
+                          leftTitles: SideTitles(
+                            showTitles: true,
+                            getTextStyles: (value) => const TextStyle(
+                              color: Color(Styling.iconColor),
+                              fontSize: 10,
+                            ),
+                            margin: 20,
+                            reservedSize: 26,
+                            interval: maxY / 4,
+                            getTitles: (value) {
+                              // log("value is $value");
+                              if (value == 0) {
+                                return '0';
+                              } else if (value == maxY / 4) {
+                                return formatInterVal(maxY / 4)!;
+                              } else if (value == maxY / 2) {
+                                return formatInterVal(maxY / 2)!;
+                              } else if (value == maxY * 3 / 4) {
+                                return formatInterVal(maxY * 3 / 4)!;
+                              } else if (value == maxY) {
+                                return formatInterVal(maxY.toDouble())!;
+                              } else {
+                                return '';
+                              }
+                            },
+                          ),
+                        ),
+                        borderData: FlBorderData(
+                          show: false,
+                        ),
+                        barGroups: showingBarGroups,
                       ),
+                      //swapAnimationDuration: Duration(milliseconds: 150),
                     ),
                   ),
                 ),
@@ -520,7 +629,7 @@ class _StatPageState extends State<StatPage> {
           Container(
             width: width,
             height: 10,
-            color: Colors.white.withOpacity(0.9),
+            color: Color(Styling.iconColor).withOpacity(0.3),
           ),
           const SizedBox(
             width: space,
@@ -528,7 +637,7 @@ class _StatPageState extends State<StatPage> {
           Container(
             width: width,
             height: 10,
-            color: Colors.white.withOpacity(0.9),
+            color: Color(Styling.iconColor).withOpacity(0.6),
           ),
           const SizedBox(
             width: space,
@@ -536,7 +645,7 @@ class _StatPageState extends State<StatPage> {
           Container(
             width: width,
             height: 10,
-            color: Colors.white.withOpacity(0.9),
+            color: Color(Styling.iconColor).withOpacity(0.9),
           ),
           const SizedBox(
             width: space,
@@ -544,97 +653,104 @@ class _StatPageState extends State<StatPage> {
         ]);
   }
 
-  /* Widget statisticStream() {
+  Widget statUser() {
     return Column(
       children: [
-        Padding(
-          padding: EdgeInsets.all(SizeConfig.diagonal * 1),
-          child: Text(
-            "Title",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Color(Styling.accentColor),
-              fontSize: SizeConfig.diagonal * 3.5,
-              fontStyle: FontStyle.italic,
+        Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(SizeConfig.diagonal * 2),
+          ),
+          color: Color(Styling.primaryBackgroundColor),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  children: [
+                    makeTransactionsIcon(),
+                    const SizedBox(
+                      width: 45,
+                    ),
+                    ZText(
+                      content: I18n.of(context).totalOrders,
+                      fontSize: SizeConfig.diagonal * 2,
+                      color: Color(Styling.iconColor),
+                    ),
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Expanded(
+                    child: Stack(
+                      children: [
+                        SizedBox(
+                          height: 17,
+                          width: double.infinity,
+                          child: LinearProgressIndicator(
+                            value: totalCount.toDouble(),
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Color(Styling.iconColor).withOpacity(0.9),
+                            ),
+                          ),
+                        ),
+                        Align(
+                          child: Text(
+                            "${I18n.of(context).totalCount} : $totalCount ${commandePluriel(totalCount, context)}",
+                            style: TextStyle(
+                              color: Color(Styling.primaryBackgroundColor),
+                            ),
+                          ),
+                          alignment: Alignment.topCenter,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: statisticList.map((userStat) {
+                    return statUserItem(userStat);
+                  }).toList(),
+                ),
+              ],
             ),
           ),
-        ),
-        StreamBuilder<QuerySnapshot> (
-          stream: statistic.snapshots(),
-          // ignore: missing_return
-          builder:
-              (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-            return Container(
-              height: SizeConfig.diagonal * 20,
-              child: ListView.builder(
-                  controller: _scrollController,
-                  scrollDirection: Axis.horizontal,
-                  itemCount: snapshot.data.docs.length,
-                  itemBuilder: (BuildContext context, index) {
-                    Statistic stat = Statistic();
-                    stat.buildObject(snapshot.data.docs[index]);
-                    return Row(
-                      children: [
-                        body(stat),
-                      ],
-                    );
-                  }),
-            );
-          },
         ),
       ],
     );
-  }*/
+  }
 
-  /*Widget body() {
-    return SingleChildScrollView(
-      controller: _scrollController,
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          card(),
-        ],
-      ),
-    );
-  }*/
-
-  /*Widget card() {
-    return Card(
-      child: Column(
-        children: [
-          Expanded(
-                    child: GridView.builder(
-                padding: EdgeInsets.symmetric(
-                    horizontal: SizeConfig.safeBlockHorizontal * 1),
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  childAspectRatio: 20 / 28.5,
-                  crossAxisCount: 4,
-                  mainAxisSpacing: SizeConfig.diagonal * 0.2,
-                  crossAxisSpacing: SizeConfig.diagonal * 0.2,
+  Padding statUserItem(StatisticUser statisticUser) {
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: Expanded(
+        child: Stack(
+          children: [
+            SizedBox(
+              height: 17,
+              width: double.infinity,
+              child: LinearProgressIndicator(
+                value: statisticUser.count! / totalCount,
+                backgroundColor:
+                    Color(Styling.transparentBackgroundDark).withOpacity(0.2),
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  Color(Styling.iconColor).withOpacity(0.8),
                 ),
-                itemCount: items.length,
-                itemBuilder: (BuildContext context, int index) {
-                  MenuItem ad = MenuItem();
-                  ad.buildObject(items[index]);
-                }),
-          ),
-          Card(
-            0,
-            color: Color(Styling.primaryBackgroundColor),
-            shape: RoundedRectangleBorder(
-              belevationorderRadius: BorderRadius.circular(30),
+              ),
             ),
-            child: ListTile(
-              title: Text("le prix"),
-              subtitle: Text("le jour"),
+            Align(
+              child: Text(
+                "${statisticUser.userName}: ${(statisticUser.count)} ${commandePluriel(statisticUser.count!, context)}",
+                style: TextStyle(
+                  color: Color(Styling.primaryBackgroundColor),
+                ),
+              ),
+              alignment: Alignment.topCenter,
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-     
     );
-  }*/
+  }
 }

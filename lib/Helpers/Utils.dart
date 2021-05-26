@@ -1,7 +1,10 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:zilliken/Components/Indicator.dart';
 import 'package:zilliken/Models/Cart.dart';
 import 'package:zilliken/Models/Category.dart';
 import 'package:zilliken/Models/Fields.dart';
@@ -115,6 +118,41 @@ String? orderStatus(context, Order order) {
   }
 
   return text;
+}
+
+List<String> getUserTags(String name, String phoneNumber) {
+  List<String> searchIndex = [];
+
+  searchIndex.addAll(createTags(name));
+  searchIndex.addAll(createTags(phoneNumber));
+
+  return searchIndex;
+}
+
+List<String> createTags(String text) {
+  text = text.trim();
+  text = text.toLowerCase();
+  text = text.replaceAll(new RegExp(r'(?:_|[^\w\s])+'), '');
+  List<String> list = [];
+  String s = '';
+  List<String> splitList = text.split(" ");
+
+  for (int i = 0; i < splitList.length; i++) {
+    list.add(splitList[i]);
+    if (s == '') s = splitList[i];
+
+    if (i > 0) {
+      for (int j = i; j < splitList.length; j++) {
+        s += " " + splitList[j];
+        list.add(s);
+      }
+      s = splitList[i];
+    }
+  }
+
+  //for (int i = 0; i < list.length; i++) print(list[i]);
+
+  return list;
 }
 
 String itemTotal(context, OrderItem orderItem) {
@@ -293,4 +331,59 @@ String? getMapsKey() {
   }
 
   return key;
+}
+
+String? formatInterVal(double number) {
+  String? text;
+
+  int a = number.round();
+  String textNumber = a.toString();
+  int length = textNumber.length;
+
+  if (length < 4) {
+    text = textNumber;
+  } else if (length < 7) {
+    text = textNumber.substring(0, length - 3) + 'k';
+  } else if (length < 10) {
+    text =
+        '${textNumber.substring(0, length - 6)}.${textNumber.substring(1, length - 5)} M';
+  } else {
+    text = textNumber;
+  }
+  return text;
+}
+
+String searchReady(String text) {
+  text = text.trim();
+  text = text.toLowerCase();
+  text = text.replaceAll(new RegExp(r'(?:_|[^\w\s])+'), '');
+  return text;
+}
+
+String? commandePluriel(num count, context) {
+  String? commande;
+  if (count == 1) {
+    commande = I18n.of(context).order;
+  } else {
+    commande = I18n.of(context).orders;
+  }
+  return commande;
+}
+
+Color? colorsStatStock(int index) {
+  Color? colorStock;
+
+  if (index == 0) {
+    colorStock = Colors.blue;
+  } else if (index == 1) {
+    colorStock = Colors.yellow;
+  } else if (index == 2) {
+    colorStock = Colors.purpleAccent;
+  } else if (index == 3) {
+    colorStock = Colors.lightGreen;
+  } else if (index == 4) {
+    colorStock = Colors.pink;
+  }
+
+  return colorStock;
 }

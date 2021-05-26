@@ -5,25 +5,36 @@ import 'Fields.dart';
 
 class StatisticUser {
   String? id;
-  late String total;
-
+  late num total;
   late Timestamp date;
+  late String userId;
+  late String userName;
+   num? count;
 
-  StatisticUser({
-    this.id,
-    required this.total,
-    required this.date,
-  });
+  StatisticUser(
+      {this.id,
+      required this.total,
+      required this.date,
+      required this.userId,
+      required this.userName,
+      this.count});
 
   StatisticUser.buildObject(DocumentSnapshot document) {
     id = document.id;
     total = document.data()![Fields.total];
     date = document.data()![Fields.date];
+    userId = document.data()![Fields.userId];
+     userName = document.data()![Fields.userName];
+
+    count = document.data()![Fields.count];
   }
 
   StatisticUser.buildObjectAsync(AsyncSnapshot<DocumentSnapshot> document) {
     id = document.data!.id;
     total = document.data![Fields.total];
     date = document.data![Fields.date];
+    userId = document.data![Fields.userId];
+    userName = document.data![Fields.userName];
+    count = document.data![Fields.count];
   }
 }

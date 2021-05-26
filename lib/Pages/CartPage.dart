@@ -21,6 +21,7 @@ import 'package:zilliken/Models/Fields.dart';
 import 'package:zilliken/Models/MenuItem.dart';
 import 'package:zilliken/Models/Order.dart';
 import 'package:zilliken/Models/OrderItem.dart';
+import 'package:zilliken/Models/UserProfile.dart';
 import 'package:zilliken/Pages/SingleOrderPage.dart';
 import 'package:zilliken/Services/Authentication.dart';
 import 'package:zilliken/Services/Database.dart';
@@ -842,26 +843,27 @@ class _CartPageState extends State<CartPage> {
           );
         } else {
           try {
+            UserProfile? userProfile = await widget.db.getUserProfile(widget.userId);
             Order order = Order(
-                clientOrder: clientOrder!,
-                orderLocation: restaurantOrRoomOrder,
-                tableAdress: tableAdress!,
-                phoneNumber: phone,
-                instructions: instruction,
-                grandTotal: grandTotalNumber(context, clientOrder!, tax),
-                orderDate: null,
-                confirmedDate: null,
-                servedDate: null,
-                status: 1,
-                userId: widget.userId,
-                userRole: widget.userRole,
-                taxPercentage: tax,
-                total: priceItemsTotalNumber(context, clientOrder!),
-                addressName: addressName,
-                geoPoint: geoPoint,
-                currentPoint: GeoPoint(-3.3834389, 29.3616122),
-                userName: 'Lionel');
-
+              clientOrder: clientOrder!,
+              orderLocation: restaurantOrRoomOrder,
+              tableAdress: tableAdress!,
+              phoneNumber: phone,
+              instructions: instruction,
+              grandTotal: grandTotalNumber(context, clientOrder!, tax),
+              orderDate: null,
+              confirmedDate: null,
+              servedDate: null,
+              status: 1,
+              userId: widget.userId,
+              userRole: widget.userRole,
+              userName: userProfile!.name,
+              taxPercentage: tax,
+              total: priceItemsTotalNumber(context, clientOrder!),
+              addressName: addressName,
+              geoPoint: geoPoint,
+              currentPoint: GeoPoint(-3.3834389, 29.3616122),
+            );
             await widget.db.placeOrder(order);
 
             EasyLoading.dismiss();

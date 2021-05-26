@@ -57,6 +57,7 @@ class _DashboardPageState extends State<DashboardPage> {
       .collection(Fields.calls)
       .orderBy(Fields.createdAt, descending: true)
       .limit(3);
+  bool isActive = true;
 
   BuildContext? dialogContext;
   bool isStarting = true;
@@ -78,6 +79,16 @@ class _DashboardPageState extends State<DashboardPage> {
         .listen((DocumentSnapshot documentSnapshot) {
       setState(() {
         enabled = documentSnapshot.data()![Fields.enabled];
+      });
+    });
+
+    FirebaseFirestore.instance
+        .collection(Fields.users)
+        .doc(widget.userId)
+        .snapshots()
+        .listen((DocumentSnapshot documentSnapshot) {
+      setState(() {
+        isActive = documentSnapshot.data()![Fields.isActive];
       });
     });
 
@@ -124,6 +135,7 @@ class _DashboardPageState extends State<DashboardPage> {
         });
         break;
     }
+
     return enabled == 0
         ? DisabledPage(
             auth: widget.auth,
@@ -131,28 +143,35 @@ class _DashboardPageState extends State<DashboardPage> {
             userId: widget.userId,
             userRole: widget.userRole,
           )
-        : Container(
-            decoration: BoxDecoration(
-                image: DecorationImage(
-              image: AssetImage('assets/Zilliken.jpg'),
-              fit: BoxFit.cover,
-            )),
-            child: Container(
-              color: Color(Styling.primaryBackgroundColor).withOpacity(0.7),
-              child: Scaffold(
-                key: _scaffoldKey,
-                backgroundColor: Colors.transparent,
-                appBar: buildAppBar(
-                  context,
-                  widget.auth,
-                  false,
-                  logout,
-                  null,
-                  null,
-                  admin,
-                ),
-                body: body(),
-                /*bottomNavigationBar: BottomNavigationBar(
+        : isActive == false
+            ? DisabledPage(
+                auth: widget.auth,
+                db: widget.db,
+                userId: widget.userId,
+                userRole: widget.userRole,
+              )
+            : Container(
+                decoration: BoxDecoration(
+                    image: DecorationImage(
+                  image: AssetImage('assets/Zilliken.jpg'),
+                  fit: BoxFit.cover,
+                )),
+                child: Container(
+                  color: Color(Styling.primaryBackgroundColor).withOpacity(0.7),
+                  child: Scaffold(
+                    key: _scaffoldKey,
+                    backgroundColor: Colors.transparent,
+                    appBar: buildAppBar(
+                      context,
+                      widget.auth,
+                      false,
+                      logout,
+                      null,
+                      null,
+                      admin,
+                    ),
+                    body: body(),
+                    /*bottomNavigationBar: BottomNavigationBar(
                   items: <BottomNavigationBarItem>[
                     BottomNavigationBarItem(
                       icon: Icon(Icons.restaurant_menu_outlined),
@@ -173,32 +192,32 @@ class _DashboardPageState extends State<DashboardPage> {
                     });
                   },
                 ),*/
-                bottomNavigationBar: CurvedNavigationBar(
-                  animationCurve: Curves.easeInBack,
-                  color: Colors.white.withOpacity(0.7),
-                  height: 50,
-                  //height: SizeConfig.diagonal * 6,
-                  animationDuration: Duration(milliseconds: 800),
+                    bottomNavigationBar: CurvedNavigationBar(
+                      animationCurve: Curves.easeInBack,
+                      color: Colors.white.withOpacity(0.7),
+                      height: 50,
+                      //height: SizeConfig.diagonal * 6,
+                      animationDuration: Duration(milliseconds: 800),
 
-                  backgroundColor: Colors.transparent,
-                  index: _selectedIndex,
-                  items: <Widget>[
-                    Icon(Icons.restaurant_menu_outlined),
-                    Icon(Icons.shopping_bag),
-                  ],
-                  /*currentIndex: _selectedIndex,
+                      backgroundColor: Colors.transparent,
+                      index: _selectedIndex,
+                      items: <Widget>[
+                        Icon(Icons.restaurant_menu_outlined),
+                        Icon(Icons.shopping_bag),
+                      ],
+                      /*currentIndex: _selectedIndex,
                   selectedItemColor: Color(
                     Styling.primaryColor,
                   ),*/
-                  onTap: (index) {
-                    setState(() {
-                      _selectedIndex = index;
-                    });
-                  },
+                      onTap: (index) {
+                        setState(() {
+                          _selectedIndex = index;
+                        });
+                      },
+                    ),
+                  ),
                 ),
-              ),
-            ),
-          );
+              );
   }
 
   /*Widget callsStream() {
@@ -251,12 +270,11 @@ class _DashboardPageState extends State<DashboardPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                   ZText(content:
-                    "${I18n.of(context).tableNumber} ${call.order.tableAdress} ${I18n.of(context).called}",
-                   
-                      fontSize: SizeConfig.diagonal * 2,
-                    ),
-                  
+                  ZText(
+                    content:
+                        "${I18n.of(context).tableNumber} ${call.order.tableAdress} ${I18n.of(context).called}",
+                    fontSize: SizeConfig.diagonal * 2,
+                  ),
                   Icon(
                     Icons.warning,
                     size: SizeConfig.diagonal * 15,
@@ -266,8 +284,9 @@ class _DashboardPageState extends State<DashboardPage> {
                     onpressed: () => updateCall(call),
                     topPadding: 0.0,
                     bottomPadding: 0.0,
-                    child:  ZText(content:
-                      "${I18n.of(context).accept} ${I18n.of(context).tableNumber} ${call.order.tableAdress}",
+                    child: ZText(
+                      content:
+                          "${I18n.of(context).accept} ${I18n.of(context).tableNumber} ${call.order.tableAdress}",
                     ),
                   )
                 ],
@@ -291,7 +310,7 @@ class _DashboardPageState extends State<DashboardPage> {
       EasyLoading.dismiss();
 
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content:  ZText(content:I18n.of(context).noInternet),
+        content: ZText(content: I18n.of(context).noInternet),
       ));
     } else {
       try {
@@ -301,8 +320,8 @@ class _DashboardPageState extends State<DashboardPage> {
       } on Exception catch (e) {
         EasyLoading.dismiss();
 
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content:  ZText(content:e.toString()),
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: ZText(content: e.toString()),
         ));
       }
     }
@@ -433,7 +452,7 @@ class _DashboardPageState extends State<DashboardPage> {
       print('Error: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content:  ZText(content:e.toString()),
+          content: ZText(content: e.toString()),
         ),
       );
     }

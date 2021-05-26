@@ -1,10 +1,9 @@
 import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:zilliken/Helpers/Utils.dart';
 import 'package:zilliken/Models/Call.dart';
@@ -16,6 +15,8 @@ import 'package:zilliken/Models/Order.dart';
 import 'package:zilliken/Models/OrderItem.dart';
 import 'package:zilliken/Models/Result.dart';
 import 'package:zilliken/Models/Statistic.dart';
+import 'package:zilliken/Models/StatisticStock.dart';
+import 'package:zilliken/Models/StatisticUser.dart';
 import 'package:zilliken/Models/Stock.dart';
 import 'package:zilliken/Models/UserProfile.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
@@ -128,6 +129,7 @@ class Database {
       Fields.userRole: order.userRole,
       Fields.taxPercentage: order.taxPercentage,
       Fields.total: order.total,
+      Fields.userName: order.userName,
       Fields.geoPoint: order.geoPoint,
       Fields.addressName: order.addressName,
       Fields.deliveringOrderId: null,
@@ -214,6 +216,8 @@ class Database {
           Fields.name: userProfile.name,
           Fields.role: userProfile.role,
           Fields.phoneNumber: userProfile.phoneNumber,
+          Fields.tags: userProfile.tags,
+          Fields.isActive: userProfile.isActive,
           Fields.lastSeenAt: FieldValue.serverTimestamp(),
           Fields.createdAt: FieldValue.serverTimestamp(),
         })
@@ -329,6 +333,8 @@ class Database {
         createdAt: snapshot[Fields.createdAt],
         lastSeenAt: snapshot[Fields.lastSeenAt],
         token: snapshot[Fields.token],
+        isActive: snapshot[Fields.isActive],
+        tags: List.from(snapshot[Fields.tags]),
       );
     });
 
@@ -410,6 +416,11 @@ class Database {
     await document.update({Fields.availability: isEnabled});
   }
 
+  Future<void> updateIsActive(String id, bool isEnabled) async {
+    var document = databaseReference.collection(Fields.users).doc(id);
+    await document.update({Fields.isActive: isEnabled});
+  }
+
   Future<void> updateStatus(
       String id, int status, int value, Order order, num grandTotal) async {
     var document = databaseReference.collection(Fields.order).doc(id);
@@ -457,6 +468,8 @@ class Database {
       Statistic newStatistic = Statistic(
         date: Timestamp.fromDate(DateTime(today.year, today.month, today.day)),
         total: grandTotal,
+        id: id,
+        //count:1,
       );
 
       await databaseReference
@@ -479,6 +492,42 @@ class Database {
             Fields.id: statref.id,
             Fields.total: newStatistic.total,
             Fields.date: newStatistic.date,
+          });
+        }
+      });
+
+      StatisticUser statisticUser = StatisticUser(
+        date: Timestamp.fromDate(DateTime(today.year, today.month, today.day)),
+        total: grandTotal,
+        userId: order.userId,
+        userName: order.userName,
+      );
+
+      await databaseReference
+          .collection(Fields.statisticUser)
+          .where(Fields.userId, isEqualTo: statisticUser.userId)
+          .where(Fields.date, isEqualTo: statisticUser.date)
+          .get()
+          .then((value) async {
+        if (value != null && value.size > 0) {
+          await databaseReference
+              .collection(Fields.statisticUser)
+              .doc(value.docs[0].id)
+              .update({
+            Fields.total: FieldValue.increment(statisticUser.total),
+            Fields.count: FieldValue.increment(1),
+          });
+        } else {
+          DocumentReference statref =
+              databaseReference.collection(Fields.statisticUser).doc();
+
+          await statref.set({
+            Fields.id: statref.id,
+            Fields.total: statisticUser.total,
+            Fields.date: statisticUser.date,
+            Fields.userName: statisticUser.userName,
+            Fields.count: 1,
+            Fields.userId: statisticUser.userId,
           });
         }
       });
@@ -985,5 +1034,47 @@ class Database {
         .catchError((error) => result = Result(
             isSuccess: false, message: I18n.of(context).operationFailed));
     return result;
+  }
+  Future<List<StatisticUser>> getTodayStatUser() async {
+    List<StatisticUser> list = [];
+
+    DateTime today = DateTime.now();
+    Timestamp timestamp =
+        Timestamp.fromDate(DateTime(today.year, today.month, today.day));
+
+    var statUserRef = databaseReference
+        .collection(Fields.statisticUser)
+        .where(Fields.date, isEqualTo: timestamp);
+    await statUserRef.get().then((QuerySnapshot snapshot) {
+      if (snapshot != null && snapshot.docs.isNotEmpty)
+        snapshot.docs.forEach((element) async {
+          StatisticUser userStat = StatisticUser.buildObject(element);
+          list.add(userStat);
+        });
+    });
+    return list;
+  }
+
+  Future<List<StatisticStock>> getTodayStatisticStock() async {
+    List<StatisticStock> list = [];
+
+    DateTime today = DateTime.now();
+    Timestamp timestamp =
+        Timestamp.fromDate(DateTime(today.year, today.month, today.day));
+
+    var statStockRef = databaseReference
+        .collection(Fields.statisticStock)
+        .where(Fields.date, isEqualTo: timestamp)
+        .orderBy(Fields.quantity, descending: true)
+        .limit(5);
+
+    await statStockRef.get().then((QuerySnapshot snapshot) {
+      if (snapshot.docs.isNotEmpty)
+        snapshot.docs.forEach((element) async {
+          StatisticStock stock = StatisticStock.buildObject(element);
+          list.add(stock);
+        });
+    });
+    return list;
   }
 }

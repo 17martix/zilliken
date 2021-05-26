@@ -18,6 +18,7 @@ class Order {
   late Timestamp? servedDate;
   late int status;
   late String userId;
+  late String userName;
   late String userRole;
   late int taxPercentage;
   late int total;
@@ -40,6 +41,7 @@ class Order {
     this.confirmedDate,
     this.preparationDate,
     this.servedDate,
+    required this.userName,
     required this.userId,
     required this.userRole,
     required this.taxPercentage,
@@ -64,6 +66,7 @@ class Order {
     preparationDate = document.data()?[Fields.preparationDate];
     servedDate = document.data()?[Fields.servedDate];
     userId = document.data()![Fields.userId];
+    userName = document.data()![Fields.userName];
     userRole = document.data()![Fields.userRole];
     taxPercentage = document.data()![Fields.taxPercentage];
     total = document.data()![Fields.total];
@@ -87,6 +90,7 @@ class Order {
     preparationDate = document.data?[Fields.preparationDate];
     servedDate = document.data?[Fields.servedDate];
     userId = document.data![Fields.userId];
+    userName = document.data![Fields.userName];
     userRole = document.data![Fields.userRole];
     taxPercentage = document.data![Fields.taxPercentage];
     total = document.data![Fields.total];

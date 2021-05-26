@@ -9,6 +9,7 @@ class Fields {
   static final String id = "id";
   static final String role = "role";
   static final String receiveNotifications = "receiveNotifications";
+  static final String isActive = "isActive";
 
   static final String client = 'client';
   static final String chef = 'chef';
@@ -18,6 +19,8 @@ class Fields {
 
   static final String chefCuisine = 'chefCuisine';
   static final String chefBoissons = 'chefBoissons';
+  static final String statisticUser = 'statisticUser';
+   static final String statisticStock = 'statisticStock';
 
   static final String taxes = 'taxes';
   static final String percentage = 'percentage';
@@ -34,6 +37,8 @@ class Fields {
   static final String userRole = 'userRole';
   static final String taxPercentage = 'taxPercentage';
   static final String total = 'total';
+
+  static final String userName = 'userName';
 
   static final String count = 'count';
   static final String name = 'name';
@@ -90,4 +95,5 @@ class Fields {
   static final String linked = 'linked';
   static final String condiments = 'condiments';
   static final String userName = 'userName';
+  static final String tags = 'tags';
 }

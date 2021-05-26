@@ -1169,8 +1169,8 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
     if (goingBack) {
       backFunction();
     }
-    widget.db.updateStatus(widget.orderId, _orderStatus, value!, order!,
-        widget.clientOrder.grandTotal);
+    widget.db.updateStatus(widget.orderId, _orderStatus, value!,
+        widget.clientOrder.grandTotal, widget.clientOrder);
   }
 
   Widget orderItemStream() {
