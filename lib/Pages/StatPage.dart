@@ -15,12 +15,9 @@ import 'package:zilliken/Models/Statistic.dart';
 import 'package:intl/intl.dart';
 import 'package:zilliken/Models/StatisticStock.dart';
 import 'package:zilliken/Models/StatisticUser.dart';
-import 'package:zilliken/Models/UserProfile.dart';
 import 'package:zilliken/Services/Authentication.dart';
 import 'package:zilliken/Services/Database.dart';
 import 'package:zilliken/i18n.dart';
-
-import 'package:flutter/foundation.dart';
 
 import '../Components/ZText.dart';
 
@@ -32,30 +29,25 @@ class StatPage extends StatefulWidget {
   final DateFormat formatter = DateFormat('dd/MM/yy');
   final DateFormat format = DateFormat('dd/MM');
 
-  //final List<Graph> data;
-
   StatPage({
     required this.auth,
     required this.db,
     required this.userId,
     required this.userRole,
-
-    //required this.data,
   });
   @override
   _StatPageState createState() => _StatPageState();
 }
 
 class _StatPageState extends State<StatPage> {
-  //List<Graph>? data;
   ScrollController _scrollController = ScrollController();
-  List<DocumentSnapshot<Map<String,dynamic>>> items = [];
+  List<DocumentSnapshot<Map<String, dynamic>>> items = [];
 
   bool isLoading = false;
   bool hasMore = true;
 
-  QuerySnapshot<Map<String,dynamic>>? statref;
-  DocumentSnapshot<Map<String,dynamic>>? lastDocument;
+  QuerySnapshot<Map<String, dynamic>>? statref;
+  DocumentSnapshot<Map<String, dynamic>>? lastDocument;
 
   List<BarChartGroupData> rawBarGroups = [];
   List<BarChartGroupData> showingBarGroups = [];
@@ -96,7 +88,7 @@ class _StatPageState extends State<StatPage> {
     });
 
     widget.db.getTodayStatisticStock().then((value) {
-      log("valueSize is ${value.length}");
+      //log("valueSize is ${value.length}");
       setState(() {
         stock = value;
       });
@@ -134,22 +126,6 @@ class _StatPageState extends State<StatPage> {
 
     showingBarGroups = rawBarGroups;
   }
-
-  /* void graph2() {
-    int length = items.length;
-    if (length > 5) length = 5;
-    final List<PieChartSectionData> pieItems = [];
-
-    for (int i = 0; i < length; i++) {
-      final pieItems = List.generate(i, items[i].data()![Fields.quantity]);
-      pieItems.add(perc);
-      if (perc < items[i].data()![Fields.quantity]) {
-        setState(() {
-          perc = items[i].data()![Fields.quantity];
-        });
-      }
-    }
-  }*/
 
   void statisticQuery() async {
     if (isLoading) {
@@ -193,7 +169,7 @@ class _StatPageState extends State<StatPage> {
       graphData();
       isLoading = false;
 
-      log('length is ${items.length}');
+      //log('length is ${items.length}');
     });
   }
 
@@ -202,7 +178,7 @@ class _StatPageState extends State<StatPage> {
     SizeConfig().init(context);
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: statList(), //statisticStream(),
+      body: statList(),
     );
   }
 
@@ -210,6 +186,7 @@ class _StatPageState extends State<StatPage> {
     return Container(
       height: SizeConfig.diagonal * 10,
       child: Card(
+        elevation: 8,
         color: Colors.white.withOpacity(0.9),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -224,12 +201,10 @@ class _StatPageState extends State<StatPage> {
                     ZText(
                       content: formatNumber(statistic.total),
                       color: Color(Styling.accentColor),
-                      fontSize: SizeConfig.diagonal * 2,
                     ),
                     ZText(
                       content: " Fbu",
                       color: Color(Styling.iconColor),
-                      fontSize: SizeConfig.diagonal * 1.5,
                     ),
                   ],
                 ),
@@ -245,13 +220,11 @@ class _StatPageState extends State<StatPage> {
                       content: I18n.of(context).date,
                       textAlign: TextAlign.center,
                       color: Color(Styling.iconColor),
-                      fontSize: SizeConfig.diagonal * 1.5,
                     ),
                     ZText(
                       content:
                           "  : ${widget.formatter.format(statistic.date.toDate())}",
                       color: Color(Styling.iconColor),
-                      fontSize: SizeConfig.diagonal * 1.5,
                     ),
                   ],
                 ),
@@ -267,19 +240,27 @@ class _StatPageState extends State<StatPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // SizedBox(
-        //   height: SizeConfig.diagonal * 5,
-        // ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ZText(
-              content: I18n.of(context).dailyTotal,
-              textAlign: TextAlign.center,
-              color: Color(Styling.iconColor),
-              fontSize: SizeConfig.diagonal * 2,
-            ),
-          ],
+        Padding(
+          padding: EdgeInsets.all(SizeConfig.diagonal * 0.5),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ZText(
+                content: I18n.of(context).dailyTotal,
+                textAlign: TextAlign.center,
+                color: Color(Styling.iconColor),
+                fontWeight: FontWeight.bold,
+              ),
+            ],
+          ),
+        ),
+        Container(
+          margin: EdgeInsets.symmetric(
+              horizontal: SizeConfig.diagonal * 2,
+              vertical: SizeConfig.diagonal * 1),
+          width: double.infinity,
+          height: 1,
+          color: Color(Styling.primaryColor),
         ),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
@@ -326,8 +307,8 @@ class _StatPageState extends State<StatPage> {
             child: Column(
               children: [
                 graph(),
-                stockUser(),
-                statUser(),
+                if (stock.isNotEmpty) stockUser(),
+                if (statisticList.isNotEmpty) statUser(),
               ],
             ),
           ),
@@ -339,100 +320,80 @@ class _StatPageState extends State<StatPage> {
   Widget stockUser() {
     return Container(
       child: AspectRatio(
-        aspectRatio: 0.98,
+        aspectRatio: 0.8,
         child: Card(
-          elevation: 1,
+          elevation: 8,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(SizeConfig.diagonal * 2),
           ),
           color: Colors.white,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.all(SizeConfig.diagonal * 1),
-                  ),
-                  const SizedBox(
-                    height: 18,
-                  ),
-                  makeTransactionsIcon(),
-                  const SizedBox(
-                    width: 45,
-                  ),
-                  ZText(
-                      content: I18n.of(context).weeklyinventory,
-                      color: Color(Styling.iconColor),
-                      textAlign: TextAlign.center,
-                      fontSize: SizeConfig.diagonal * 2),
-                  const SizedBox(
-                    width: 5,
-                  ),
-                ],
-              ),
-              Container(
-                margin: EdgeInsets.all(SizeConfig.diagonal * 2),
-                height: 1,
-                color: Color(Styling.iconColor),
-                padding: EdgeInsets.all(SizeConfig.diagonal * 3),
-              ),
-              Expanded(
-                child: PieChart(
-                  PieChartData(
-                      pieTouchData:
-                          PieTouchData(touchCallback: (pieTouchResponse) {
-                        setState(() {
-                          final desiredTouch = pieTouchResponse.touchInput
-                                  is! PointerExitEvent &&
-                              pieTouchResponse.touchInput is! PointerUpEvent;
-                          if (desiredTouch &&
-                              pieTouchResponse.touchedSection != null) {
-                            touchedIndex = pieTouchResponse
-                                .touchedSection!.touchedSectionIndex;
-                          } else {
-                            touchedIndex = -1;
-                          }
-                        });
-                      }),
-                      borderData: FlBorderData(
-                        show: false,
-                      ),
-                      sectionsSpace: 0,
-                      centerSpaceRadius: 20,
-                      sections: showingSections()),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
+          child: Padding(
+            padding: EdgeInsets.all(SizeConfig.diagonal * 1),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: stock.map((e) {
-                    log("name is ${e.name}");
-                    return Column(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Indicator(
-                          color: Colors.black,
-                          text: '${e.name}',
-                          isSquare: true,
-                        ),
-                        SizedBox(
-                          height: 4,
-                        ),
-                      ],
-                    );
-                  }).toList(),
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    makeTransactionsIcon(),
+                    SizedBox(width: SizeConfig.diagonal * 1),
+                    ZText(
+                      content: I18n.of(context).stockUsed,
+                      color: Color(Styling.iconColor),
+                      fontWeight: FontWeight.bold,
+                    ),
+                    SizedBox(width: SizeConfig.diagonal * 1),
+                  ],
                 ),
-              ),
-              const SizedBox(
-                width: 28,
-              ),
-            ],
+                Container(
+                  margin: EdgeInsets.symmetric(
+                      horizontal: SizeConfig.diagonal * 1,
+                      vertical: SizeConfig.diagonal * 1),
+                  width: double.infinity,
+                  height: 1,
+                  color: Color(Styling.primaryColor),
+                ),
+                Expanded(
+                  child: PieChart(
+                    PieChartData(
+                        borderData: FlBorderData(
+                          show: false,
+                        ),
+                        sectionsSpace: 2,
+                        centerSpaceRadius: 90,
+                        sections: showingSections()),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.all(SizeConfig.diagonal * 1),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: stock.map((e) {
+                      return Column(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Indicator(
+                            color: colorsStatStock(stock.indexOf(e)),
+                            text: '${e.name}',
+                            isSquare: false,
+                          ),
+                          SizedBox(height: SizeConfig.diagonal * 0.5),
+                        ],
+                      );
+                    }).toList(),
+                  ),
+                ),
+                SizedBox(width: SizeConfig.diagonal * 0.5),
+              ],
+            ),
           ),
         ),
       ),
@@ -440,14 +401,8 @@ class _StatPageState extends State<StatPage> {
   }
 
   List<PieChartSectionData> showingSections() {
-    // int index = 0;
-   
-    // for (int i = 0; i < index; i++) {
-    //   colorsStatStock(index);
-    // }
-
     return stock.map((e) {
-      int index=stock.indexOf(e);
+      int index = stock.indexOf(e);
       return PieChartSectionData(
         color: colorsStatStock(index),
         value: (e.quantity / maxQuantity),
@@ -461,10 +416,7 @@ class _StatPageState extends State<StatPage> {
     }).toList();
   }
 
-  BarChartGroupData makeGroupData(
-    int x,
-    num y1,
-  ) {
+  BarChartGroupData makeGroupData(int x, num y1) {
     return BarChartGroupData(barsSpace: 4, x: x, barRods: [
       BarChartRodData(
         y: y1.toDouble(),
@@ -475,20 +427,19 @@ class _StatPageState extends State<StatPage> {
   }
 
   Widget graph() {
-    //maxY1 = maxY / 4;
     return Container(
       child: AspectRatio(
         aspectRatio: 1.6,
         child: Card(
-          elevation: 5,
+          elevation: 8,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(SizeConfig.diagonal * 2),
           ),
           color: Color(Styling.primaryBackgroundColor),
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: EdgeInsets.all(SizeConfig.diagonal * 1),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+              crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
@@ -498,23 +449,22 @@ class _StatPageState extends State<StatPage> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
                     makeTransactionsIcon(),
-                    const SizedBox(
-                      width: 45,
-                    ),
+                    SizedBox(width: SizeConfig.diagonal * 1),
                     ZText(
-                        content: I18n.of(context).weeklyinventory,
-                        color: Color(Styling.iconColor),
-                        fontSize: SizeConfig.diagonal * 2),
-                    const SizedBox(
-                      width: 5,
+                      content: I18n.of(context).weeklyinventory,
+                      color: Color(Styling.iconColor),
+                      fontWeight: FontWeight.bold,
                     ),
+                    SizedBox(width: SizeConfig.diagonal * 1),
                   ],
                 ),
                 Container(
-                  margin: EdgeInsets.all(SizeConfig.diagonal * 2),
+                  margin: EdgeInsets.symmetric(
+                      horizontal: SizeConfig.diagonal * 1,
+                      vertical: SizeConfig.diagonal * 1),
+                  width: double.infinity,
                   height: 1,
-                  color: Color(Styling.iconColor),
-                  padding: EdgeInsets.all(SizeConfig.diagonal * 3),
+                  color: Color(Styling.primaryColor),
                 ),
                 Expanded(
                   //flex: 1,
@@ -522,7 +472,6 @@ class _StatPageState extends State<StatPage> {
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     child: BarChart(
                       BarChartData(
-                        // groupsSpace:6,
                         maxY: maxY.toDouble(),
                         barTouchData: BarTouchData(
                           touchTooltipData: BarTouchTooltipData(
@@ -665,27 +614,31 @@ class _StatPageState extends State<StatPage> {
             padding: const EdgeInsets.all(8.0),
             child: Column(
               mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     makeTransactionsIcon(),
-                    const SizedBox(
-                      width: 45,
-                    ),
+                    SizedBox(width: SizeConfig.diagonal * 1),
                     ZText(
                       content: I18n.of(context).totalOrders,
-                      fontSize: SizeConfig.diagonal * 2,
+                      fontWeight: FontWeight.bold,
                       color: Color(Styling.iconColor),
                     ),
+                    SizedBox(width: SizeConfig.diagonal * 1),
                   ],
                 ),
                 Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: EdgeInsets.all(SizeConfig.diagonal * 1),
                   child: Expanded(
                     child: Stack(
                       children: [
                         SizedBox(
-                          height: 17,
+                          height: SizeConfig.diagonal * 2,
                           width: double.infinity,
                           child: LinearProgressIndicator(
                             value: totalCount.toDouble(),
@@ -695,13 +648,12 @@ class _StatPageState extends State<StatPage> {
                           ),
                         ),
                         Align(
-                          child: Text(
-                            "${I18n.of(context).totalCount} : $totalCount ${commandePluriel(totalCount, context)}",
-                            style: TextStyle(
-                              color: Color(Styling.primaryBackgroundColor),
-                            ),
+                          child: ZText(
+                            content:
+                                "${I18n.of(context).totalCount} : $totalCount ${commandePluriel(totalCount, context)}",
+                            color: Color(Styling.primaryBackgroundColor),
                           ),
-                          alignment: Alignment.topCenter,
+                          alignment: Alignment.center,
                         ),
                       ],
                     ),
@@ -723,12 +675,12 @@ class _StatPageState extends State<StatPage> {
 
   Padding statUserItem(StatisticUser statisticUser) {
     return Padding(
-      padding: const EdgeInsets.all(10.0),
+      padding: EdgeInsets.all(SizeConfig.diagonal * 1),
       child: Expanded(
         child: Stack(
           children: [
             SizedBox(
-              height: 17,
+              height: SizeConfig.diagonal * 2,
               width: double.infinity,
               child: LinearProgressIndicator(
                 value: statisticUser.count! / totalCount,
@@ -740,13 +692,12 @@ class _StatPageState extends State<StatPage> {
               ),
             ),
             Align(
-              child: Text(
-                "${statisticUser.userName}: ${(statisticUser.count)} ${commandePluriel(statisticUser.count!, context)}",
-                style: TextStyle(
-                  color: Color(Styling.primaryBackgroundColor),
-                ),
+              child: ZText(
+                content:
+                    "${statisticUser.userName}: ${(statisticUser.count)} ${commandePluriel(statisticUser.count!, context)}",
+                color: Color(Styling.primaryBackgroundColor),
               ),
-              alignment: Alignment.topCenter,
+              alignment: Alignment.center,
             ),
           ],
         ),

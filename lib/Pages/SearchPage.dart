@@ -77,37 +77,40 @@ class _SearchPageState extends State<SearchPage> {
 
   Widget userList(UserProfile userProfile) {
     return Card(
-      child: ListTile(
-        title: ZText(
-          content: '${I18n.of(context).name} ' " : " ' ${userProfile.name}',
-        ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ZText(
-              content: I18n.of(context).phone + " : " + userProfile.phoneNumber,
-            ),
-            ZText(
-              content: '${I18n.of(context).last} '
-                  " : "
-                  '${widget.formatter.format(userProfile.lastSeenAt!.toDate())}',
-            ),
-          ],
-        ),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => SingleUserPage(
-                db: widget.db,
-                auth: widget.auth,
-                userId: widget.userId,
-                userRole: widget.userRole,
-                userData: userProfile,
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: SizeConfig.diagonal * 1),
+        child: ListTile(
+          title: ZText(
+            content: '${I18n.of(context).name} ' " : " ' ${userProfile.name}',
+          ),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ZText(
+                content: I18n.of(context).phone + " : " + userProfile.phoneNumber,
               ),
-            ),
-          );
-        },
+              ZText(
+                content: '${I18n.of(context).last} '
+                    " : "
+                    '${widget.formatter.format(userProfile.lastSeenAt!.toDate())}',
+              ),
+            ],
+          ),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => SingleUserPage(
+                  db: widget.db,
+                  auth: widget.auth,
+                  userId: widget.userId,
+                  userRole: widget.userRole,
+                  userData: userProfile,
+                ),
+              ),
+            );
+          },
+        ),
       ),
     );
   }

@@ -1,10 +1,8 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:zilliken/Components/Indicator.dart';
 import 'package:zilliken/Models/Cart.dart';
 import 'package:zilliken/Models/Category.dart';
 import 'package:zilliken/Models/Fields.dart';
@@ -370,8 +368,8 @@ String? commandePluriel(num count, context) {
   return commande;
 }
 
-Color? colorsStatStock(int index) {
-  Color? colorStock;
+Color colorsStatStock(int index) {
+  late Color colorStock;
 
   if (index == 0) {
     colorStock = Colors.blue;
@@ -383,6 +381,8 @@ Color? colorsStatStock(int index) {
     colorStock = Colors.lightGreen;
   } else if (index == 4) {
     colorStock = Colors.pink;
+  } else {
+    colorStock = Colors.black;
   }
 
   return colorStock;

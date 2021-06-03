@@ -35,18 +35,18 @@ class UserPage extends StatefulWidget {
 }
 
 class _UserPageState extends State<UserPage> {
-  late QuerySnapshot<Map<String,dynamic>> itemref;
+  late QuerySnapshot<Map<String, dynamic>> itemref;
   int documentLimit = 10;
   bool hasMore = true;
-  DocumentSnapshot<Map<String,dynamic>>? lastDocument;
-  List<DocumentSnapshot<Map<String,dynamic>>> items = [];
+  DocumentSnapshot<Map<String, dynamic>>? lastDocument;
+  List<DocumentSnapshot<Map<String, dynamic>>> items = [];
 
   TextEditingController searchController = TextEditingController();
   String? searchText = '';
   ScrollController _scrollController = ScrollController();
-  late Query<Map<String,dynamic>> searchRef1;
-  late Query<Map<String,dynamic>> searchRef2;
-  List<DocumentSnapshot<Map<String,dynamic>>> searchList = [];
+  late Query<Map<String, dynamic>> searchRef1;
+  late Query<Map<String, dynamic>> searchRef2;
+  List<DocumentSnapshot<Map<String, dynamic>>> searchList = [];
   String? noResult = '';
   bool isSearchLoading = false;
   bool displayCancelButton = false;
@@ -221,7 +221,8 @@ class _UserPageState extends State<UserPage> {
                 child: ZText(content: ""),
               )
             : Column(
-                children: items.map((DocumentSnapshot<Map<String,dynamic>> document) {
+                children: items
+                    .map((DocumentSnapshot<Map<String, dynamic>> document) {
                   UserProfile userProfile = UserProfile.buildObject(document);
                   return userList(userProfile);
                 }).toList(),
@@ -241,37 +242,42 @@ class _UserPageState extends State<UserPage> {
 
   Widget userList(UserProfile userProfile) {
     return Card(
-      child: ListTile(
-        title: ZText(
-          content: '${I18n.of(context).name} ' " : " ' ${userProfile.name}',
-        ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ZText(
-              content: I18n.of(context).phone + " : " + userProfile.phoneNumber,
-            ),
-            ZText(
-              content: '${I18n.of(context).last} '
-                  " : "
-                  '${widget.formatter.format(userProfile.lastSeenAt!.toDate())}',
-            ),
-          ],
-        ),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => SingleUserPage(
-                db: widget.db,
-                auth: widget.auth,
-                userId: widget.userId,
-                userRole: widget.userRole,
-                userData: userProfile,
+      elevation: 8.0,
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: SizeConfig.diagonal * 1),
+        child: ListTile(
+          title: ZText(
+            content: '${I18n.of(context).name} ' " : " ' ${userProfile.name}',
+          ),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ZText(
+                content:
+                    I18n.of(context).phone + " : " + userProfile.phoneNumber,
               ),
-            ),
-          );
-        },
+              ZText(
+                content: '${I18n.of(context).last} '
+                    " : "
+                    '${widget.formatter.format(userProfile.lastSeenAt!.toDate())}',
+              ),
+            ],
+          ),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => SingleUserPage(
+                  db: widget.db,
+                  auth: widget.auth,
+                  userId: widget.userId,
+                  userRole: widget.userRole,
+                  userData: userProfile,
+                ),
+              ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -294,7 +300,7 @@ class _UserPageState extends State<UserPage> {
         .where(Fields.tags, arrayContains: searchReady(searchText!))
         .limit(50);
 
-    searchRef1.get().then((QuerySnapshot<Map<String,dynamic>>? snapshot) {
+    searchRef1.get().then((QuerySnapshot<Map<String, dynamic>>? snapshot) {
       if (snapshot == null || snapshot.docs.length < 1) {
         // log("here 8");
         searchQuery2();
@@ -303,9 +309,11 @@ class _UserPageState extends State<UserPage> {
         if (mounted) {
           setState(() {
             searchList.removeWhere((Object item) {
-              if (item is DocumentSnapshot<Map<String,dynamic>>) {
-                DocumentSnapshot<Map<String,dynamic>>? exist = snapshot.docs.firstWhereOrNull(
-                    (DocumentSnapshot<Map<String,dynamic>> element) => element.id == item.id);
+              if (item is DocumentSnapshot<Map<String, dynamic>>) {
+                DocumentSnapshot<Map<String, dynamic>>? exist = snapshot.docs
+                    .firstWhereOrNull(
+                        (DocumentSnapshot<Map<String, dynamic>> element) =>
+                            element.id == item.id);
                 if (exist == null) {
                   return true;
                 } else {
@@ -318,7 +326,7 @@ class _UserPageState extends State<UserPage> {
 
             snapshot.docs.forEach((item) {
               Object? exist = searchList.firstWhereOrNull((Object element) {
-                if (element is DocumentSnapshot<Map<String,dynamic>>) {
+                if (element is DocumentSnapshot<Map<String, dynamic>>) {
                   bool isEqual = element.id == item.id;
                   return isEqual;
                 } else {
@@ -349,7 +357,7 @@ class _UserPageState extends State<UserPage> {
         .where(Fields.tags, arrayContainsAny: searchTags)
         .limit(50);
 
-    searchRef2.get().then((QuerySnapshot<Map<String,dynamic>>? snapshot) {
+    searchRef2.get().then((QuerySnapshot<Map<String, dynamic>>? snapshot) {
       if (snapshot == null || snapshot.docs.length < 1) {
         // log("here 13");
         if (mounted) {
@@ -363,9 +371,11 @@ class _UserPageState extends State<UserPage> {
         if (mounted) {
           setState(() {
             searchList.removeWhere((Object item) {
-              if (item is DocumentSnapshot<Map<String,dynamic>>) {
-                DocumentSnapshot<Map<String,dynamic>>? exist = snapshot.docs.firstWhereOrNull(
-                    (DocumentSnapshot<Map<String,dynamic>> element) => element.id == item.id);
+              if (item is DocumentSnapshot<Map<String, dynamic>>) {
+                DocumentSnapshot<Map<String, dynamic>>? exist = snapshot.docs
+                    .firstWhereOrNull(
+                        (DocumentSnapshot<Map<String, dynamic>> element) =>
+                            element.id == item.id);
                 if (exist == null) {
                   return true;
                 } else {
@@ -378,7 +388,7 @@ class _UserPageState extends State<UserPage> {
 
             snapshot.docs.forEach((item) {
               Object? exist = searchList.firstWhereOrNull((Object element) {
-                if (element is DocumentSnapshot<Map<String,dynamic>>) {
+                if (element is DocumentSnapshot<Map<String, dynamic>>) {
                   bool isEqual = element.id == item.id;
                   return isEqual;
                 } else {

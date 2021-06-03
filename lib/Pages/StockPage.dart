@@ -42,7 +42,7 @@ class StockPage extends StatefulWidget {
 
 class _StockPageState extends State<StockPage> {
   final _formKey = GlobalKey<FormState>();
-  CollectionReference<Map<String,dynamic>> item =
+  CollectionReference<Map<String, dynamic>> item =
       FirebaseFirestore.instance.collection(Fields.stock);
 
   num? quantity;
@@ -50,13 +50,14 @@ class _StockPageState extends State<StockPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.transparent,
       body: itemStream(),
       floatingActionButton: CircleAvatar(
         radius: SizeConfig.diagonal * 3.5,
         backgroundColor: Color(Styling.accentColor),
         child: IconButton(
-          color: Color(Styling.textColor),
-          icon: Icon(Icons.add),
+          color: Color(Styling.primaryBackgroundColor),
+          icon: Icon(Icons.add, size: SizeConfig.diagonal * 2.5),
           onPressed: () {
             Navigator.push(
               context,
@@ -77,9 +78,10 @@ class _StockPageState extends State<StockPage> {
   }
 
   Widget itemStream() {
-    return StreamBuilder<QuerySnapshot<Map<String,dynamic>>>(
+    return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
         stream: item.snapshots(),
-        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot<Map<String,dynamic>>> snapshot) {
+        builder: (BuildContext context,
+            AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
           if (snapshot.data == null)
             return Center(
               child: ZText(content: ''),

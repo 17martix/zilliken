@@ -112,9 +112,10 @@ enterQuantity,Enter Quantity,Saisissez la Quantité
 edit,Edit,Modifier
 adjust,Adjust,Ajuster
 noResult,No Result,Pas De Résultat
-weeklyinventory,weekly inventory,Inventaire Hebdomadaire
-totalOrders,Total Orders per Day,Total des Commandes par Jour
+weeklyinventory,Last 7 Days Total Overview,Aperçu du total des 7 derniers jours
+totalOrders,Orders Of The Day,Commandes Du Jour
 totalCount,Total Count,Compte Total
 deactivateUser,Deactivate user ?,Désactiver l'utilisateur?
 desactive,Desactivate,Désactiver
 evaluationSem,Evaluation of the week,Evaluation de la semaine
+stockUsed,Today Most Used Stock Items,Articles en stock les plus utilisés aujourd'hui

@@ -245,6 +245,8 @@ class I18n {
 
   String get evaluationSem => _getText("evaluationSem");
 
+  String get stockUsed => _getText("stockUsed");
+
   static late Map<String, String> _localizedValues;
 
   static const _enValues = {
@@ -362,12 +364,13 @@ class I18n {
     "edit": "Edit",
     "adjust": "Adjust",
     "noResult": "No Result",
-    "weeklyinventory": "weekly inventory",
-    "totalOrders": "Total Orders per Day",
+    "weeklyinventory": "Last 7 Days Total Overview",
+    "totalOrders": "Orders Of The Day",
     "totalCount": "Total Count",
     "deactivateUser": "Deactivate user ?",
     "desactive": "Desactivate",
     "evaluationSem": "Evaluation of the week",
+    "stockUsed": "Today Most Used Stock Items",
   };
 
   static const _frValues = {
@@ -485,12 +488,13 @@ class I18n {
     "edit": "Modifier",
     "adjust": "Ajuster",
     "noResult": "Pas De Résultat",
-    "weeklyinventory": "Inventaire Hebdomadaire",
-    "totalOrders": "Total des Commandes par Jour",
+    "weeklyinventory": "Aperçu du total des 7 derniers jours",
+    "totalOrders": "Commandes Du Jour",
     "totalCount": "Compte Total",
     "deactivateUser": "Désactiver l'utilisateur?",
     "desactive": "Désactiver",
     "evaluationSem": "Evaluation de la semaine",
+    "stockUsed": "Articles en stock les plus utilisés aujourd'hui",
   };
 
   static const _allValues = {
