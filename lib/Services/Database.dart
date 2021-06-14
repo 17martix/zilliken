@@ -101,7 +101,7 @@ class Database {
         .collection(Fields.configuration)
         .doc(Fields.taxes)
         .get()
-        .then((DocumentSnapshot<Map<String,dynamic>> documentSnapshot) {
+        .then((DocumentSnapshot<Map<String, dynamic>> documentSnapshot) {
       if (documentSnapshot.exists) {
         taxPercentage = documentSnapshot.data()![Fields.percentage];
       }
@@ -236,7 +236,7 @@ class Database {
         .doc(userId)
         .collection(Fields.addresses);
 
-    QuerySnapshot<Map<String,dynamic>> querySnapshot = await collection.get();
+    QuerySnapshot<Map<String, dynamic>> querySnapshot = await collection.get();
 
     querySnapshot.docs.forEach((element) {
       Address address = Address.buildObject(element);
@@ -265,7 +265,7 @@ class Database {
         .doc(orderId)
         .collection(Fields.items);
 
-    QuerySnapshot<Map<String,dynamic>> querySnapshot = await collection.get();
+    QuerySnapshot<Map<String, dynamic>> querySnapshot = await collection.get();
 
     querySnapshot.docs.forEach((element) {
       OrderItem orderItem = OrderItem.buildObject(element);
@@ -881,7 +881,7 @@ class Database {
     List<MenuItem> menuItemList = [];
     var reference = databaseReference.collection(Fields.menu);
 
-    await reference.get().then((QuerySnapshot<Map<String,dynamic>> snapshot) {
+    await reference.get().then((QuerySnapshot<Map<String, dynamic>> snapshot) {
       if (snapshot != null && snapshot.docs.isNotEmpty) {
         snapshot.docs.forEach((element) async {
           MenuItem menuItem = MenuItem.buildObject(element);
@@ -1035,6 +1035,7 @@ class Database {
             isSuccess: false, message: I18n.of(context).operationFailed));
     return result;
   }
+
   Future<List<StatisticUser>> getTodayStatUser() async {
     List<StatisticUser> list = [];
 
@@ -1045,7 +1046,9 @@ class Database {
     var statUserRef = databaseReference
         .collection(Fields.statisticUser)
         .where(Fields.date, isEqualTo: timestamp);
-    await statUserRef.get().then((QuerySnapshot<Map<String,dynamic>> snapshot) {
+    await statUserRef
+        .get()
+        .then((QuerySnapshot<Map<String, dynamic>> snapshot) {
       if (snapshot != null && snapshot.docs.isNotEmpty)
         snapshot.docs.forEach((element) async {
           StatisticUser userStat = StatisticUser.buildObject(element);
@@ -1068,7 +1071,9 @@ class Database {
         .orderBy(Fields.quantity, descending: true)
         .limit(5);
 
-    await statStockRef.get().then((QuerySnapshot<Map<String,dynamic>> snapshot) {
+    await statStockRef
+        .get()
+        .then((QuerySnapshot<Map<String, dynamic>> snapshot) {
       if (snapshot.docs.isNotEmpty)
         snapshot.docs.forEach((element) async {
           StatisticStock stock = StatisticStock.buildObject(element);
@@ -1076,5 +1081,19 @@ class Database {
         });
     });
     return list;
+  }
+
+  Future<List<Stock>> getStock() async {
+    var stockRef = databaseReference.collection(Fields.stock);
+    List<Stock> stockList = [];
+    await stockRef.get().then((value) {
+      if (value.docs.isNotEmpty)
+        value.docs.forEach((element) async {
+          Stock stock = Stock.buildObject(element);
+          stockList.add(stock);
+        });
+    });
+
+    return stockList;
   }
 }
