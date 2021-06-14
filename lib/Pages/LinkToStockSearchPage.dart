@@ -2,268 +2,103 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:zilliken/Components/ZAppBar.dart';
 import 'package:zilliken/Components/ZElevatedButton.dart';
+import 'package:zilliken/Components/ZText.dart';
 import 'package:zilliken/Components/ZTextField.dart';
 import 'package:zilliken/Helpers/SizeConfig.dart';
 import 'package:zilliken/Helpers/Styling.dart';
-import 'package:zilliken/Helpers/Utils.dart';
-import 'package:zilliken/Models/Fields.dart';
 import 'package:zilliken/Models/MenuItem.dart';
 import 'package:zilliken/Models/Stock.dart';
-import 'package:zilliken/Pages/LinkToStockSearchPage.dart';
 import 'package:zilliken/Services/Authentication.dart';
 import 'package:zilliken/Services/Database.dart';
-import 'package:zilliken/Services/Messaging.dart';
 import 'package:zilliken/i18n.dart';
 import 'package:collection/collection.dart';
 
-import '../Components/ZText.dart';
-import '../Models/MenuItem.dart';
-
-class LinkToMenu extends StatefulWidget {
+class LinkToStockSearchPage extends StatefulWidget {
   final Authentication auth;
   final Database db;
-  final Messaging messaging;
   final String userId;
   final String userRole;
-  final Stock stock;
+  final bool isLoading;
+  final List<DocumentSnapshot<Map<String, dynamic>>> searchList;
+  final String noResult;
+  List<MenuItem>? itemsToSend;
+  GlobalKey<FormState> formKey;
+  Stock stock;
 
-  LinkToMenu({
+  LinkToStockSearchPage({
     required this.auth,
     required this.db,
-    required this.messaging,
     required this.userId,
     required this.userRole,
+    required this.isLoading,
+    required this.noResult,
+    required this.searchList,
+    required this.itemsToSend,
+    required this.formKey,
     required this.stock,
   });
+
   @override
-  _ConnectToMenuState createState() => _ConnectToMenuState();
+  _LinkToStockSearchPageState createState() => _LinkToStockSearchPageState();
 }
 
-class _ConnectToMenuState extends State<LinkToMenu> {
-  List<MenuItem> itemList = [];
-  List<MenuItem>? itemsToSend = [];
-  // List<MenuItem>? itemsToRemove = [];
-
-  final _formKey = GlobalKey<FormState>();
-
-  num? quantity;
-  bool displayCancelButton = false;
-  bool isSearching = false;
-  String? noResult = '';
-  bool isSearchLoading = false;
-  TextEditingController searchController = TextEditingController();
-  String? searchText = '';
-  List<DocumentSnapshot<Map<String, dynamic>>> searchList = [];
-  late Query<Map<String, dynamic>> searchRef1;
-  late Query<Map<String, dynamic>> searchRef2;
-  List<String> searchTags = [];
-
-  @override
-  void initState() {
-    super.initState();
-
-    waitForItems();
-  }
-
-  void waitForItems() {
-    widget.db.getMenuItems(widget.stock.id!).then((value) {
-      /*value.forEach((element) {
-        if (element.isChecked!) {
-          itemsToSend.add(element);
-        }
-      });*/
-
-      setState(() {
-        itemList = value;
-      });
-      // log("new length is ${itemList.length}");
-    });
-    // itemList.sortByCompare(
-    //     (element) => element.name, (a, b) => a!.length.compareTo(b!.length));
-  }
-
-  void backFunction() {
-    Navigator.of(context).pop();
-  }
-
+class _LinkToStockSearchPageState extends State<LinkToStockSearchPage> {
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
-    return Scaffold(
-      appBar: buildAppBar(
-          context, widget.auth, true, null, backFunction, null, null),
-      body: body(),
+    return Expanded(
+      child: resultView(),
     );
   }
 
-  Widget body() {
+  Widget resultView() {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        /*Padding(
-          padding: EdgeInsets.all(SizeConfig.diagonal * 1),
-          child: ZTextField(
-            hint: (I18n.of(context).search),
-            maxLines: 1,
-            controller: searchController,
-            keyboardType: TextInputType.text,
-            textInputAction: TextInputAction.search,
-            outsidePrefix: Icon(
-              Icons.search,
-              size: SizeConfig.diagonal * 2.5,
-            ),
-            outsideSuffix: Row(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                displayCancelButton
-                    ? IconButton(
-                        icon: Icon(
-                          Icons.cancel_outlined,
-                          color: Color(Styling.primaryColor),
-                          size: SizeConfig.diagonal * 2.5,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            searchController.clear();
-                            isSearching = false;
-                            displayCancelButton = false;
-                          });
-                        })
-                    : Text(''),
-              ],
-            ),
-            onFieldSubmitted: (String? value) {
-              if (value != null && value.isNotEmpty && value != '') {
-                setState(() {
-                  isSearching = true;
-                });
-                searchText = value;
-                isSearchLoading = false;
-                searchQuery();
-              } else {
-                setState(() {
-                  isSearching = false;
-                });
-              }
-            },
-            onChanged: (String? value) {
-              if (value == null || value.isEmpty || value == '') {
-                setState(() {
-                  isSearching = false;
-                  displayCancelButton = false;
-                });
-              } else {
-                setState(() {
-                  displayCancelButton = true;
-                });
-              }
-            },
-          ),
-        ),*/
-        Container(
-          height: SizeConfig.diagonal * 5,
-          child: Center(
-            child: ZText(content: I18n.of(context).linkDescription),
-          ),
-        ),
-        isSearching ? searchBody() : content(),
+        widget.searchList.length == 0
+            ? Center(
+                child: ZText(
+                  content: widget.noResult,
+                  fontSize: SizeConfig.diagonal * 2,
+                  color: Color(Styling.primaryColor),
+                  fontWeight: FontWeight.w700,
+                ),
+              )
+            : ListView(
+                shrinkWrap: true,
+                children: widget.searchList
+                    .map((DocumentSnapshot<Map<String, dynamic>> document) {
+                  MenuItem menuItem = MenuItem.buildObject(document);
+                  Stock? stock;
+                  if (menuItem.condiments != null) {
+                    stock = menuItem.condiments!.firstWhereOrNull((condiment) {
+                      return condiment.id == widget.stock.id;
+                    });
+
+                    if (stock == null) {
+                      menuItem.isChecked = false;
+                    } else {
+                      menuItem.isChecked = true;
+                    }
+                  } else {
+                    menuItem.isChecked = false;
+                  }
+                  return itemTile(menuItem);
+                }).toList(),
+              ),
+        widget.isLoading
+            ? Container(
+                width: MediaQuery.of(context).size.width,
+                padding: EdgeInsets.all(SizeConfig.diagonal * 1),
+                child: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              )
+            : Container()
       ],
     );
-  }
-
-  Widget searchBody() {
-    return LinkToStockSearchPage(
-      auth: widget.auth,
-      db: widget.db,
-      userId: widget.userId,
-      userRole: widget.userRole,
-      isLoading: isSearchLoading,
-      noResult: noResult!,
-      searchList: searchList,
-      formKey: _formKey,
-      itemsToSend: itemsToSend,
-      stock: widget.stock,
-    );
-  }
-
-  Widget content() {
-    return itemList.isEmpty
-        ? Container(
-            width: MediaQuery.of(context).size.width,
-            padding: EdgeInsets.all(SizeConfig.diagonal * 1),
-            child: Center(
-              child: CircularProgressIndicator(),
-            ),
-          )
-        : Expanded(
-            child: Column(
-              children: [
-                Expanded(
-                  child: itemsList(),
-                ),
-                ZElevatedButton(
-                  onpressed: () async {
-                    EasyLoading.show(status: I18n.of(context).loading);
-                    bool isOnline = await hasConnection();
-                    if (!isOnline) {
-                      EasyLoading.dismiss();
-
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: ZText(content: I18n.of(context).noInternet),
-                        ),
-                      );
-                    } else {
-                      try {
-                        await widget.db.linkToStock(itemsToSend!, widget.stock);
-                        // log('itemsToSend: ${itemsToSend}');
-                        // log('itemsToRemove: ${itemsToRemove}');
-                        /*  itemsToSend.clear();
-                    itemsToRemove.clear();*/
-
-                        EasyLoading.dismiss();
-
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: ZText(
-                                content: I18n.of(context).operationSucceeded),
-                          ),
-                        );
-                      } on Exception catch (e) {
-                        EasyLoading.dismiss();
-
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: ZText(content: e.toString()),
-                        ));
-                      }
-                    }
-                  },
-                  child: ZText(
-                    content: I18n.of(context).save,
-                    color: Color(Styling.primaryBackgroundColor),
-                  ),
-                  bottomPadding: SizeConfig.diagonal * 0.8,
-                  topPadding: SizeConfig.diagonal * 0.8,
-                ),
-              ],
-            ),
-          );
-  }
-
-  Widget itemsList() {
-    // log("length is ${itemList.length}");
-    return ListView.builder(
-        shrinkWrap: true,
-        //physics: BouncingScrollPhysics(),
-        itemCount: itemList.length,
-        itemBuilder: (BuildContext context, index) {
-          return itemTile(itemList[index]);
-        });
   }
 
   Widget itemTile(MenuItem menuItem) {
@@ -327,7 +162,7 @@ class _ConnectToMenuState extends State<LinkToMenu> {
                             //color: Colors.amber,
                             child: SingleChildScrollView(
                               child: Form(
-                                key: _formKey,
+                                key: widget.formKey,
                                 autovalidateMode: AutovalidateMode.disabled,
                                 child: Column(
                                   children: [
@@ -335,7 +170,8 @@ class _ConnectToMenuState extends State<LinkToMenu> {
                                       height: SizeConfig.diagonal * 2.5,
                                     ),
                                     ZTextField(
-                                      hint: "${I18n.of(context).quantity}",
+                                      hint:
+                                          "${I18n.of(context).quantity}",
                                       controller: menuItem.controller,
                                       onSaved: (value) {
                                         if (value != null) {
@@ -352,14 +188,15 @@ class _ConnectToMenuState extends State<LinkToMenu> {
                                     ),
                                     ZElevatedButton(
                                       onpressed: () {
-                                        final form = _formKey.currentState;
+                                        final form =
+                                            widget.formKey.currentState;
 
                                         if (form!.validate()) {
                                           form.save();
-
-                                          itemsToSend!.removeWhere((element) =>
-                                              element.id == menuItem.id);
-                                          itemsToSend!.add(menuItem);
+                                          widget.itemsToSend!.removeWhere(
+                                              (element) =>
+                                                  element.id == menuItem.id);
+                                          widget.itemsToSend!.add(menuItem);
 
                                           Navigator.of(context).pop();
                                           ScaffoldMessenger.of(context)
@@ -474,7 +311,7 @@ class _ConnectToMenuState extends State<LinkToMenu> {
                             //color: Colors.amber,
                             child: SingleChildScrollView(
                               child: Form(
-                                key: _formKey,
+                                key: widget.formKey,
                                 autovalidateMode: AutovalidateMode.disabled,
                                 child: Column(
                                   children: [
@@ -482,8 +319,7 @@ class _ConnectToMenuState extends State<LinkToMenu> {
                                       height: SizeConfig.diagonal * 2.5,
                                     ),
                                     ZTextField(
-                                      hint:
-                                          "${I18n.of(context).quantity} ${I18n.of(context).inen} ${widget.stock.unit}",
+                                      hint: I18n.of(context).quantity,
                                       controller: menuItem.controller,
                                       onSaved: (value) {
                                         if (value != null) {
@@ -500,14 +336,16 @@ class _ConnectToMenuState extends State<LinkToMenu> {
                                     ),
                                     ZElevatedButton(
                                       onpressed: () {
-                                        final form = _formKey.currentState;
+                                        final form =
+                                            widget.formKey.currentState;
 
                                         if (form!.validate()) {
                                           form.save();
 
-                                          itemsToSend!.removeWhere((element) =>
-                                              element.id == menuItem.id);
-                                          itemsToSend!.add(menuItem);
+                                          widget.itemsToSend!.removeWhere(
+                                              (element) =>
+                                                  element.id == menuItem.id);
+                                          widget.itemsToSend!.add(menuItem);
 
                                           Navigator.of(context).pop();
                                           ScaffoldMessenger.of(context)
@@ -575,9 +413,9 @@ class _ConnectToMenuState extends State<LinkToMenu> {
                 }
                 menuItem.quantity = null;
 
-                itemsToSend!
+                widget.itemsToSend!
                     .removeWhere((element) => element.id == menuItem.id);
-                itemsToSend!.add(menuItem);
+                widget.itemsToSend!.add(menuItem);
 
                 //itemsToRemove!.add(menuItem);
               }
@@ -586,131 +424,5 @@ class _ConnectToMenuState extends State<LinkToMenu> {
         ),
       ),
     );
-  }
-
-  void searchQuery() {
-    if (isSearchLoading == true) {
-      // log("here 2");
-      return;
-    }
-    searchList.clear();
-    if (mounted) {
-      setState(() {
-        isSearchLoading = true;
-        noResult = '';
-      });
-    }
-
-    searchRef1 = FirebaseFirestore.instance
-        .collection(Fields.menu)
-        .where(Fields.tags, arrayContains: searchReady(searchText!))
-        .limit(50);
-
-    searchRef1.get().then((QuerySnapshot<Map<String, dynamic>>? snapshot) {
-      if (snapshot == null || snapshot.docs.length < 1) {
-        // log("here 8");
-        searchQuery2();
-      } else {
-        //log("here 9");
-        if (mounted) {
-          setState(() {
-            searchList.removeWhere((Object item) {
-              if (item is DocumentSnapshot<Map<String, dynamic>>) {
-                DocumentSnapshot<Map<String, dynamic>>? exist = snapshot.docs
-                    .firstWhereOrNull(
-                        (DocumentSnapshot<Map<String, dynamic>> element) =>
-                            element.id == item.id);
-                if (exist == null) {
-                  return true;
-                } else {
-                  return false;
-                }
-              } else {
-                return true;
-              }
-            });
-
-            snapshot.docs.forEach((item) {
-              Object? exist = searchList.firstWhereOrNull((Object element) {
-                if (element is DocumentSnapshot<Map<String, dynamic>>) {
-                  bool isEqual = element.id == item.id;
-                  return isEqual;
-                } else {
-                  return false;
-                }
-              });
-
-              if (exist == null) {
-                searchList.add(item);
-              }
-            });
-            isSearchLoading = false;
-          });
-        }
-      }
-    });
-  }
-
-  void searchQuery2() {
-    searchTags = [];
-    searchTags = createTags(searchText!);
-    if (searchTags.length > 10) {
-      searchTags = searchTags.sublist(0, 10);
-    }
-
-    searchRef2 = FirebaseFirestore.instance
-        .collection(Fields.users)
-        .where(Fields.tags, arrayContainsAny: searchTags)
-        .limit(50);
-
-    searchRef2.get().then((QuerySnapshot<Map<String, dynamic>>? snapshot) {
-      if (snapshot == null || snapshot.docs.length < 1) {
-        // log("here 13");
-        if (mounted) {
-          setState(() {
-            isSearchLoading = false;
-            noResult = I18n.of(context).noResult;
-          });
-        }
-      } else {
-        // log("here 14");
-        if (mounted) {
-          setState(() {
-            searchList.removeWhere((Object item) {
-              if (item is DocumentSnapshot<Map<String, dynamic>>) {
-                DocumentSnapshot<Map<String, dynamic>>? exist = snapshot.docs
-                    .firstWhereOrNull(
-                        (DocumentSnapshot<Map<String, dynamic>> element) =>
-                            element.id == item.id);
-                if (exist == null) {
-                  return true;
-                } else {
-                  return false;
-                }
-              } else {
-                return true;
-              }
-            });
-
-            snapshot.docs.forEach((item) {
-              Object? exist = searchList.firstWhereOrNull((Object element) {
-                if (element is DocumentSnapshot<Map<String, dynamic>>) {
-                  bool isEqual = element.id == item.id;
-                  return isEqual;
-                } else {
-                  return false;
-                }
-              });
-
-              if (exist == null) {
-                searchList.add(item);
-              }
-            });
-
-            isSearchLoading = false;
-          });
-        }
-      }
-    });
   }
 }

@@ -51,7 +51,7 @@ class Order {
     this.deliveringOrderId,
   });
 
-  Order.buildObject(DocumentSnapshot<Map<String,dynamic>> document) {
+  Order.buildObject(DocumentSnapshot<Map<String, dynamic>> document) {
     id = document.id;
     instructions = document.data()?[Fields.instructions];
     orderLocation = document.data()![Fields.orderLocation];
@@ -75,7 +75,8 @@ class Order {
     userName = document.data()?[Fields.userName];
   }
 
-  Order.buildObjectAsync(AsyncSnapshot<DocumentSnapshot<Map<String,dynamic>>> document) {
+  Order.buildObjectAsync(
+      AsyncSnapshot<DocumentSnapshot<Map<String, dynamic>>> document) {
     id = document.data?.id;
     instructions = document.data?[Fields.instructions];
     orderLocation = document.data![Fields.orderLocation];

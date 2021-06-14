@@ -387,3 +387,13 @@ Color colorsStatStock(int index) {
 
   return colorStock;
 }
+
+List<String> getMenuTags(
+  MenuItem menuItem
+) {
+  List<String> searchIndex = [];
+
+  searchIndex.addAll(createTags(menuItem.name));
+  searchIndex.addAll(createTags(menuItem.category!));
+  return searchIndex;
+}

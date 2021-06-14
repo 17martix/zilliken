@@ -18,7 +18,7 @@ class Fields {
   static final String chefCuisine = 'chefCuisine';
   static final String chefBoissons = 'chefBoissons';
   static final String statisticUser = 'statisticUser';
-   static final String statisticStock = 'statisticStock';
+  static final String statisticStock = 'statisticStock';
 
   static final String taxes = 'taxes';
   static final String percentage = 'percentage';
@@ -93,4 +93,6 @@ class Fields {
   static final String linked = 'linked';
   static final String condiments = 'condiments';
   static final String tags = 'tags';
+
+  static final String stockId = 'stockId';
 }

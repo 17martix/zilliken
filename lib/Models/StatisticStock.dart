@@ -7,6 +7,7 @@ class StatisticStock {
   late String name;
   late num quantity;
   late String unit;
+  late String stockId;
   late Timestamp? date;
 
   StatisticStock({
@@ -15,21 +16,23 @@ class StatisticStock {
     required this.quantity,
     required this.date,
     required this.unit,
+    required this.stockId,
   });
-  StatisticStock.buildObject(DocumentSnapshot<Map<String,dynamic>> document) {
+  StatisticStock.buildObject(DocumentSnapshot<Map<String, dynamic>> document) {
     id = document.id;
     name = document.data()![Fields.name];
     quantity = document.data()![Fields.quantity];
     unit = document.data()![Fields.unit];
     date = document.data()![Fields.date];
-
+    stockId = document.data()![Fields.stockId];
   }
-   StatisticStock.buildObjectAsync(AsyncSnapshot<DocumentSnapshot<Map<String,dynamic>>> document) {
+  StatisticStock.buildObjectAsync(
+      AsyncSnapshot<DocumentSnapshot<Map<String, dynamic>>> document) {
     id = document.data!.id;
     name = document.data![Fields.name];
     quantity = document.data![Fields.quantity];
     unit = document.data![Fields.unit];
     date = document.data![Fields.date];
-
+    stockId = document.data![Fields.stockId];
   }
 }

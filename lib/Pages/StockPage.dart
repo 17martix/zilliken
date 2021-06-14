@@ -8,7 +8,6 @@ import 'package:zilliken/Helpers/SizeConfig.dart';
 import 'package:zilliken/Helpers/Styling.dart';
 import 'package:zilliken/Helpers/Utils.dart';
 import 'package:zilliken/Models/Fields.dart';
-import 'package:zilliken/Models/MenuItem.dart';
 import 'package:zilliken/Models/Stock.dart';
 import 'package:zilliken/Pages/LinkToStockPage.dart';
 import 'package:zilliken/Pages/NewItemPage.dart';
@@ -126,7 +125,10 @@ class _StockPageState extends State<StockPage> {
                       Icons.cancel,
                       size: SizeConfig.diagonal * 2.5,
                     ),
-                    ZText(content: I18n.of(context).cancelOnly),
+                    ZText(
+                      content: I18n.of(context).cancelOnly,
+                      color: Color(Styling.primaryBackgroundColor),
+                    ),
                   ],
                 ),
                 decoration: BoxDecoration(
@@ -300,7 +302,10 @@ class _StockPageState extends State<StockPage> {
                       Icons.update,
                       size: SizeConfig.diagonal * 2.5,
                     ),
-                    ZText(content: I18n.of(context).update),
+                    ZText(
+                      content: I18n.of(context).update,
+                      color: Color(Styling.primaryBackgroundColor),
+                    ),
                   ],
                 ),
                 decoration: BoxDecoration(
@@ -345,7 +350,10 @@ class _StockPageState extends State<StockPage> {
                       Icons.link,
                       size: SizeConfig.diagonal * 2.5,
                     ),
-                    ZText(content: I18n.of(context).linkToMenu),
+                    ZText(
+                      content: I18n.of(context).linkToMenu,
+                      color: Color(Styling.primaryBackgroundColor),
+                    ),
                   ],
                 ),
                 decoration: BoxDecoration(
@@ -555,7 +563,10 @@ class _StockPageState extends State<StockPage> {
                       Icons.adjust,
                       size: SizeConfig.diagonal * 2.5,
                     ),
-                    ZText(content: I18n.of(context).adjust),
+                    ZText(
+                      content: I18n.of(context).adjust,
+                      color: Color(Styling.primaryBackgroundColor),
+                    ),
                   ],
                 ),
                 decoration: BoxDecoration(
@@ -618,7 +629,11 @@ class _StockPageState extends State<StockPage> {
                       Icons.delete_forever_sharp,
                       size: SizeConfig.diagonal * 2.5,
                     ),
-                    ZText(content: I18n.of(context).delete),
+                    ZText(
+                      content: I18n.of(context).delete,
+                      color: Color(Styling.primaryBackgroundColor),
+                    
+                    ),
                   ],
                 ),
                 decoration: BoxDecoration(

@@ -1,8 +1,6 @@
 import 'dart:developer';
-import 'dart:ffi';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:zilliken/Components/ZAppBar.dart';
 import 'package:zilliken/Components/ZElevatedButton.dart';
@@ -42,13 +40,13 @@ class SingleUserPage extends StatefulWidget {
 class _SingleUserPageState extends State<SingleUserPage> {
   var oneUserDetails;
 
-  List<DocumentSnapshot<Map<String,dynamic>>> items = [];
+  List<DocumentSnapshot<Map<String, dynamic>>> items = [];
   ScrollController _scrollController = ScrollController();
   bool isLoading = false;
   bool hasMore = true;
 
-  QuerySnapshot<Map<String,dynamic>>? statref;
-  DocumentSnapshot<Map<String,dynamic>>? lastDocument;
+  QuerySnapshot<Map<String, dynamic>>? statref;
+  DocumentSnapshot<Map<String, dynamic>>? lastDocument;
 
   List<BarChartGroupData> rawBarGroups = [];
   List<BarChartGroupData> showingBarGroups = [];
@@ -134,12 +132,9 @@ class _SingleUserPageState extends State<SingleUserPage> {
     setState(() {
       for (int i = 0; i < statref!.docs.length; i++) {
         items.add(statref!.docs[i]);
-        log("stat id is ${statref!.docs[i].id}");
       }
       graphData();
       isLoading = false;
-
-      log('length is ${items.length}');
     });
   }
 
@@ -191,59 +186,56 @@ class _SingleUserPageState extends State<SingleUserPage> {
     ]);
   }
 
-  Widget itemCard(Statistic statisticUser) {
+  Widget itemCard(Statistic statistic) {
     return Container(
       height: SizeConfig.diagonal * 10,
       child: Card(
+        elevation: 8,
         color: Colors.white.withOpacity(0.9),
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Expanded(
-            child: Container(
-              padding: EdgeInsets.all(SizeConfig.diagonal * 0.2),
-              height: 3,
-              color: Color(Styling.iconColor).withOpacity(0.1),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  ZText(
-                    content: "${statisticUser.total}",
-                    color: Color(Styling.accentColor),
-                    fontSize: SizeConfig.diagonal * 3,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  ZText(
-                    content: " Fbu",
-                    color: Color(Styling.iconColor),
-                    fontSize: SizeConfig.diagonal * 2.5,
-                  ),
-                ],
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Expanded(
+              flex: 1,
+              child: Container(
+                padding: EdgeInsets.all(SizeConfig.diagonal * 1.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    ZText(
+                      content: formatNumber(statistic.total),
+                      color: Color(Styling.accentColor),
+                    ),
+                    ZText(
+                      content: " Fbu",
+                      color: Color(Styling.iconColor),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-          Expanded(
-            child: Container(
-              padding: EdgeInsets.all(SizeConfig.diagonal * 0.2),
-              color: Color(Styling.primaryBackgroundColor).withOpacity(0.3),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  ZText(
-                    content: I18n.of(context).date,
-                    textAlign: TextAlign.center,
-                    color: Color(Styling.iconColor),
-                    fontSize: SizeConfig.diagonal * 2,
-                  ),
-                  ZText(
-                    content:
-                        "  : ${widget.formatter.format(statisticUser.date.toDate())}",
-                    color: Color(Styling.iconColor),
-                    fontSize: SizeConfig.diagonal * 2,
-                  ),
-                ],
+            Expanded(
+              child: Container(
+                padding: EdgeInsets.all(SizeConfig.diagonal * 1.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    ZText(
+                      content: I18n.of(context).date,
+                      textAlign: TextAlign.center,
+                      color: Color(Styling.iconColor),
+                    ),
+                    ZText(
+                      content:
+                          "  : ${widget.formatter.format(statistic.date.toDate())}",
+                      color: Color(Styling.iconColor),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        ]),
+          ],
+        ),
       ),
     );
   }
@@ -252,17 +244,27 @@ class _SingleUserPageState extends State<SingleUserPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ZText(
-              content: '${I18n.of(context).dailyTotal}',
-              textAlign: TextAlign.center,
-              color: Color(Styling.iconColor),
-              fontSize: SizeConfig.diagonal * 2.5,
-              fontStyle: FontStyle.normal,
-            ),
-          ],
+        Padding(
+          padding: EdgeInsets.all(SizeConfig.diagonal * 0.5),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ZText(
+                content: I18n.of(context).dailyTotal,
+                textAlign: TextAlign.center,
+                color: Color(Styling.iconColor),
+                fontWeight: FontWeight.bold,
+              ),
+            ],
+          ),
+        ),
+        Container(
+          margin: EdgeInsets.symmetric(
+              horizontal: SizeConfig.diagonal * 2,
+              vertical: SizeConfig.diagonal * 1),
+          width: double.infinity,
+          height: 1,
+          color: Color(Styling.primaryColor),
         ),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
@@ -324,15 +326,15 @@ class _SingleUserPageState extends State<SingleUserPage> {
   Widget graph() {
     return Container(
       child: AspectRatio(
-        aspectRatio: 1.4,
+        aspectRatio: 1.6,
         child: Card(
-          elevation: 5,
+          elevation: 8,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(SizeConfig.diagonal * 2),
           ),
           color: Color(Styling.primaryBackgroundColor).withOpacity(0.9),
           child: Padding(
-            padding: EdgeInsets.all(SizeConfig.diagonal * 4),
+            padding: EdgeInsets.all(SizeConfig.diagonal * 1),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisAlignment: MainAxisAlignment.start,
@@ -344,30 +346,24 @@ class _SingleUserPageState extends State<SingleUserPage> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
                     makeTransactionsIcon(),
-                    const SizedBox(
-                      width: 20,
-                    ),
+                    SizedBox(width: SizeConfig.diagonal * 1),
                     ZText(
-                        content: '${I18n.of(context).evaluationSem} ',
-                        color: Color(Styling.iconColor),
-                        fontSize: 15),
-                    const SizedBox(
-                      width: 2,
+                      content: I18n.of(context).weeklyinventory,
+                      color: Color(Styling.iconColor),
+                      fontWeight: FontWeight.bold,
                     ),
+                    SizedBox(width: SizeConfig.diagonal * 1),
                   ],
                 ),
-                const SizedBox(
-                  height: 2,
-                ),
                 Container(
-                  margin: EdgeInsets.all(SizeConfig.diagonal * 1.5),
-                  padding: EdgeInsets.all(SizeConfig.diagonal * 1),
+                  margin: EdgeInsets.symmetric(
+                      horizontal: SizeConfig.diagonal * 1,
+                      vertical: SizeConfig.diagonal * 1),
                   width: double.infinity,
                   height: 1,
                   color: Color(Styling.primaryColor),
                 ),
                 Expanded(
-                  flex: 1,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     child: BarChart(
@@ -420,9 +416,11 @@ class _SingleUserPageState extends State<SingleUserPage> {
                           leftTitles: SideTitles(
                             showTitles: true,
                             getTextStyles: (value) => const TextStyle(
-                                color: Color(Styling.iconColor), fontSize: 14),
+                              color: Color(Styling.iconColor),
+                              fontSize: 10,
+                            ),
                             margin: 20,
-                            reservedSize: 15,
+                            reservedSize: 26,
                             interval: maxY / 4,
                             getTitles: (value) {
                               log("value is $value");
@@ -447,7 +445,7 @@ class _SingleUserPageState extends State<SingleUserPage> {
                         ),
                         barGroups: showingBarGroups,
                       ),
-                      swapAnimationDuration: Duration(milliseconds: 150),
+                      //swapAnimationDuration: Duration(milliseconds: 150),
                     ),
                   ),
                 ),
@@ -494,10 +492,10 @@ class _SingleUserPageState extends State<SingleUserPage> {
   }
 
   Widget userStream() {
-    return StreamBuilder<DocumentSnapshot<Map<String,dynamic>>>(
+    return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
         stream: oneUserDetails.snapshots(),
-        builder:
-            (BuildContext context, AsyncSnapshot<DocumentSnapshot<Map<String,dynamic>>> snapshot) {
+        builder: (BuildContext context,
+            AsyncSnapshot<DocumentSnapshot<Map<String, dynamic>>> snapshot) {
           if (snapshot.data == null) return Center(child: ZText(content: ""));
           UserProfile userProfile = UserProfile.buildObjectAsync(snapshot);
           return userDetails(userProfile);
@@ -506,7 +504,7 @@ class _SingleUserPageState extends State<SingleUserPage> {
 
   Widget userDetails(UserProfile userProfile) {
     return Card(
-      elevation: 5,
+      elevation: 8,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(SizeConfig.diagonal * 2),
       ),
@@ -522,6 +520,7 @@ class _SingleUserPageState extends State<SingleUserPage> {
                 content: '${I18n.of(context).deactivateUser}',
                 textAlign: TextAlign.center,
                 fontSize: SizeConfig.diagonal * 1.5,
+                fontWeight: FontWeight.bold,
                 color: Color(Styling.textColor),
               ),
             ),

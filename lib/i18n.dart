@@ -247,6 +247,8 @@ class I18n {
 
   String get stockUsed => _getText("stockUsed");
 
+  String get inen => _getText("inen");
+
   static late Map<String, String> _localizedValues;
 
   static const _enValues = {
@@ -371,6 +373,7 @@ class I18n {
     "desactive": "Desactivate",
     "evaluationSem": "Evaluation of the week",
     "stockUsed": "Today Most Used Stock Items",
+    "inen": "In",
   };
 
   static const _frValues = {
@@ -495,6 +498,7 @@ class I18n {
     "desactive": "Désactiver",
     "evaluationSem": "Evaluation de la semaine",
     "stockUsed": "Articles en stock les plus utilisés aujourd'hui",
+    "inen": "En",
   };
 
   static const _allValues = {

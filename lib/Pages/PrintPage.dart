@@ -1,8 +1,6 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'dart:io' show Platform;
-import 'package:zilliken/Components/ZAppBar.dart';
 import 'package:zilliken/Helpers/SizeConfig.dart';
 import 'package:zilliken/Helpers/Styling.dart';
 import 'package:zilliken/Services/Authentication.dart';

@@ -120,6 +120,12 @@ class Zilliken extends StatelessWidget {
       scaffoldBackgroundColor: Color(Styling.primaryBackgroundColor),
       backgroundColor: Color(Styling.primaryBackgroundColor),
       cardColor: Color(Styling.primaryBackgroundColor),
+      colorScheme: base.colorScheme.copyWith(
+        secondary: Color(Styling.accentColor),
+        onSecondary: Color(Styling.primaryBackgroundColor),
+        primary: Color(Styling.accentColor),
+        onPrimary: Color(Styling.primaryBackgroundColor),
+      ),
       //textTheme: base.textTheme.apply(fontFamily: 'Cochin'),
       //primaryTextTheme: base.textTheme.apply(fontFamily: 'Cochin'),
       // accentTextTheme: base.textTheme.apply(fontFamily: 'Cochin'),

@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zilliken/Components/ZAppBar.dart';
 import 'package:zilliken/Components/ZElevatedButton.dart';
 import 'package:zilliken/Helpers/SizeConfig.dart';
@@ -22,7 +21,6 @@ import 'package:zilliken/i18n.dart';
 
 import '../Components/ZText.dart';
 import 'DisabledPage.dart';
-import 'SplashPage.dart';
 
 class DashboardPage extends StatefulWidget {
   final Authentication auth;
@@ -76,7 +74,7 @@ class _DashboardPageState extends State<DashboardPage> {
         .collection(Fields.configuration)
         .doc(Fields.settings)
         .snapshots()
-        .listen((DocumentSnapshot<Map<String,dynamic>> documentSnapshot) {
+        .listen((DocumentSnapshot<Map<String, dynamic>> documentSnapshot) {
       setState(() {
         enabled = documentSnapshot.data()![Fields.enabled];
       });
@@ -86,7 +84,7 @@ class _DashboardPageState extends State<DashboardPage> {
         .collection(Fields.users)
         .doc(widget.userId)
         .snapshots()
-        .listen((DocumentSnapshot<Map<String,dynamic>> documentSnapshot) {
+        .listen((DocumentSnapshot<Map<String, dynamic>> documentSnapshot) {
       setState(() {
         isActive = documentSnapshot.data()![Fields.isActive];
       });
@@ -168,7 +166,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       logout,
                       null,
                       null,
-                      admin,
+                      widget.userRole != Fields.client ? admin : null,
                     ),
                     body: body(),
                     /*bottomNavigationBar: BottomNavigationBar(

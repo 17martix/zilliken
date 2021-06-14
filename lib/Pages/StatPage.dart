@@ -1,8 +1,5 @@
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:zilliken/Components/Indicator.dart';
 
@@ -435,13 +432,13 @@ class _StatPageState extends State<StatPage> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(SizeConfig.diagonal * 2),
           ),
-          color: Color(Styling.primaryBackgroundColor),
+          color: Color(Styling.primaryBackgroundColor).withOpacity(0.9),
           child: Padding(
             padding: EdgeInsets.all(SizeConfig.diagonal * 1),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisAlignment: MainAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
+              mainAxisSize: MainAxisSize.max,
               children: <Widget>[
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -488,6 +485,7 @@ class _StatPageState extends State<StatPage> {
                               fontSize: 10,
                             ),
                             margin: 15,
+                            reservedSize: 8,
                             getTitles: (double value) {
                               switch (value.toInt()) {
                                 case 0:

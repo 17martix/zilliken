@@ -3,7 +3,6 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:zilliken/Helpers/Utils.dart';
 import 'package:zilliken/Models/Call.dart';
@@ -101,7 +100,7 @@ class Database {
         .collection(Fields.configuration)
         .doc(Fields.taxes)
         .get()
-        .then((DocumentSnapshot<Map<String,dynamic>> documentSnapshot) {
+        .then((DocumentSnapshot<Map<String, dynamic>> documentSnapshot) {
       if (documentSnapshot.exists) {
         taxPercentage = documentSnapshot.data()![Fields.percentage];
       }
@@ -236,7 +235,7 @@ class Database {
         .doc(userId)
         .collection(Fields.addresses);
 
-    QuerySnapshot<Map<String,dynamic>> querySnapshot = await collection.get();
+    QuerySnapshot<Map<String, dynamic>> querySnapshot = await collection.get();
 
     querySnapshot.docs.forEach((element) {
       Address address = Address.buildObject(element);
@@ -265,7 +264,7 @@ class Database {
         .doc(orderId)
         .collection(Fields.items);
 
-    QuerySnapshot<Map<String,dynamic>> querySnapshot = await collection.get();
+    QuerySnapshot<Map<String, dynamic>> querySnapshot = await collection.get();
 
     querySnapshot.docs.forEach((element) {
       OrderItem orderItem = OrderItem.buildObject(element);
@@ -424,6 +423,7 @@ class Database {
   Future<void> updateStatus(
       String id, int status, int value, Order order, num grandTotal) async {
     var document = databaseReference.collection(Fields.order).doc(id);
+    DateTime today = DateTime.now();
 
     if (value == 1) {
       await document.update({
@@ -431,27 +431,71 @@ class Database {
         Fields.orderDate: FieldValue.serverTimestamp(),
       });
     } else if (value == 2) {
+      if (order.confirmedDate == null) {
+        order.clientOrder.forEach((orderItem) async {
+          if (orderItem.menuItem.condiments != null) {
+            orderItem.menuItem.condiments!.forEach((stock) async {
+              StatisticStock statisticStock = StatisticStock(
+                date: Timestamp.fromDate(
+                    DateTime(today.year, today.month, today.day)),
+                stockId: stock.id!,
+                name: stock.name,
+                quantity: stock.quantity,
+                unit: stock.unit,
+              );
+
+              log("there 1");
+
+              await databaseReference
+                  .collection(Fields.statisticStock)
+                  .where(Fields.stockId, isEqualTo: statisticStock.stockId)
+                  .where(Fields.date, isEqualTo: statisticStock.date)
+                  .get()
+                  .then((value) async {
+                if (value != null && value.size > 0) {
+                  var stockUpdateRef = databaseReference
+                      .collection(Fields.statisticStock)
+                      .doc(value.docs[0].id);
+                  log("there 2");
+
+                  await stockUpdateRef.update({
+                    Fields.quantity:
+                        FieldValue.increment(statisticStock.quantity),
+                  });
+                } else {
+                  DocumentReference statStockRef =
+                      databaseReference.collection(Fields.statisticStock).doc();
+
+                  log("there 3");
+                  await statStockRef.set({
+                    Fields.id: statStockRef.id,
+                    Fields.stockId: statisticStock.stockId,
+                    Fields.date: statisticStock.date,
+                    Fields.name: statisticStock.name,
+                    Fields.quantity: statisticStock.quantity,
+                    Fields.unit: statisticStock.unit,
+                  });
+                }
+              });
+
+              log("stock id is ${stock.id}");
+
+              var stockReference =
+                  databaseReference.collection(Fields.stock).doc(stock.id);
+
+              await stockReference.update({
+                Fields.quantity: FieldValue.increment(-stock.quantity),
+                Fields.usedSince: FieldValue.increment(stock.quantity),
+                Fields.usedTotal: FieldValue.increment(stock.quantity),
+              });
+            });
+          }
+        });
+      }
+
       await document.update({
         Fields.status: Fields.confirmed,
         Fields.confirmedDate: FieldValue.serverTimestamp(),
-      });
-
-      order.clientOrder.forEach((orderItem) async {
-        if (orderItem.menuItem.condiments != null) {
-          orderItem.menuItem.condiments!.forEach((stock) async {
-            var stockReference =
-                databaseReference.collection(Fields.stock).doc(stock.id);
-            WriteBatch batch = databaseReference.batch();
-
-            batch.update(stockReference, {
-              Fields.quantity: FieldValue.increment(-stock.quantity),
-              Fields.usedSince: FieldValue.increment(stock.quantity),
-              Fields.usedTotal: FieldValue.increment(stock.quantity),
-            });
-
-            await batch.commit();
-          });
-        }
       });
     } else if (value == 3) {
       await document.update({
@@ -459,77 +503,79 @@ class Database {
         Fields.preparationDate: FieldValue.serverTimestamp(),
       });
     } else if (value == 4) {
+      if (order.servedDate == null) {
+        Statistic newStatistic = Statistic(
+          date:
+              Timestamp.fromDate(DateTime(today.year, today.month, today.day)),
+          total: grandTotal,
+          id: id,
+        );
+
+        await databaseReference
+            .collection(Fields.statistic)
+            .where(Fields.date, isEqualTo: newStatistic.date)
+            .get()
+            .then((value) async {
+          if (value != null && value.size > 0) {
+            await databaseReference
+                .collection(Fields.statistic)
+                .doc(value.docs[0].id)
+                .update({
+              Fields.total: FieldValue.increment(newStatistic.total),
+            });
+          } else {
+            DocumentReference statref =
+                databaseReference.collection(Fields.statistic).doc();
+
+            await statref.set({
+              Fields.id: statref.id,
+              Fields.total: newStatistic.total,
+              Fields.date: newStatistic.date,
+            });
+          }
+        });
+
+        StatisticUser statisticUser = StatisticUser(
+          date:
+              Timestamp.fromDate(DateTime(today.year, today.month, today.day)),
+          total: grandTotal,
+          userId: order.userId,
+          userName: order.userName,
+        );
+
+        await databaseReference
+            .collection(Fields.statisticUser)
+            .where(Fields.userId, isEqualTo: statisticUser.userId)
+            .where(Fields.date, isEqualTo: statisticUser.date)
+            .get()
+            .then((value) async {
+          if (value != null && value.size > 0) {
+            await databaseReference
+                .collection(Fields.statisticUser)
+                .doc(value.docs[0].id)
+                .update({
+              Fields.total: FieldValue.increment(statisticUser.total),
+              Fields.count: FieldValue.increment(1),
+            });
+          } else {
+            DocumentReference statref =
+                databaseReference.collection(Fields.statisticUser).doc();
+
+            await statref.set({
+              Fields.id: statref.id,
+              Fields.total: statisticUser.total,
+              Fields.date: statisticUser.date,
+              Fields.userName: statisticUser.userName,
+              Fields.count: 1,
+              Fields.userId: statisticUser.userId,
+            });
+          }
+        });
+      }
+
       await document.update({
         Fields.status: Fields.served,
         Fields.servedDate: FieldValue.serverTimestamp(),
-      });
-
-      DateTime today = DateTime.now();
-      Statistic newStatistic = Statistic(
-        date: Timestamp.fromDate(DateTime(today.year, today.month, today.day)),
-        total: grandTotal,
-        id: id,
-        //count:1,
-      );
-
-      await databaseReference
-          .collection(Fields.statistic)
-          .where(Fields.date, isEqualTo: newStatistic.date)
-          .get()
-          .then((value) async {
-        if (value != null && value.size > 0) {
-          await databaseReference
-              .collection(Fields.statistic)
-              .doc(value.docs[0].id)
-              .update({
-            Fields.total: FieldValue.increment(newStatistic.total),
-          });
-        } else {
-          DocumentReference statref =
-              databaseReference.collection(Fields.statistic).doc();
-
-          await statref.set({
-            Fields.id: statref.id,
-            Fields.total: newStatistic.total,
-            Fields.date: newStatistic.date,
-          });
-        }
-      });
-
-      StatisticUser statisticUser = StatisticUser(
-        date: Timestamp.fromDate(DateTime(today.year, today.month, today.day)),
-        total: grandTotal,
-        userId: order.userId,
-        userName: order.userName,
-      );
-
-      await databaseReference
-          .collection(Fields.statisticUser)
-          .where(Fields.userId, isEqualTo: statisticUser.userId)
-          .where(Fields.date, isEqualTo: statisticUser.date)
-          .get()
-          .then((value) async {
-        if (value != null && value.size > 0) {
-          await databaseReference
-              .collection(Fields.statisticUser)
-              .doc(value.docs[0].id)
-              .update({
-            Fields.total: FieldValue.increment(statisticUser.total),
-            Fields.count: FieldValue.increment(1),
-          });
-        } else {
-          DocumentReference statref =
-              databaseReference.collection(Fields.statisticUser).doc();
-
-          await statref.set({
-            Fields.id: statref.id,
-            Fields.total: statisticUser.total,
-            Fields.date: statisticUser.date,
-            Fields.userName: statisticUser.userName,
-            Fields.count: 1,
-            Fields.userId: statisticUser.userId,
-          });
-        }
       });
     }
   }
@@ -577,6 +623,8 @@ class Database {
     for (int i = 0; i < list1.length; i++) {
       DocumentReference documentReference =
           databaseReference.collection(Fields.menu).doc();
+      List<String> tags = getMenuTags(list1[i]);
+
       batch1.set(documentReference, {
         Fields.id: documentReference.id,
         Fields.name: list1[i].name,
@@ -587,6 +635,7 @@ class Database {
         Fields.availability: list1[i].availability,
         Fields.imageName: list1[i].imageName,
         Fields.isDrink: list1[i].isDrink,
+        Fields.tags: tags,
         Fields.createdAt: FieldValue.serverTimestamp(),
       });
     }
@@ -595,6 +644,7 @@ class Database {
     for (int i = 0; i < list2.length; i++) {
       DocumentReference documentReference =
           databaseReference.collection(Fields.menu).doc();
+      List<String> tags = getMenuTags(list2[i]);
       batch2.set(documentReference, {
         Fields.id: documentReference.id,
         Fields.name: list2[i].name,
@@ -605,6 +655,7 @@ class Database {
         Fields.availability: list2[i].availability,
         Fields.imageName: list2[i].imageName,
         Fields.isDrink: list2[i].isDrink,
+        Fields.tags: tags,
         Fields.createdAt: FieldValue.serverTimestamp(),
       });
     }
@@ -881,7 +932,7 @@ class Database {
     List<MenuItem> menuItemList = [];
     var reference = databaseReference.collection(Fields.menu);
 
-    await reference.get().then((QuerySnapshot<Map<String,dynamic>> snapshot) {
+    await reference.get().then((QuerySnapshot<Map<String, dynamic>> snapshot) {
       if (snapshot != null && snapshot.docs.isNotEmpty) {
         snapshot.docs.forEach((element) async {
           MenuItem menuItem = MenuItem.buildObject(element);
@@ -1035,6 +1086,7 @@ class Database {
             isSuccess: false, message: I18n.of(context).operationFailed));
     return result;
   }
+
   Future<List<StatisticUser>> getTodayStatUser() async {
     List<StatisticUser> list = [];
 
@@ -1045,7 +1097,9 @@ class Database {
     var statUserRef = databaseReference
         .collection(Fields.statisticUser)
         .where(Fields.date, isEqualTo: timestamp);
-    await statUserRef.get().then((QuerySnapshot<Map<String,dynamic>> snapshot) {
+    await statUserRef
+        .get()
+        .then((QuerySnapshot<Map<String, dynamic>> snapshot) {
       if (snapshot != null && snapshot.docs.isNotEmpty)
         snapshot.docs.forEach((element) async {
           StatisticUser userStat = StatisticUser.buildObject(element);
@@ -1068,7 +1122,9 @@ class Database {
         .orderBy(Fields.quantity, descending: true)
         .limit(5);
 
-    await statStockRef.get().then((QuerySnapshot<Map<String,dynamic>> snapshot) {
+    await statStockRef
+        .get()
+        .then((QuerySnapshot<Map<String, dynamic>> snapshot) {
       if (snapshot.docs.isNotEmpty)
         snapshot.docs.forEach((element) async {
           StatisticStock stock = StatisticStock.buildObject(element);

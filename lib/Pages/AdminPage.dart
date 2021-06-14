@@ -7,7 +7,6 @@ import 'package:zilliken/Services/Messaging.dart';
 import 'package:zilliken/Pages/StatPage.dart';
 import 'package:zilliken/Pages/StockPage.dart';
 import 'package:zilliken/Pages/UserPage.dart';
-import 'package:zilliken/Pages/AdminPage.dart';
 import 'package:zilliken/Services/Authentication.dart';
 
 class AdminPage extends StatefulWidget {
@@ -44,21 +43,21 @@ class _AdminPageState extends State<AdminPage> {
       case 0:
         setState(() {
           _xoffset1 = SizeConfig.safeBlockHorizontal * 0;
-          _xoffset2 = SizeConfig.safeBlockHorizontal * 100;
-          _xoffset3 = SizeConfig.safeBlockHorizontal * 100;
+          _xoffset2 = SizeConfig.safeBlockHorizontal * 200;
+          _xoffset3 = SizeConfig.safeBlockHorizontal * 200;
         });
         break;
       case 1:
         setState(() {
-          _xoffset1 = SizeConfig.safeBlockHorizontal * -100;
+          _xoffset1 = SizeConfig.safeBlockHorizontal * -200;
           _xoffset2 = SizeConfig.safeBlockHorizontal * 0;
-          _xoffset3 = SizeConfig.safeBlockHorizontal * 100;
+          _xoffset3 = SizeConfig.safeBlockHorizontal * 200;
         });
         break;
       case 2:
         setState(() {
-          _xoffset1 = SizeConfig.safeBlockHorizontal * -100;
-          _xoffset2 = SizeConfig.safeBlockHorizontal * -100;
+          _xoffset1 = SizeConfig.safeBlockHorizontal * -200;
+          _xoffset2 = SizeConfig.safeBlockHorizontal * -200;
           _xoffset3 = SizeConfig.safeBlockHorizontal * 0;
         });
     }

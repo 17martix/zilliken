@@ -6,7 +6,6 @@ import 'package:zilliken/Components/ZTextField.dart';
 import 'package:zilliken/Helpers/SizeConfig.dart';
 import 'package:zilliken/Helpers/Styling.dart';
 import 'package:zilliken/Helpers/Utils.dart';
-import 'package:zilliken/Models/Category.dart';
 import 'package:zilliken/Models/Stock.dart';
 import 'package:zilliken/Services/Authentication.dart';
 import 'package:zilliken/Services/Database.dart';
@@ -127,7 +126,7 @@ class _NewItemPageState extends State<NewItemPage> {
                 onpressed: saveItem,
                 child: ZText(
                   content: I18n.of(context).save,
-                  color: Color(Styling.textColor),
+                  color: Color(Styling.primaryBackgroundColor),
                 ),
               ),
             ],
