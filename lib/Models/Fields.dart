@@ -95,4 +95,6 @@ class Fields {
   static final String tags = 'tags';
 
   static final String stockId = 'stockId';
+  static final String refillStock = 'refillStock';
+  static final String updateStock = 'updateStock';
 }

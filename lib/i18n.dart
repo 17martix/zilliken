@@ -215,8 +215,6 @@ class I18n {
 
   String get cancelOnly => _getText("cancelOnly");
 
-  String get update => _getText("update");
-
   String get linkToMenu => _getText("linkToMenu");
 
   String get selectUnit => _getText("selectUnit");
@@ -248,6 +246,16 @@ class I18n {
   String get stockUsed => _getText("stockUsed");
 
   String get inen => _getText("inen");
+
+  String get updateStock => _getText("updateStock");
+
+  String get refillStock => _getText("refillStock");
+
+  String get refillTitle => _getText("refillTitle");
+
+  String get updateTitle => _getText("updateTitle");
+
+  String get editCondimentQuantity => _getText("editCondimentQuantity");
 
   static late Map<String, String> _localizedValues;
 
@@ -357,7 +365,6 @@ class I18n {
     "itemEditing": "Edit Item Details",
     "printingDisabled": "Printing Disabled",
     "cancelOnly": "Cancel",
-    "update": "Update",
     "linkToMenu": "Link to Menu",
     "selectUnit": "Select Unit",
     "added": "Added",
@@ -374,6 +381,12 @@ class I18n {
     "evaluationSem": "Evaluation of the week",
     "stockUsed": "Today Most Used Stock Items",
     "inen": "In",
+    "updateStock": "Update Stock",
+    "refillStock": "Refill Stock",
+    "refillTitle": "Enter the amount to add to the stock",
+    "updateTitle": "Enter the amount to remove from the stock",
+    "editCondimentQuantity":
+        "Enter the amount to substract from the stock when the element is used to prepare the dish.",
   };
 
   static const _frValues = {
@@ -482,7 +495,6 @@ class I18n {
     "itemEditing": "Modifier Détails",
     "printingDisabled": "Impression désactivée",
     "cancelOnly": "Annuler",
-    "update": "Mettre à Jour",
     "linkToMenu": "Lier au Menu",
     "selectUnit": "Choisir l'Unité",
     "added": "Ajouté",
@@ -499,6 +511,12 @@ class I18n {
     "evaluationSem": "Evaluation de la semaine",
     "stockUsed": "Articles en stock les plus utilisés aujourd'hui",
     "inen": "En",
+    "updateStock": "Mettre à Jour le Stock",
+    "refillStock": "Remplir le Stock",
+    "refillTitle": "Saisissez le montant à ajouter au stock",
+    "updateTitle": "Saisir le montant à retirer du stock",
+    "editCondimentQuantity":
+        "Saisir la quantité à soustraire du stock lorsque l'élément est utilisé pour préparer le plat.",
   };
 
   static const _allValues = {

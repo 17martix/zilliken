@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 import 'package:zilliken/Components/ZElevatedButton.dart';
 import 'package:zilliken/Components/ZTextField.dart';
 import 'package:zilliken/Helpers/SizeConfig.dart';
@@ -173,6 +174,18 @@ class _StockPageState extends State<StockPage> {
                                   SizedBox(
                                     height: SizeConfig.diagonal * 2.5,
                                   ),
+                                  Padding(
+                                    padding: EdgeInsets.only(
+                                      top: SizeConfig.diagonal * 4,
+                                      bottom: SizeConfig.diagonal * 1.5,
+                                    ),
+                                    child: SizedBox(
+                                      height: SizeConfig.diagonal * 2.5,
+                                      child: ZText(
+                                        content: I18n.of(context).refillTitle,
+                                      ),
+                                    ),
+                                  ),
                                   ZTextField(
                                     hint: '${stock.quantity} ${stock.unit}',
                                     onSaved: (value) {
@@ -289,8 +302,8 @@ class _StockPageState extends State<StockPage> {
             },
             child: Card(
               shape: RoundedRectangleBorder(
-                  borderRadius:
-                      BorderRadius.circular(SizeConfig.diagonal * 1.5)),
+                borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5),
+              ),
               elevation: 8,
               child: Container(
                 height: SizeConfig.diagonal * 11.3,
@@ -299,11 +312,11 @@ class _StockPageState extends State<StockPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(
-                      Icons.update,
+                      Icons.upgrade_rounded,
                       size: SizeConfig.diagonal * 2.5,
                     ),
                     ZText(
-                      content: I18n.of(context).update,
+                      content: I18n.of(context).refillStock,
                       color: Color(Styling.primaryBackgroundColor),
                     ),
                   ],
@@ -367,7 +380,6 @@ class _StockPageState extends State<StockPage> {
         ),
       ],
       child: Container(
-        height: SizeConfig.diagonal * 12,
         child: Card(
           margin: EdgeInsets.symmetric(
               horizontal: SizeConfig.diagonal * 0.9,
@@ -379,22 +391,55 @@ class _StockPageState extends State<StockPage> {
             padding: EdgeInsets.symmetric(
                 horizontal: SizeConfig.diagonal * 1.5,
                 vertical: SizeConfig.diagonal * 1),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            child: Row(
               children: [
-                ZText(
-                  content: I18n.of(context).name + ' : ${stock.name}',
-                  textAlign: TextAlign.start,
+                Padding(
+                  padding: EdgeInsets.only(
+                      // left: SizeConfig.diagonal * 1,
+                      right: SizeConfig.diagonal * 2),
+                  child: Icon(
+                    Icons.inventory_outlined,
+                    size: 25,
+                  ),
                 ),
-                ZText(
-                    content: I18n.of(context).quantity +
-                        ' : ${stock.quantity} ${stock.unit}'),
-                ZText(
-                    content: I18n.of(context).used +
-                        ' : ${stock.usedSince} ${stock.unit}'),
-                ZText(
-                    content: '${widget.formatter.format(stock.date!.toDate())}')
+                Container(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ZText(
+                        content: I18n.of(context).name + ' : ${stock.name}',
+                        textAlign: TextAlign.start,
+                      ),
+                      ZText(
+                          content: I18n.of(context).quantity +
+                              ' : ${stock.quantity} ${stock.unit}'),
+                      ZText(
+                          content: I18n.of(context).used +
+                              ' : ${stock.usedSince} ${stock.unit}'),
+                      ZText(
+                          content: '${widget.formatter.format(
+                        stock.date!.toDate(),
+                      )}')
+                    ],
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.only(left: SizeConfig.diagonal * 3),
+                  child: SleekCircularSlider(
+                      innerWidget: (percentage) {
+                        return ZText(
+                          content:
+                              '${(stock.quantity / 100) + (stock.usedSince / 100)}',
+                        );
+                      },
+                      max: (stock.quantity / 100) + (stock.usedSince / 100),
+                      initialValue: stock.quantity / 100,
+                      appearance: CircularSliderAppearance(
+                        size: SizeConfig.diagonal * 15,
+                        spinnerMode: false,
+                      )),
+                ),
               ],
             ),
           ),
@@ -431,8 +476,17 @@ class _StockPageState extends State<StockPage> {
                               autovalidateMode: AutovalidateMode.disabled,
                               child: Column(
                                 children: [
-                                  SizedBox(
-                                    height: SizeConfig.diagonal * 2.5,
+                                  Padding(
+                                    padding: EdgeInsets.only(
+                                      top: SizeConfig.diagonal * 4,
+                                      bottom: SizeConfig.diagonal * 1.5,
+                                    ),
+                                    child: SizedBox(
+                                      height: SizeConfig.diagonal * 2.5,
+                                      child: ZText(
+                                        content: I18n.of(context).updateTitle,
+                                      ),
+                                    ),
                                   ),
                                   ZTextField(
                                     hint: '${stock.usedSince} ${stock.unit}',
@@ -560,11 +614,11 @@ class _StockPageState extends State<StockPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(
-                      Icons.adjust,
+                      Icons.update,
                       size: SizeConfig.diagonal * 2.5,
                     ),
                     ZText(
-                      content: I18n.of(context).adjust,
+                      content: I18n.of(context).updateStock,
                       color: Color(Styling.primaryBackgroundColor),
                     ),
                   ],
@@ -632,7 +686,6 @@ class _StockPageState extends State<StockPage> {
                     ZText(
                       content: I18n.of(context).delete,
                       color: Color(Styling.primaryBackgroundColor),
-                    
                     ),
                   ],
                 ),
