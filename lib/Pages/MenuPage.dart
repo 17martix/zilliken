@@ -15,11 +15,13 @@ import 'package:zilliken/Models/Category.dart';
 import 'package:zilliken/Models/Fields.dart';
 import 'package:zilliken/Models/MenuItem.dart';
 import 'package:zilliken/Models/OrderItem.dart';
+import 'package:zilliken/Models/Stock.dart';
 import 'package:zilliken/Services/Authentication.dart';
 import 'package:zilliken/Services/Database.dart';
 import 'package:zilliken/Services/Messaging.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
+import 'package:collection/collection.dart';
 
 import 'package:zilliken/i18n.dart';
 
@@ -48,7 +50,7 @@ class MenuPage extends StatefulWidget {
 }
 
 class _MenuPageState extends State<MenuPage> {
-  late Query<Map<String,dynamic>> commandes;
+  late Query<Map<String, dynamic>> commandes;
   var categories = FirebaseFirestore.instance
       .collection(Fields.category)
       .orderBy(Fields.rank, descending: false);
@@ -76,6 +78,10 @@ class _MenuPageState extends State<MenuPage> {
   int? newPrice;
   String? newId;
 
+  List<Stock> stockList = [];
+
+  // String? _stockId;
+
   @override
   void initState() {
     super.initState();
@@ -93,6 +99,10 @@ class _MenuPageState extends State<MenuPage> {
       _catList.addAll(value);
       category = _catList[0];
       _isCategoryLoaded = true;
+    });
+
+    widget.db.getStock().then((value) {
+      stockList = value;
     });
 
     //if (clientOrder.length > 0)
@@ -583,9 +593,10 @@ class _MenuPageState extends State<MenuPage> {
   }
 
   Widget categoryList() {
-    return StreamBuilder<QuerySnapshot<Map<String,dynamic>>>(
+    return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
       stream: categories.snapshots(),
-      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot<Map<String,dynamic>>> snapshot) {
+      builder: (BuildContext context,
+          AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
         if (snapshot.data == null)
           return Center(
             child: ZText(content: ""),
@@ -596,7 +607,8 @@ class _MenuPageState extends State<MenuPage> {
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
-              children: snapshot.data!.docs.map((DocumentSnapshot<Map<String,dynamic>> document) {
+              children: snapshot.data!.docs
+                  .map((DocumentSnapshot<Map<String, dynamic>> document) {
                 Category category = Category.buildObject(document);
                 return categoryItem(category);
               }).toList(),
@@ -608,9 +620,10 @@ class _MenuPageState extends State<MenuPage> {
   }
 
   Widget menulist() {
-    return StreamBuilder<QuerySnapshot<Map<String,dynamic>>>(
+    return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
       stream: commandes.snapshots(),
-      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot<Map<String,dynamic>>> snapshot) {
+      builder: (BuildContext context,
+          AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
         if (snapshot.data == null)
           return Center(
             child: ZText(content: ""),
@@ -642,11 +655,30 @@ class _MenuPageState extends State<MenuPage> {
           itemCount: snapshot.data!.docs.length,
           itemBuilder: (context, index) {
             MenuItem menu = MenuItem.buildObject(snapshot.data!.docs[index]);
+            bool isDisplayed = true;
+            if (menu.condiments != null) {
+              menu.condiments!.forEach((menuStock) {
+                Stock? stock = stockList.firstWhereOrNull(
+                    (stockElement) => stockElement.id == menuStock.id);
+
+                if (stock != null) {
+                  if (stock.quantity < menuStock.quantity) {
+                    isDisplayed = false;
+                    return;
+                  }
+                }
+              });
+            }
+            // num q;
+            // _stockId = menu.condiments!.elementAt(0).buildStringFromObject(q);
             return Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                //if (menu.rank == 1) categoryRow(menu),
-                item(menu),
+                isDisplayed
+                    ?
+                    //if (menu.rank == 1) categoryRow(menu),
+                    item(menu)
+                    : Container(),
               ],
             );
           },

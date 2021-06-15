@@ -1136,4 +1136,18 @@ class Database {
     });
     return list;
   }
+
+  Future<List<Stock>> getStock() async {
+    var stockRef = databaseReference.collection(Fields.stock);
+    List<Stock> stockList = [];
+    await stockRef.get().then((value) {
+      if (value.docs.isNotEmpty)
+        value.docs.forEach((element) async {
+          Stock stock = Stock.buildObject(element);
+          stockList.add(stock);
+        });
+    });
+
+    return stockList;
+  }
 }
