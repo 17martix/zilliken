@@ -784,34 +784,50 @@ class _MenuPageState extends State<MenuPage> {
                                           AutovalidateMode.disabled,
                                       child: Column(
                                         children: [
-                                          SizedBox(
-                                            height: SizeConfig.diagonal * 2.5,
+                                          Padding(
+                                            padding: EdgeInsets.only(
+                                                top: SizeConfig.diagonal * 5,
+                                                bottom:
+                                                    SizeConfig.diagonal * 3),
+                                            child: ZText(
+                                                content: I18n.of(context)
+                                                    .editMenuItem),
                                           ),
-                                          ZTextField(
-                                            hint: I18n.of(context).itemName,
-                                            onSaved: (value) {
-                                              if (value != null) {
-                                                newName = value;
-                                              }
-                                            },
-                                            validator: (value) =>
-                                                value == null || value.isEmpty
-                                                    ? I18n.of(context).requit
-                                                    : null,
-                                            icon: Icons.restaurant,
+                                          Padding(
+                                            padding: EdgeInsets.only(
+                                              bottom: SizeConfig.diagonal * 1,
+                                            ),
+                                            child: ZTextField(
+                                              hint: I18n.of(context).itemName,
+                                              onSaved: (value) {
+                                                if (value != null) {
+                                                  newName = value;
+                                                }
+                                              },
+                                              validator: (value) =>
+                                                  value == null || value.isEmpty
+                                                      ? I18n.of(context).requit
+                                                      : null,
+                                              icon: Icons.short_text_sharp,
+                                            ),
                                           ),
-                                          ZTextField(
-                                            hint: I18n.of(context).itemPrice,
-                                            onSaved: (value) {
-                                              if (value != null) {
-                                                newPrice = int.parse(value);
-                                              }
-                                            },
-                                            validator: (value) =>
-                                                value == null || value.isEmpty
-                                                    ? I18n.of(context).requit
-                                                    : null,
-                                            icon: Icons.restaurant,
+                                          Padding(
+                                            padding: EdgeInsets.only(
+                                              bottom: SizeConfig.diagonal * 1,
+                                            ),
+                                            child: ZTextField(
+                                              hint: I18n.of(context).itemPrice,
+                                              onSaved: (value) {
+                                                if (value != null) {
+                                                  newPrice = int.parse(value);
+                                                }
+                                              },
+                                              validator: (value) =>
+                                                  value == null || value.isEmpty
+                                                      ? I18n.of(context).requit
+                                                      : null,
+                                              icon: Icons.price_check_sharp,
+                                            ),
                                           ),
                                           ZElevatedButton(
                                             onpressed: () async {

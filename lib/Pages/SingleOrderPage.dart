@@ -1094,6 +1094,8 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
       padding: EdgeInsets.only(
           left: SizeConfig.diagonal * 0.5, right: SizeConfig.diagonal * 0.5),
       child: Card(
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5)),
         elevation: 16,
         child: new Column(
           mainAxisAlignment: MainAxisAlignment.center,

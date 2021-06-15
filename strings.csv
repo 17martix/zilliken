@@ -97,7 +97,7 @@ last,Last seen at,Vu à
 active,Activate,Activer
 dailyTotal, Daily Total, Total Journalier
 quantity,Quantity,Quantité
-used,Used,Utilisé
+used,used,utilisé
 unit,Unit,Unité
 itemDescription,Enter Item Description,Entrer Déscription
 itemEditing,Edit Item Details,Modifier Détails
@@ -124,3 +124,6 @@ refillStock,Refill Stock,Remplir le Stock
 refillTitle,Enter the amount to add to the stock,Saisissez le montant à ajouter au stock
 updateTitle,Enter the amount to remove from the stock,Saisir le montant à retirer du stock
 editCondimentQuantity,Enter the amount to substract from the stock when the element is used to prepare the dish.,Saisir la quantité à soustraire du stock lorsque l'élément est utilisé pour préparer le plat.
+over,over,sur
+inStock, in Stock, en Stock
+editMenuItem,Edit item's ttributes,Modifier les attributs de l'élément

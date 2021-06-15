@@ -417,6 +417,7 @@ class _ConnectToMenuState extends State<LinkToMenu> {
     return Container(
       width: double.infinity,
       child: Card(
+        color: Colors.white.withOpacity(0.7),
         elevation: 8,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5),

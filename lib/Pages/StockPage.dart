@@ -380,69 +380,117 @@ class _StockPageState extends State<StockPage> {
         ),
       ],
       child: Container(
-        child: Card(
-          margin: EdgeInsets.symmetric(
-              horizontal: SizeConfig.diagonal * 0.9,
-              vertical: SizeConfig.diagonal * 0.4),
-          elevation: 8,
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5)),
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-                horizontal: SizeConfig.diagonal * 1.5,
-                vertical: SizeConfig.diagonal * 1),
-            child: Row(
-              children: [
-                Padding(
-                  padding: EdgeInsets.only(
-                      // left: SizeConfig.diagonal * 1,
-                      right: SizeConfig.diagonal * 2),
-                  child: Icon(
-                    Icons.inventory_outlined,
-                    size: 25,
-                  ),
+        child: Column(
+          children: [
+            Card(
+              color: Colors.white.withOpacity(0.7),
+              margin: EdgeInsets.symmetric(
+                horizontal: SizeConfig.diagonal * 0.9,
+              ),
+              elevation: 8,
+              shape: RoundedRectangleBorder(
+                  borderRadius:
+                      BorderRadius.circular(SizeConfig.diagonal * 1.5)),
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: SizeConfig.diagonal * 1.5,
+                  vertical: SizeConfig.diagonal * 1,
                 ),
-                Container(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ZText(
-                        content: I18n.of(context).name + ' : ${stock.name}',
-                        textAlign: TextAlign.start,
-                      ),
-                      ZText(
-                          content: I18n.of(context).quantity +
-                              ' : ${stock.quantity} ${stock.unit}'),
-                      ZText(
-                          content: I18n.of(context).used +
-                              ' : ${stock.usedSince} ${stock.unit}'),
-                      ZText(
-                          content: '${widget.formatter.format(
-                        stock.date!.toDate(),
-                      )}')
-                    ],
-                  ),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.only(
+                                  // left: SizeConfig.diagonal * 1,
+                                  right: SizeConfig.diagonal * 2),
+                              child: Icon(
+                                Icons.inventory_outlined,
+                                size: 25,
+                                color: Color(Styling.accentColor),
+                              ),
+                            ),
+                            Container(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsets.only(
+                                        bottom: SizeConfig.diagonal * 1),
+                                    child: ZText(
+                                      content: '${stock.name}',
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: SizeConfig.diagonal * 2.1,
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.only(
+                                        bottom: SizeConfig.diagonal * 1),
+                                    child: ZText(
+                                        content:
+                                            '${stock.quantity} ${stock.unit} ' +
+                                                I18n.of(context).inStock),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.only(
+                                        bottom: SizeConfig.diagonal * 1),
+                                    child: ZText(
+                                        content:
+                                            '${stock.usedSince} ${stock.unit} /' +
+                                                '${stock.quantity + stock.usedSince} ${stock.unit} ' +
+                                                I18n.of(context).used),
+                                  ),
+                                  ZText(
+                                      content: '${widget.formatter.format(
+                                    stock.date!.toDate(),
+                                  )}'),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        Container(
+                          margin: EdgeInsets.only(
+                              left: SizeConfig.diagonal * 1,
+                              top: SizeConfig.diagonal * 1),
+                          child: SleekCircularSlider(
+                              max: (stock.quantity / 100) +
+                                  (stock.usedSince / 100),
+                              initialValue: stock.quantity / 100,
+                              appearance: CircularSliderAppearance(
+                                customColors: CustomSliderColors(
+                                    trackColor: Color(Styling.accentColor),
+                                    progressBarColors: [
+                                      Colors.blue,
+                                      Colors.yellow,
+                                      Colors.red,
+                                    ]),
+                                infoProperties: InfoProperties(
+                                  mainLabelStyle: TextStyle(
+                                    fontSize: SizeConfig.diagonal * 2.5,
+                                  ),
+                                  modifier: (percentage) {
+                                    return '${(stock.quantity * 100) / (stock.quantity + stock.usedSince)}\%';
+                                  },
+                                  topLabelText: 'Remaining quantity',
+                                  topLabelStyle: TextStyle(
+                                    fontSize: SizeConfig.diagonal * 1.35,
+                                  ),
+                                ),
+                                size: SizeConfig.diagonal * 17,
+                                spinnerMode: false,
+                              )),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-                Container(
-                  margin: EdgeInsets.only(left: SizeConfig.diagonal * 3),
-                  child: SleekCircularSlider(
-                      innerWidget: (percentage) {
-                        return ZText(
-                          content:
-                              '${(stock.quantity / 100) + (stock.usedSince / 100)}',
-                        );
-                      },
-                      max: (stock.quantity / 100) + (stock.usedSince / 100),
-                      initialValue: stock.quantity / 100,
-                      appearance: CircularSliderAppearance(
-                        size: SizeConfig.diagonal * 15,
-                        spinnerMode: false,
-                      )),
-                ),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
       secondaryActions: [
@@ -699,35 +747,6 @@ class _StockPageState extends State<StockPage> {
           ),
         )
       ],
-    )
-
-        /*Card(
-      margin: EdgeInsets.symmetric(
-          horizontal: SizeConfig.diagonal * 0.9,
-          vertical: SizeConfig.diagonal * 0.3),
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5)),
-      elevation: 8,
-      child: ListTile(
-        onTap: () {},
-        leading: Icon(
-          Icons.food_bank,
-          size: SizeConfig.diagonal * 4,
-        ),
-        title: Text(stock.name),
-        subtitle: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(I18n.of(context).quantity +
-                ' : ' +
-                '${stock.quantity}' +
-                ' ' +
-                stock.unit),
-            Text(I18n.of(context).used + ' : ' + '${stock.usedSince}'),
-          ],
-        ),
-      ),
-    )*/
-        ;
+    );
   }
 }

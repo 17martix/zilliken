@@ -257,6 +257,12 @@ class I18n {
 
   String get editCondimentQuantity => _getText("editCondimentQuantity");
 
+  String get over => _getText("over");
+
+  String get inStock => _getText("inStock");
+
+  String get editMenuItem => _getText("editMenuItem");
+
   static late Map<String, String> _localizedValues;
 
   static const _enValues = {
@@ -359,7 +365,7 @@ class I18n {
     "active": "Activate",
     "dailyTotal": " Daily Total",
     "quantity": "Quantity",
-    "used": "Used",
+    "used": "used",
     "unit": "Unit",
     "itemDescription": "Enter Item Description",
     "itemEditing": "Edit Item Details",
@@ -387,6 +393,9 @@ class I18n {
     "updateTitle": "Enter the amount to remove from the stock",
     "editCondimentQuantity":
         "Enter the amount to substract from the stock when the element is used to prepare the dish.",
+    "over": "over",
+    "inStock": " in Stock",
+    "editMenuItem": "Edit item's ttributes",
   };
 
   static const _frValues = {
@@ -489,7 +498,7 @@ class I18n {
     "active": "Activer",
     "dailyTotal": " Total Journalier",
     "quantity": "Quantité",
-    "used": "Utilisé",
+    "used": "utilisé",
     "unit": "Unité",
     "itemDescription": "Entrer Déscription",
     "itemEditing": "Modifier Détails",
@@ -517,6 +526,9 @@ class I18n {
     "updateTitle": "Saisir le montant à retirer du stock",
     "editCondimentQuantity":
         "Saisir la quantité à soustraire du stock lorsque l'élément est utilisé pour préparer le plat.",
+    "over": "sur",
+    "inStock": " en Stock",
+    "editMenuItem": "Modifier les attributs de l'élément",
   };
 
   static const _allValues = {
