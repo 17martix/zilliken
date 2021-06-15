@@ -1375,7 +1375,8 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                 Expanded(
                   flex: 1,
                   child: ZText(
-                    content: '${formatNumber(orderItem.menuItem.price)} Fbu',
+                    content:
+                        '${formatNumber(orderItem.menuItem.price)} * ${orderItem.count} =  ${formatNumber(orderItem.menuItem.price * orderItem.count)} Fbu',
                     overflow: TextOverflow.ellipsis,
                     textAlign: TextAlign.end,
                     color: Color(Styling.textColor),

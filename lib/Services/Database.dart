@@ -440,7 +440,7 @@ class Database {
                     DateTime(today.year, today.month, today.day)),
                 stockId: stock.id!,
                 name: stock.name,
-                quantity: stock.quantity,
+                quantity: stock.quantity * orderItem.count,
                 unit: stock.unit,
               );
 
@@ -484,9 +484,12 @@ class Database {
                   databaseReference.collection(Fields.stock).doc(stock.id);
 
               await stockReference.update({
-                Fields.quantity: FieldValue.increment(-stock.quantity),
-                Fields.usedSince: FieldValue.increment(stock.quantity),
-                Fields.usedTotal: FieldValue.increment(stock.quantity),
+                Fields.quantity:
+                    FieldValue.increment(-stock.quantity * orderItem.count),
+                Fields.usedSince:
+                    FieldValue.increment(stock.quantity * orderItem.count),
+                Fields.usedTotal:
+                    FieldValue.increment(stock.quantity * orderItem.count),
               });
             });
           }
