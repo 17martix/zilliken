@@ -336,14 +336,14 @@ class _SingleUserPageState extends State<SingleUserPage> {
           child: Padding(
             padding: EdgeInsets.all(SizeConfig.diagonal * 1),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisAlignment: MainAxisAlignment.start,
-              mainAxisSize: MainAxisSize.max,
+              //crossAxisAlignment: CrossAxisAlignment.stretch,
+              //mainAxisAlignment: MainAxisAlignment.start,
+              //mainAxisSize: MainAxisSize.max,
               children: <Widget>[
                 Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.start,
+                  //crossAxisAlignment: CrossAxisAlignment.center,
+                  //mainAxisSize: MainAxisSize.min,
+                  //mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
                     makeTransactionsIcon(),
                     SizedBox(width: SizeConfig.diagonal * 1),

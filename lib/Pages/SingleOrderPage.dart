@@ -1364,7 +1364,6 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
-                  flex: 3,
                   child: ZText(
                     content: '${orderItem.menuItem.name} x ${orderItem.count}',
                     overflow: TextOverflow.ellipsis,
@@ -1372,15 +1371,12 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                   ),
                 ),
                 SizedBox(width: SizeConfig.diagonal * 1),
-                Expanded(
-                  flex: 1,
-                  child: ZText(
-                    content:
-                        '${formatNumber(orderItem.menuItem.price)} * ${orderItem.count} =  ${formatNumber(orderItem.menuItem.price * orderItem.count)} Fbu',
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.end,
-                    color: Color(Styling.textColor),
-                  ),
+                ZText(
+                  content:
+                      '${formatNumber(orderItem.menuItem.price)} * ${orderItem.count} = ${formatNumber(orderItem.menuItem.price * orderItem.count)} FBU',
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.end,
+                  color: Color(Styling.textColor),
                 ),
               ],
             )),
@@ -1422,7 +1418,6 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
-                flex: 1,
                 child: ZText(
                   content: '${I18n.of(context).taxCharge}',
                   overflow: TextOverflow.ellipsis,
@@ -1430,15 +1425,12 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                 ),
               ),
               SizedBox(width: SizeConfig.diagonal * 1),
-              Expanded(
-                flex: 1,
-                child: ZText(
-                  content: appliedTaxFromTotal(
-                      context, order.total, order.taxPercentage),
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.end,
-                  color: Color(Styling.textColor),
-                ),
+              ZText(
+                content: appliedTaxFromTotal(
+                    context, order.total, order.taxPercentage),
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.end,
+                color: Color(Styling.textColor),
               ),
             ],
           ),
@@ -1453,7 +1445,6 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
-                flex: 1,
                 child: ZText(
                   content: '${I18n.of(context).grandTotal}',
                   overflow: TextOverflow.ellipsis,
@@ -1461,14 +1452,11 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                 ),
               ),
               SizedBox(width: SizeConfig.diagonal * 1),
-              Expanded(
-                flex: 1,
-                child: ZText(
-                  content: '${formatNumber(order.grandTotal)} Fbu',
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.end,
-                  color: Color(Styling.textColor),
-                ),
+              ZText(
+                content: '${formatNumber(order.grandTotal)} FBU',
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.end,
+                color: Color(Styling.textColor),
               ),
             ],
           ),
