@@ -252,10 +252,13 @@ class _UserPageState extends State<UserPage> {
       child: Padding(
         padding: EdgeInsets.symmetric(vertical: SizeConfig.diagonal * 1),
         child: ListTile(
-          leading: Icon(
-            Icons.person,
-            size: 25,
-            color: Color(Styling.accentColor),
+          leading: Padding(
+            padding: EdgeInsets.only(top: SizeConfig.diagonal * 1),
+            child: Icon(
+              Icons.person,
+              size: 25,
+              color: Color(Styling.accentColor),
+            ),
           ),
           title: Padding(
             padding: EdgeInsets.only(
@@ -283,6 +286,16 @@ class _UserPageState extends State<UserPage> {
                     '${widget.formatter.format(userProfile.lastSeenAt!.toDate())}',
               ),
             ],
+          ),
+          trailing: Padding(
+            padding: EdgeInsets.only(
+              top: SizeConfig.diagonal * 1,
+            ),
+            child: Icon(
+              Icons.keyboard_arrow_right,
+              size: 30,
+              color: Color(Styling.accentColor),
+            ),
           ),
           onTap: () {
             Navigator.push(

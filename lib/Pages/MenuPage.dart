@@ -726,6 +726,7 @@ class _MenuPageState extends State<MenuPage> {
 
   Widget item(MenuItem menu) {
     return Card(
+      color: Colors.white.withOpacity(0.7),
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5)),
       elevation: 2,

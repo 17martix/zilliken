@@ -36,7 +36,7 @@ class OrdersPage extends StatefulWidget {
 }
 
 class _OrdersPageState extends State<OrdersPage> {
-  late Query<Map<String,dynamic>> commandes;
+  late Query<Map<String, dynamic>> commandes;
 
   @override
   void initState() {
@@ -77,7 +77,7 @@ class _OrdersPageState extends State<OrdersPage> {
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5)),
         elevation: 16,
-        color: Colors.white,
+        color: Colors.white.withOpacity(0.8),
         child: Container(
           alignment: Alignment.center,
           height: SizeConfig.diagonal * 10,
@@ -99,11 +99,15 @@ class _OrdersPageState extends State<OrdersPage> {
                 ),
               );
             },
-            leading: Icon(
-              order.orderLocation == 0
-                  ? FontAwesomeIcons.listAlt
-                  : FontAwesomeIcons.truckMoving,
-              size: SizeConfig.diagonal * 4,
+            leading: Padding(
+              padding: EdgeInsets.only(top: SizeConfig.diagonal * 1),
+              child: Icon(
+                order.orderLocation == 0
+                    ? FontAwesomeIcons.listAlt
+                    : FontAwesomeIcons.truckMoving,
+                size: 25,
+                color: Color(Styling.accentColor),
+              ),
             ),
             title: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -176,9 +180,10 @@ class _OrdersPageState extends State<OrdersPage> {
   }
 
   Widget ordersList() {
-    return StreamBuilder<QuerySnapshot<Map<String,dynamic>>>(
+    return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
       stream: commandes.snapshots(),
-      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot<Map<String,dynamic>>> snapshot) {
+      builder: (BuildContext context,
+          AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
         if (snapshot.data == null || snapshot.data!.docs.length <= 0) {
           return Center(
             child: ZText(
@@ -192,7 +197,8 @@ class _OrdersPageState extends State<OrdersPage> {
         }
 
         return ListView(
-          children: snapshot.data!.docs.map((DocumentSnapshot<Map<String,dynamic>> document) {
+          children: snapshot.data!.docs
+              .map((DocumentSnapshot<Map<String, dynamic>> document) {
             Order order = Order.buildObject(document);
 
             return item(order);

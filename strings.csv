@@ -127,3 +127,5 @@ editCondimentQuantity,Enter the amount to substract from the stock when the elem
 over,over,sur
 inStock, in Stock, en Stock
 editMenuItem,Edit item's ttributes,Modifier les attributs de l'élément
+refilledAt,Refilled on,Rempli le
+remaining,Remaining,Restant

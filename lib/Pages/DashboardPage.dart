@@ -156,7 +156,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   ),
                 ),
                 child: Container(
-                  color: Color(Styling.primaryBackgroundColor).withOpacity(0.7),
+                  // color: Color(Styling.primaryBackgroundColor).withOpacity(0.1),
                   child: Scaffold(
                     key: _scaffoldKey,
                     backgroundColor: Colors.transparent,

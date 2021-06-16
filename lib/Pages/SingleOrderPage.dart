@@ -359,67 +359,77 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
               userId: widget.userId,
               userRole: widget.userRole,
             )
-          : Scaffold(
-              key: _scaffoldKey,
-              appBar: buildAppBar(
-                context,
-                widget.auth,
-                true,
-                null,
-                backFunction,
-                (widget.userRole != Fields.client && items != null)
-                    ? printing
-                    : null,
-                null,
+          : Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                    image: AssetImage('assets/Zilliken.jpg'),
+                    fit: BoxFit.cover),
               ),
-              floatingActionButton: (widget.userRole != Fields.client ||
-                      widget.clientOrder.orderLocation == 1)
-                  ? null
-                  : FloatingActionButton.extended(
-                      onPressed: () async {
-                        EasyLoading.show(status: I18n.of(context).loading);
-                        bool isOnline = await hasConnection();
-                        if (!isOnline) {
-                          EasyLoading.dismiss();
-
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content:
-                                ZText(content: I18n.of(context).noInternet),
-                          ));
-                        } else {
-                          try {
-                            Call call = Call(
-                              hasCalled: true,
-                              order: widget.clientOrder,
-                            );
-                            await widget.db.addCall(call);
+              child: Scaffold(
+                backgroundColor: Colors.transparent,
+                key: _scaffoldKey,
+                appBar: buildAppBar(
+                  context,
+                  widget.auth,
+                  true,
+                  null,
+                  backFunction,
+                  (widget.userRole != Fields.client && items != null)
+                      ? printing
+                      : null,
+                  null,
+                ),
+                floatingActionButton: (widget.userRole != Fields.client ||
+                        widget.clientOrder.orderLocation == 1)
+                    ? null
+                    : FloatingActionButton.extended(
+                        onPressed: () async {
+                          EasyLoading.show(status: I18n.of(context).loading);
+                          bool isOnline = await hasConnection();
+                          if (!isOnline) {
                             EasyLoading.dismiss();
 
                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                               content:
-                                  ZText(content: I18n.of(context).messageSent),
+                                  ZText(content: I18n.of(context).noInternet),
                             ));
-                          } on Exception catch (e) {
-                            EasyLoading.dismiss();
+                          } else {
+                            try {
+                              Call call = Call(
+                                hasCalled: true,
+                                order: widget.clientOrder,
+                              );
+                              await widget.db.addCall(call);
+                              EasyLoading.dismiss();
 
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              content: ZText(content: e.toString()),
-                            ));
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                content: ZText(
+                                    content: I18n.of(context).messageSent),
+                              ));
+                            } on Exception catch (e) {
+                              EasyLoading.dismiss();
+
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                content: ZText(content: e.toString()),
+                              ));
+                            }
                           }
-                        }
-                      },
-                      label: ZText(
-                          content: I18n.of(context).callThewaiter,
+                        },
+                        label: ZText(
+                            content: I18n.of(context).callThewaiter,
+                            color: Color(Styling.primaryBackgroundColor),
+                            fontSize: SizeConfig.diagonal * 1.5),
+                        icon: Icon(
+                          FontAwesomeIcons.handPointUp,
+                          size: SizeConfig.diagonal * 2.5,
                           color: Color(Styling.primaryBackgroundColor),
-                          fontSize: SizeConfig.diagonal * 1.5),
-                      icon: Icon(
-                        FontAwesomeIcons.handPointUp,
-                        size: SizeConfig.diagonal * 2.5,
-                        color: Color(Styling.primaryBackgroundColor),
+                        ),
+                        backgroundColor: Color(Styling.accentColor),
                       ),
-                      backgroundColor: Color(Styling.accentColor),
-                    ),
-              body: body(),
+                body: body(),
+              ),
             ),
     );
   }
@@ -502,6 +512,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                 left: SizeConfig.diagonal * 0.5,
                 right: SizeConfig.diagonal * 0.5),
             child: Card(
+              color: Colors.white.withOpacity(0.7),
               shape: RoundedRectangleBorder(
                   borderRadius:
                       BorderRadius.circular(SizeConfig.diagonal * 1.5)),
@@ -722,6 +733,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
         right: SizeConfig.diagonal * 0.5,
       ),
       child: Card(
+        color: Colors.white.withOpacity(0.7),
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5)),
         elevation: 16,
@@ -1094,6 +1106,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
       padding: EdgeInsets.only(
           left: SizeConfig.diagonal * 0.5, right: SizeConfig.diagonal * 0.5),
       child: Card(
+        color: Colors.white.withOpacity(0.7),
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5)),
         elevation: 16,
@@ -1191,6 +1204,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
               left: SizeConfig.diagonal * 0.5,
               right: SizeConfig.diagonal * 0.5),
           child: Card(
+            color: Colors.white.withOpacity(0.7),
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5)),
             elevation: 16,
@@ -1507,6 +1521,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
         right: SizeConfig.diagonal * 0.5,
       ),
       child: Card(
+        color: Colors.white.withOpacity(0.7),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5),
         ),

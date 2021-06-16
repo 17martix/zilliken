@@ -263,6 +263,10 @@ class I18n {
 
   String get editMenuItem => _getText("editMenuItem");
 
+  String get refilledAt => _getText("refilledAt");
+
+  String get remaining => _getText("remaining");
+
   static late Map<String, String> _localizedValues;
 
   static const _enValues = {
@@ -396,6 +400,8 @@ class I18n {
     "over": "over",
     "inStock": " in Stock",
     "editMenuItem": "Edit item's ttributes",
+    "refilledAt": "Refilled on",
+    "remaining": "Remaining",
   };
 
   static const _frValues = {
@@ -529,6 +535,8 @@ class I18n {
     "over": "sur",
     "inStock": " en Stock",
     "editMenuItem": "Modifier les attributs de l'élément",
+    "refilledAt": "Rempli le",
+    "remaining": "Restant",
   };
 
   static const _allValues = {
