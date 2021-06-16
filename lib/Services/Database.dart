@@ -921,7 +921,7 @@ class Database {
 
     await inventory
         .update({
-          Fields.quantity: stock.quantity,
+          Fields.quantity: FieldValue.increment(stock.quantity),
           Fields.usedSince: 0,
         })
         .whenComplete(() => result = Result(

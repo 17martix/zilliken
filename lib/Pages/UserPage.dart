@@ -242,19 +242,43 @@ class _UserPageState extends State<UserPage> {
 
   Widget userList(UserProfile userProfile) {
     return Card(
+      color: Colors.white.withOpacity(0.7),
+      margin: EdgeInsets.symmetric(
+          horizontal: SizeConfig.diagonal * 0.9,
+          vertical: SizeConfig.diagonal * 0.4),
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5)),
       elevation: 8.0,
       child: Padding(
         padding: EdgeInsets.symmetric(vertical: SizeConfig.diagonal * 1),
         child: ListTile(
-          title: ZText(
-            content: '${I18n.of(context).name} ' " : " ' ${userProfile.name}',
+          leading: Padding(
+            padding: EdgeInsets.only(top: SizeConfig.diagonal * 1),
+            child: Icon(
+              Icons.person,
+              size: 25,
+              color: Color(Styling.accentColor),
+            ),
+          ),
+          title: Padding(
+            padding: EdgeInsets.only(
+              bottom: SizeConfig.diagonal * 1,
+            ),
+            child: ZText(
+              content: '${I18n.of(context).name} ' " : " ' ${userProfile.name}',
+            ),
           ),
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ZText(
-                content:
-                    I18n.of(context).phone + " : " + userProfile.phoneNumber,
+              Padding(
+                padding: EdgeInsets.only(
+                  bottom: SizeConfig.diagonal * 1,
+                ),
+                child: ZText(
+                  content:
+                      I18n.of(context).phone + " : " + userProfile.phoneNumber,
+                ),
               ),
               ZText(
                 content: '${I18n.of(context).last} '
@@ -262,6 +286,16 @@ class _UserPageState extends State<UserPage> {
                     '${widget.formatter.format(userProfile.lastSeenAt!.toDate())}',
               ),
             ],
+          ),
+          trailing: Padding(
+            padding: EdgeInsets.only(
+              top: SizeConfig.diagonal * 1,
+            ),
+            child: Icon(
+              Icons.keyboard_arrow_right,
+              size: 30,
+              color: Color(Styling.accentColor),
+            ),
           ),
           onTap: () {
             Navigator.push(

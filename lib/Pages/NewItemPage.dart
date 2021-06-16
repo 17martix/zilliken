@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zilliken/Components/ZAppBar.dart';
 import 'package:zilliken/Components/ZElevatedButton.dart';
 import 'package:zilliken/Components/ZTextField.dart';
@@ -44,8 +45,6 @@ class _NewItemPageState extends State<NewItemPage> {
 
   final _formKey = GlobalKey<FormState>();
 
-  List<String> unitList = ['Kg', 'l', 'Box', 'Bottle', 'Item', 'g'];
-
   String? selectedValue;
   String? name;
   String? unit;
@@ -57,10 +56,19 @@ class _NewItemPageState extends State<NewItemPage> {
   Widget build(BuildContext context) {
     SizeConfig().init(context);
 
-    return Scaffold(
-      appBar: buildAppBar(
-          context, widget.auth, true, null, backFunction, null, null),
-      body: body(),
+    return Container(
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage('assets/Zilliken.jpg'),
+          fit: BoxFit.cover,
+        ),
+      ),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: buildAppBar(
+            context, widget.auth, true, null, backFunction, null, null),
+        body: body(),
+      ),
     );
   }
 
@@ -80,7 +88,8 @@ class _NewItemPageState extends State<NewItemPage> {
                 ),
               ),
               ZTextField(
-                outsidePrefix: ZText(content: I18n.of(context).name + ' :'),
+                outsidePrefix: Icon(Icons.short_text_sharp),
+                label: I18n.of(context).itemName,
                 onSaved: (value) => name = value,
                 validator: (value) => value == null || value.isEmpty
                     ? I18n.of(context).requit
@@ -90,7 +99,8 @@ class _NewItemPageState extends State<NewItemPage> {
                 height: SizeConfig.diagonal * 3,
               ),
               ZTextField(
-                outsidePrefix: ZText(content: I18n.of(context).quantity + ' :'),
+                outsidePrefix: Icon(Icons.inventory_2_sharp),
+                label: I18n.of(context).quantity,
                 onSaved: (value) {
                   if (value != null) {
                     quantity = num.parse(value);
@@ -103,22 +113,18 @@ class _NewItemPageState extends State<NewItemPage> {
               SizedBox(
                 height: SizeConfig.diagonal * 3,
               ),
-              DropdownButton(
-                  hint: ZText(content: I18n.of(context).selectUnit),
-                  value: selectedValue,
-                  items: unitList.map((String value) {
-                    return DropdownMenuItem<String>(
-                        value: value,
-                        child: ZText(
-                          content: value,
-                        ));
-                  }).toList(),
-                  onChanged: (String? val) {
-                    setState(() {
-                      selectedValue = val;
-                      unit = selectedValue;
-                    });
-                  }),
+              ZTextField(
+                outsidePrefix: Icon(FontAwesomeIcons.rulerCombined),
+                label: I18n.of(context).unit,
+                onSaved: (value) {
+                  if (value != null) {
+                    unit = value;
+                  }
+                },
+                validator: (value) => value == null || value.isEmpty
+                    ? I18n.of(context).requit
+                    : null,
+              ),
               SizedBox(
                 height: SizeConfig.diagonal * 2,
               ),

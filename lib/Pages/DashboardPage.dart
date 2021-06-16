@@ -150,12 +150,13 @@ class _DashboardPageState extends State<DashboardPage> {
               )
             : Container(
                 decoration: BoxDecoration(
-                    image: DecorationImage(
-                  image: AssetImage('assets/Zilliken.jpg'),
-                  fit: BoxFit.cover,
-                )),
+                  image: DecorationImage(
+                    image: AssetImage('assets/Zilliken.jpg'),
+                    fit: BoxFit.cover,
+                  ),
+                ),
                 child: Container(
-                  color: Color(Styling.primaryBackgroundColor).withOpacity(0.7),
+                  // color: Color(Styling.primaryBackgroundColor).withOpacity(0.1),
                   child: Scaffold(
                     key: _scaffoldKey,
                     backgroundColor: Colors.transparent,

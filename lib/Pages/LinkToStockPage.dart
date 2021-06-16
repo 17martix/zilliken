@@ -93,78 +93,29 @@ class _ConnectToMenuState extends State<LinkToMenu> {
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
-    return Scaffold(
-      appBar: buildAppBar(
-          context, widget.auth, true, null, backFunction, null, null),
-      body: body(),
+    return Container(
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage(
+            "assets/Zilliken.jpg",
+          ),
+          fit: BoxFit.cover,
+        ),
+      ),
+      child: Container(
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          appBar: buildAppBar(
+              context, widget.auth, true, null, backFunction, null, null),
+          body: body(),
+        ),
+      ),
     );
   }
 
   Widget body() {
     return Column(
       children: [
-        /*Padding(
-          padding: EdgeInsets.all(SizeConfig.diagonal * 1),
-          child: ZTextField(
-            hint: (I18n.of(context).search),
-            maxLines: 1,
-            controller: searchController,
-            keyboardType: TextInputType.text,
-            textInputAction: TextInputAction.search,
-            outsidePrefix: Icon(
-              Icons.search,
-              size: SizeConfig.diagonal * 2.5,
-            ),
-            outsideSuffix: Row(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                displayCancelButton
-                    ? IconButton(
-                        icon: Icon(
-                          Icons.cancel_outlined,
-                          color: Color(Styling.primaryColor),
-                          size: SizeConfig.diagonal * 2.5,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            searchController.clear();
-                            isSearching = false;
-                            displayCancelButton = false;
-                          });
-                        })
-                    : Text(''),
-              ],
-            ),
-            onFieldSubmitted: (String? value) {
-              if (value != null && value.isNotEmpty && value != '') {
-                setState(() {
-                  isSearching = true;
-                });
-                searchText = value;
-                isSearchLoading = false;
-                searchQuery();
-              } else {
-                setState(() {
-                  isSearching = false;
-                });
-              }
-            },
-            onChanged: (String? value) {
-              if (value == null || value.isEmpty || value == '') {
-                setState(() {
-                  isSearching = false;
-                  displayCancelButton = false;
-                });
-              } else {
-                setState(() {
-                  displayCancelButton = true;
-                });
-              }
-            },
-          ),
-        ),*/
         Container(
           height: SizeConfig.diagonal * 5,
           child: Center(
@@ -267,6 +218,9 @@ class _ConnectToMenuState extends State<LinkToMenu> {
   }
 
   Widget itemTile(MenuItem menuItem) {
+    if (!menuItem.isChecked!) {
+      return stockTile(menuItem);
+    }
     return Slidable(
       actionPane: SlidableDrawerActionPane(),
       actions: [
@@ -331,11 +285,26 @@ class _ConnectToMenuState extends State<LinkToMenu> {
                                 autovalidateMode: AutovalidateMode.disabled,
                                 child: Column(
                                   children: [
-                                    SizedBox(
-                                      height: SizeConfig.diagonal * 2.5,
+                                    Padding(
+                                      padding: EdgeInsets.only(
+                                        top: SizeConfig.diagonal * 4,
+                                        bottom: SizeConfig.diagonal * 1.5,
+                                        left: SizeConfig.diagonal * 1,
+                                        right: SizeConfig.diagonal * 1,
+                                      ),
+                                      child: SizedBox(
+                                        height: SizeConfig.diagonal * 5,
+                                        child: ZText(
+                                          maxLines: 4,
+                                          content: I18n.of(context)
+                                              .editCondimentQuantity,
+                                        ),
+                                      ),
                                     ),
                                     ZTextField(
-                                      hint: "${I18n.of(context).quantity}",
+                                      hint: menuItem.quantity == null
+                                          ? '0 ${widget.stock.unit}'
+                                          : "${menuItem.quantity} ${widget.stock.unit}",
                                       controller: menuItem.controller,
                                       onSaved: (value) {
                                         if (value != null) {
@@ -363,10 +332,13 @@ class _ConnectToMenuState extends State<LinkToMenu> {
 
                                           Navigator.of(context).pop();
                                           ScaffoldMessenger.of(context)
-                                              .showSnackBar(SnackBar(
-                                                  content: ZText(
-                                                      content: I18n.of(context)
-                                                          .added)));
+                                              .showSnackBar(
+                                            SnackBar(
+                                              content: ZText(
+                                                content: I18n.of(context).added,
+                                              ),
+                                            ),
+                                          );
                                           // }
                                         }
                                       },
@@ -378,14 +350,15 @@ class _ConnectToMenuState extends State<LinkToMenu> {
                                       bottomPadding: SizeConfig.diagonal * 0.3,
                                     ),
                                     IconButton(
-                                        color: Colors.red,
-                                        icon: Icon(
-                                          Icons.cancel_sharp,
-                                        ),
-                                        iconSize: SizeConfig.diagonal * 5,
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        })
+                                      color: Colors.red,
+                                      icon: Icon(
+                                        Icons.cancel_sharp,
+                                      ),
+                                      iconSize: SizeConfig.diagonal * 5,
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
                                   ],
                                 ),
                               ),
@@ -436,153 +409,170 @@ class _ConnectToMenuState extends State<LinkToMenu> {
           ),
         ),
       ],
-      child: Container(
-        width: double.infinity,
-        child: Card(
-          elevation: 8,
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5)),
-          child: CheckboxListTile(
-            activeColor: Color(Styling.accentColor),
-            title: ZText(content: menuItem.name),
-            //subtitle: ZText(content: '${menuItem.quantity} ${widget.stock.unit}'),
-            value: menuItem.isChecked,
-            onChanged: (value) {
-              setState(() {
-                menuItem.isChecked = value;
-              });
-              if (value!) {
-                showGeneralDialog(
-                  context: context,
-                  barrierColor: Colors.black.withOpacity(0.5),
-                  transitionBuilder: (context, a1, a2, w) {
-                    return Transform.scale(
-                      scale: a1.value,
-                      child: Opacity(
-                        opacity: a1.value,
-                        child: Dialog(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                              SizeConfig.diagonal * 1.5,
-                            ),
+      child: stockTile(menuItem),
+    );
+  }
+
+  Container stockTile(MenuItem menuItem) {
+    return Container(
+      width: double.infinity,
+      child: Card(
+        color: Colors.white.withOpacity(0.7),
+        elevation: 8,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5),
+        ),
+        child: CheckboxListTile(
+          activeColor: Color(Styling.accentColor),
+          title: ZText(content: menuItem.name),
+          //subtitle: ZText(content: '${menuItem.quantity} ${widget.stock.unit}'),
+          value: menuItem.isChecked,
+          onChanged: (value) {
+            setState(() {
+              menuItem.isChecked = value;
+            });
+            if (value!) {
+              showGeneralDialog(
+                context: context,
+                barrierColor: Colors.black.withOpacity(0.5),
+                transitionBuilder: (context, a1, a2, w) {
+                  return Transform.scale(
+                    scale: a1.value,
+                    child: Opacity(
+                      opacity: a1.value,
+                      child: Dialog(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                            SizeConfig.diagonal * 1.5,
                           ),
-                          child: Container(
-                            padding: EdgeInsets.only(
-                                left: SizeConfig.diagonal * 0.9,
-                                right: SizeConfig.diagonal * 0.9),
-                            //height: SizeConfig.diagonal * 32,
-                            //color: Colors.amber,
-                            child: SingleChildScrollView(
-                              child: Form(
-                                key: _formKey,
-                                autovalidateMode: AutovalidateMode.disabled,
-                                child: Column(
-                                  children: [
-                                    SizedBox(
-                                      height: SizeConfig.diagonal * 2.5,
+                        ),
+                        child: Container(
+                          padding: EdgeInsets.only(
+                              left: SizeConfig.diagonal * 0.9,
+                              right: SizeConfig.diagonal * 0.9),
+                          //height: SizeConfig.diagonal * 32,
+                          //color: Colors.amber,
+                          child: SingleChildScrollView(
+                            child: Form(
+                              key: _formKey,
+                              autovalidateMode: AutovalidateMode.disabled,
+                              child: Column(
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsets.only(
+                                      top: SizeConfig.diagonal * 4,
+                                      bottom: SizeConfig.diagonal * 1.5,
+                                      left: SizeConfig.diagonal * 1,
+                                      right: SizeConfig.diagonal * 1,
                                     ),
-                                    ZTextField(
-                                      hint:
-                                          "${I18n.of(context).quantity} ${I18n.of(context).inen} ${widget.stock.unit}",
-                                      controller: menuItem.controller,
-                                      onSaved: (value) {
-                                        if (value != null) {
-                                          setState(() {
-                                            menuItem.quantity =
-                                                num.parse(value);
-                                          });
-                                        }
-                                      },
-                                      validator: (value) => value!.isEmpty
-                                          ? I18n.of(context).requit
-                                          : null,
-                                      icon: Icons.restaurant,
-                                    ),
-                                    ZElevatedButton(
-                                      onpressed: () {
-                                        final form = _formKey.currentState;
-
-                                        if (form!.validate()) {
-                                          form.save();
-
-                                          itemsToSend!.removeWhere((element) =>
-                                              element.id == menuItem.id);
-                                          itemsToSend!.add(menuItem);
-
-                                          Navigator.of(context).pop();
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(SnackBar(
-                                                  content: ZText(
-                                                      content: I18n.of(context)
-                                                          .added)));
-                                          // }
-                                        }
-                                      },
+                                    child: SizedBox(
+                                      height: SizeConfig.diagonal * 5,
                                       child: ZText(
-                                        content: I18n.of(context).addItem,
-                                        color: Color(
-                                            Styling.primaryBackgroundColor),
+                                        maxLines: 4,
+                                        content: I18n.of(context)
+                                            .editCondimentQuantity,
                                       ),
-                                      bottomPadding: SizeConfig.diagonal * 0.3,
                                     ),
-                                    IconButton(
-                                        color: Colors.red,
-                                        icon: Icon(
-                                          Icons.cancel_sharp,
-                                        ),
-                                        iconSize: SizeConfig.diagonal * 5,
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                          setState(() {
-                                            menuItem.isChecked = false;
-                                          });
-                                        })
-                                  ],
-                                ),
+                                  ),
+                                  ZTextField(
+                                    hint:
+                                        "${I18n.of(context).quantity} ${I18n.of(context).inen} ${widget.stock.unit}",
+                                    controller: menuItem.controller,
+                                    onSaved: (value) {
+                                      if (value != null) {
+                                        setState(() {
+                                          menuItem.quantity = num.parse(value);
+                                        });
+                                      }
+                                    },
+                                    validator: (value) => value!.isEmpty
+                                        ? I18n.of(context).requit
+                                        : null,
+                                    icon: Icons.restaurant,
+                                  ),
+                                  ZElevatedButton(
+                                    onpressed: () {
+                                      final form = _formKey.currentState;
+
+                                      if (form!.validate()) {
+                                        form.save();
+
+                                        itemsToSend!.removeWhere((element) =>
+                                            element.id == menuItem.id);
+                                        itemsToSend!.add(menuItem);
+
+                                        Navigator.of(context).pop();
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(SnackBar(
+                                                content: ZText(
+                                                    content: I18n.of(context)
+                                                        .added)));
+                                        // }
+                                      }
+                                    },
+                                    child: ZText(
+                                      content: I18n.of(context).addItem,
+                                      color:
+                                          Color(Styling.primaryBackgroundColor),
+                                    ),
+                                    bottomPadding: SizeConfig.diagonal * 0.3,
+                                  ),
+                                  IconButton(
+                                      color: Colors.red,
+                                      icon: Icon(
+                                        Icons.cancel_sharp,
+                                      ),
+                                      iconSize: SizeConfig.diagonal * 5,
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                        setState(() {
+                                          menuItem.isChecked = false;
+                                        });
+                                      })
+                                ],
                               ),
                             ),
                           ),
                         ),
                       ),
-                    );
-                  },
-                  barrierDismissible: false,
-                  barrierLabel: '',
-                  transitionDuration: Duration(milliseconds: 300),
-                  pageBuilder: (context, animation1, animation2) {
-                    return Container();
-                  },
-                );
-              } else {
-                log('else is executed');
+                    ),
+                  );
+                },
+                barrierDismissible: false,
+                barrierLabel: '',
+                transitionDuration: Duration(milliseconds: 300),
+                pageBuilder: (context, animation1, animation2) {
+                  return Container();
+                },
+              );
+            } else {
+              log('else is executed');
 
-                /*  menuItem.condiments!
-                  .removeWhere((element) => element.id == menuItem.id);
-              itemsToSend.removeWhere((element) => element.id == menuItem.id);*/
+              /*  menuItem.condiments!
+                .removeWhere((element) => element.id == menuItem.id);
+            itemsToSend.removeWhere((element) => element.id == menuItem.id);*/
 
-                /*MenuItem item = itemsToSend
-                  .firstWhere((element) => element.id == menuItem.id);
-              item.condiments!
-                  .removeWhere((element) => element.id == widget.stock.id);
-              if (item.condiments!.isEmpty) {
-                item.condiments = null;
-              }*/
+              /*MenuItem item = itemsToSend
+                .firstWhere((element) => element.id == menuItem.id);
+            item.condiments!
+                .removeWhere((element) => element.id == widget.stock.id);
+            if (item.condiments!.isEmpty) {
+              item.condiments = null;
+            }*/
 
-                menuItem.condiments!.removeWhere(
-                    (condiment) => condiment.id == widget.stock.id);
-                if (menuItem.condiments!.isEmpty) {
-                  menuItem.condiments = null;
-                }
-                menuItem.quantity = null;
-
-                itemsToSend!
-                    .removeWhere((element) => element.id == menuItem.id);
-                itemsToSend!.add(menuItem);
-
-                //itemsToRemove!.add(menuItem);
+              menuItem.condiments!
+                  .removeWhere((condiment) => condiment.id == widget.stock.id);
+              if (menuItem.condiments!.isEmpty) {
+                menuItem.condiments = null;
               }
-            },
-          ),
+              menuItem.quantity = null;
+
+              itemsToSend!.removeWhere((element) => element.id == menuItem.id);
+              itemsToSend!.add(menuItem);
+
+              //itemsToRemove!.add(menuItem);
+            }
+          },
         ),
       ),
     );

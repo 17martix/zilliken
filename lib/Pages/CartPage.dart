@@ -97,7 +97,7 @@ class _CartPageState extends State<CartPage> {
         .collection(Fields.configuration)
         .doc(Fields.settings)
         .snapshots()
-        .listen((DocumentSnapshot<Map<String,dynamic>> documentSnapshot) {
+        .listen((DocumentSnapshot<Map<String, dynamic>> documentSnapshot) {
       setState(() {
         enabled = documentSnapshot.data()![Fields.enabled];
       });
@@ -107,7 +107,7 @@ class _CartPageState extends State<CartPage> {
         .collection(Fields.configuration)
         .doc(Fields.settings)
         .snapshots()
-        .listen((DocumentSnapshot<Map<String,dynamic>> documentSnapshot) {
+        .listen((DocumentSnapshot<Map<String, dynamic>> documentSnapshot) {
       setState(() {
         enabled = documentSnapshot.data()![Fields.enabled];
       });
@@ -159,7 +159,7 @@ class _CartPageState extends State<CartPage> {
           fit: BoxFit.cover,
         )),
         child: Container(
-          color: Color(Styling.primaryBackgroundColor).withOpacity(0.7),
+          // color: Color(Styling.primaryBackgroundColor).withOpacity(0.7),
           child: enabled == 0
               ? DisabledPage(
                   auth: widget.auth,
@@ -205,6 +205,7 @@ class _CartPageState extends State<CartPage> {
 
   Widget order() {
     return Card(
+      color: Colors.white.withOpacity(0.7),
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5)),
       elevation: 16,
@@ -412,6 +413,7 @@ class _CartPageState extends State<CartPage> {
 
   Widget item(MenuItem menu) {
     return Card(
+      color: Colors.white.withOpacity(0.7),
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5)),
       elevation: 2,
@@ -711,6 +713,7 @@ class _CartPageState extends State<CartPage> {
   Widget bill() {
     return _isTaxLoaded
         ? Card(
+            color: Colors.white.withOpacity(0.7),
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5)),
             elevation: 16,
@@ -745,7 +748,8 @@ class _CartPageState extends State<CartPage> {
                               content: I18n.of(context).total,
                               textAlign: TextAlign.center,
                               fontSize: SizeConfig.diagonal * 1.5,
-                              color: Color(Styling.textColor).withOpacity(0.7),
+                              color: Color(Styling.textColor),
+                              fontWeight: FontWeight.bold,
                             ),
                             ZText(
                               content: priceItemsTotal(context, clientOrder!),
@@ -762,9 +766,9 @@ class _CartPageState extends State<CartPage> {
                             ZText(
                               content: I18n.of(context).taxCharge,
                               textAlign: TextAlign.center,
-                              color:
-                                  Color(Styling.accentColor).withOpacity(0.7),
+                              color: Color(Styling.textColor),
                               fontSize: SizeConfig.diagonal * 1.5,
+                              fontWeight: FontWeight.bold,
                             ),
                             ZText(
                               content: appliedTax(context, clientOrder!, tax),
@@ -781,8 +785,9 @@ class _CartPageState extends State<CartPage> {
                             ZText(
                               content: I18n.of(context).gtotal,
                               textAlign: TextAlign.center,
-                              color: Color(Styling.accentColor),
+                              color: Color(Styling.textColor),
                               fontSize: SizeConfig.diagonal * 1.5,
+                              fontWeight: FontWeight.bold,
                             ),
                             ZText(
                               content: grandTotal(context, clientOrder!, tax),
@@ -843,7 +848,8 @@ class _CartPageState extends State<CartPage> {
           );
         } else {
           try {
-            UserProfile? userProfile = await widget.db.getUserProfile(widget.userId);
+            UserProfile? userProfile =
+                await widget.db.getUserProfile(widget.userId);
             Order order = Order(
               clientOrder: clientOrder!,
               orderLocation: restaurantOrRoomOrder,

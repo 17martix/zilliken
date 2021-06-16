@@ -54,6 +54,7 @@ dependencies:
 
   flutter_localizations:
     sdk: flutter
+  sleek_circular_slider: ^2.0.0
 
 dev_dependencies:
   flappy_translator: ^2.0.0-nullsafety.1

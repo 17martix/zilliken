@@ -190,8 +190,11 @@ class _SingleUserPageState extends State<SingleUserPage> {
     return Container(
       height: SizeConfig.diagonal * 10,
       child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5),
+        ),
         elevation: 8,
-        color: Colors.white.withOpacity(0.9),
+        color: Colors.white.withOpacity(0.7),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -291,7 +294,7 @@ class _SingleUserPageState extends State<SingleUserPage> {
                       padding: EdgeInsets.all(SizeConfig.diagonal * 1.5),
                       child: Card(
                         elevation: 2,
-                        color: Colors.white.withOpacity(1),
+                        color: Colors.white.withOpacity(0.7),
                         shape: RoundedRectangleBorder(
                           borderRadius:
                               BorderRadius.circular(SizeConfig.diagonal * 1),
@@ -332,7 +335,7 @@ class _SingleUserPageState extends State<SingleUserPage> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(SizeConfig.diagonal * 2),
           ),
-          color: Color(Styling.primaryBackgroundColor).withOpacity(0.9),
+          color: Color(Styling.primaryBackgroundColor).withOpacity(0.7),
           child: Padding(
             padding: EdgeInsets.all(SizeConfig.diagonal * 1),
             child: Column(
@@ -508,7 +511,7 @@ class _SingleUserPageState extends State<SingleUserPage> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(SizeConfig.diagonal * 2),
       ),
-      color: Color(Styling.primaryBackgroundColor).withOpacity(0.9),
+      color: Color(Styling.primaryBackgroundColor).withOpacity(0.7),
       child: Container(
         child: Column(
           children: [
