@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zilliken/Components/ZAppBar.dart';
@@ -101,6 +102,8 @@ class _NewItemPageState extends State<NewItemPage> {
               ZTextField(
                 outsidePrefix: Icon(Icons.inventory_2_sharp),
                 label: I18n.of(context).quantity,
+                keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 onSaved: (value) {
                   if (value != null) {
                     quantity = num.parse(value);

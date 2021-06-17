@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -426,7 +425,6 @@ class _SingleUserPageState extends State<SingleUserPage> {
                             reservedSize: 26,
                             interval: maxY / 4,
                             getTitles: (value) {
-                              log("value is $value");
                               if (value == 0) {
                                 return '0';
                               } else if (value == maxY / 4) {

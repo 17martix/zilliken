@@ -11,6 +11,7 @@ import 'package:zilliken/Services/Authentication.dart';
 import 'package:intl/intl.dart';
 import 'package:zilliken/Services/Database.dart';
 import 'package:zilliken/Services/Messaging.dart';
+import 'package:collection/collection.dart';
 
 import '../Components/ZText.dart';
 import '../i18n.dart';
@@ -36,32 +37,107 @@ class OrdersPage extends StatefulWidget {
 }
 
 class _OrdersPageState extends State<OrdersPage> {
-  late Query<Map<String, dynamic>> commandes;
+  bool isLoading = false;
+  bool hasMore = true;
+  int documentLimit = 25;
+  ScrollController _scrollController = ScrollController();
+  DocumentSnapshot? lastDocument;
+  late Query<Map<String, dynamic>> orderRef;
+  List<DocumentSnapshot<Map<String, dynamic>>> items = [];
 
   @override
   void initState() {
     super.initState();
 
-    if (widget.userRole == Fields.client) {
+    orderQuery();
+    _scrollController.addListener(() {
+      double maxScroll = _scrollController.position.maxScrollExtent;
+      double currentScroll = _scrollController.position.pixels;
+      double delta = MediaQuery.of(context).size.height * 0.20;
+      if (maxScroll - currentScroll <= delta) {
+        orderQuery();
+      }
+    });
+  }
+
+  void orderQuery() {
+    if (!hasMore) {
+      return;
+    }
+
+    if (isLoading == true) {
+      return;
+    }
+
+    if (mounted) {
       setState(() {
-        commandes = FirebaseFirestore.instance
-            .collection(Fields.order)
-            .where(Fields.userId, isEqualTo: widget.userId)
-            .orderBy(Fields.status, descending: false);
-        //.orderBy(Fields.orderDate, descending: true);
-      });
-    } else {
-      setState(() {
-        commandes = FirebaseFirestore.instance
-            .collection(Fields.order)
-            .orderBy(Fields.status, descending: false);
+        isLoading = true;
       });
     }
+
+    if (lastDocument == null) {
+      if (widget.userRole == Fields.client) {
+        orderRef = widget.db.databaseReference
+            .collection(Fields.order)
+            .where(Fields.userId, isEqualTo: widget.userId)
+            .orderBy(Fields.status, descending: false)
+            .limit(documentLimit);
+      } else {
+        orderRef = widget.db.databaseReference
+            .collection(Fields.order)
+            .orderBy(Fields.status, descending: false)
+            .limit(documentLimit);
+      }
+    } else {
+      if (widget.userRole == Fields.client) {
+        orderRef = widget.db.databaseReference
+            .collection(Fields.order)
+            .where(Fields.userId, isEqualTo: widget.userId)
+            .orderBy(Fields.status, descending: false)
+            .startAfterDocument(lastDocument!)
+            .limit(documentLimit);
+      } else {
+        orderRef = widget.db.databaseReference
+            .collection(Fields.order)
+            .orderBy(Fields.status, descending: false)
+            .startAfterDocument(lastDocument!)
+            .limit(documentLimit);
+      }
+    }
+
+    orderRef.get().then((QuerySnapshot<Map<String, dynamic>> snapshot) {
+      if (snapshot.docs.length < documentLimit) {
+        hasMore = false;
+      }
+
+      if (snapshot.docs.length > 0)
+        lastDocument = snapshot.docs[snapshot.docs.length - 1];
+
+      if (mounted) {
+        setState(() {
+          for (int i = 0; i < snapshot.docs.length; i++) {
+            Object? exist = items.firstWhereOrNull((Object element) {
+              if (element is DocumentSnapshot<Map<String, dynamic>>) {
+                bool isEqual = element.id == snapshot.docs[i].id;
+                return isEqual;
+              } else {
+                return false;
+              }
+            });
+
+            if (exist == null) {
+              items.add(snapshot.docs[i]);
+            }
+          }
+
+          isLoading = false;
+        });
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    // log("mon id est ${widget.userId} et mo role est ${widget.userRole}");
     SizeConfig().init(context);
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -70,94 +146,97 @@ class _OrdersPageState extends State<OrdersPage> {
   }
 
   Widget item(Order order) {
-    return Padding(
-      padding: EdgeInsets.only(
-          left: SizeConfig.diagonal * 0.2, right: SizeConfig.diagonal * 0.2),
-      child: Card(
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5)),
-        elevation: 16,
-        color: Colors.white.withOpacity(0.8),
-        child: Container(
-          alignment: Alignment.center,
-          height: SizeConfig.diagonal * 10,
-          width: SizeConfig.diagonal * 10,
-          child: ListTile(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => SingleOrderPage(
-                    auth: widget.auth,
-                    db: widget.db,
-                    userId: widget.userId,
-                    userRole: widget.userRole,
-                    orderId: order.id!,
-                    clientOrder: order,
-                    messaging: widget.messaging,
+    return Container(
+      width: double.infinity,
+      child: Padding(
+        padding: EdgeInsets.only(
+            left: SizeConfig.diagonal * 0.2, right: SizeConfig.diagonal * 0.2),
+        child: Card(
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(SizeConfig.diagonal * 1.5)),
+          elevation: 16,
+          color: Colors.white.withOpacity(0.8),
+          child: Container(
+            alignment: Alignment.center,
+            height: SizeConfig.diagonal * 10,
+            width: SizeConfig.diagonal * 10,
+            child: ListTile(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SingleOrderPage(
+                      auth: widget.auth,
+                      db: widget.db,
+                      userId: widget.userId,
+                      userRole: widget.userRole,
+                      orderId: order.id!,
+                      clientOrder: order,
+                      messaging: widget.messaging,
+                    ),
                   ),
+                );
+              },
+              leading: Padding(
+                padding: EdgeInsets.only(top: SizeConfig.diagonal * 1),
+                child: Icon(
+                  order.orderLocation == 0
+                      ? FontAwesomeIcons.listAlt
+                      : FontAwesomeIcons.truckMoving,
+                  size: 25,
+                  color: Color(Styling.accentColor),
                 ),
-              );
-            },
-            leading: Padding(
-              padding: EdgeInsets.only(top: SizeConfig.diagonal * 1),
-              child: Icon(
-                order.orderLocation == 0
-                    ? FontAwesomeIcons.listAlt
-                    : FontAwesomeIcons.truckMoving,
-                size: 25,
-                color: Color(Styling.accentColor),
               ),
-            ),
-            title: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  flex: 1,
-                  child: ZText(
-                      content: '${orderStatus(context, order)}',
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.left,
-                      color: colorPicker(order.status),
-                      fontSize: SizeConfig.diagonal * 1.5),
-                ),
-                Expanded(
-                  flex: 1,
-                  child: ZText(
-                      content:
-                          '${I18n.of(context).total} : ${formatNumber(order.grandTotal)} ${I18n.of(context).fbu}',
-                      textAlign: TextAlign.right,
-                      overflow: TextOverflow.ellipsis,
-                      fontSize: SizeConfig.diagonal * 1.5),
-                ),
-              ],
-            ),
-            subtitle: Padding(
-              padding: EdgeInsets.only(top: SizeConfig.diagonal * 1),
-              child: Row(
+              title: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
                     flex: 1,
                     child: ZText(
-                        content: order.orderLocation == 0
-                            ? '${I18n.of(context).tableNumber} : ${order.tableAdress}'
-                            : '${I18n.of(context).address} : ${order.tableAdress}',
+                        content: '${orderStatus(context, order)}',
                         overflow: TextOverflow.ellipsis,
                         textAlign: TextAlign.left,
+                        color: colorPicker(order.status),
                         fontSize: SizeConfig.diagonal * 1.5),
                   ),
                   Expanded(
                     flex: 1,
                     child: ZText(
-                        content: order.orderDate == null
-                            ? ""
-                            : '${widget.formatter.format(order.orderDate!.toDate())}',
+                        content:
+                            '${I18n.of(context).total} : ${formatNumber(order.grandTotal)} ${I18n.of(context).fbu}',
                         textAlign: TextAlign.right,
                         overflow: TextOverflow.ellipsis,
                         fontSize: SizeConfig.diagonal * 1.5),
                   ),
                 ],
+              ),
+              subtitle: Padding(
+                padding: EdgeInsets.only(top: SizeConfig.diagonal * 1),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      flex: 1,
+                      child: ZText(
+                          content: order.orderLocation == 0
+                              ? '${I18n.of(context).tableNumber} : ${order.tableAdress}'
+                              : '${I18n.of(context).address} : ${order.tableAdress}',
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.left,
+                          fontSize: SizeConfig.diagonal * 1.5),
+                    ),
+                    Expanded(
+                      flex: 1,
+                      child: ZText(
+                          content: order.orderDate == null
+                              ? ""
+                              : '${widget.formatter.format(order.orderDate!.toDate())}',
+                          textAlign: TextAlign.right,
+                          overflow: TextOverflow.ellipsis,
+                          fontSize: SizeConfig.diagonal * 1.5),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -180,31 +259,33 @@ class _OrdersPageState extends State<OrdersPage> {
   }
 
   Widget ordersList() {
-    return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-      stream: commandes.snapshots(),
-      builder: (BuildContext context,
-          AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
-        if (snapshot.data == null || snapshot.data!.docs.length <= 0) {
-          return Center(
-            child: ZText(
-              content: I18n.of(context).orderPlaceholder,
-              textAlign: TextAlign.center,
-              fontSize: SizeConfig.diagonal * 2,
-              color: Color(Styling.primaryColor),
-              fontWeight: FontWeight.bold,
-            ),
-          );
-        }
-
-        return ListView(
-          children: snapshot.data!.docs
-              .map((DocumentSnapshot<Map<String, dynamic>> document) {
-            Order order = Order.buildObject(document);
-
-            return item(order);
-          }).toList(),
-        );
-      },
+    return ListView(
+      controller: _scrollController,
+      children: [
+        items.length == 0
+            ? Center(
+                child: ZText(content: ""),
+              )
+            : Column(
+                children: items
+                    .map((DocumentSnapshot<Map<String, dynamic>> document) {
+                  Order order = Order.buildObject(document);
+                  return item(order);
+                }).toList(),
+              ),
+        isLoading
+            ? Container(
+                width: MediaQuery.of(context).size.width,
+                padding: EdgeInsets.all(SizeConfig.diagonal * 1),
+                child: Center(
+                  child: CircularProgressIndicator(
+                    valueColor:
+                        AlwaysStoppedAnimation(Color(Styling.accentColor)),
+                  ),
+                ),
+              )
+            : Container()
+      ],
     );
   }
 }

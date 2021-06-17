@@ -42,10 +42,93 @@ class StockPage extends StatefulWidget {
 
 class _StockPageState extends State<StockPage> {
   final _formKey = GlobalKey<FormState>();
-  CollectionReference<Map<String, dynamic>> item =
-      FirebaseFirestore.instance.collection(Fields.stock);
+  Query<Map<String, dynamic>> item =
+      FirebaseFirestore.instance.collection(Fields.stock)
+      .orderBy(Fields.quantity,descending: false);
 
   num? quantity;
+
+  /*bool isLoading = false;
+  bool hasMore = true;
+  int documentLimit = 5;
+  ScrollController _scrollController = ScrollController();
+  DocumentSnapshot? lastDocument;
+  late Query<Map<String, dynamic>> stockRef;
+  List<DocumentSnapshot<Map<String, dynamic>>> items = [];*/
+
+  @override
+  void initState() {
+    super.initState();
+
+    /*stockQuery();
+    _scrollController.addListener(() {
+      double maxScroll = _scrollController.position.maxScrollExtent;
+      double currentScroll = _scrollController.position.pixels;
+      double delta = MediaQuery.of(context).size.height * 0.20;
+      if (maxScroll - currentScroll <= delta) {
+        stockQuery();
+      }
+    });*/
+  }
+
+ /* void stockQuery() {
+    if (!hasMore) {
+      return;
+    }
+
+    if (isLoading == true) {
+      return;
+    }
+
+    if (mounted) {
+      setState(() {
+        isLoading = true;
+      });
+    }
+
+    if (lastDocument == null) {
+      stockRef = widget.db.databaseReference
+          .collection(Fields.stock)
+          .orderBy(Fields.date, descending: false)
+          .limit(documentLimit);
+    } else {
+      stockRef = widget.db.databaseReference
+          .collection(Fields.stock)
+          .orderBy(Fields.date, descending: false)
+          .startAfterDocument(lastDocument!)
+          .limit(documentLimit);
+    }
+
+    stockRef.get().then((QuerySnapshot<Map<String, dynamic>> snapshot) {
+      if (snapshot.docs.length < documentLimit) {
+        hasMore = false;
+      }
+
+      if (snapshot.docs.length > 0)
+        lastDocument = snapshot.docs[snapshot.docs.length - 1];
+
+      if (mounted) {
+        setState(() {
+          for (int i = 0; i < snapshot.docs.length; i++) {
+            Object? exist = items.firstWhereOrNull((Object element) {
+              if (element is DocumentSnapshot<Map<String, dynamic>>) {
+                bool isEqual = element.id == snapshot.docs[i].id;
+                return isEqual;
+              } else {
+                return false;
+              }
+            });
+
+            if (exist == null) {
+              items.add(snapshot.docs[i]);
+            }
+          }
+
+          isLoading = false;
+        });
+      }
+    });
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +153,10 @@ class _StockPageState extends State<StockPage> {
                   messaging: widget.messaging,
                 ),
               ),
-            );
+            )/*.then((value) {
+              hasMore = true;
+              stockQuery();
+            })*/;
           },
         ),
       ),
@@ -100,6 +186,34 @@ class _StockPageState extends State<StockPage> {
                 );
               });
         });
+   /* return ListView(
+      controller: _scrollController,
+      children: [
+        items.length == 0
+            ? Center(
+                child: ZText(content: ""),
+              )
+            : Column(
+                children: items
+                    .map((DocumentSnapshot<Map<String, dynamic>> document) {
+                  Stock stock = Stock.buildObject(document);
+                  return itemTile(stock);
+                }).toList(),
+              ),
+        isLoading
+            ? Container(
+                width: MediaQuery.of(context).size.width,
+                padding: EdgeInsets.all(SizeConfig.diagonal * 1),
+                child: Center(
+                  child: CircularProgressIndicator(
+                    valueColor:
+                        AlwaysStoppedAnimation(Color(Styling.accentColor)),
+                  ),
+                ),
+              )
+            : Container()
+      ],
+    );*/
   }
 
   Widget itemTile(Stock stock) {
@@ -119,7 +233,6 @@ class _StockPageState extends State<StockPage> {
                         BorderRadius.circular(SizeConfig.diagonal * 1.5)),
                 elevation: 8,
                 child: Container(
-                  height: SizeConfig.diagonal * 11.3,
                   width: double.infinity,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -310,7 +423,6 @@ class _StockPageState extends State<StockPage> {
                 ),
                 elevation: 8,
                 child: Container(
-                  height: SizeConfig.diagonal * 11.3,
                   width: double.infinity,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -359,7 +471,6 @@ class _StockPageState extends State<StockPage> {
                 elevation: 8,
                 child: Container(
                   width: double.infinity,
-                  height: SizeConfig.diagonal * 11.3,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -405,55 +516,61 @@ class _StockPageState extends State<StockPage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Row(
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.only(
-                                    // left: SizeConfig.diagonal * 1,
-                                    right: SizeConfig.diagonal * 2),
-                                child: Icon(
-                                  Icons.inventory_outlined,
-                                  size: 25,
-                                  color: Color(Styling.accentColor),
+                          Flexible(
+                            child: Row(
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                      // left: SizeConfig.diagonal * 1,
+                                      right: SizeConfig.diagonal * 2),
+                                  child: Icon(
+                                    Icons.inventory_outlined,
+                                    size: 25,
+                                    color: Color(Styling.accentColor),
+                                  ),
                                 ),
-                              ),
-                              Container(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Padding(
-                                      padding: EdgeInsets.only(
-                                          bottom: SizeConfig.diagonal * 1),
-                                      child: ZText(
-                                        content: '${stock.name}',
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: SizeConfig.diagonal * 1.7,
-                                      ),
+                                Flexible(
+                                  child: Container(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Padding(
+                                          padding: EdgeInsets.only(
+                                              bottom: SizeConfig.diagonal * 1),
+                                          child: ZText(
+                                            content: '${stock.name}',
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: SizeConfig.diagonal * 1.7,
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: EdgeInsets.only(
+                                              bottom: SizeConfig.diagonal * 1),
+                                          child: ZText(
+                                              content:
+                                                  '${stock.quantity} ${stock.unit} ' +
+                                                      I18n.of(context).inStock),
+                                        ),
+                                        Padding(
+                                          padding: EdgeInsets.only(
+                                              bottom: SizeConfig.diagonal * 1),
+                                          child: ZText(
+                                              content:
+                                                  '${stock.usedSince} ${stock.unit} /' +
+                                                      '${stock.quantity + stock.usedSince} ${stock.unit} ' +
+                                                      I18n.of(context).used),
+                                        ),
+                                        ZText(
+                                            content: I18n.of(context)
+                                                    .refilledAt +
+                                                ' ${widget.formatter.format(stock.date!.toDate())}'),
+                                      ],
                                     ),
-                                    Padding(
-                                      padding: EdgeInsets.only(
-                                          bottom: SizeConfig.diagonal * 1),
-                                      child: ZText(
-                                          content:
-                                              '${stock.quantity} ${stock.unit} ' +
-                                                  I18n.of(context).inStock),
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.only(
-                                          bottom: SizeConfig.diagonal * 1),
-                                      child: ZText(
-                                          content:
-                                              '${stock.usedSince} ${stock.unit} /' +
-                                                  '${stock.quantity + stock.usedSince} ${stock.unit} ' +
-                                                  I18n.of(context).used),
-                                    ),
-                                    ZText(
-                                        content: I18n.of(context).refilledAt +
-                                            ' ${widget.formatter.format(stock.date!.toDate())}'),
-                                  ],
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                           Container(
                             margin: EdgeInsets.only(
@@ -473,7 +590,7 @@ class _StockPageState extends State<StockPage> {
                                       ]),
                                   infoProperties: InfoProperties(
                                     mainLabelStyle: TextStyle(
-                                      fontSize: SizeConfig.diagonal * 2.5,
+                                      fontSize: SizeConfig.diagonal * 1.5,
                                     ),
                                     modifier: (percentage) {
                                       double pt = (stock.quantity * 100) /
@@ -485,7 +602,7 @@ class _StockPageState extends State<StockPage> {
                                       fontSize: SizeConfig.diagonal * 1.35,
                                     ),
                                   ),
-                                  size: SizeConfig.diagonal * 13,
+                                  size: SizeConfig.diagonal * 11,
                                   spinnerMode: false,
                                 )),
                           ),
@@ -662,7 +779,6 @@ class _StockPageState extends State<StockPage> {
                       BorderRadius.circular(SizeConfig.diagonal * 1.5),
                 ),
                 child: Container(
-                  height: SizeConfig.diagonal * 11.3,
                   width: double.infinity,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -728,7 +844,6 @@ class _StockPageState extends State<StockPage> {
                         BorderRadius.circular(SizeConfig.diagonal * 1.5)),
                 elevation: 8,
                 child: Container(
-                  height: SizeConfig.diagonal * 11.3,
                   width: double.infinity,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,

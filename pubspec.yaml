@@ -51,10 +51,10 @@ dependencies:
   flutter_polyline_points: ^1.0.0
   fl_chart: ^0.35.0
   flutter_slidable: ^0.6.0
+  sleek_circular_slider: ^2.0.0
 
   flutter_localizations:
     sdk: flutter
-  sleek_circular_slider: ^2.0.0
 
 dev_dependencies:
   flappy_translator: ^2.0.0-nullsafety.1

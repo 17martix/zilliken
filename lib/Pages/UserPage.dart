@@ -36,7 +36,7 @@ class UserPage extends StatefulWidget {
 
 class _UserPageState extends State<UserPage> {
   late QuerySnapshot<Map<String, dynamic>> itemref;
-  int documentLimit = 10;
+  int documentLimit = 25;
   bool hasMore = true;
   DocumentSnapshot<Map<String, dynamic>>? lastDocument;
   List<DocumentSnapshot<Map<String, dynamic>>> items = [];

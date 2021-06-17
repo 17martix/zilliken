@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:zilliken/Helpers/SizeConfig.dart';
-import 'package:zilliken/Helpers/Styling.dart';
-
-import 'ZText.dart';
 
 class ZTextButton extends StatelessWidget {
   final onpressed;
