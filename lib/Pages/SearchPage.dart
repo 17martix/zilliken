@@ -19,7 +19,7 @@ class SearchPage extends StatefulWidget {
   final bool isLoading;
   final List<DocumentSnapshot<Map<String,dynamic>>> searchList;
   final String noResult;
-  final DateFormat formatter = DateFormat('dd/MM/yy hh:mm ');
+  final DateFormat formatter = DateFormat('dd/MM/yy HH:mm');
 
   SearchPage({
     required this.auth,

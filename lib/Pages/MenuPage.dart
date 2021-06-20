@@ -86,14 +86,18 @@ class _MenuPageState extends State<MenuPage> {
   void initState() {
     super.initState();
     log("mon id est ${widget.userId}");
-    setState(() {
-      commandesQuery(selectedCategory);
-    });
+    if (mounted) {
+      setState(() {
+        commandesQuery(selectedCategory);
+      });
+    }
 
-    if (widget.clientOrder != null && widget.clientOrder!.length > 0)
+    if (widget.clientOrder != null &&
+        widget.clientOrder!.length > 0) if (mounted) {
       setState(() {
         clientOrder = widget.clientOrder!;
       });
+    }
 
     widget.db.getCategories().then((value) {
       _catList.addAll(value);
@@ -267,9 +271,11 @@ class _MenuPageState extends State<MenuPage> {
                             fontSize: SizeConfig.diagonal * 1.5,
                           ),
                           onChanged: (String? newValue) {
-                            setState(() {
-                              category = newValue;
-                            });
+                            if (mounted) {
+                              setState(() {
+                                category = newValue;
+                              });
+                            }
                           },
                           items: _catList
                               .map<DropdownMenuItem<String>>((String value) {
@@ -503,24 +509,30 @@ class _MenuPageState extends State<MenuPage> {
 
           _catList.clear();
           widget.db.getCategories().then((value) {
-            setState(() {
-              _catList.addAll(value);
-              category = _catList[0];
-              _isCategoryLoaded = true;
-            });
+            if (mounted) {
+              setState(() {
+                _catList.addAll(value);
+                category = _catList[0];
+                _isCategoryLoaded = true;
+              });
+            }
           });
 
           EasyLoading.dismiss();
 
-          setState(() {
-            _catformKey.currentState!.reset();
-          });
+          if (mounted) {
+            setState(() {
+              _catformKey.currentState!.reset();
+            });
+          }
         } on Exception catch (e) {
           //print('Error: $e');
           EasyLoading.dismiss();
-          setState(() {
-            _catformKey.currentState!.reset();
-          });
+          if (mounted) {
+            setState(() {
+              _catformKey.currentState!.reset();
+            });
+          }
 
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -565,16 +577,20 @@ class _MenuPageState extends State<MenuPage> {
 
           EasyLoading.dismiss();
 
-          setState(() {
-            _formKey.currentState!.reset();
-          });
+          if (mounted) {
+            setState(() {
+              _formKey.currentState!.reset();
+            });
+          }
         } on Exception catch (e) {
           //print('Error: $e');
 
           EasyLoading.dismiss();
-          setState(() {
-            _formKey.currentState!.reset();
-          });
+          if (mounted) {
+            setState(() {
+              _formKey.currentState!.reset();
+            });
+          }
 
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -587,9 +603,11 @@ class _MenuPageState extends State<MenuPage> {
   }
 
   void _handleValueChange(int? value) {
-    setState(() {
-      _itemorCategory = value!;
-    });
+    if (mounted) {
+      setState(() {
+        _itemorCategory = value!;
+      });
+    }
   }
 
   Widget categoryList() {
@@ -942,8 +960,8 @@ class _MenuPageState extends State<MenuPage> {
                                 "${formatNumber(menu.price)} ${I18n.of(context).fbu}",
                             textAlign: TextAlign.left,
 
-                            color: Color(Styling.textColor),
-                            fontWeight: FontWeight.normal,
+                            color: Color(Styling.accentColor),
+                            fontWeight: FontWeight.bold,
                             fontSize: SizeConfig.diagonal * 1.5,
                             //fontFamily: "assets/Cochin.ttf",
                           ),
@@ -970,14 +988,18 @@ class _MenuPageState extends State<MenuPage> {
                                         OrderItem orderItem = findOrderItem(
                                             clientOrder, menu.id!);
                                         if (value == 0) {
-                                          setState(() {
-                                            clientOrder.remove(orderItem);
-                                          });
+                                          if (mounted) {
+                                            setState(() {
+                                              clientOrder.remove(orderItem);
+                                            });
+                                          }
                                           //order.remove(orderItem);
                                         } else {
-                                          setState(() {
-                                            orderItem.count = value;
-                                          });
+                                          if (mounted) {
+                                            setState(() {
+                                              orderItem.count = value;
+                                            });
+                                          }
                                           //orderItem.count = value;
                                         }
                                       },
@@ -990,12 +1012,14 @@ class _MenuPageState extends State<MenuPage> {
                                       children: [
                                         InkWell(
                                           onTap: () {
-                                            setState(() {
-                                              clientOrder.add(OrderItem(
-                                                menuItem: menu,
-                                                count: 1,
-                                              ));
-                                            });
+                                            if (mounted) {
+                                              setState(() {
+                                                clientOrder.add(OrderItem(
+                                                  menuItem: menu,
+                                                  count: 1,
+                                                ));
+                                              });
+                                            }
                                           },
                                           child: Container(
                                             decoration: BoxDecoration(
@@ -1056,10 +1080,12 @@ class _MenuPageState extends State<MenuPage> {
           ? () => changeImage(category.imageName!)
           : () {},
       onTap: () {
-        setState(() {
-          selectedCategory = category.name;
-          commandesQuery(category.name);
-        });
+        if (mounted) {
+          setState(() {
+            selectedCategory = category.name;
+            commandesQuery(category.name);
+          });
+        }
       },
       child: Container(
         width: SizeConfig.diagonal * 25,
@@ -1124,9 +1150,11 @@ class _MenuPageState extends State<MenuPage> {
   void changeImage(String name) async {
     List<Asset>? images;
 
-    setState(() {
-      images = [];
-    });
+    if (mounted) {
+      setState(() {
+        images = [];
+      });
+    }
 
     List<Asset>? resultList;
     String error;
@@ -1155,9 +1183,11 @@ class _MenuPageState extends State<MenuPage> {
       return;
     }
 
-    setState(() {
-      images = resultList;
-    });
+    if (mounted) {
+      setState(() {
+        images = resultList;
+      });
+    }
 
     if (images != null && images!.length > 0) {
       EasyLoading.show(status: I18n.of(context).loading);

@@ -1,8 +1,12 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:zilliken/Components/ZAppBar.dart';
 import 'package:zilliken/Components/ZElevatedButton.dart';
+import 'package:zilliken/Components/ZFlatButton.dart';
 import 'package:zilliken/Helpers/SizeConfig.dart';
 import 'package:zilliken/Helpers/Styling.dart';
 import 'package:zilliken/Helpers/Utils.dart';
@@ -57,10 +61,21 @@ class _SingleUserPageState extends State<SingleUserPage> {
   int documentLimit = 10;
   num maxY = 1;
   ScrollController _controller = ScrollController();
+  late String newRole;
+  List<String> roleList = [];
 
   @override
   void initState() {
     super.initState();
+
+    roleList = [
+      Fields.admin,
+      Fields.chef,
+      Fields.client,
+      Fields.chefBoissons,
+      Fields.chefCuisine,
+    ];
+    newRole = Fields.client;
 
     oneUserDetails = FirebaseFirestore.instance
         .collection(Fields.users)
@@ -86,9 +101,11 @@ class _SingleUserPageState extends State<SingleUserPage> {
       final barGroup = makeGroupData(i, items[i].data()![Fields.total]);
       barItems.add(barGroup);
       if (maxY < items[i].data()![Fields.total]) {
-        setState(() {
-          maxY = items[i].data()![Fields.total];
-        });
+        if (mounted) {
+          setState(() {
+            maxY = items[i].data()![Fields.total];
+          });
+        }
       }
     }
 
@@ -101,9 +118,11 @@ class _SingleUserPageState extends State<SingleUserPage> {
     if (isLoading) {
       return;
     }
-    setState(() {
-      isLoading = true;
-    });
+    if (mounted) {
+      setState(() {
+        isLoading = true;
+      });
+    }
 
     if (lastDocument == null) {
       statref = await widget.db.databaseReference
@@ -128,13 +147,15 @@ class _SingleUserPageState extends State<SingleUserPage> {
 
     if (statref!.docs.length > 0)
       lastDocument = statref!.docs[statref!.docs.length - 1];
-    setState(() {
-      for (int i = 0; i < statref!.docs.length; i++) {
-        items.add(statref!.docs[i]);
-      }
-      graphData();
-      isLoading = false;
-    });
+    if (mounted) {
+      setState(() {
+        for (int i = 0; i < statref!.docs.length; i++) {
+          items.add(statref!.docs[i]);
+        }
+        graphData();
+        isLoading = false;
+      });
+    }
   }
 
   void _actionPression(UserProfile userProfile) async {
@@ -499,6 +520,7 @@ class _SingleUserPageState extends State<SingleUserPage> {
             AsyncSnapshot<DocumentSnapshot<Map<String, dynamic>>> snapshot) {
           if (snapshot.data == null) return Center(child: ZText(content: ""));
           UserProfile userProfile = UserProfile.buildObjectAsync(snapshot);
+          newRole = userProfile.role;
           return userDetails(userProfile);
         });
   }
@@ -541,12 +563,12 @@ class _SingleUserPageState extends State<SingleUserPage> {
                     content: '${I18n.of(context).name} :',
                     textAlign: TextAlign.center,
                     fontSize: SizeConfig.diagonal * 1.5,
-                    color: Color(Styling.textColor).withOpacity(0.7),
+                    color: Color(Styling.textColor),
                   ),
                   ZText(
                     content: '${userProfile.name}',
                     textAlign: TextAlign.center,
-                    color: Color(Styling.textColor).withOpacity(0.7),
+                    color: Color(Styling.textColor),
                     fontSize: SizeConfig.diagonal * 1.5,
                   ),
                 ],
@@ -562,19 +584,62 @@ class _SingleUserPageState extends State<SingleUserPage> {
                       content: '${I18n.of(context).phone} :',
                       textAlign: TextAlign.center,
                       fontSize: SizeConfig.diagonal * 1.5,
-                      color: Color(Styling.textColor).withOpacity(0.7),
+                      color: Color(Styling.textColor),
                     ),
                     ZText(
                       content: '${userProfile.phoneNumber}',
                       textAlign: TextAlign.center,
-                      color: Color(Styling.textColor).withOpacity(0.7),
+                      color: Color(Styling.textColor),
                       fontSize: SizeConfig.diagonal * 1.5,
                     ),
                   ],
                 ),
               ),
             ),
-            if (userProfile.role == 'admin')
+            Container(
+              child: Padding(
+                padding: EdgeInsets.all(SizeConfig.diagonal * 1),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    ZText(
+                      content: '${I18n.of(context).role} :',
+                      textAlign: TextAlign.center,
+                      fontSize: SizeConfig.diagonal * 1.5,
+                      color: Color(Styling.textColor),
+                    ),
+                    Row(
+                      children: [
+                        ZText(
+                          content: '${userProfile.role}',
+                          textAlign: TextAlign.center,
+                          color: Color(Styling.textColor),
+                          fontSize: SizeConfig.diagonal * 1.5,
+                        ),
+                        if (widget.userRole == Fields.admin &&
+                            userProfile.id != widget.userId)
+                          SizedBox(width: SizeConfig.diagonal * 1),
+                        if (widget.userRole == Fields.admin &&
+                            userProfile.id != widget.userId)
+                          InkWell(
+                            onTap: () => changeRole(userProfile.id!),
+                            child: ZText(
+                              content: I18n.of(context).change,
+                              textAlign: TextAlign.center,
+                              color: Color(Styling.accentColor),
+                              fontSize: SizeConfig.diagonal * 1.5,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            if (widget.userRole == Fields.admin &&
+                userProfile.id != widget.userId &&
+                userProfile.role != Fields.admin)
               ZElevatedButton(
                   child: Text(userProfile.isActive
                       ? "${I18n.of(context).desactive}"
@@ -584,5 +649,95 @@ class _SingleUserPageState extends State<SingleUserPage> {
         ),
       ),
     );
+  }
+
+  void changeRole(String id) async {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (context) => WillPopScope(
+        onWillPop: () async {
+          return true;
+        },
+        child: AlertDialog(
+          title: ZText(
+            content: I18n.of(context).changeRole,
+            textAlign: TextAlign.center,
+            fontSize: SizeConfig.diagonal * 2,
+            fontWeight: FontWeight.bold,
+          ),
+          content: StatefulBuilder(
+            builder: (BuildContext context, StateSetter dialogsetState) {
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  DropdownButton<String>(
+                    value: newRole,
+                    icon: const Icon(Icons.arrow_drop_down),
+                    iconSize: SizeConfig.diagonal * 2.5,
+                    elevation: 8,
+                    style: TextStyle(color: Color(Styling.textColor)),
+                    underline: Container(
+                      height: 2,
+                      color: Color(Styling.primaryColor),
+                    ),
+                    onChanged: (String? newValue) {
+                      dialogsetState(() {
+                        newRole = newValue!;
+                      });
+                    },
+                    items:
+                        roleList.map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                  ),
+                  SizedBox(height: SizeConfig.diagonal * 2),
+                  ZElevatedButton(
+                    onpressed: () => updateRole(id),
+                    topPadding: 0.0,
+                    bottomPadding: 0.0,
+                    child: ZText(
+                      content: "${I18n.of(context).updateRole}",
+                      color: Color(Styling.primaryBackgroundColor),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  void updateRole(String id) async {
+    EasyLoading.show(status: I18n.of(context).loading);
+    bool isOnline = await hasConnection();
+    if (!isOnline) {
+      EasyLoading.dismiss();
+      Navigator.of(context).pop();
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: ZText(content: I18n.of(context).noInternet)));
+    } else {
+      try {
+        await widget.db.updateRole(id, newRole);
+        EasyLoading.dismiss();
+        Navigator.of(context).pop();
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: ZText(content: I18n.of(context).operationSucceeded)));
+      } catch (e) {
+        EasyLoading.dismiss();
+        Navigator.of(context).pop();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: ZText(content: e.toString()),
+          ),
+        );
+      }
+    }
   }
 }

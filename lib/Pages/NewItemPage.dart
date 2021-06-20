@@ -179,16 +179,20 @@ class _NewItemPageState extends State<NewItemPage> {
             ),
           );
 
-          setState(() {
-            _formKey.currentState!.reset();
-          });
+          if (mounted) {
+            setState(() {
+              _formKey.currentState!.reset();
+            });
+          }
         } on Exception catch (e) {
           //print('Error: $e');
 
           EasyLoading.dismiss();
-          setState(() {
-            _formKey.currentState!.reset();
-          });
+          if (mounted) {
+            setState(() {
+              _formKey.currentState!.reset();
+            });
+          }
 
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(

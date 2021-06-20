@@ -63,6 +63,8 @@ class _DashboardPageState extends State<DashboardPage> {
   void initState() {
     super.initState();
 
+    widget.db.updateLastSeen(widget.userId);
+
     if (widget.index != null) {
       setState(() {
         _selectedIndex = widget.index!;

@@ -1,30 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:zilliken/Components/ZElevatedButton.dart';
 import 'package:zilliken/Helpers/SizeConfig.dart';
 import 'package:zilliken/Helpers/Styling.dart';
+import 'package:zilliken/Models/Order.dart';
+import 'package:zilliken/Models/Receipt.dart';
 import 'package:zilliken/Services/Authentication.dart';
+import 'package:blue_thermal_printer/blue_thermal_printer.dart';
 
 import '../Components/ZText.dart';
 import '../i18n.dart';
 
 class PrintPage extends StatefulWidget {
   final Authentication auth;
+  final String agentName;
   final String orderType;
-  final List<String> items;
+  final String tableAddressLabel;
   final String tableAddress;
   final String? phoneNumber;
-  final String orderDate;
-  final String tax;
-  final String total;
+  final Order order;
 
   PrintPage({
+    required this.auth,
+    required this.agentName,
     required this.orderType,
-    required this.items,
+    required this.tableAddressLabel,
     required this.tableAddress,
     required this.phoneNumber,
-    required this.orderDate,
-    required this.tax,
-    required this.total,
-    required this.auth,
+    required this.order,
   });
 
   @override
@@ -32,7 +35,246 @@ class PrintPage extends StatefulWidget {
 }
 
 class _PrintPageState extends State<PrintPage> {
+  BlueThermalPrinter bluetooth = BlueThermalPrinter.instance;
+
+  List<BluetoothDevice> _devices = [];
+  BluetoothDevice? _device;
+  bool _connected = false;
+  //String pathImage;
+  Receipt receipt = Receipt();
+
   @override
+  void initState() {
+    super.initState();
+    initPlatformState();
+    // initSavetoPath();
+  }
+
+   /*initSavetoPath()async{
+    //read and write
+    //image max 300px X 300px
+    final filename = 'yourlogo.png';
+    var bytes = await rootBundle.load("assets/images/yourlogo.png");
+    String dir = (await getApplicationDocumentsDirectory()).path;
+    writeToFile(bytes,'$dir/$filename');
+    setState(() {
+     pathImage='$dir/$filename';
+   });
+ }
+
+  //write to app path
+ Future<void> writeToFile(ByteData data, String path) {
+    final buffer = data.buffer;
+    return new File(path).writeAsBytes(
+        buffer.asUint8List(data.offsetInBytes, data.lengthInBytes));
+ }*/
+
+  Future<void> initPlatformState() async {
+    bool? isConnected = await bluetooth.isConnected;
+    List<BluetoothDevice> devices = [];
+    try {
+      devices = await bluetooth.getBondedDevices();
+    } on PlatformException {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: ZText(content: I18n.of(context).operationFailed)));
+    }
+
+    bluetooth.onStateChanged().listen((state) {
+      switch (state) {
+        case BlueThermalPrinter.CONNECTED:
+          setState(() {
+            _connected = true;
+          });
+          break;
+        case BlueThermalPrinter.DISCONNECTED:
+          setState(() {
+            _connected = false;
+          });
+          break;
+        default:
+          print(state);
+          break;
+      }
+    });
+
+    if (!mounted) return;
+    setState(() {
+      _devices = devices;
+    });
+
+    if (isConnected != null && isConnected == true) {
+      setState(() {
+        _connected = true;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    SizeConfig().init(context);
+    return Container(
+      decoration: BoxDecoration(
+          image: DecorationImage(
+        image: AssetImage('assets/Zilliken.jpg'),
+        fit: BoxFit.cover,
+      )),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Container(
+          /* decoration: BoxDecoration(
+            gradient: kUIGradient,
+          ),*/
+          child: Padding(
+            padding: EdgeInsets.all(SizeConfig.diagonal * 1),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    SizedBox(
+                      width: SizeConfig.diagonal * 1,
+                    ),
+                    ZText(
+                      content: I18n.of(context).device,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    SizedBox(
+                      width: SizeConfig.diagonal * 1,
+                    ),
+                    Expanded(
+                      child: DropdownButton(
+                        items: _getDeviceItems(),
+                        onChanged: (BluetoothDevice? value) =>
+                            setState(() => _device = value),
+                        value: _device,
+                        iconSize: SizeConfig.diagonal * 2.5,
+                        style: TextStyle(
+                          fontSize: SizeConfig.diagonal * 1.5,
+                          color: Color(Styling.textColor),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  width: SizeConfig.diagonal * 1,
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: <Widget>[
+                    ZElevatedButton(
+                      onpressed: () {
+                        initPlatformState();
+                      },
+                      child: ZText(
+                        content: I18n.of(context).refresh,
+                        color: Colors.white,
+                      ),
+                    ),
+                    SizedBox(
+                      width: SizeConfig.diagonal * 1,
+                    ),
+                    ZElevatedButton(
+                      color: _connected
+                          ? Color(Styling.accentColor)
+                          : Color(Styling.primaryColor),
+                      onpressed: _connected ? _disconnect : _connect,
+                      child: ZText(
+                        content: _connected
+                            ? I18n.of(context).disconnect
+                            : I18n.of(context).connect,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+                Padding(
+                  padding:
+                      const EdgeInsets.only(left: 10.0, right: 10.0, top: 50),
+                  child: ZElevatedButton(
+                    onpressed: () {
+                      receipt.sample(
+                          context,
+                          widget.agentName,
+                          widget.orderType,
+                          widget.tableAddressLabel,
+                          widget.tableAddress,
+                          widget.phoneNumber,
+                          widget.order);
+                      Navigator.of(context).pop();
+                    },
+                    child: ZText(
+                      content: I18n.of(context).print,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  List<DropdownMenuItem<BluetoothDevice>> _getDeviceItems() {
+    List<DropdownMenuItem<BluetoothDevice>> items = [];
+    if (_devices.isEmpty) {
+      items.add(DropdownMenuItem(
+        child: ZText(content: I18n.of(context).none),
+      ));
+    } else {
+      _devices.forEach((device) {
+        items.add(DropdownMenuItem(
+          child: ZText(content: device.name!),
+          value: device,
+        ));
+      });
+    }
+    return items;
+  }
+
+  void _connect() {
+    if (_device == null) {
+      show(I18n.of(context).noDevices);
+    } else {
+      bluetooth.isConnected.then((isConnected) {
+        if (!isConnected!) {
+          bluetooth.connect(_device!).catchError((error) {
+            setState(() => _connected = false);
+          });
+          setState(() => _connected = true);
+        }
+      });
+    }
+  }
+
+  void _disconnect() {
+    bluetooth.disconnect();
+    setState(() => _connected = true);
+  }
+
+  Future show(
+    String message, {
+    Duration duration: const Duration(seconds: 3),
+  }) async {
+    await new Future.delayed(new Duration(milliseconds: 100));
+    ScaffoldMessenger.of(context).showSnackBar(
+      new SnackBar(
+        content: ZText(
+          content: message,
+          color: Colors.white,
+        ),
+        duration: duration,
+      ),
+    );
+  }
+
+  /* @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
     return Container(
@@ -57,7 +299,7 @@ class _PrintPageState extends State<PrintPage> {
         ),
       ),
     );
-  }
+  }*/
   /*PrinterBluetoothManager _printerManager = PrinterBluetoothManager();
   List<PrinterBluetooth> _devices = [];
   String _devicesMsg;

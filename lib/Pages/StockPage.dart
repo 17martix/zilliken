@@ -26,7 +26,7 @@ class StockPage extends StatefulWidget {
   final Messaging messaging;
   final String userId;
   final String userRole;
-  final DateFormat formatter = DateFormat('dd/MM/yy hh:mm');
+  final DateFormat formatter = DateFormat('dd/MM/yy HH:mm');
 
   StockPage({
     required this.auth,
@@ -42,9 +42,9 @@ class StockPage extends StatefulWidget {
 
 class _StockPageState extends State<StockPage> {
   final _formKey = GlobalKey<FormState>();
-  Query<Map<String, dynamic>> item =
-      FirebaseFirestore.instance.collection(Fields.stock)
-      .orderBy(Fields.quantity,descending: false);
+  Query<Map<String, dynamic>> item = FirebaseFirestore.instance
+      .collection(Fields.stock)
+      .orderBy(Fields.quantity, descending: false);
 
   num? quantity;
 
@@ -71,7 +71,7 @@ class _StockPageState extends State<StockPage> {
     });*/
   }
 
- /* void stockQuery() {
+  /* void stockQuery() {
     if (!hasMore) {
       return;
     }
@@ -153,10 +153,11 @@ class _StockPageState extends State<StockPage> {
                   messaging: widget.messaging,
                 ),
               ),
-            )/*.then((value) {
+            ) /*.then((value) {
               hasMore = true;
               stockQuery();
-            })*/;
+            })*/
+                ;
           },
         ),
       ),
@@ -186,7 +187,7 @@ class _StockPageState extends State<StockPage> {
                 );
               });
         });
-   /* return ListView(
+    /* return ListView(
       controller: _scrollController,
       children: [
         items.length == 0
@@ -305,9 +306,11 @@ class _StockPageState extends State<StockPage> {
                                       hint: '${stock.quantity} ${stock.unit}',
                                       onSaved: (value) {
                                         if (value != null) {
-                                          setState(() {
-                                            quantity = num.parse(value);
-                                          });
+                                          if (mounted) {
+                                            setState(() {
+                                              quantity = num.parse(value);
+                                            });
+                                          }
                                         }
                                       },
                                       validator: (value) => value!.isEmpty
@@ -358,19 +361,24 @@ class _StockPageState extends State<StockPage> {
                                                           .operationSucceeded),
                                                 ),
                                               );
-
-                                              setState(() {
-                                                _formKey.currentState!.reset();
-                                              });
+                                              if (mounted) {
+                                                setState(() {
+                                                  _formKey.currentState!
+                                                      .reset();
+                                                });
+                                              }
 
                                               Navigator.of(context).pop();
                                             } on Exception catch (e) {
                                               //print('Error: $e');
 
                                               EasyLoading.dismiss();
-                                              setState(() {
-                                                _formKey.currentState!.reset();
-                                              });
+                                              if (mounted) {
+                                                setState(() {
+                                                  _formKey.currentState!
+                                                      .reset();
+                                                });
+                                              }
 
                                               ScaffoldMessenger.of(context)
                                                   .showSnackBar(
@@ -662,9 +670,11 @@ class _StockPageState extends State<StockPage> {
                                       hint: '${stock.usedSince} ${stock.unit}',
                                       onSaved: (value) {
                                         if (value != null) {
-                                          setState(() {
-                                            quantity = num.parse(value);
-                                          });
+                                          if (mounted) {
+                                            setState(() {
+                                              quantity = num.parse(value);
+                                            });
+                                          }
                                         }
                                       },
                                       validator: (value) => value!.isEmpty
@@ -714,19 +724,24 @@ class _StockPageState extends State<StockPage> {
                                                           .operationSucceeded),
                                                 ),
                                               );
-
-                                              setState(() {
-                                                _formKey.currentState!.reset();
-                                              });
+                                              if (mounted) {
+                                                setState(() {
+                                                  _formKey.currentState!
+                                                      .reset();
+                                                });
+                                              }
 
                                               Navigator.of(context).pop();
                                             } on Exception catch (e) {
                                               //print('Error: $e');
 
                                               EasyLoading.dismiss();
-                                              setState(() {
-                                                _formKey.currentState!.reset();
-                                              });
+                                              if (mounted) {
+                                                setState(() {
+                                                  _formKey.currentState!
+                                                      .reset();
+                                                });
+                                              }
 
                                               ScaffoldMessenger.of(context)
                                                   .showSnackBar(

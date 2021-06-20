@@ -267,6 +267,34 @@ class I18n {
 
   String get remaining => _getText("remaining");
 
+  String get role => _getText("role");
+
+  String get change => _getText("change");
+
+  String get changeRole => _getText("changeRole");
+
+  String get updateRole => _getText("updateRole");
+
+  String get device => _getText("device");
+
+  String get refresh => _getText("refresh");
+
+  String get disconnect => _getText("disconnect");
+
+  String get connect => _getText("connect");
+
+  String get print => _getText("print");
+
+  String get none => _getText("none");
+
+  String get receipt => _getText("receipt");
+
+  String get agentName => _getText("agentName");
+
+  String get thankYou => _getText("thankYou");
+
+  String get orderType => _getText("orderType");
+
   static late Map<String, String> _localizedValues;
 
   static const _enValues = {
@@ -351,7 +379,7 @@ class I18n {
     "called": "requires your attention",
     "accept": "Go to",
     "oopsSomethingwentwrong": "Oops something went wrong!",
-    "noDevices": "No devices",
+    "noDevices": "No device selected",
     "pleaseEnablebluetooth": "Please enable bluetooth to print",
     "callThewaiter": "Call a waiter",
     "messageSent": "Message sent",
@@ -386,7 +414,7 @@ class I18n {
     "weeklyinventory": "Last 7 Days Total Overview",
     "totalOrders": "Orders Of The Day",
     "totalCount": "Total Count",
-    "deactivateUser": "Deactivate user ?",
+    "deactivateUser": "User Details",
     "desactive": "Desactivate",
     "evaluationSem": "Evaluation of the week",
     "stockUsed": "Today Most Used Stock Items",
@@ -402,6 +430,20 @@ class I18n {
     "editMenuItem": "Edit item's ttributes",
     "refilledAt": "Refilled on",
     "remaining": "Remaining",
+    "role": "Role",
+    "change": "Change",
+    "changeRole": "Change Role",
+    "updateRole": "Update Role",
+    "device": "Device : ",
+    "refresh": "Refresh",
+    "disconnect": "Disconnect",
+    "connect": "Connect",
+    "print": "Print",
+    "none": "None",
+    "receipt": "Receipt",
+    "agentName": "Agent Name",
+    "thankYou": "Thank You ...!",
+    "orderType": "Order Type",
   };
 
   static const _frValues = {
@@ -486,7 +528,7 @@ class I18n {
     "called": "nécessite votre attention",
     "accept": "Aller à",
     "oopsSomethingwentwrong": "oups quelque chose s'est mal passée!",
-    "noDevices": "Aucun dispositif ",
+    "noDevices": "Aucun appareil sélectionné",
     "pleaseEnablebluetooth": "Veuillez activer bluetooth pour imprimer",
     "callThewaiter": "Appeler un serveur",
     "messageSent": "Message envoyé",
@@ -521,7 +563,7 @@ class I18n {
     "weeklyinventory": "Aperçu du total des 7 derniers jours",
     "totalOrders": "Commandes Du Jour",
     "totalCount": "Compte Total",
-    "deactivateUser": "Désactiver l'utilisateur?",
+    "deactivateUser": "Détails de l'utilisateur",
     "desactive": "Désactiver",
     "evaluationSem": "Evaluation de la semaine",
     "stockUsed": "Articles en stock les plus utilisés aujourd'hui",
@@ -537,6 +579,20 @@ class I18n {
     "editMenuItem": "Modifier les attributs de l'élément",
     "refilledAt": "Rempli le",
     "remaining": "Restant",
+    "role": "Rôle",
+    "change": "Changer",
+    "changeRole": "Changer de rôle",
+    "updateRole": "Mettre à jour le rôle",
+    "device": "Appareil :",
+    "refresh": "Rafraîchir",
+    "disconnect": "Déconnecter",
+    "connect": "Connecter",
+    "print": "Imprimer",
+    "none": "Rien",
+    "receipt": "Reçu",
+    "agentName": "Nom de l'agent",
+    "thankYou": "Merci ...!",
+    "orderType": "Type de commande",
   };
 
   static const _allValues = {

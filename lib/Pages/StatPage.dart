@@ -75,9 +75,11 @@ class _StatPageState extends State<StatPage> {
     super.initState();
 
     widget.db.getTodayStatUser().then((value) {
-      setState(() {
-        statisticList = value;
-      });
+      if (mounted) {
+        setState(() {
+          statisticList = value;
+        });
+      }
 
       statisticList.forEach((element) {
         totalCount = totalCount + element.count!;
@@ -86,9 +88,11 @@ class _StatPageState extends State<StatPage> {
 
     widget.db.getTodayStatisticStock().then((value) {
       //log("valueSize is ${value.length}");
-      setState(() {
-        stock = value;
-      });
+      if (mounted) {
+        setState(() {
+          stock = value;
+        });
+      }
       stock.forEach((element) {
         maxQuantity = maxQuantity + element.quantity;
       });
@@ -114,9 +118,11 @@ class _StatPageState extends State<StatPage> {
       final barGroup = makeGroupData(i, items[i].data()![Fields.total]);
       barItems.add(barGroup);
       if (maxY < items[i].data()![Fields.total]) {
-        setState(() {
-          maxY = items[i].data()![Fields.total];
-        });
+        if (mounted) {
+          setState(() {
+            maxY = items[i].data()![Fields.total];
+          });
+        }
       }
     }
     rawBarGroups = barItems;
@@ -132,10 +138,11 @@ class _StatPageState extends State<StatPage> {
     if (hasMore == false) {
       return;
     }
-
-    setState(() {
-      isLoading = true;
-    });
+    if (mounted) {
+      setState(() {
+        isLoading = true;
+      });
+    }
 
     if (lastDocument == null) {
       statref = await widget.db.databaseReference
@@ -158,16 +165,18 @@ class _StatPageState extends State<StatPage> {
 
     if (statref!.docs.length > 0)
       lastDocument = statref!.docs[statref!.docs.length - 1];
-    setState(() {
-      for (int i = 0; i < statref!.docs.length; i++) {
-        items.add(statref!.docs[i]);
-      }
+    if (mounted) {
+      setState(() {
+        for (int i = 0; i < statref!.docs.length; i++) {
+          items.add(statref!.docs[i]);
+        }
 
-      graphData();
-      isLoading = false;
+        graphData();
+        isLoading = false;
 
-      //log('length is ${items.length}');
-    });
+        //log('length is ${items.length}');
+      });
+    }
   }
 
   @override

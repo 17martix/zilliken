@@ -21,6 +21,7 @@ import 'package:zilliken/Models/Call.dart';
 import 'package:zilliken/Models/Fields.dart';
 import 'package:zilliken/Models/Order.dart';
 import 'package:zilliken/Models/OrderItem.dart';
+import 'package:zilliken/Models/UserProfile.dart';
 import 'package:zilliken/Services/Authentication.dart';
 import 'package:zilliken/Services/Database.dart';
 import 'package:zilliken/Services/Messaging.dart';
@@ -42,7 +43,7 @@ class SingleOrderPage extends StatefulWidget {
   final String orderId;
   final Order clientOrder;
   final Messaging messaging;
-  final DateFormat formatter = DateFormat('HH:mm');
+  final DateFormat formatter = DateFormat('dd/MM/yy HH:mm');
 
   SingleOrderPage({
     required this.auth,
@@ -76,7 +77,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
   //double CAMERA_BEARING = 0;
   LatLng SOURCE_LOCATION = LatLng(-3.3834389, 29.3616122);
   //MenuItem menu = MenuItem();
-  //UserProfile userProfile = UserProfile();
+ UserProfile? userProfile;
 
   /*double CAMERA_ZOOM = 16;
   double CAMERA_TILT = 80;
@@ -129,6 +130,12 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
         .doc(widget.orderId)
         .collection(Fields.items);
 
+        widget.db.getUserProfile(widget.userId).then((value) {
+          setState(() {
+            userProfile=value;
+          });
+        });
+
     FirebaseFirestore.instance
         .collection(Fields.order)
         .doc(widget.orderId)
@@ -166,33 +173,41 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
         .doc(Fields.settings)
         .snapshots()
         .listen((DocumentSnapshot<Map<String, dynamic>> documentSnapshot) {
-      setState(() {
-        enabled = documentSnapshot.data()![Fields.enabled];
-      });
-    });
-
-    widget.db.getOrder(widget.orderId).then((value) {
-      setState(() {
-        order = value;
-      });
-      if (value!.orderLocation == 1) {
+      if (mounted) {
         setState(() {
-          _currentPoint = value.currentPoint;
-          if (_status != 4) {
-            if (widget.userId == order!.deliveringOrderId) {
-              initLocation();
-            } else {
-              initLocationFromServer();
-            }
-          }
+          enabled = documentSnapshot.data()![Fields.enabled];
         });
       }
     });
 
+    widget.db.getOrder(widget.orderId).then((value) {
+      if (mounted) {
+        setState(() {
+          order = value;
+        });
+      }
+      if (value!.orderLocation == 1) {
+        if (mounted) {
+          setState(() {
+            _currentPoint = value.currentPoint;
+            if (_status != 4) {
+              if (widget.userId == order!.deliveringOrderId) {
+                initLocation();
+              } else {
+                initLocationFromServer();
+              }
+            }
+          });
+        }
+      }
+    });
+
     widget.db.getOrderItems(widget.orderId).then((value) {
-      setState(() {
-        items = value;
-      });
+      if (mounted) {
+        setState(() {
+          items = value;
+        });
+      }
     });
   }
 
@@ -205,12 +220,14 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
             distanceFilter: 1,
             intervalDuration: Duration(minutes: 1))
         .listen((Position position) {
-      setState(() {
-        if (_status != 4) {
-          currentLocation = position;
-          updatePinOnMap(currentLocation);
-        }
-      });
+      if (mounted) {
+        setState(() {
+          if (_status != 4) {
+            currentLocation = position;
+            updatePinOnMap(currentLocation);
+          }
+        });
+      }
 
       GeoPoint currentPoint =
           GeoPoint(currentLocation.latitude, currentLocation.longitude);
@@ -260,10 +277,12 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
 
     Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
         .then((value) {
-      setState(() {
-        currentLocation = value;
-        updatePinOnMap(currentLocation);
-      });
+      if (mounted) {
+        setState(() {
+          currentLocation = value;
+          updatePinOnMap(currentLocation);
+        });
+      }
     });
 
     // hard-coded destination for this example
@@ -374,7 +393,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                   true,
                   null,
                   backFunction,
-                  (widget.userRole != Fields.client && items != null)
+                  (widget.userRole != Fields.client && order!=null && userProfile!=null)
                       ? printing
                       : null,
                   null,
@@ -435,13 +454,6 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
   }
 
   void printing() {
-    log("error 1");
-    List<String> myList = [];
-    for (int i = 0; i < items.length; i++) {
-      myList.add(
-          "${items[i].menuItem.name} : ${items[i].menuItem.price} ${I18n.of(context).fbu}");
-    }
-    log("error 2");
     Navigator.push(
         context,
         MaterialPageRoute(
@@ -449,20 +461,16 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
             auth: widget.auth,
             orderType: widget.clientOrder.orderLocation == 0
                 ? I18n.of(context).restaurantOrder
-                : I18n.of(context).livrdomicile, //restaurant order or delivery
-            tableAddress: widget.clientOrder.orderLocation == 0
-                ? "${I18n.of(context).tableNumber} : ${widget.clientOrder.tableAdress}"
-                : "${I18n.of(context).addr} : ${widget.clientOrder.tableAdress}",
+                : I18n.of(context).livrdomicile,
+                tableAddressLabel: widget.clientOrder.orderLocation == 0?
+                "${I18n.of(context).tableNumber}":"${I18n.of(context).addr}", //restaurant order or delivery
+            tableAddress: 
+                 "${widget.clientOrder.tableAdress}",
             phoneNumber: widget.clientOrder.orderLocation == 1
-                ? "${I18n.of(context).yourphonenumber} : ${widget.clientOrder.phoneNumber}"
+                ? "${widget.clientOrder.phoneNumber}"
                 : null,
-            orderDate:
-                "${I18n.of(context).orderDate} : ${widget.formatter.format(widget.clientOrder.orderDate!.toDate())}",
-            items: myList,
-            tax:
-                "${I18n.of(context).taxCharge} : ${widget.clientOrder.taxPercentage}",
-            total:
-                "${I18n.of(context).total} : ${widget.clientOrder.grandTotal}",
+           agentName: userProfile!.name,
+           order: order!,
           ),
         ));
   }
@@ -549,10 +557,12 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
     } else {
       try {
         await widget.db.assignDelivery(widget.orderId, widget.userId);
-        setState(() {
-          order!.deliveringOrderId = widget.userId;
-          initLocation();
-        });
+        if (mounted) {
+          setState(() {
+            order!.deliveringOrderId = widget.userId;
+            initLocation();
+          });
+        }
 
         EasyLoading.dismiss();
       } on Exception catch (e) {
@@ -688,17 +698,19 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
         polylineCoordinates.add(LatLng(point.latitude, point.longitude));
       });
 
-      setState(() {
-        if (_polylines != null && _polylines.length > 0) {
-          _polylines.clear();
-        }
+      if (mounted) {
+        setState(() {
+          if (_polylines != null && _polylines.length > 0) {
+            _polylines.clear();
+          }
 
-        _polylines.add(Polyline(
-            width: 5, // set the width of the polylines
-            polylineId: PolylineId('poly'),
-            color: Color(Styling.accentColor),
-            points: polylineCoordinates));
-      });
+          _polylines.add(Polyline(
+              width: 5, // set the width of the polylines
+              polylineId: PolylineId('poly'),
+              color: Color(Styling.accentColor),
+              points: polylineCoordinates));
+        });
+      }
     }
   }
 
@@ -1177,10 +1189,12 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
   }
 
   void handleStatusChange(int? value) {
-    setState(() {
-      goingBack = value! < _orderStatus ? true : false;
-      _orderStatus = value;
-    });
+    if (mounted) {
+      setState(() {
+        goingBack = value! < _orderStatus ? true : false;
+        _orderStatus = value;
+      });
+    }
 
     if (goingBack) {
       backFunction();
@@ -1667,9 +1681,11 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
       leftPadding: SizeConfig.diagonal * 1,
       rightPadding: SizeConfig.diagonal * 1,
       onpressed: () async {
-        setState(() {
-          isDataBeingDeleted = true;
-        });
+        if (mounted) {
+          setState(() {
+            isDataBeingDeleted = true;
+          });
+        }
         await widget.db.cancelOrder(widget.orderId);
         backFunction();
       },

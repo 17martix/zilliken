@@ -79,7 +79,7 @@ howLiked,How do you like it,Comment le voulez vous
 called,requires your attention,nécessite votre attention
 accept,Go to,Aller à
 oopsSomethingwentwrong,Oops something went wrong!,oups quelque chose s'est mal passée!
-noDevices,No devices,"Aucun dispositif "
+noDevices,No device selected,Aucun appareil sélectionné
 pleaseEnablebluetooth,Please enable bluetooth to print,Veuillez activer bluetooth pour imprimer
 callThewaiter,Call a waiter,Appeler un serveur
 messageSent,Message sent,Message envoyé
@@ -114,7 +114,7 @@ noResult,No Result,Pas De Résultat
 weeklyinventory,Last 7 Days Total Overview,Aperçu du total des 7 derniers jours
 totalOrders,Orders Of The Day,Commandes Du Jour
 totalCount,Total Count,Compte Total
-deactivateUser,Deactivate user ?,Désactiver l'utilisateur?
+deactivateUser,User Details,Détails de l'utilisateur
 desactive,Desactivate,Désactiver
 evaluationSem,Evaluation of the week,Evaluation de la semaine
 stockUsed,Today Most Used Stock Items,Articles en stock les plus utilisés aujourd'hui
@@ -129,3 +129,17 @@ inStock, in Stock, en Stock
 editMenuItem,Edit item's ttributes,Modifier les attributs de l'élément
 refilledAt,Refilled on,Rempli le
 remaining,Remaining,Restant
+role,Role,Rôle
+change,Change,Changer
+changeRole,Change Role,Changer de rôle
+updateRole,Update Role,Mettre à jour le rôle
+device,Device : ,Appareil :
+refresh,Refresh,Rafraîchir
+disconnect,Disconnect,Déconnecter
+connect,Connect,Connecter
+print,Print,Imprimer
+none,None,Rien
+receipt,Receipt,Reçu
+agentName,Agent Name,Nom de l'agent
+thankYou,Thank You ...!,Merci ...!
+orderType,Order Type,Type de commande

@@ -1150,4 +1150,17 @@ class Database {
 
     return stockList;
   }
+
+  Future<void> updateLastSeen(String id) async {
+    await databaseReference.collection(Fields.users).doc(id).update({
+      Fields.lastSeenAt: FieldValue.serverTimestamp(),
+    });
+  }
+
+  Future<void> updateRole(String id, String role) async {
+    var document = databaseReference.collection(Fields.users).doc(id);
+    await document.update({
+      Fields.role: role,
+    });
+  }
 }

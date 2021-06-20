@@ -20,7 +20,7 @@ class UserPage extends StatefulWidget {
   final Authentication auth;
   final Database db;
   final String userId;
-  final DateFormat formatter = DateFormat('dd/MM/yy hh:mm ');
+  final DateFormat formatter = DateFormat('dd/MM/yy HH:mm');
   final String userRole;
 
   UserPage({
@@ -79,9 +79,11 @@ class _UserPageState extends State<UserPage> {
       return;
     }
 
-    setState(() {
-      isLoading = true;
-    });
+    if (mounted) {
+      setState(() {
+        isLoading = true;
+      });
+    }
 
     if (lastDocument == null) {
       itemref = await widget.db.databaseReference
@@ -104,12 +106,14 @@ class _UserPageState extends State<UserPage> {
 
     if (itemref.docs.length > 0)
       lastDocument = itemref.docs[itemref.docs.length - 1];
-    setState(() {
-      for (int i = 0; i < itemref.docs.length; i++) {
-        items.add(itemref.docs[i]);
-      }
-      isLoading = false;
-    });
+    if (mounted) {
+      setState(() {
+        for (int i = 0; i < itemref.docs.length; i++) {
+          items.add(itemref.docs[i]);
+        }
+        isLoading = false;
+      });
+    }
   }
 
   @override
@@ -144,39 +148,49 @@ class _UserPageState extends State<UserPage> {
                             size: SizeConfig.diagonal * 2.5,
                           ),
                           onPressed: () {
-                            setState(() {
-                              searchController.clear();
-                              isSearching = false;
-                              displayCancelButton = false;
-                            });
+                            if (mounted) {
+                              setState(() {
+                                searchController.clear();
+                                isSearching = false;
+                                displayCancelButton = false;
+                              });
+                            }
                           })
                       : Text(''),
                 ],
               ),
               onFieldSubmitted: (String? value) {
                 if (value != null && value.isNotEmpty && value != '') {
-                  setState(() {
-                    isSearching = true;
-                  });
+                  if (mounted) {
+                    setState(() {
+                      isSearching = true;
+                    });
+                  }
                   searchText = value;
                   isSearchLoading = false;
                   searchQuery();
                 } else {
-                  setState(() {
-                    isSearching = false;
-                  });
+                  if (mounted) {
+                    setState(() {
+                      isSearching = false;
+                    });
+                  }
                 }
               },
               onChanged: (String? value) {
                 if (value == null || value.isEmpty || value == '') {
-                  setState(() {
-                    isSearching = false;
-                    displayCancelButton = false;
-                  });
+                  if (mounted) {
+                    setState(() {
+                      isSearching = false;
+                      displayCancelButton = false;
+                    });
+                  }
                 } else {
-                  setState(() {
-                    displayCancelButton = true;
-                  });
+                  if (mounted) {
+                    setState(() {
+                      displayCancelButton = true;
+                    });
+                  }
                 }
               },
             ),
