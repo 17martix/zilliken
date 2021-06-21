@@ -5,6 +5,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:zilliken/Components/ZAppBar.dart';
 import 'package:zilliken/Components/ZElevatedButton.dart';
 import 'package:zilliken/Helpers/SizeConfig.dart';
+import 'package:zilliken/Helpers/Styling.dart';
 import 'package:zilliken/Helpers/Utils.dart';
 import 'package:zilliken/Models/Call.dart';
 import 'package:zilliken/Models/Fields.dart';
@@ -168,7 +169,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       logout,
                       null,
                       null,
-                      widget.userRole != Fields.client ? admin : null,
+                      widget.userRole == Fields.admin ? admin : null,
                     ),
                     body: body(),
                     /*bottomNavigationBar: BottomNavigationBar(
@@ -194,16 +195,23 @@ class _DashboardPageState extends State<DashboardPage> {
                 ),*/
                     bottomNavigationBar: CurvedNavigationBar(
                       animationCurve: Curves.easeInBack,
-                      color: Colors.white.withOpacity(0.7),
+                      //color: Colors.white.withOpacity(0.7),
                       height: 50,
                       //height: SizeConfig.diagonal * 6,
                       animationDuration: Duration(milliseconds: 800),
 
-                      backgroundColor: Colors.transparent,
+                      //backgroundColor: Colors.transparent,
+                      backgroundColor: Color(Styling.grey),
                       index: _selectedIndex,
                       items: <Widget>[
-                        Icon(Icons.restaurant_menu_outlined),
-                        Icon(Icons.shopping_bag),
+                        Icon(
+                          Icons.restaurant_menu_outlined,
+                          color: Color(Styling.primaryColor),
+                        ),
+                        Icon(
+                          Icons.shopping_bag,
+                          color: Color(Styling.primaryColor),
+                        ),
                       ],
                       /*currentIndex: _selectedIndex,
                   selectedItemColor: Color(

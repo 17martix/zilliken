@@ -217,6 +217,7 @@ class Database {
           Fields.phoneNumber: userProfile.phoneNumber,
           Fields.tags: userProfile.tags,
           Fields.isActive: userProfile.isActive,
+          Fields.token: userProfile.token,
           Fields.lastSeenAt: FieldValue.serverTimestamp(),
           Fields.createdAt: FieldValue.serverTimestamp(),
         })
@@ -322,19 +323,7 @@ class Database {
     UserProfile? userProfile;
     var document = databaseReference.collection(Fields.users).doc(id);
     await document.get().then((snapshot) {
-      String role = snapshot[Fields.role];
-
-      userProfile = UserProfile(
-        id: id,
-        role: role,
-        name: snapshot[Fields.name],
-        phoneNumber: snapshot[Fields.phoneNumber],
-        createdAt: snapshot[Fields.createdAt],
-        lastSeenAt: snapshot[Fields.lastSeenAt],
-        token: snapshot[Fields.token],
-        isActive: snapshot[Fields.isActive],
-        tags: List.from(snapshot[Fields.tags]),
-      );
+      userProfile = UserProfile.buildObject(snapshot);
     });
 
     return userProfile;

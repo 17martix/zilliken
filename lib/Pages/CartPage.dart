@@ -800,7 +800,7 @@ class _CartPageState extends State<CartPage> {
                   ),
                   ZElevatedButton(
                     onpressed: sendToFireBase,
-                    color: Color(Styling.accentColor),
+                    //color: Color(Styling.accentColor),
                     leftPadding: 0.0,
                     rightPadding: 0.0,
                     child: ZText(

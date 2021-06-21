@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:zilliken/Components/ZAppBar.dart';
 import 'package:zilliken/Components/ZElevatedButton.dart';
 import 'package:zilliken/Helpers/SizeConfig.dart';
 import 'package:zilliken/Helpers/Styling.dart';
@@ -50,7 +51,7 @@ class _PrintPageState extends State<PrintPage> {
     // initSavetoPath();
   }
 
-   /*initSavetoPath()async{
+  /*initSavetoPath()async{
     //read and write
     //image max 300px X 300px
     final filename = 'yourlogo.png';
@@ -120,82 +121,115 @@ class _PrintPageState extends State<PrintPage> {
       )),
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        body: Container(
-          /* decoration: BoxDecoration(
-            gradient: kUIGradient,
-          ),*/
-          child: Padding(
-            padding: EdgeInsets.all(SizeConfig.diagonal * 1),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    SizedBox(
-                      width: SizeConfig.diagonal * 1,
-                    ),
-                    ZText(
-                      content: I18n.of(context).device,
+        appBar: buildAppBar(
+          context,
+          widget.auth,
+          true,
+          null,
+          null,
+          null,
+          null,
+        ),
+        body: Center(
+          child: SingleChildScrollView(
+            child: Card(
+              color: Colors.white.withOpacity(0.7),
+              shape: RoundedRectangleBorder(
+                  borderRadius:
+                      BorderRadius.circular(SizeConfig.diagonal * 1.5)),
+              elevation: 16,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Container(
+                    margin: EdgeInsets.all(SizeConfig.diagonal * 1),
+                    child: ZText(
+                      content: I18n.of(context).print,
                       fontWeight: FontWeight.bold,
+                      fontSize: SizeConfig.diagonal * 1.5,
                     ),
-                    SizedBox(
-                      width: SizeConfig.diagonal * 1,
-                    ),
-                    Expanded(
-                      child: DropdownButton(
-                        items: _getDeviceItems(),
-                        onChanged: (BluetoothDevice? value) =>
-                            setState(() => _device = value),
-                        value: _device,
-                        iconSize: SizeConfig.diagonal * 2.5,
-                        style: TextStyle(
-                          fontSize: SizeConfig.diagonal * 1.5,
-                          color: Color(Styling.textColor),
-                          fontWeight: FontWeight.bold,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                        horizontal: SizeConfig.diagonal * 1,
+                        vertical: SizeConfig.diagonal * 0.5),
+                    child: Divider(height: 2.0, color: Colors.black),
+                  ),
+                  SizedBox(
+                    height: SizeConfig.diagonal * 2.5,
+                  ),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      SizedBox(
+                        width: SizeConfig.diagonal * 1,
+                      ),
+                      ZText(
+                        content: I18n.of(context).device,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      SizedBox(
+                        width: SizeConfig.diagonal * 1,
+                      ),
+                      Expanded(
+                        child: DropdownButton(
+                          items: _getDeviceItems(),
+                          onChanged: (BluetoothDevice? value) =>
+                              setState(() => _device = value),
+                          value: _device,
+                          iconSize: SizeConfig.diagonal * 2.5,
+                          style: TextStyle(
+                            fontSize: SizeConfig.diagonal * 1.5,
+                            color: Color(Styling.textColor),
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  width: SizeConfig.diagonal * 1,
-                ),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: <Widget>[
-                    ZElevatedButton(
-                      onpressed: () {
-                        initPlatformState();
-                      },
-                      child: ZText(
-                        content: I18n.of(context).refresh,
-                        color: Colors.white,
+                    ],
+                  ),
+                  SizedBox(
+                    height: SizeConfig.diagonal * 2.5,
+                  ),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: <Widget>[
+                      Expanded(
+                        child: ZElevatedButton(
+                          onpressed: () {
+                            initPlatformState();
+                          },
+                          // bottomPadding: SizeConfig.diagonal * 1,
+                          child: ZText(
+                            content: I18n.of(context).refresh,
+                            color: Colors.white,
+                          ),
+                        ),
                       ),
-                    ),
-                    SizedBox(
-                      width: SizeConfig.diagonal * 1,
-                    ),
-                    ZElevatedButton(
-                      color: _connected
-                          ? Color(Styling.accentColor)
-                          : Color(Styling.primaryColor),
-                      onpressed: _connected ? _disconnect : _connect,
-                      child: ZText(
-                        content: _connected
-                            ? I18n.of(context).disconnect
-                            : I18n.of(context).connect,
-                        color: Colors.white,
+                      SizedBox(
+                        width: SizeConfig.diagonal * 1,
                       ),
-                    ),
-                  ],
-                ),
-                Padding(
-                  padding:
-                      const EdgeInsets.only(left: 10.0, right: 10.0, top: 50),
-                  child: ZElevatedButton(
+                      Expanded(
+                        child: ZElevatedButton(
+                          // bottomPadding: SizeConfig.diagonal * 1,
+                          color: _connected
+                              ? Color(Styling.accentColor)
+                              : Color(Styling.primaryColor),
+                          onpressed: _connected ? _disconnect : _connect,
+                          child: ZText(
+                            content: _connected
+                                ? I18n.of(context).disconnect
+                                : I18n.of(context).connect,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  ZElevatedButton(
+                    // bottomPadding: SizeConfig.diagonal * 1,
                     onpressed: () {
                       receipt.sample(
                           context,
@@ -205,15 +239,15 @@ class _PrintPageState extends State<PrintPage> {
                           widget.tableAddress,
                           widget.phoneNumber,
                           widget.order);
-                      Navigator.of(context).pop();
+                      //Navigator.of(context).pop();
                     },
                     child: ZText(
                       content: I18n.of(context).print,
                       color: Colors.white,
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -240,7 +274,15 @@ class _PrintPageState extends State<PrintPage> {
 
   void _connect() {
     if (_device == null) {
-      show(I18n.of(context).noDevices);
+      ScaffoldMessenger.of(context).showSnackBar(
+        new SnackBar(
+          content: ZText(
+            content: I18n.of(context).noDevices,
+            color: Colors.white,
+          ),
+        ),
+      );
+      //show(I18n.of(context).noDevices);
     } else {
       bluetooth.isConnected.then((isConnected) {
         if (!isConnected!) {

@@ -20,6 +20,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 import '../Components/ZText.dart';
+import 'TermsPage.dart';
 
 class LoginPage extends StatefulWidget {
   final Authentication auth;
@@ -61,6 +62,7 @@ class _LoginPageState extends State<LoginPage> {
   User? _firebaseUser;
 
   String? _name;
+  bool? _agreed = false;
 
   @override
   Widget build(BuildContext context) {
@@ -314,11 +316,81 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                               Form(
                                 key: _nameKey,
-                                child: ZTextField(
-                                  hint: I18n.of(context).yourname,
-                                  onEditingComplete: () => node.nextFocus(),
-                                  onSaved: (newValue) => _name = newValue,
-                                  keyboardType: TextInputType.text,
+                                child: Column(
+                                  children: [
+                                    ZTextField(
+                                      hint: I18n.of(context).yourname,
+                                      onEditingComplete: () => node.nextFocus(),
+                                      onSaved: (newValue) => _name = newValue,
+                                      keyboardType: TextInputType.text,
+                                    ),
+                                    SizedBox(
+                                      height: SizeConfig.diagonal * 1,
+                                    ),
+                                    Row(
+                                      children: [
+                                        Theme(
+                                          data: ThemeData(
+                                              unselectedWidgetColor:
+                                                  Colors.black),
+                                          child: Checkbox(
+                                            value: _agreed,
+                                            onChanged: (bool? newValue) {
+                                              setState(() {
+                                                _agreed = newValue;
+                                              });
+                                            },
+                                            activeColor:
+                                                Color(Styling.accentColor),
+                                            checkColor: Color(
+                                                Styling.primaryBackgroundColor),
+                                          ),
+                                        ),
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) => TermsPage(
+                                                  auth: widget.auth,
+                                                  db: widget.db,
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                          child: RichText(
+                                            text: TextSpan(
+                                                text: I18n.of(context)
+                                                    .readAndAgree,
+                                                style: TextStyle(
+                                                  color:
+                                                      Color(Styling.textColor),
+                                                  fontSize:
+                                                      SizeConfig.diagonal * 1.5,
+                                                ),
+                                                children: [
+                                                  TextSpan(
+                                                    text:
+                                                        I18n.of(context).terms,
+                                                    style: TextStyle(
+                                                      color: Color(
+                                                          Styling.accentColor),
+                                                      fontSize:
+                                                          SizeConfig.diagonal *
+                                                              1.5,
+                                                      decoration: TextDecoration
+                                                          .underline,
+                                                    ),
+                                                  ),
+                                                ]),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      height: SizeConfig.diagonal * 1,
+                                    ),
+                                  ],
                                 ),
                               ),
                               ZElevatedButton(
@@ -403,49 +475,54 @@ class _LoginPageState extends State<LoginPage> {
   void createAccount() async {
     FocusScope.of(context).requestFocus(new FocusNode());
     if (validate2()) {
-      EasyLoading.show(status: I18n.of(context).loading);
-      bool isOnline = await hasConnection();
-      if (!isOnline) {
-        EasyLoading.dismiss();
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: ZText(content: I18n.of(context).noInternet)));
+      if (_agreed == false) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: ZText(content: I18n.of(context).acceptConditions)));
       } else {
-        try {
-          User currentUser;
-          if (_firebaseUser != null)
-            currentUser = _firebaseUser!;
-          else
-            currentUser = widget.user!;
-
-          String? token = await widget.messaging.firebaseMessaging.getToken();
-          UserProfile userProfile = UserProfile(
-            id: currentUser.uid,
-            name: _name!,
-            role: Fields.client,
-            phoneNumber: currentUser.phoneNumber!,
-            token: token,
-            isActive: true,
-            tags: getUserTags(_name!, currentUser.phoneNumber!),
-          );
-          await widget.db.createAccount(context, userProfile);
+        EasyLoading.show(status: I18n.of(context).loading);
+        bool isOnline = await hasConnection();
+        if (!isOnline) {
           EasyLoading.dismiss();
+          ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: ZText(content: I18n.of(context).noInternet)));
+        } else {
+          try {
+            User currentUser;
+            if (_firebaseUser != null)
+              currentUser = _firebaseUser!;
+            else
+              currentUser = widget.user!;
 
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => DashboardPage(
-                auth: widget.auth,
-                userId: userProfile.id!,
-                userRole: userProfile.role,
-                db: widget.db,
-                messaging: widget.messaging,
+            String? token = await widget.messaging.firebaseMessaging.getToken();
+            UserProfile userProfile = UserProfile(
+              id: currentUser.uid,
+              name: _name!,
+              role: Fields.client,
+              phoneNumber: currentUser.phoneNumber!,
+              token: token,
+              isActive: true,
+              tags: getUserTags(_name!, currentUser.phoneNumber!),
+            );
+            await widget.db.createAccount(context, userProfile);
+            EasyLoading.dismiss();
+
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => DashboardPage(
+                  auth: widget.auth,
+                  userId: userProfile.id!,
+                  userRole: userProfile.role,
+                  db: widget.db,
+                  messaging: widget.messaging,
+                ),
               ),
-            ),
-          );
-        } on Exception catch (e) {
-          EasyLoading.dismiss();
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: ZText(content: I18n.of(context).operationFailed)));
+            );
+          } on Exception catch (e) {
+            EasyLoading.dismiss();
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: ZText(content: I18n.of(context).operationFailed)));
+          }
         }
       }
     }

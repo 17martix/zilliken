@@ -295,6 +295,12 @@ class I18n {
 
   String get orderType => _getText("orderType");
 
+  String get readAndAgree => _getText("readAndAgree");
+
+  String get terms => _getText("terms");
+
+  String get acceptConditions => _getText("acceptConditions");
+
   static late Map<String, String> _localizedValues;
 
   static const _enValues = {
@@ -444,6 +450,9 @@ class I18n {
     "agentName": "Agent Name",
     "thankYou": "Thank You ...!",
     "orderType": "Order Type",
+    "readAndAgree": "I have read and agree to ",
+    "terms": "the terms of service",
+    "acceptConditions": "You haven't accepted the terms of service",
   };
 
   static const _frValues = {
@@ -593,6 +602,9 @@ class I18n {
     "agentName": "Nom de l'agent",
     "thankYou": "Merci ...!",
     "orderType": "Type de commande",
+    "readAndAgree": "J'ai lu et j'accepte",
+    "terms": "les conditions de service",
+    "acceptConditions": "Vous n'avez pas accepté les conditions de service",
   };
 
   static const _allValues = {

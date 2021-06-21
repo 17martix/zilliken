@@ -8,5 +8,5 @@ class Styling {
   static const int transparentBackgroundDark = 0xff80000000;
   static const int iconColor = 0xff122F41;
   static const int accentColor = 0xffC49A6C;
-  
+   static const int grey = 0xffEEEEEE; //text color
 }

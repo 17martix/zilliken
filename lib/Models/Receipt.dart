@@ -1,7 +1,7 @@
-import 'package:blue_thermal_printer/blue_thermal_printer.dart';
 import 'package:intl/intl.dart';
 import 'package:zilliken/Helpers/Utils.dart';
 import 'package:zilliken/Models/Order.dart';
+import 'package:blue_thermal_printer/blue_thermal_printer.dart';
 
 import '../i18n.dart';
 

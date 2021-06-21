@@ -77,7 +77,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
   //double CAMERA_BEARING = 0;
   LatLng SOURCE_LOCATION = LatLng(-3.3834389, 29.3616122);
   //MenuItem menu = MenuItem();
- UserProfile? userProfile;
+  UserProfile? userProfile;
 
   /*double CAMERA_ZOOM = 16;
   double CAMERA_TILT = 80;
@@ -130,11 +130,11 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
         .doc(widget.orderId)
         .collection(Fields.items);
 
-        widget.db.getUserProfile(widget.userId).then((value) {
-          setState(() {
-            userProfile=value;
-          });
-        });
+    widget.db.getUserProfile(widget.userId).then((value) {
+      setState(() {
+        userProfile = value;
+      });
+    });
 
     FirebaseFirestore.instance
         .collection(Fields.order)
@@ -393,7 +393,9 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                   true,
                   null,
                   backFunction,
-                  (widget.userRole != Fields.client && order!=null && userProfile!=null)
+                  (widget.userRole != Fields.client &&
+                          order != null &&
+                          userProfile != null)
                       ? printing
                       : null,
                   null,
@@ -462,15 +464,15 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
             orderType: widget.clientOrder.orderLocation == 0
                 ? I18n.of(context).restaurantOrder
                 : I18n.of(context).livrdomicile,
-                tableAddressLabel: widget.clientOrder.orderLocation == 0?
-                "${I18n.of(context).tableNumber}":"${I18n.of(context).addr}", //restaurant order or delivery
-            tableAddress: 
-                 "${widget.clientOrder.tableAdress}",
+            tableAddressLabel: widget.clientOrder.orderLocation == 0
+                ? "${I18n.of(context).tableNumber}"
+                : "${I18n.of(context).addr}", //restaurant order or delivery
+            tableAddress: "${widget.clientOrder.tableAdress}",
             phoneNumber: widget.clientOrder.orderLocation == 1
                 ? "${widget.clientOrder.phoneNumber}"
                 : null,
-           agentName: userProfile!.name,
-           order: order!,
+            agentName: userProfile!.name,
+            order: order!,
           ),
         ));
   }
@@ -1145,6 +1147,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   new Radio(
+                    activeColor: Color(Styling.accentColor),
                     value: 1,
                     groupValue: _orderStatus,
                     onChanged: handleStatusChange,
@@ -1156,6 +1159,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                     value: 2,
                     groupValue: _orderStatus,
                     onChanged: handleStatusChange,
+                    activeColor: Color(Styling.accentColor),
                   ),
                   ZText(
                     content: I18n.of(context).confirmedOrder,
@@ -1163,6 +1167,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                   ),
                   new Radio(
                     value: 3,
+                    activeColor: Color(Styling.accentColor),
                     groupValue: _orderStatus,
                     onChanged: handleStatusChange,
                   ),
@@ -1172,6 +1177,7 @@ class _SingleOrderPageState extends State<SingleOrderPage> {
                   ),
                   new Radio(
                     value: 4,
+                    activeColor: Color(Styling.accentColor),
                     groupValue: _orderStatus,
                     onChanged: handleStatusChange,
                   ),

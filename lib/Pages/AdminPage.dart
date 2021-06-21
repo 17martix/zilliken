@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:zilliken/Components/ZAppBar.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:zilliken/Helpers/SizeConfig.dart';
+import 'package:zilliken/Helpers/Styling.dart';
 import 'package:zilliken/Services/Database.dart';
 import 'package:zilliken/Services/Messaging.dart';
 import 'package:zilliken/Pages/StatPage.dart';
@@ -82,15 +83,25 @@ class _AdminPageState extends State<AdminPage> {
         backgroundColor: Colors.transparent,
         bottomNavigationBar: CurvedNavigationBar(
           animationCurve: Curves.easeInBack,
-          color: Colors.white.withOpacity(0.7),
+          //color: Colors.white.withOpacity(0.7),
+          backgroundColor: Color(Styling.grey),
           height: 54,
-          backgroundColor: Colors.transparent,
+          //backgroundColor: Colors.transparent,
           animationDuration: Duration(milliseconds: 800),
           index: _pageState,
           items: <Widget>[
-            Icon(Icons.stacked_bar_chart),
-            Icon(Icons.fastfood),
-            Icon(Icons.supervised_user_circle),
+            Icon(
+              Icons.stacked_bar_chart,
+              color: Color(Styling.primaryColor),
+            ),
+            Icon(
+              Icons.fastfood,
+              color: Color(Styling.primaryColor),
+            ),
+            Icon(
+              Icons.supervised_user_circle,
+              color: Color(Styling.primaryColor),
+            ),
           ],
           onTap: (index) {
             setState(() {

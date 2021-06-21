@@ -143,3 +143,6 @@ receipt,Receipt,Reçu
 agentName,Agent Name,Nom de l'agent
 thankYou,Thank You ...!,Merci ...!
 orderType,Order Type,Type de commande
+readAndAgree,I have read and agree to ,J'ai lu et j'accepte
+terms,the terms of service,les conditions de service
+acceptConditions,You haven't accepted the terms of service,Vous n'avez pas accepté les conditions de service
