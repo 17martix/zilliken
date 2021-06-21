@@ -128,7 +128,7 @@ class _LoginPageState extends State<LoginPage> {
                       child: Center(
                         child: Card(
                           color: Color(Styling.primaryBackgroundColor)
-                              .withOpacity(0.9),
+                              .withOpacity(0.7),
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(
                                   SizeConfig.diagonal * 7)),
@@ -200,7 +200,7 @@ class _LoginPageState extends State<LoginPage> {
                     transform: Matrix4.translationValues(_xOffset2, 0, 1),
                     child: Card(
                       color: Color(Styling.primaryBackgroundColor)
-                          .withOpacity(0.9),
+                          .withOpacity(0.7),
                       shape: RoundedRectangleBorder(
                           borderRadius:
                               BorderRadius.circular(SizeConfig.diagonal * 7)),
@@ -284,7 +284,7 @@ class _LoginPageState extends State<LoginPage> {
                     child: Center(
                       child: Card(
                         color: Color(Styling.primaryBackgroundColor)
-                            .withOpacity(0.9),
+                            .withOpacity(0.7),
                         shape: RoundedRectangleBorder(
                             borderRadius:
                                 BorderRadius.circular(SizeConfig.diagonal * 7)),
