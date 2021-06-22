@@ -615,104 +615,96 @@ class _StatPageState extends State<StatPage> {
   }
 
   Widget statUser() {
-    return Column(
-      children: [
-        Card(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(SizeConfig.diagonal * 2),
-          ),
-          color: Color(Styling.primaryBackgroundColor),
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              //mainAxisSize: MainAxisSize.min,
+    return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(SizeConfig.diagonal * 2),
+      ),
+      color: Color(Styling.primaryBackgroundColor),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          //mainAxisSize: MainAxisSize.min,
+          // crossAxisAlignment: CrossAxisAlignment.center,
+          // mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Row(
               // crossAxisAlignment: CrossAxisAlignment.center,
+              // mainAxisSize: MainAxisSize.max,
               // mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Row(
-                  // crossAxisAlignment: CrossAxisAlignment.center,
-                  // mainAxisSize: MainAxisSize.max,
-                  // mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    makeTransactionsIcon(),
-                    SizedBox(width: SizeConfig.diagonal * 1),
-                    ZText(
-                      content: I18n.of(context).totalOrders,
-                      fontWeight: FontWeight.bold,
-                      color: Color(Styling.iconColor),
-                    ),
-                    SizedBox(width: SizeConfig.diagonal * 1),
-                  ],
+                makeTransactionsIcon(),
+                SizedBox(width: SizeConfig.diagonal * 1),
+                ZText(
+                  content: I18n.of(context).totalOrders,
+                  fontWeight: FontWeight.bold,
+                  color: Color(Styling.iconColor),
                 ),
-                Padding(
-                  padding: EdgeInsets.all(SizeConfig.diagonal * 1),
-                  child: Expanded(
-                    child: Stack(
-                      children: [
-                        SizedBox(
-                          height: SizeConfig.diagonal * 2,
-                          width: double.infinity,
-                          child: LinearProgressIndicator(
-                            value: totalCount.toDouble(),
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              Color(Styling.iconColor).withOpacity(0.9),
-                            ),
-                          ),
-                        ),
-                        Align(
-                          child: ZText(
-                            content:
-                                "${I18n.of(context).totalCount} : $totalCount ${commandePluriel(totalCount, context)}",
-                            color: Color(Styling.primaryBackgroundColor),
-                          ),
-                          alignment: Alignment.center,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: statisticList.map((userStat) {
-                    return statUserItem(userStat);
-                  }).toList(),
-                ),
+                SizedBox(width: SizeConfig.diagonal * 1),
               ],
             ),
-          ),
+            Padding(
+              padding: EdgeInsets.all(SizeConfig.diagonal * 1),
+              child: Stack(
+                children: [
+                  SizedBox(
+                    height: SizeConfig.diagonal * 2,
+                    width: double.infinity,
+                    child: LinearProgressIndicator(
+                      value: totalCount.toDouble(),
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        Color(Styling.iconColor).withOpacity(0.9),
+                      ),
+                    ),
+                  ),
+                  Align(
+                    child: ZText(
+                      content:
+                          "${I18n.of(context).totalCount} : $totalCount ${commandePluriel(totalCount, context)}",
+                      color: Color(Styling.primaryBackgroundColor),
+                    ),
+                    alignment: Alignment.center,
+                  ),
+                ],
+              ),
+            ),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: statisticList.map((userStat) {
+                return statUserItem(userStat);
+              }).toList(),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 
   Padding statUserItem(StatisticUser statisticUser) {
     return Padding(
       padding: EdgeInsets.all(SizeConfig.diagonal * 1),
-      child: Expanded(
-        child: Stack(
-          children: [
-            SizedBox(
-              height: SizeConfig.diagonal * 2,
-              width: double.infinity,
-              child: LinearProgressIndicator(
-                value: statisticUser.count! / totalCount,
-                backgroundColor:
-                    Color(Styling.transparentBackgroundDark).withOpacity(0.2),
-                valueColor: AlwaysStoppedAnimation<Color>(
-                  Color(Styling.iconColor).withOpacity(0.8),
-                ),
+      child: Stack(
+        children: [
+          SizedBox(
+            height: SizeConfig.diagonal * 2,
+            width: double.infinity,
+            child: LinearProgressIndicator(
+              value: statisticUser.count! / totalCount,
+              backgroundColor:
+                  Color(Styling.transparentBackgroundDark).withOpacity(0.2),
+              valueColor: AlwaysStoppedAnimation<Color>(
+                Color(Styling.iconColor).withOpacity(0.8),
               ),
             ),
-            Align(
-              child: ZText(
-                content:
-                    "${statisticUser.userName}: ${(statisticUser.count)} ${commandePluriel(statisticUser.count!, context)}",
-                color: Color(Styling.primaryBackgroundColor),
-              ),
-              alignment: Alignment.center,
+          ),
+          Align(
+            child: ZText(
+              content:
+                  "${statisticUser.userName}: ${(statisticUser.count)} ${commandePluriel(statisticUser.count!, context)}",
+              color: Color(Styling.primaryBackgroundColor),
             ),
-          ],
-        ),
+            alignment: Alignment.center,
+          ),
+        ],
       ),
     );
   }

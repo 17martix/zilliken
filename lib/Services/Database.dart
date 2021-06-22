@@ -884,7 +884,7 @@ class Database {
     DocumentReference inventory =
         databaseReference.collection(Fields.stock).doc();
 
-    await inventory
+      await inventory
         .set({
           Fields.id: inventory.id,
           Fields.name: stock.name,

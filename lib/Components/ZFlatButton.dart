@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:zilliken/Helpers/SizeConfig.dart';
+import 'package:zilliken/Helpers/Styling.dart';
 
 class ZTextButton extends StatelessWidget {
   final onpressed;
@@ -19,9 +20,7 @@ class ZTextButton extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.fromLTRB(
           0.0, 0, 0.0, bottomVerticalSpace ?? SizeConfig.diagonal * 2),
-      child: TextButton(
-          child: child,
-          onPressed: onpressed),
+      child: TextButton(child: child, onPressed: onpressed),
     );
   }
 }

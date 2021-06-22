@@ -320,7 +320,7 @@ class _CartPageState extends State<CartPage> {
           children: [
             ZText(
                 content: address.addressName,
-                color: Color(Styling.primaryBackgroundColor),
+                color: Color(Styling.primaryColor),
                 fontSize: SizeConfig.diagonal * 1.5),
             SizedBox(width: SizeConfig.diagonal * 1),
             PopupMenuButton(

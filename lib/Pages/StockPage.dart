@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -169,7 +171,7 @@ class _StockPageState extends State<StockPage> {
         stream: item.snapshots(),
         builder: (BuildContext context,
             AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
-          if (snapshot.data == null)
+          if (snapshot.data == null || snapshot.data!.docs.isEmpty)
             return Center(
               child: ZText(content: ''),
             );
@@ -218,8 +220,6 @@ class _StockPageState extends State<StockPage> {
   }
 
   Widget itemTile(Stock stock) {
-    // List<MenuItem> menuItem = [];
-
     return Padding(
       padding: EdgeInsets.only(bottom: SizeConfig.diagonal * 1),
       child: Slidable(
@@ -569,10 +569,10 @@ class _StockPageState extends State<StockPage> {
                                                       '${stock.quantity + stock.usedSince} ${stock.unit} ' +
                                                       I18n.of(context).used),
                                         ),
-                                        ZText(
-                                            content: I18n.of(context)
-                                                    .refilledAt +
-                                                ' ${widget.formatter.format(stock.date!.toDate())}'),
+                                        if (stock.date != null)
+                                          ZText(
+                                              content:
+                                                  '${I18n.of(context).refilledAt} ${widget.formatter.format(stock.date!.toDate())}'),
                                       ],
                                     ),
                                   ),
