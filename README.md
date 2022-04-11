@@ -1,13 +1,13 @@
 # zilliken
 
-Zilliken - Restaurant Ordering and Delivering App
-The app can be downloaded [here](https://play.google.com/store/apps/details?id=net.visionplusplus.zilliken).
+<p>Zilliken - Restaurant Ordering and Delivering App.</p>
+<p>[The app can be downloaded here](https://play.google.com/store/apps/details?id=net.visionplusplus.zilliken).</p>
 
 # Summary
 
-Zilliken is a food ordering and delivering app made with flutter and firebase. This app was made to replace physical menus that are used in local restaurants. The customer is presented instead with a tablet with a digital menu where he can make his order.
-The restaurant staff receives the order instantly as soon as the customer confirms the order. This has the advantage of eliminating errors and making it easy to keep track of how the restaurant is doing.
-The app is also equipped with an admin area that allows the restaurant staff to manage the orders and update the menu. The app also displays stats regarding the orders that came in each day.
+<p>Zilliken is a food ordering and delivering app made with flutter and firebase. This app was made to replace physical menus that are used in local restaurants. The customer is presented instead with a tablet with a digital menu where he can make his order.</p>
+<p>The restaurant staff receives the order instantly as soon as the customer confirms the order. This has the advantage of eliminating errors and making it easy to keep track of how the restaurant is doing.</p>
+<p>The app is also equipped with an admin area that allows the restaurant staff to manage the orders and update the menu. The app also displays stats regarding the orders that came in each day.</p>
 
 <table>
   <tr>
