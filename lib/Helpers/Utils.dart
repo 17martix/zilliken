@@ -325,9 +325,9 @@ Future<bool> hasConnection() async {
 String? getMapsKey() {
   String? key;
   if (Platform.isAndroid) {
-    key = "AIzaSyCOCHr54YA02I6vq2vd5Wuf9a1qWSlFU70";
+    key = "REPLACE WITH ANDROID API KEY";
   } else if (Platform.isIOS) {
-    key = "AIzaSyD3e3F8wOwsHFyPiBRK6pjzT6gxbDsp-oU";
+    key = "REPLACE WITH IOS API KEY";
   }
 
   return key;
